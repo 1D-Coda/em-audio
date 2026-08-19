@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 3d8f1b802810fb41d6ee4da84235404a853f4671
+commit: 5aed2563fea0a58dde29e1287896f48e2914e6ef
 tag: v1.0.0
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
