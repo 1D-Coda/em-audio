@@ -36,6 +36,9 @@ step "C0 build mixed-origin corpus"
 step "C  ground-truth recovery"
 ( cd experiments && python3 public_audio_splice.py ) || fail=1
 
+step "C2 voice model"
+./tools/fetch_voice.sh || fail=1
+
 step "C2 robustness arm (neural TTS + noise overlay)"
 ( cd experiments && python3 robustness_corpus.py ) || fail=1
 
