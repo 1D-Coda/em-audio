@@ -69,6 +69,7 @@ python3 tools/make_figures.py || fail=1
 step "preflight report"
 python3 tools/preflight.py || fail=1
 python3 tools/check_numbers.py || fail=1
+python3 tools/prose_audit.py || fail=1
 
 echo
 if [ "$fail" -ne 0 ]; then echo "RUN FAILED"; exit 1; fi
