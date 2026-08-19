@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: d60a58e2edbe74b4bcacdbbb38228d8eddc4c05c
+commit: 02147683e24e04935f7f7589829432e53c439b5b
 tag: v1.0.0
 zenodo_version_doi: PENDING - assign at archive time
 zenodo_concept_doi: PENDING - assign at archive time
