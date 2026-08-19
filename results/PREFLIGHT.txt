@@ -1,7 +1,11 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 02147683e24e04935f7f7589829432e53c439b5b
+commit: 185aff43c1d431f91b1ced48f06373ba1b5694be
 tag: v1.0.0
+note: 'commit' is HEAD when this report was generated. Because the report is
+      itself committed, the copy stored in the repository necessarily lags the
+      commit that stores it by one. Re-run tools/preflight.py, or run_all.sh,
+      to regenerate it against the working tree you actually have.
 zenodo_version_doi: PENDING - assign at archive time
 zenodo_concept_doi: PENDING - assign at archive time
 
