@@ -131,6 +131,27 @@ def main() -> int:
                        ("B2_complete_blind", "BTwo"), ("B3_complete_footprint", "BThree")):
         m[short + "Interior"] = fmt(AB["arms"]["interior"]["per_policy"][key]["promotions"])
         m[short + "Footprint"] = fmt(AB["arms"]["footprint"]["per_policy"][key]["promotions"])
+    # C2 robustness
+    C2 = load("C2_robustness")
+    m["CtwoNeuralN"] = fmt(C2["arms"]["neural_tts"]["n"])
+    m["CtwoNeuralExact"] = fmt(C2["arms"]["neural_tts"]["exact"])
+    m["CtwoNeuralBase"] = fmt(C2["arms"]["neural_tts"]["base_promote"])
+    m["CtwoNeuralEm"] = fmt(C2["arms"]["neural_tts"]["em_promote"])
+    m["CtwoNoiseN"] = fmt(C2["arms"]["noise_overlay"]["n"])
+    m["CtwoNoiseExact"] = fmt(C2["arms"]["noise_overlay"]["exact"])
+    m["CtwoNoiseEm"] = fmt(C2["arms"]["noise_overlay"]["em_promote"])
+    # J componentOf composition
+    J = load("J_c2pa_composition")
+    m["Jfixtures"] = fmt(J["n_fixtures"])
+    m["JsourcesTrusted"] = fmt(J["sources_trusted"])
+    m["JcompTrusted"] = fmt(J["composition_trusted"])
+    m["Jcomponents"] = fmt(J["component_ingredients_recorded"])
+    m["Jplaced"] = fmt(J["placed_actions_reference_both"])
+    m["Jroundtrip"] = fmt(J["assertion_roundtrip_identical"])
+    m["Jmixed"] = fmt(J["aggregate_mixed"])
+    m["JderivedTrusted"] = fmt(J["derived_trusted"])
+    m["JderivedMixed"] = fmt(J["derived_mixed"])
+    m["Jessence"] = fmt(J["essence_mismatches"])
     # I claim dilution
     I = load("I_claim_dilution")
     pt_i = I["per_transformation"]
@@ -148,6 +169,10 @@ def main() -> int:
     m["IchainDeepMax"] = f"{100*cd[-1]['max_dilution_fraction']:.2f}"
     m["IchainDepth"] = fmt(cd[-1]["depth"])
     m["IchainClips"] = fmt(I["chain_subset_clips"])
+    la = {r["asset_seconds"]: r for r in I["long_asset_chain"]}
+    m["IlongThirtyPct"] = f"{100*la[30]['dilution_fraction']:.2f}"
+    m["IlongThreeHundredPct"] = f"{100*la[300]['dilution_fraction']:.3f}"
+    m["IoverlayMedianPct"] = f"{100*pt_i['overlay_generated']['median_dilution_fraction']:.2f}"
     # H
     m["Hcases"] = fmt(H["cases"]); m["Hdis"] = fmt(H["disagreements"])
     m["Hdelta"] = f"{H['max_support_abs_difference']:.0f}"

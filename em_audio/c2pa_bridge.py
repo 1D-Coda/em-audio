@@ -107,6 +107,26 @@ def ingredients_of(report: Dict[str, object]) -> List[Dict[str, object]]:
     return report["manifests"][active].get("ingredients", [])
 
 
+def ingredient_report(asset: Path, outdir: Path, signer: Signer,
+                      workdir: Path) -> Dict[str, object]:
+    """Generate an ingredient report for ``asset`` and return the ingredient
+    struct with its stored manifest bytes referenced by absolute path."""
+    p = _c2pa([str(asset), "-i", "-o", str(outdir), "-f",
+               "--settings", str(signer.settings(workdir))], signer, workdir)
+    if p.returncode != 0:
+        raise RuntimeError(f"c2patool ingredient failed:\n{p.stderr[-1500:]}")
+    ing = json.loads((outdir / "ingredient.json").read_text())
+    man = outdir / "manifest_data.c2pa"
+    if man.exists():
+        # c2pa-rs resolves ResourceRef identifiers relative to the directory of
+        # the manifest-definition file, so the reference must be relative to the
+        # workdir in which sign() writes that file.
+        ing["manifest_data"] = {"format": "application/c2pa",
+                                "identifier": str(man.resolve().relative_to(
+                                    workdir.resolve()))}
+    return ing
+
+
 def build_manifest(title: str, em_assertion: Dict[str, object],
                    actions: Sequence[Dict[str, object]],
                    generator: str = "em-audio", version_str: str = "1.0.0") -> Dict[str, object]:

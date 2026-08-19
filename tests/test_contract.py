@@ -131,6 +131,19 @@ def main() -> int:
     check("kernel-footprint completeness: widening D_y never strengthens the claim",
           leq_claim(aggregate([i.ev for i in wide]).P, aggregate([i.ev for i in narrow]).P))
 
+    # --- pitch shift as a composite of in-scope operators --------------------
+    tps = tl_from(["C", "G", "C", "C"]); sps = {"s": tps}; nps = 4 * W
+    # rate-change reinterpretation (a resample map) followed by a compensating
+    # time stretch: the common pitch-shift construction
+    o_rs = O.resample("s", nps, 48000, 56000)          # up-shift reinterpretation
+    t_mid = compose_timeline(o_rs, sps, "ps1")
+    o_st = O.time_stretch("ps1", t_mid.end, 56000 / 48000.0, 56000)
+    comp_ps = aggregate([i.ev for i in em_intervals(o_st, {"ps1": t_mid})])
+    direct_ps = aggregate([i.ev for i in em_intervals(O.transcode("s", nps, "flac"), sps)])
+    check("pitch shift (resample + stretch composite) does not promote",
+          leq_claim(comp_ps.P, direct_ps.P) and comp_ps.L >= direct_ps.L,
+          f"{comp_ps.label} vs {direct_ps.label}")
+
     # --- composition -------------------------------------------------------
     t7 = tl_from(["C", "G", "C", "C"]); s7 = {"s": t7}; n7 = 4 * W
     o1 = O.resample("s", n7, 48000, 16000)

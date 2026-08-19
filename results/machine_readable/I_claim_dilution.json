@@ -69,9 +69,36 @@
   "python": "3.11.15"
  },
  "experiment": "I_claim_dilution",
+ "long_asset_chain": [
+  {
+   "asset_seconds": 30,
+   "chain": [
+    "trim_middle_80",
+    "normalize",
+    "transcode_mp3"
+   ],
+   "dilution_fraction": 0.024
+  },
+  {
+   "asset_seconds": 300,
+   "chain": [
+    "trim_middle_80",
+    "normalize",
+    "transcode_mp3"
+   ],
+   "dilution_fraction": 0.0024
+  }
+ ],
  "n_clips": 600,
  "per_transformation": {
   "normalize": {
+   "clips": 600,
+   "clips_with_any_dilution": 0,
+   "max_dilution_fraction": 0.0,
+   "mean_dilution_fraction": 0.0,
+   "median_dilution_fraction": 0.0
+  },
+  "overlay_generated": {
    "clips": 600,
    "clips_with_any_dilution": 0,
    "max_dilution_fraction": 0.0,
@@ -121,5 +148,5 @@
    "median_dilution_fraction": 0.0
   }
  },
- "runtime_s": 0.931
+ "runtime_s": 0.979
 }

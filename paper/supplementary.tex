@@ -202,6 +202,26 @@ a low value. Temporal ranges follow the C2PA \texttt{npt} convention with
 inclusive start and exclusive end; sample-exact bounds are carried alongside
 because \texttt{npt} strings are lossy at sample resolution.
 
+\section{Composition manifest wiring}
+\label{s:composition}
+
+Two implementation notes for the C2PA-native composition fixtures
+(manuscript Section on heterogeneous composition), recorded so a replicating
+reader does not lose time on them. First, the official tool resolves
+\texttt{ResourceRef} identifiers relative to the directory of the
+manifest-definition file, so an ingredient's stored \texttt{manifest\_data.c2pa}
+must be referenced by a path relative to that directory; an absolute path is
+reported as \texttt{resource not found} even when the file exists. Second, a
+\texttt{c2pa.placed} action must carry a hashed-URI reference to its
+\texttt{componentOf} ingredient assertion (C2PA 2.4 \S18.16.3); writing the
+reference by hand is impossible before signing, and the supported route is to
+give the action an \texttt{ingredientIds} parameter naming the ingredient's
+\texttt{instance\_id}, which the claim generator resolves to the hashed URI at
+signing time. A frozen composition manifest with both \texttt{componentOf}
+ingredients, both resolved \texttt{c2pa.placed} references, both source
+\texttt{digitalSourceType} values and the EM aggregate is committed at
+\texttt{fixtures/expected/manifest\_composition\_componentOf.json}.
+
 \section{Reproduction}
 \label{s:repro}
 

@@ -36,6 +36,9 @@ step "C0 build mixed-origin corpus"
 step "C  ground-truth recovery"
 ( cd experiments && python3 public_audio_splice.py ) || fail=1
 
+step "C2 robustness arm (neural TTS + noise overlay)"
+( cd experiments && python3 robustness_corpus.py ) || fail=1
+
 step "D  transformation matrix (stock ffmpeg)"
 ( cd experiments && python3 transform_matrix.py ) || fail=1
 
@@ -47,6 +50,9 @@ step "F  signed round-trip and signal transparency"
 
 step "G  overhead"
 ( cd experiments && python3 overhead_benchmark.py ) || fail=1
+
+step "J  C2PA-native componentOf composition"
+( cd experiments && python3 c2pa_composition.py ) || fail=1
 
 step "I  claim dilution (cost of conservatism)"
 ( cd experiments && python3 claim_dilution.py ) || fail=1

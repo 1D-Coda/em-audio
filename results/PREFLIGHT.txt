@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 293aa181bddd46595b6da1afd8cec9234489d6fb
+commit: 3d8f1b802810fb41d6ee4da84235404a853f4671
 tag: v1.0.0
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
@@ -73,16 +73,28 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 0.9491
-median_baseline_ms_per_audio_minute: 0.284
-em_over_baseline_ratio: 3.3416
-em_fraction_of_ffmpeg_time: 0.001427
+median_em_ms_per_audio_minute: 0.9472
+median_baseline_ms_per_audio_minute: 0.2827
+em_over_baseline_ratio: 3.3508
+em_fraction_of_ffmpeg_time: 0.001513
 median_manifest_overhead_bytes_per_asset: 14854
 median_em_assertion_bytes_per_asset: 1268
 metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 12.3006
-median_validate_ms: 10.2713
+median_sign_ms: 11.3515
+median_validate_ms: 9.4159
 assertion_bytes_per_interval: 332.7
+
+--- C2  robustness arm ---
+c2_neural_exact: 50/50
+c2_neural_em_promotions: 0
+c2_noise_exact: 50/50
+c2_noise_em_promotions: 0
+
+--- J  componentOf composition ---
+j_fixtures: 30
+j_composition_trusted: 30
+j_aggregate_mixed: 30
+j_essence_mismatches: 0
 
 --- I  claim dilution ---
 max_dilution_fraction_any_transformation: 0.449153
@@ -94,6 +106,6 @@ oracle_disagreements: 0
 oracle_max_support_difference: 0.0
 
 --- totals ---
-tests_total: 27
-tests_passed: 27
+tests_total: 28
+tests_passed: 28
 tests_failed: 0

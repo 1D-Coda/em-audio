@@ -1,0 +1,54 @@
+{
+  "format": "audio/wav",
+  "instance_id": "xmp:iid:e490360a-f649-4eee-8036-c1cccfbfcb33",
+  "relationship": "componentOf",
+  "active_manifest": "urn:c2pa:daeaa899-75a1-4076-ae28-ec56c1542e68",
+  "validation_results": {
+    "activeManifest": {
+      "success": [
+        {
+          "code": "signingCredential.trusted",
+          "url": "self#jumbf=/c2pa/urn:c2pa:daeaa899-75a1-4076-ae28-ec56c1542e68/c2pa.signature",
+          "explanation": "signing certificate trusted, found in System trust anchors"
+        },
+        {
+          "code": "claimSignature.insideValidity",
+          "url": "self#jumbf=/c2pa/urn:c2pa:daeaa899-75a1-4076-ae28-ec56c1542e68/c2pa.signature",
+          "explanation": "claim signature valid"
+        },
+        {
+          "code": "claimSignature.validated",
+          "url": "self#jumbf=/c2pa/urn:c2pa:daeaa899-75a1-4076-ae28-ec56c1542e68/c2pa.signature",
+          "explanation": "claim signature valid"
+        },
+        {
+          "code": "assertion.hashedURI.match",
+          "url": "self#jumbf=/c2pa/urn:c2pa:daeaa899-75a1-4076-ae28-ec56c1542e68/c2pa.assertions/c2pa.hash.data",
+          "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data"
+        },
+        {
+          "code": "assertion.hashedURI.match",
+          "url": "self#jumbf=/c2pa/urn:c2pa:daeaa899-75a1-4076-ae28-ec56c1542e68/c2pa.assertions/c2pa.actions.v2",
+          "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2"
+        },
+        {
+          "code": "assertion.hashedURI.match",
+          "url": "self#jumbf=/c2pa/urn:c2pa:daeaa899-75a1-4076-ae28-ec56c1542e68/c2pa.assertions/mx.aurtech.emaudio.evidence",
+          "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/mx.aurtech.emaudio.evidence"
+        },
+        {
+          "code": "assertion.dataHash.match",
+          "url": "self#jumbf=/c2pa/urn:c2pa:daeaa899-75a1-4076-ae28-ec56c1542e68/c2pa.assertions/c2pa.hash.data",
+          "explanation": "data hash valid"
+        }
+      ],
+      "informational": [],
+      "failure": []
+    }
+  },
+  "manifest_data": {
+    "format": "application/c2pa",
+    "identifier": "manifest_data.c2pa"
+  },
+  "ocsp_responses": []
+}

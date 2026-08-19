@@ -1,0 +1,31 @@
+{
+ "arms": {
+  "neural_tts": {
+   "base_promote": 50,
+   "em_promote": 0,
+   "exact": 50,
+   "n": 50
+  },
+  "noise_overlay": {
+   "base_promote": 0,
+   "em_promote": 0,
+   "exact": 50,
+   "n": 50
+  }
+ },
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "node": "v26.0.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.15"
+ },
+ "experiment": "C2_robustness",
+ "neural_tts_engine": "Piper (VITS architecture), voice en_US-ljspeech-medium; LJSpeech source data is public domain",
+ "noise_source": "ffmpeg anoisesrc, pink, -18 dB, locally generated, seeded per clip",
+ "note": "the evidence algebra reads no acoustic features, so these arms test the pipeline machinery under different signal character, not a detector",
+ "runtime_s": 13.757
+}

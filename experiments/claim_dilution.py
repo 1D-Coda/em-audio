@@ -94,14 +94,28 @@ def main() -> int:
         "time_stretch_1.10": lambda n: O.time_stretch("clip", n, 1.10, FS),
         "silence_removal": lambda n: O.silence_removal(
             "clip", [(0, int(0.4 * n)), (int(0.6 * n), n)]),
+        # overlay's nominal required-source set already contains every covering
+        # source and both pieces declare zero footprint, so its expected
+        # dilution is exactly zero; it is included so the table covers all
+        # eight transformations of the main experiment rather than leaving the
+        # reader to infer the omission.
+        "overlay_generated": "OVERLAY",
     }
+
+    tone_ev = Evidence(P=claim_of(["G"]), S={CHANNEL: 0.05}, A={CHANNEL: SCOPE},
+                       L=frozenset({"urn:emaudio:ffmpeg-lavfi-sine:660Hz"}))
+    n_tone = FS // 2
+    tone_tl = Timeline("tone", [SourceInterval("tone", 0, n_tone, tone_ev)])
 
     per_tf: Dict[str, Dict[str, object]] = {}
     for name, mk in jobs.items():
         fracs = []
         for rec in index:
-            tls = {"clip": timeline_of(rec)}
-            weak, total = diluted_samples(mk(rec["n_samples"]), tls)
+            n = rec["n_samples"]
+            tls = {"clip": timeline_of(rec), "tone": tone_tl}
+            model = O.overlay(("clip", n), ("tone", n_tone), n // 2) \
+                if mk == "OVERLAY" else mk(n)
+            weak, total = diluted_samples(model, tls)
             fracs.append(weak / total if total else 0.0)
         per_tf[name] = {
             "clips": len(fracs),
@@ -163,7 +177,53 @@ def main() -> int:
               f"{depth_rows[-1]['median_dilution_fraction']*100:.3f}%  "
               f"max {depth_rows[-1]['max_dilution_fraction']*100:.3f}%")
 
+    # --- long-asset arm: the same fixed-radius bands on broadcast-length ----
+    # material.  A 30 s asset with one interior generated segment, through a
+    # three-operator chain (trim to the middle 80% -> normalize -> MP3), is the
+    # shape of a routine broadcast edit; the bands are the same absolute widths
+    # as on the corpus clips, so the fraction shrinks with duration.
+    long_rows = []
+    for dur_s in (30, 300):
+        n = dur_s * FS
+        g0, g1 = int(0.45 * n), int(0.55 * n)
+        tl = Timeline("clip", [
+            SourceInterval("clip", 0, g0, Evidence(P=claim_of(["C"]),
+                           S={CHANNEL: 0.9}, A={CHANNEL: SCOPE}, L=frozenset({"urn:a"}))),
+            SourceInterval("clip", g0, g1, Evidence(P=claim_of(["G"]),
+                           S={CHANNEL: 0.1}, A={CHANNEL: SCOPE}, L=frozenset({"urn:b"}))),
+            SourceInterval("clip", g1, n, Evidence(P=claim_of(["C"]),
+                           S={CHANNEL: 0.9}, A={CHANNEL: SCOPE}, L=frozenset({"urn:c"}))),
+        ])
+        state = {"fp": tl, "ref": tl}
+        chain3 = [lambda src, m: O.trim(src, m, m // 10, m - m // 10),
+                  lambda src, m: O.normalize(src, m),
+                  lambda src, m: O.transcode(src, m, "mp3")]
+        for i, mk3 in enumerate(chain3):
+            nxt = f"L{i+1}"
+            state = {key: Timeline(nxt, [SourceInterval(nxt, iv.out_start, iv.out_end, iv.ev)
+                                         for iv in em_intervals(mk3(cur.src, cur.end),
+                                                                {cur.src: cur},
+                                                                footprint_aware=(key == "fp"))],
+                                   check=False)
+                     for key, cur in state.items()}
+        fp_tl, ref_tl = state["fp"], state["ref"]
+        edges = sorted({i.start for i in fp_tl.intervals} | {fp_tl.end}
+                       | {i.start for i in ref_tl.intervals} | {ref_tl.end})
+        weak = total = 0
+        for a, b in zip(edges, edges[1:]):
+            if a >= min(fp_tl.end, ref_tl.end):
+                break
+            total += b - a
+            if strictly_weaker(fp_tl.at(a).ev, ref_tl.at(a).ev):
+                weak += b - a
+        long_rows.append({"asset_seconds": dur_s,
+                          "chain": ["trim_middle_80", "normalize", "transcode_mp3"],
+                          "dilution_fraction": round(weak / total, 6)})
+        print(f"  long asset {dur_s}s, depth-3 chain: dilution "
+              f"{100*weak/total:.3f}%")
+
     payload = {
+        "long_asset_chain": long_rows,
         "definition": ("fraction of output samples whose footprint-aware evidence record is "
                        "strictly weaker (weaker provenance claim, lost channel, or lower "
                        "support value) than the record computed over the nominal represented "

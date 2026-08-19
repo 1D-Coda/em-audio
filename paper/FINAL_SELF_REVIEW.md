@@ -52,6 +52,45 @@ supplement into a main-text table; and the representational-versus-computational
 dependency distinction is now named explicitly in the model section, resolving
 the normalisation ambiguity.
 
+## Round-2 hardening (2026-08-19, same day)
+
+A second review round requested three substantive items and several
+positioning changes. Disposition:
+
+**Applied with new experiments (all numbers measured, none asserted):**
+- **Experiment J — C2PA-native heterogeneous composition (30 fixtures).**
+  Signed captured + generated sources become `componentOf` ingredients carrying
+  their full manifests, with spec-conformant `c2pa.placed` hashed-URI
+  references and the EM aggregate; derived and re-signed with `parentOf`.
+  30/30 trusted, 30/30 aggregate MIXED, 0 essence mismatches. This closes the
+  gap between the vocabulary-vs-reduction argument and the signed transport.
+- **Experiment C2 — robustness arm.** 50 clips rebuilt with a neural TTS
+  (Piper/VITS, public-domain LJSpeech voice; the lessac voices were rejected on
+  licence grounds) and 50 clips buried under −18 dB pink noise. 100/100 exact
+  recovery, 0 EM promotions — the "clean data only" critique is now answered
+  empirically, not argumentatively.
+- **Dilution extensions.** Overlay added to the dilution table (measured 0%,
+  with the structural reason stated); the five-operator chain is now defined
+  operator-by-operator in the text; and a long-asset arm measures the same
+  depth-3 broadcast-style chain at 2.40% dilution on a 30 s asset and 0.24% on
+  a five-minute asset — the reviewer's requested contextualization, but with
+  computed numbers instead of asserted ones.
+
+**Applied as text:** the constructed-baseline qualifier and corpus-scoped
+dilution figure now appear in the abstract; figures relocated to their first
+citations (Figure 1: page 20 → page 4); pitch shifting addressed as a composite
+with a named regression test; automated footprint calibration and
+specification-derived footprints proposed as future work; the per-sample-oracle
+independence rationale stated with its honest limit; a deployment-path
+paragraph (library at the operator invocation, no spec change); a concrete
+PROV example; and an explicit information-flow-integrity reading.
+
+**Declined:** quoting an uncomputed "<5% for typical broadcast workflows"
+claim (replaced by the measured long-asset arm); naming commercial editors in
+the standardization paragraph; a second speech corpus behind a login wall
+(Common Voice) — the LJSpeech-voiced neural arm covers the external-validity
+concern within Gate 0C's licence discipline.
+
 ## Verdict
 
 No dimension scores below 4, so no substantive scientific blocker remains.

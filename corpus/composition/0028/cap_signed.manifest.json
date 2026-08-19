@@ -1,0 +1,66 @@
+{
+ "claim_generator_info": [
+  {
+   "name": "em-audio",
+   "version": "1.0.0"
+  }
+ ],
+ "title": "captured source",
+ "assertions": [
+  {
+   "label": "c2pa.actions.v2",
+   "data": {
+    "actions": [
+     {
+      "action": "c2pa.created",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
+     }
+    ]
+   }
+  },
+  {
+   "label": "mx.aurtech.emaudio.evidence",
+   "data": {
+    "schema": "https://aurtech.mx/ns/em-audio/1.0",
+    "policy": "complete-source",
+    "operator": "capture",
+    "operatorParameters": {},
+    "asset": {
+     "sampleRate": 16000,
+     "sampleCount": 11360
+    },
+    "intervals": [
+     {
+      "regionOfInterest": {
+       "type": "temporal",
+       "time": {
+        "type": "npt",
+        "start": "0.000000000",
+        "end": "0.710000000"
+       }
+      },
+      "samples": {
+       "start": 0,
+       "end": 11360
+      },
+      "provenance": [
+       "C"
+      ],
+      "state": "CAPTURED",
+      "support": {
+       "capture-support": 0.9
+      },
+      "applicability": {
+       "capture-support": [
+        "digital-asset"
+       ]
+      },
+      "lineage": [
+       "urn:emaudio:librispeech:8297-275154-0010"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

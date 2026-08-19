@@ -180,6 +180,9 @@ def dilution_table():
         rows.append(f"composition depth {c['depth']} & {c['clips']} & "
                     f"{100*c['median_dilution_fraction']:.2f}\\% & "
                     f"{100*c['max_dilution_fraction']:.2f}\\% & --- \\\\")
+    for r in I["long_asset_chain"]:
+        rows.append(f"{r['asset_seconds']}\\,s asset, depth-3 chain & 1 & "
+                    f"{100*r['dilution_fraction']:.2f}\\% & --- & --- \\\\")
     write("dilution_table", "\n".join(rows), colspec="lrrrr",
           header=("Transformation & Clips & Median dilution & Max dilution & "
                   "Clips affected"))

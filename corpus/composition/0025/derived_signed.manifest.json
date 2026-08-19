@@ -1,0 +1,97 @@
+{
+ "claim_generator_info": [
+  {
+   "name": "em-audio",
+   "version": "1.0.0"
+  }
+ ],
+ "title": "derived 25",
+ "assertions": [
+  {
+   "label": "c2pa.actions.v2",
+   "data": {
+    "actions": [
+     {
+      "action": "c2pa.cropped"
+     }
+    ]
+   }
+  },
+  {
+   "label": "mx.aurtech.emaudio.evidence",
+   "data": {
+    "schema": "https://aurtech.mx/ns/em-audio/1.0",
+    "policy": "complete-source",
+    "operator": "trim",
+    "operatorParameters": {
+     "start": 6920,
+     "end": 23368
+    },
+    "asset": {
+     "sampleRate": 16000,
+     "sampleCount": 16448
+    },
+    "intervals": [
+     {
+      "regionOfInterest": {
+       "type": "temporal",
+       "time": {
+        "type": "npt",
+        "start": "0.000000000",
+        "end": "0.432500000"
+       }
+      },
+      "samples": {
+       "start": 0,
+       "end": 6920
+      },
+      "provenance": [
+       "C"
+      ],
+      "state": "CAPTURED",
+      "support": {
+       "capture-support": 0.9
+      },
+      "applicability": {
+       "capture-support": [
+        "digital-asset"
+       ]
+      },
+      "lineage": [
+       "urn:emaudio:librispeech:1272-128104-0013"
+      ]
+     },
+     {
+      "regionOfInterest": {
+       "type": "temporal",
+       "time": {
+        "type": "npt",
+        "start": "0.432500000",
+        "end": "1.028000000"
+       }
+      },
+      "samples": {
+       "start": 6920,
+       "end": 16448
+      },
+      "provenance": [
+       "G"
+      ],
+      "state": "GENERATED",
+      "support": {
+       "capture-support": 0.1
+      },
+      "applicability": {
+       "capture-support": [
+        "digital-asset"
+       ]
+      },
+      "lineage": [
+       "urn:emaudio:espeak-ng:1.52.0:0025"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -4,76 +4,76 @@
    "assertion_bytes": 549,
    "audio_seconds": 0.256,
    "emitted_intervals": 1,
-   "median_ms": 0.0137,
+   "median_ms": 0.0136,
    "source_intervals": 1
   },
   {
    "assertion_bytes": 875,
    "audio_seconds": 0.512,
    "emitted_intervals": 2,
-   "median_ms": 0.0254,
+   "median_ms": 0.0253,
    "source_intervals": 2
   },
   {
    "assertion_bytes": 1530,
    "audio_seconds": 1.024,
    "emitted_intervals": 4,
-   "median_ms": 0.0499,
+   "median_ms": 0.0485,
    "source_intervals": 4
   },
   {
    "assertion_bytes": 2840,
    "audio_seconds": 2.048,
    "emitted_intervals": 8,
-   "median_ms": 0.1018,
+   "median_ms": 0.0956,
    "source_intervals": 8
   },
   {
    "assertion_bytes": 5466,
    "audio_seconds": 4.096,
    "emitted_intervals": 16,
-   "median_ms": 0.1922,
+   "median_ms": 0.1966,
    "source_intervals": 16
   },
   {
    "assertion_bytes": 10738,
    "audio_seconds": 8.192,
    "emitted_intervals": 32,
-   "median_ms": 0.384,
+   "median_ms": 0.3909,
    "source_intervals": 32
   },
   {
    "assertion_bytes": 21363,
    "audio_seconds": 16.384,
    "emitted_intervals": 64,
-   "median_ms": 0.8455,
+   "median_ms": 0.8224,
    "source_intervals": 64
   },
   {
    "assertion_bytes": 42671,
    "audio_seconds": 32.768,
    "emitted_intervals": 128,
-   "median_ms": 1.7571,
+   "median_ms": 1.7742,
    "source_intervals": 128
   },
   {
    "assertion_bytes": 85383,
    "audio_seconds": 65.536,
    "emitted_intervals": 256,
-   "median_ms": 3.7748,
+   "median_ms": 3.6571,
    "source_intervals": 256
   }
  ],
  "audio_minutes_per_repetition": 1.4081,
  "baseline_bookkeeping_ms_per_repetition": {
-  "max": 0.4783,
-  "median": 0.3999,
+  "max": 0.5586,
+  "median": 0.398,
   "min": 0.3777,
   "n": 30,
-  "q1": 0.3878,
-  "q3": 0.4038
+  "q1": 0.3885,
+  "q3": 0.4054
  },
- "baseline_ms_per_audio_minute": 0.284,
+ "baseline_ms_per_audio_minute": 0.2827,
  "clips_per_repetition": 30,
  "em_assertion_bytes": {
   "max": 1270.0,
@@ -85,16 +85,16 @@
  },
  "em_assertion_bytes_per_audio_minute": 25510.3,
  "em_bookkeeping_ms_per_repetition": {
-  "max": 1.7873,
-  "median": 1.3364,
-  "min": 1.2612,
+  "max": 1.5288,
+  "median": 1.3337,
+  "min": 1.2597,
   "n": 30,
-  "q1": 1.2966,
-  "q3": 1.3938
+  "q1": 1.305,
+  "q3": 1.3951
  },
- "em_ms_per_audio_minute": 0.9491,
- "em_over_baseline_ratio": 3.3416,
- "em_over_ffmpeg_fraction": 0.001427,
+ "em_ms_per_audio_minute": 0.9472,
+ "em_over_baseline_ratio": 3.3508,
+ "em_over_ffmpeg_fraction": 0.001513,
  "environment": {
   "c2patool": "c2patool 0.27.2",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
@@ -107,12 +107,12 @@
  },
  "experiment": "G_overhead",
  "ffmpeg_transcode_ms_per_repetition": {
-  "max": 1029.7013,
-  "median": 936.3087,
-  "min": 899.3395,
+  "max": 990.9721,
+  "median": 881.7797,
+  "min": 855.548,
   "n": 30,
-  "q1": 926.4286,
-  "q3": 951.8661
+  "q1": 868.7457,
+  "q3": 890.1603
  },
  "machine_dependence_note": "single-machine medians for a Python reference implementation; a compiled implementation will differ, so these are not language-independent constants",
  "manifest_bytes_per_audio_minute": 298723.0,
@@ -128,21 +128,21 @@
  "median_manifest_overhead_bytes_per_asset": 14854,
  "per_minute_caveat": "the corpus clips have a median duration of 2.98 s, and the C2PA manifest overhead is dominated by a fixed per-asset cost (certificate chain, COSE structure, hard binding) rather than by audio duration, so the per-audio-minute figures are extrapolations of a mostly fixed cost and should be read together with the per-asset figures and the interval-scaling table",
  "repetitions": 30,
- "runtime_s": 29.295,
+ "runtime_s": 27.586,
  "sign_ms": {
-  "max": 19.3625,
-  "median": 12.3006,
-  "min": 11.158,
+  "max": 13.2719,
+  "median": 11.3515,
+  "min": 10.4454,
   "n": 30,
-  "q1": 11.926,
-  "q3": 12.9294
+  "q1": 10.9617,
+  "q3": 11.7269
  },
  "validate_ms": {
-  "max": 12.011,
-  "median": 10.2713,
-  "min": 9.2949,
+  "max": 10.6432,
+  "median": 9.4159,
+  "min": 8.6621,
   "n": 30,
-  "q1": 9.9356,
-  "q3": 10.7876
+  "q1": 9.0991,
+  "q3": 9.6603
  }
 }

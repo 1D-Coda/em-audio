@@ -33,6 +33,21 @@ captured audio with a redistributable licence.
 | Redistribution | The generated clips are redistributed under this repository's MIT licence |
 | Determinism | Fixed voice (`en-us`), fixed speed/pitch per clip index, no randomness |
 
+## Supplementary neural-TTS voice (robustness arm)
+
+| Field | Value |
+|---|---|
+| Engine | Piper (VITS architecture), MIT-licensed |
+| Voice | `en_US-ljspeech-medium` |
+| Voice training data | LJSpeech dataset: public-domain LibriVox recordings of a public-domain text; the dataset is released into the public domain |
+| Role | generates the synthetic middle segment of the 50-clip neural robustness arm; the model files are committed under `corpus/piper_voices/` |
+| Note | the `lessac` voices were considered and rejected because the underlying Blizzard 2013 data carries a restrictive licence |
+
+## Supplementary noise source (robustness arm)
+
+Pink noise generated locally by ffmpeg `anoisesrc`, seeded per clip. No
+third-party material.
+
 ## Tools in the processing path
 
 | Tool | Version | Licence | Role |
