@@ -1,0 +1,155 @@
+"""Generate the preflight report from the machine-readable results only.
+
+Every number quoted in the manuscript must appear here.  ``tools/check_numbers.py``
+fails the build if a number in the manuscript source is absent from this file.
+"""
+from __future__ import annotations
+
+import json, platform, subprocess, sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+MR = ROOT / "results" / "machine_readable"
+
+
+def load(name):
+    p = MR / f"{name}.json"
+    return json.loads(p.read_text()) if p.exists() else None
+
+
+def _v(cmd):
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True).stdout.splitlines()[0].strip()
+    except Exception:
+        return "unavailable"
+
+
+def git(*args):
+    try:
+        return subprocess.run(["git", *args], cwd=ROOT, capture_output=True,
+                              text=True).stdout.strip() or "UNCOMMITTED"
+    except Exception:
+        return "UNCOMMITTED"
+
+
+def main() -> int:
+    A, B, C0, C, D = load("A_synthetic_state_space"), load("B_adversarial_timelines"), \
+        load("C0_corpus_build"), load("C_public_audio_splice"), load("D_transform_matrix")
+    E, F, G, H = load("E_manifest_stripping"), load("F_c2pa_roundtrip"), \
+        load("G_overhead"), load("H_oracle_differential")
+    missing = [n for n, x in [("A", A), ("B", B), ("C0", C0), ("C", C), ("D", D),
+                              ("E", E), ("F", F), ("G", G), ("H", H)] if x is None]
+    if missing:
+        print(f"missing results: {missing}", file=sys.stderr)
+        return 2
+
+    d5 = B["per_depth"]["5"]
+    lines = []
+    add = lines.append
+    add("EM-AUDIO PREFLIGHT REPORT")
+    add("=" * 72)
+    add(f"commit: {git('rev-parse', 'HEAD')}")
+    add(f"tag: {git('describe', '--tags', '--always')}")
+    add("zenodo_version_doi: PENDING - assign at archive time")
+    add("zenodo_concept_doi: PENDING - assign at archive time")
+    add("")
+    add(f"python: {sys.version.split()[0]}")
+    add(f"ffmpeg: {_v(['ffmpeg', '-version'])}")
+    add(f"c2patool: {_v(['c2patool', '--version'])}")
+    add(f"node: {_v(['node', '-v'])}")
+    add(f"espeak_ng: {_v(['espeak-ng', '--version'])}")
+    add("c2pa_spec_version: 2.4 (April 2026)")
+    add(f"os: {platform.platform()}")
+    add(f"cpu: {platform.machine()}")
+    add("")
+    add("--- A  exhaustive finite-state conformance ---")
+    add(f"words_enumerated: {A['words_enumerated']}")
+    add(f"operator_cases: {A['operator_cases']}")
+    add(f"checks_total: {A['checks_total']}")
+    add(f"checks_failed: {A['checks_failed']}")
+    add(f"composition_cases: {A['composition_cases']}")
+    add("")
+    add("--- B  adversarial timelines ---")
+    add(f"synthetic_cases: {B['n_timelines']}")
+    add(f"baseline_promotions_depth1: {B['per_depth']['1']['baseline_provenance_promotions']}")
+    add(f"baseline_promotion_rate_depth1: {B['per_depth']['1']['baseline_promotion_rate']}")
+    add(f"baseline_promotions_depth5: {d5['baseline_provenance_promotions']}")
+    add(f"em_promotions: {sum(v['em_provenance_promotions'] for v in B['per_depth'].values())}")
+    add(f"em_unverified_to_verified: {sum(v['em_unverified_to_verified'] for v in B['per_depth'].values())}")
+    add(f"em_lineage_omissions: {sum(v['em_lineage_omissions'] for v in B['per_depth'].values())}")
+    add(f"baseline_lineage_omissions_depth1: {B['per_depth']['1']['baseline_lineage_omissions']}")
+    mx = max(abs(c['measured_baseline_rate'] - c['closed_form_baseline_rate'])
+             for arm in B['control_uniform_positions'].values() for c in arm.values())
+    add(f"control_max_abs_deviation_from_closed_form: {mx:.4f}")
+    add("")
+    add("--- C  mixed-origin corpus ---")
+    add(f"audio_clips: {C['n_clips']}")
+    add(f"exact_interval_recovery: {C['exact_interval_recovery']}")
+    add(f"generated_interval_recovered: {C['generated_interval_recovered']}")
+    add(f"corpus_boundary_mismatches: {C0['boundary_mismatches']}")
+    add(f"c_baseline_promotions: {C['baseline_provenance_promotions']}")
+    add(f"c_em_promotions: {C['em_provenance_promotions']}")
+    add("")
+    add("--- D  transformation matrix ---")
+    add(f"transformations: {len(D['per_transformation'])}")
+    add(f"transformation_runs: {sum(v['n'] for v in D['per_transformation'].values())}")
+    add(f"d_baseline_promotions: {sum(v['baseline_promotions'] for v in D['per_transformation'].values())}")
+    add(f"d_em_promotions: {sum(v['em_promotions'] for v in D['per_transformation'].values())}")
+    add(f"lineage_failures: {sum(v['em_lineage_omissions'] for v in D['per_transformation'].values())}")
+    add(f"determinism_rerun_mismatches: {D['determinism_rerun_mismatches']}")
+    add(f"max_model_vs_ffmpeg_sample_deviation: "
+        f"{max(v['model_vs_ffmpeg_max_abs_sample_dev'] or 0 for v in D['per_transformation'].values())}")
+    add(f"guard_bands_all_adequate: "
+        f"{all(v['guard_band_covers_deviation'] for v in D['per_transformation'].values())}")
+    add("")
+    add("--- E  provenance loss ---")
+    add(f"e_clips: {E['n_clips']}")
+    add(f"e_violations: {E['violations']}")
+    for cond, tally in E["state_tally"].items():
+        add(f"e_{cond}: {tally}")
+    add("")
+    add("--- F  signed round-trip ---")
+    tot = sum(v["n"] for v in F["per_container"].values())
+    add(f"signed_roundtrips: {tot}")
+    add(f"validation_failures: {sum(v['n'] - v['validate_valid_or_better'] for v in F['per_container'].values())}")
+    add(f"derived_validate_trusted: {sum(v['derived_validate_trusted'] for v in F['per_container'].values())}")
+    add(f"parentOf_recorded: {sum(v['parentOf_recorded'] for v in F['per_container'].values())}")
+    add(f"assertion_roundtrip_identical: {sum(v['assertion_roundtrip_identical'] for v in F['per_container'].values())}")
+    add(f"signal_mismatches: {sum(v['n'] - v['essence_identical_pre_vs_em'] for v in F['per_container'].values())}")
+    add(f"file_hash_changed_by_signing: {sum(v['file_hash_changed_by_signing'] for v in F['per_container'].values())}")
+    add("")
+    add("--- G  overhead ---")
+    add(f"median_em_ms_per_audio_minute: {G['em_ms_per_audio_minute']}")
+    add(f"median_baseline_ms_per_audio_minute: {G['baseline_ms_per_audio_minute']}")
+    add(f"em_over_baseline_ratio: {G['em_over_baseline_ratio']}")
+    add(f"em_fraction_of_ffmpeg_time: {G['em_over_ffmpeg_fraction']}")
+    add(f"median_manifest_overhead_bytes_per_asset: {G['median_manifest_overhead_bytes_per_asset']}")
+    add(f"median_em_assertion_bytes_per_asset: {G['median_em_assertion_bytes_per_asset']}")
+    add(f"metadata_bytes_per_audio_minute: {G['manifest_bytes_per_audio_minute']}")
+    add(f"median_sign_ms: {G['sign_ms']['median']}")
+    add(f"median_validate_ms: {G['validate_ms']['median']}")
+    sc = G["assertion_scaling"]
+    add(f"assertion_bytes_per_interval: {round((sc[-1]['assertion_bytes'] - sc[0]['assertion_bytes']) / (sc[-1]['emitted_intervals'] - sc[0]['emitted_intervals']), 1)}")
+    add("")
+    add("--- H  two-language differential ---")
+    add(f"oracle_cases: {H['cases']}")
+    add(f"oracle_disagreements: {H['disagreements']}")
+    add(f"oracle_max_support_difference: {H['max_support_abs_difference']}")
+    add("")
+    add("--- totals ---")
+    tests = subprocess.run([sys.executable, str(ROOT / "tests" / "test_contract.py")],
+                           capture_output=True, text=True)
+    npass = tests.stdout.count("  PASS  ")
+    nfail = tests.stdout.count("  FAIL  ")
+    add(f"tests_total: {npass + nfail}")
+    add(f"tests_passed: {npass}")
+    add(f"tests_failed: {nfail}")
+
+    out = ROOT / "results" / "PREFLIGHT.txt"
+    out.write_text("\n".join(lines) + "\n")
+    print("\n".join(lines))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

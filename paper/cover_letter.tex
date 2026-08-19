@@ -1,0 +1,66 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{microtype}
+\signature{A. Urias}
+\address{Aurtech\\C.P. 83220, Hermosillo, Sonora, Mexico\\alex@aurtech.mx}
+\begin{document}
+\begin{letter}{The Editors\\Forensic Science International: Digital Investigation}
+\opening{Dear Editors,}
+
+We submit \emph{Evidence-Monotone Audio Representation: Preventing Provenance
+Promotion Across Derived Audio Transformations} for consideration as a research
+article.
+
+Current provenance standards can cryptographically bind assertions and
+transformation history to an asset. The missing layer addressed here is whether
+the evidence claim emitted by a derived representation is conservative with
+respect to every source interval that representation actually contains. A clip
+assembled from captured and generated material, then trimmed, resampled and
+re-encoded, can emerge described as captured-only --- with a valid signature,
+an intact chain and a bit-identical waveform --- because a derived asset
+inherits from its parent and a minimal implementation summarises that parent
+from the boundaries of the retained region. For an examiner reading such an
+asset, the difference between that claim and the truth is the whole point.
+
+We contribute a formal operator contract for derived media, a temporal audio
+instantiation with declared kernel footprints and a footprint-monotonicity
+result that makes the rule implementable against real codecs, a signal-transparent
+reference implementation that requires no model training, a signed transport
+built entirely inside C2PA's own extension points, and a frozen public
+reproducibility artifact with one-command reproduction.
+
+Three things are worth flagging to the editors directly, because we would rather
+state them than have a reviewer find them.
+
+First, we do not claim the underlying algebra as new. The non-amplification
+property is an instance of a meet in a lattice, familiar from provenance
+semirings and from information-flow models, and we say so in the Introduction,
+the Formal model and the Discussion. The contribution is the executable temporal
+contract, the transport and the measurements.
+
+Second, the comparison policy is a constructed reference policy motivated by the
+specification's own \texttt{parentOf} definition. It is not a description of any
+shipping product, no product is named or evaluated, and the fixture rates are
+reported as a mechanism stress rate rather than as a prevalence estimate.
+
+Third, this is not a deepfake-detection paper. No model is trained, no acoustic
+feature is used, and an unsigned or provenance-stripped asset is classified as
+unverified rather than synthetic. A cryptographically valid signature proves
+that an assertion was signed, not that it is true, and we state that limitation
+in the abstract, the threat model, the discussion and the conclusion.
+
+The work fits the journal's stated primary pillar of digital evidence and
+multimedia with the core qualities of provenance, integrity and authenticity,
+and its ``scientific practices'' track: it is an attempt to make one specific
+property of derived digital evidence falsifiable and reproducible rather than
+assumed.
+
+The manuscript is original, is not under consideration elsewhere, and all
+authors have approved the submission. A declaration of competing interests and a
+declaration of generative-AI use are included. All code, fixtures, corpora
+build scripts and machine-readable results are public under the MIT licence,
+with third-party data licences verified from primary sources.
+
+\closing{Yours sincerely,}
+\end{letter}
+\end{document}

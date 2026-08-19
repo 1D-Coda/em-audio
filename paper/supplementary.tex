@@ -1,0 +1,233 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,graphicx,xspace,microtype,longtable}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+\input{../results/numbers}
+\newcommand{\C}{\ensuremath{C}}
+\newcommand{\G}{\ensuremath{G}}
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\arabic{table}}
+
+\title{Supplementary material for\\
+\emph{Evidence-Monotone Audio Representation: Preventing Provenance Promotion
+Across Derived Audio Transformations}}
+\author{A. Urias}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Transfer memo: what is prior work and what is new}
+\label{s:transfer}
+
+Written before any code was produced. Every row in the first column is prior
+work and is cited rather than claimed.
+
+\begin{longtable}{p{0.31\linewidth}p{0.31\linewidth}p{0.31\linewidth}}
+\toprule
+Transfers unchanged (prior work) & Transfers with modification (new here) &
+Does not transfer \\
+\midrule
+\endhead
+Evidence record $(P,S,A,L)$: provenance set, typed support channels,
+applicability scope, complete-source lineage &
+The domain of $D_y$ becomes a \emph{temporal} required-source set over half-open
+sample intervals &
+Polyline simplification in every form; there is no geometric tolerance in audio
+\\
+\addlinespace
+Provenance as a set of ancestry atoms, mixed produced only by union &
+Alphabet changes from measured/interpolated to captured/generated; the
+measurand is different even though the algebra is identical &
+Terrain support profiles, directional ray classifiers, roughness proxies \\
+\addlinespace
+Same-channel meet by minimum &
+Unchanged as an operation; the channel is capture-support &
+Contour extraction rules and closed-ring anchoring \\
+\addlinespace
+Absence of verified evidence is absorbing and is not an atom &
+Strengthened: a $\bot$ element also makes every numeric channel unavailable
+over the represented span (requirement iv$'$) &
+Every spatial result, table and figure \\
+\addlinespace
+Applicability intersection and lineage union &
+Unchanged &
+The spatial simplification operator itself \\
+\addlinespace
+Non-promotion in the spatial setting &
+Restated modality-independently and, following the Phase-0 search, presented as
+an \emph{instance} of known lattice algebra rather than as a new theorem &
+Any prior source-code audit and its counterexample \\
+\addlinespace
+Conformance-test philosophy: exhaustive enumeration, deterministic adversarial
+fixtures, independent oracle, frozen expectations, explicit non-prevalence
+language &
+Reused as a method template; all results are new &
+Any prior third-party generalizer audit \\
+\addlinespace
+--- &
+\textbf{New with no spatial analogue:} the kernel-footprint rule with declared
+per-operator guard bands and measured model-versus-implementation deviation;
+footprint monotonicity; signal transparency on decoded PCM; a signed C2PA
+transport with temporal regions of interest; the unverified state as an
+operational outcome of a real validator &
+--- \\
+\bottomrule
+\end{longtable}
+
+\section{Novelty search and closest-work matrix}
+\label{s:novelty}
+
+\paragraph{Search date.} 2026-08-19, re-run before submission.
+
+\paragraph{Databases and interfaces.} Open-literature web search; arXiv; IACR
+Cryptology ePrint Archive; ACM Digital Library and LIPIcs listings; the C2PA
+specification site; OpenSLR.
+
+\paragraph{Query strings.}
+(1) \texttt{provenance semiring non-amplification derived media operator
+monotone provenance lattice};
+(2) \texttt{C2PA content credentials audio provenance derived asset ingredient
+inheritance research paper 2026};
+(3) \texttt{"provenance laundering" OR "metadata washing" media provenance
+attack C2PA};
+(4) \texttt{audio editing provenance preservation composition proof interval
+lineage trim concatenate resample formal};
+(5) \texttt{Denning lattice model secure information flow non-interference
+applied to media provenance labels 2025 2026};
+(6) \texttt{audio deepfake detection survey 2026 speech antispoofing ASVspoof 5
+generalization};
+(7) \texttt{audio watermarking soft binding C2PA durable content credentials
+AudioSeal 2026}.
+
+\paragraph{Outcome.} The columns \emph{complete-source operator rule} and
+\emph{C2PA-integrated interval-level enforcement} were empty across every prior
+row. Because provenance-semiring and information-flow work already yields the
+non-amplification property abstractly, the theorem is not claimed as new; it is
+presented as an instance and the contribution is relocated to the executable
+temporal contract, the transport and the measurements. The full matrix is in
+\texttt{paper/PHASE0\_novelty.md} in the repository.
+
+\section{Threat-model matrix}
+\label{s:threat}
+
+\begin{longtable}{p{0.28\linewidth}p{0.34\linewidth}p{0.31\linewidth}}
+\toprule
+Attacker capability & Contract behaviour & Not prevented \\
+\midrule
+\endhead
+Passes a mixed-origin asset through a benign transformation to obtain a
+captured-only claim &
+Output claim is the meet over the complete required source set, so it stays
+mixed &
+Nothing, if the attacker also controls the signer \\
+\addlinespace
+Trims away the boundaries so that only captured material is at the edges &
+Interior sources remain in $D_y$; claim stays mixed &
+A trim that genuinely removes all generated material, which legitimately yields
+a captured-only claim \\
+\addlinespace
+Relies on a filtered operator so that a generated sample bleeds into a
+neighbouring output region without appearing in the nominal range &
+The declared kernel footprint enlarges $D_y$; over-approximation is safe by
+Proposition~5 &
+An under-declared footprint, which is a conformance failure of that
+implementation \\
+\addlinespace
+Strips the manifest and redistributes &
+State becomes \textsc{unverified} &
+Detection of the stripping as intentional; re-signing under a fresh, dishonest
+chain \\
+\addlinespace
+Modifies the asset after signing &
+Hard binding fails; state becomes \textsc{invalid} &
+Attacks on the cryptographic layer itself \\
+\addlinespace
+Signs a false assertion with a valid key &
+Nothing. The contract governs propagation, not truthfulness &
+Everything: a valid signature proves signing, not truth \\
+\addlinespace
+Records a loudspeaker playing synthetic speech &
+A captured claim propagates, correct at the sensor layer &
+The semantic origin; see the replay limitation in the manuscript \\
+\bottomrule
+\end{longtable}
+
+\section{EM assertion schema}
+\label{s:schema}
+
+The assertion label is \texttt{mx.aurtech.emaudio.evidence}. The payload is:
+
+\begin{verbatim}
+{
+  "schema": "https://aurtech.mx/ns/em-audio/1.0",
+  "policy": "complete-source",
+  "operator": "trim",
+  "operatorParameters": { "start": 4800, "end": 43200 },
+  "asset": { "sampleRate": 16000, "sampleCount": 38400 },
+  "intervals": [
+    {
+      "regionOfInterest": {
+        "type": "temporal",
+        "time": { "type": "npt", "start": "0.000000000", "end": "0.612500000" }
+      },
+      "samples": { "start": 0, "end": 9800 },
+      "provenance": ["C"],
+      "state": "CAPTURED",
+      "support": { "capture-support": 0.9 },
+      "applicability": { "capture-support": ["digital-asset"] },
+      "lineage": ["urn:emaudio:librispeech:1272-128104-0000"]
+    },
+    {
+      "regionOfInterest": {
+        "type": "temporal",
+        "time": { "type": "npt", "start": "0.612500000", "end": "1.437500000" }
+      },
+      "samples": { "start": 9800, "end": 23000 },
+      "provenance": ["G"],
+      "state": "GENERATED",
+      "support": { "capture-support": 0.1 },
+      "applicability": { "capture-support": ["digital-asset"] },
+      "lineage": ["urn:emaudio:espeak-ng:1.52.0:0042"]
+    }
+  ]
+}
+\end{verbatim}
+
+Normative fields are \texttt{provenance} (\texttt{null} means unverified and is
+never an atom), \texttt{support}, \texttt{applicability} and \texttt{lineage}.
+The \texttt{state} field is a presentation label. A channel omitted from
+\texttt{support} is unavailable, which is different from a channel present with
+a low value. Temporal ranges follow the C2PA \texttt{npt} convention with
+inclusive start and exclusive end; sample-exact bounds are carried alongside
+because \texttt{npt} strings are lossy at sample resolution.
+
+\section{Reproduction}
+\label{s:repro}
+
+\begin{verbatim}
+git clone <repo> && cd em-audio && git checkout v1.0.0 && ./run_all.sh
+\end{verbatim}
+
+\texttt{run\_all.sh} fetches the checksum-pinned corpus, generates the test
+signing credential, runs the named regression tests and experiments A--H,
+regenerates every table, macro and figure from the machine-readable results,
+writes \texttt{results/PREFLIGHT.txt}, and exits non-zero if any conformance
+check fails. The preflight report is the single source of every number in the
+manuscript; a checker script verifies that no numeric result appears in the
+manuscript source outside the generated macro file.
+
+\section{Feasibility log}
+\label{s:feasibility}
+
+Two pitfalls in the signed-transport layer are recorded so that a replicating
+reader does not lose time on them. First, the signing key must be supplied to
+the official tool in PKCS\#8 form and as PEM \emph{content}, not as a path; a
+SEC1 key or a path produces a decoder error that does not name the cause.
+Second, a hand-written \texttt{c2pa.opened} action without an
+\texttt{ingredients} parameter is rejected with
+\texttt{assertion.action.ingredientMismatch}, because the specification requires
+that action to carry a hashed-URI reference to the \texttt{parentOf} ingredient
+assertion; the correct move is to let the claim generator insert it.
+
+\end{document}

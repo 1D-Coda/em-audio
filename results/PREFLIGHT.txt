@@ -1,0 +1,91 @@
+EM-AUDIO PREFLIGHT REPORT
+========================================================================
+commit: UNCOMMITTED
+tag: UNCOMMITTED
+zenodo_version_doi: PENDING - assign at archive time
+zenodo_concept_doi: PENDING - assign at archive time
+
+python: 3.11.15
+ffmpeg: ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers
+c2patool: c2patool 0.27.2
+node: v26.0.0
+espeak_ng: eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data
+c2pa_spec_version: 2.4 (April 2026)
+os: macOS-26.5.2-arm64-arm-64bit
+cpu: arm64
+
+--- A  exhaustive finite-state conformance ---
+words_enumerated: 9840
+operator_cases: 98385
+checks_total: 787443
+checks_failed: 0
+composition_cases: 363
+
+--- B  adversarial timelines ---
+synthetic_cases: 10000
+baseline_promotions_depth1: 9455
+baseline_promotion_rate_depth1: 0.9455
+baseline_promotions_depth5: 9455
+em_promotions: 0
+em_unverified_to_verified: 0
+em_lineage_omissions: 0
+baseline_lineage_omissions_depth1: 10000
+control_max_abs_deviation_from_closed_form: 0.0070
+
+--- C  mixed-origin corpus ---
+audio_clips: 600
+exact_interval_recovery: 600
+generated_interval_recovered: 600
+corpus_boundary_mismatches: 0
+c_baseline_promotions: 600
+c_em_promotions: 0
+
+--- D  transformation matrix ---
+transformations: 8
+transformation_runs: 4800
+d_baseline_promotions: 3600
+d_em_promotions: 0
+lineage_failures: 0
+determinism_rerun_mismatches: 0
+max_model_vs_ffmpeg_sample_deviation: 681
+guard_bands_all_adequate: True
+
+--- E  provenance loss ---
+e_clips: 60
+e_violations: 0
+e_asset_modified_after_signing: {'INVALID': 60}
+e_manifest_removed: {'UNVERIFIED': 60}
+e_reencoded_without_manifest: {'UNVERIFIED': 60}
+e_valid_derived_manifest: {'MIXED': 60}
+e_valid_manifest: {'MIXED': 60}
+
+--- F  signed round-trip ---
+signed_roundtrips: 120
+validation_failures: 0
+derived_validate_trusted: 120
+parentOf_recorded: 120
+assertion_roundtrip_identical: 120
+signal_mismatches: 0
+file_hash_changed_by_signing: 120
+
+--- G  overhead ---
+median_em_ms_per_audio_minute: 0.7903
+median_baseline_ms_per_audio_minute: 0.3801
+em_over_baseline_ratio: 2.0794
+em_fraction_of_ffmpeg_time: 0.000962
+median_manifest_overhead_bytes_per_asset: 14854
+median_em_assertion_bytes_per_asset: 1268
+metadata_bytes_per_audio_minute: 298723.0
+median_sign_ms: 14.3475
+median_validate_ms: 11.8688
+assertion_bytes_per_interval: 332.7
+
+--- H  two-language differential ---
+oracle_cases: 9804
+oracle_disagreements: 0
+oracle_max_support_difference: 0.0
+
+--- totals ---
+tests_total: 27
+tests_passed: 27
+tests_failed: 0

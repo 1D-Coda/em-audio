@@ -1,0 +1,31 @@
+\begin{tabular}{lrrr}
+\toprule
+Check & Cases & Boundary-only & Complete-source \\
+\midrule
+\multicolumn{4}{l}{\textit{A\quad Exhaustive finite-state conformance}} \\
+Source words over $\{C,G,\bot\}$, length $\le 8$ & 9,840 & --- & --- \\
+Operator cases & 98,385 & --- & --- \\
+Contract checks & 787,443 & 0 failed & --- \\
+\addlinespace
+\multicolumn{4}{l}{\textit{B\quad Deterministic adversarial timelines (10\,000 frozen fixtures, 64 intervals)}} \\
+Chain depth 1 & 10,000 & 9,455 (94.5\%) & 0 \\
+Chain depth 3 & 10,000 & 9,455 (94.5\%) & 0 \\
+Chain depth 5 & 10,000 & 9,455 (94.5\%) & 0 \\
+Lineage omissions (depth 1) & 10,000 & 10,000 & 0 \\
+Unverified $\to$ verified (depth 1) & --- & 7,222 & 0 \\
+\addlinespace
+\multicolumn{4}{l}{\textit{C--D\quad Mixed-origin audio corpus, stock-FFmpeg processing}} \\
+Exact interval recovery & 600 & --- & 600 \\
+normalize & 600 & 600 (100.0\%) & 0 \\
+overlay\_generated & 600 & 0 (0.0\%) & 0 \\
+resample\_16\_8 & 600 & 600 (100.0\%) & 0 \\
+silence\_removal & 600 & 0 (0.0\%) & 0 \\
+time\_stretch\_1.10 & 600 & 600 (100.0\%) & 0 \\
+transcode\_flac & 600 & 600 (100.0\%) & 0 \\
+transcode\_mp3 & 600 & 600 (100.0\%) & 0 \\
+trim\_10\_90 & 600 & 600 (100.0\%) & 0 \\
+\addlinespace
+\multicolumn{4}{l}{\textit{H\quad Two-language differential oracle}} \\
+Frozen cases & 9,804 & --- & 0 disagreements \\
+\bottomrule
+\end{tabular}

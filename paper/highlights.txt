@@ -1,0 +1,5 @@
+Derived audio can keep its exact waveform while claiming stronger provenance than its sources.
+A complete-source operator contract makes the derived claim the meet over every represented interval.
+Declared kernel footprints make the rule implementable against real codecs; over-approximation is safe.
+Boundary-only inheritance promoted on 94.5% of frozen timelines; complete-source on none.
+Interval evidence survived 120 signed C2PA round-trips at 0.096% of FFmpeg time.

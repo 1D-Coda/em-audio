@@ -1,0 +1,28 @@
+# fetched corpus (checksum-pinned; retrieved by tools/fetch_corpus.sh)
+corpus/dev-clean.tar.gz
+corpus/LibriSpeech/
+corpus/build/
+corpus/clips/
+corpus/transformed/
+corpus/stripping/
+corpus/roundtrip/
+corpus/overhead/
+corpus/fetch.log
+
+# generated during a run
+__pycache__/
+*.pyc
+
+# LaTeX build products
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.spl
+paper/*.fdb_latexmk
+
+# private key material for the local test credential
+tools/test_certs/*.key
+tools/test_certs/*.srl
+tools/test_certs/*.csr

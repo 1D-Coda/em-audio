@@ -1,0 +1,1143 @@
+\documentclass[preprint,3p,11pt]{elsarticle}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{stmaryrd}  % \bigsqcap
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+
+\graphicspath{{../results/figures/}}
+\input{../results/numbers}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newcommand{\C}{\ensuremath{C}}
+\newcommand{\G}{\ensuremath{G}}
+\newcommand{\Dy}{\ensuremath{D_y}}
+\journal{Forensic Science International: Digital Investigation}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Evidence-Monotone Audio Representation: Preventing Provenance
+Promotion Across Derived Audio Transformations}
+
+\author[aur]{A. Urias\corref{cor}}
+\ead{alex@aurtech.mx}
+\cortext[cor]{Corresponding author. ORCID: 0009-0007-3147-323X.}
+\address[aur]{Aurtech, C.P. 83220, Hermosillo, Sonora, Mexico}
+
+\begin{abstract}
+Derived audio can keep its exact waveform while silently strengthening what it
+says about its own origin. A clip assembled from captured and generated
+material, then trimmed, resampled and re-encoded, can emerge described as
+captured-only, because a derived asset inherits from its parent and a minimal
+implementation summarises that parent from the boundaries of the retained
+region rather than from every source interval the output actually represents.
+We treat this as a representation problem and specify an operator contract for
+derived audio: provenance is the union over the complete required source set,
+same-channel support is the minimum over it, applicability is intersected,
+lineage is the union, and an unverified source interval is absorbing. The
+underlying algebra is an instance of a known meet-semilattice construction and
+is not claimed as new; what is new is the executable temporal instantiation
+over sample-exact intervals with declared kernel footprints, a signed transport
+that carries interval evidence inside C2PA temporal regions of interest, and a
+measured demonstration. No model is trained and no acoustic feature is used.
+Across \Achecks{} contract checks over all \Awords{} source words of length up
+to \Amaxlen{} over $\{\C,\G,\bot\}$, \Btimelines{} frozen adversarial
+timelines at \Bdepths{} composition depths, \Cclips{} mixed-origin clips
+transformed by stock FFmpeg through \Dtransforms{} transformations, and
+\Hcases{} cases of a two-language differential oracle, complete-source
+propagation produced \Afailed{} contract failures, \Dem{} promotions and
+\DemLineage{} lineage omissions, while boundary-only inheritance promoted on
+\BbaseOnePct{}\% of adversarial timelines and on \Dbase{} of \Druns{}
+transformation runs. Decoded essence was identical before and after signing
+under both policies in \Ftotal{} signed round-trips across
+\Fcontainers{} containers, with \Fmismatch{} mismatches; bookkeeping cost
+\Gem{}~ms per audio-minute, \GffmpegPct{}\% of FFmpeg time. The contract
+constrains what a derived representation may claim about its sources; it does
+not detect deepfakes, does not establish that speech is truthful, and a
+cryptographically valid signature proves only that an assertion was signed, not
+that it is true.
+\end{abstract}
+
+\begin{keyword}
+digital evidence \sep media provenance \sep content credentials \sep C2PA \sep
+audio forensics \sep synthetic speech \sep chain of custody
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}
+\label{sec:intro}
+
+Speech can now be generated convincingly enough that the question ``is this
+recording real?'' is answered less and less reliably by listening to it. Two
+different mechanisms have grown up in response. Detection asks whether a signal
+carries the traces of synthesis \citep{pham2025survey,wang2025asvspoof5}.
+Provenance asks what an asset's own cryptographically signed history says about
+where it came from \citep{c2pa24}. These answer different questions, and this
+work is about the second one, so nothing here is a detection result.
+
+Provenance systems bind assertions to an asset. They do not, on their own, say
+what a derived asset is entitled to assert. That gap opens as soon as audio is
+edited, because editing is routine: a broadcast clip is trimmed, a podcast
+segment is spliced, a submitted exhibit is resampled and re-encoded before it
+reaches an examiner. Each of those steps produces a new asset whose manifest is
+written by whatever software performed the step. The C2PA specification
+describes the relationship such an asset has to its input with the ingredient
+relationship \texttt{parentOf}, whose meaning is given as ``The current asset is
+a derived asset or asset rendition of this ingredient''
+\citep[Table~10, \S18.16.3]{c2pa24}. That is a faithful statement of lineage. It
+is not a rule about what the derived asset's own evidence assertion may say, and
+we found no such rule in the specification text.
+
+The consequence is concrete. Consider five consecutive source intervals of a
+recording whose third interval is generated speech and whose other four are
+captured. A derived asset representing all five can be described from its
+retained boundaries, which are captured, and emerge labelled captured-only. The
+decoded audio is bit-identical either way. Only the evidential claim differs
+(Figure~\ref{fig:counterexample}). In a forensic setting that difference is the
+whole point: an examiner reading a captured-only claim over an interval that
+contains generated speech is being told something stronger than the sources
+support, by a chain in which no signature was forged and no cryptographic
+primitive failed.
+
+We call this \emph{provenance promotion}: a derived representation acquiring a
+stronger evidential claim than the complete source material it represents,
+without any change to the decoded signal. The requirement that prevents it is
+what we call \emph{evidence monotonicity}: along a chain of representation-only
+transformations, the emitted claim must be no stronger than the meet of every
+required source, ancestry accumulates rather than disappears, and the absence of
+verified evidence is absorbing.
+
+An earlier instantiation of that requirement exists for spatial data, where
+derived terrain geometry can overstate the evidence of the source arc it
+replaces \citep{urias2026emtrf}. This work asks whether the requirement is
+usable in a temporal medium with a real signed transport and real processing
+software, and what it costs. It is not a re-presentation of that work: the
+alphabet, the operator set, the interval mapping, the kernel-footprint problem,
+the transport and every reported number are new, and no earlier result is
+reused. The relationship is set out row by row in Supplementary Note~S1.
+
+We are equally explicit about what is \emph{not} new. The algebra we use --- a
+meet over a lattice of labels, with union of ancestry and an absorbing bottom
+element --- is an instance of constructions that are decades old, in
+provenance annotation over absorptive semirings \citep{green2007provenance} and
+in label lattices for secure information flow
+\citep{denning1976lattice,goguen1982noninterference}. We therefore do not claim
+the non-amplification property as a new theorem. We state it as an instance,
+prove the parts that are specific to the temporal setting, and locate the
+contribution in what is executable and measured.
+
+\paragraph{Contributions.} Each is traceable to a completed experiment.
+
+\begin{enumerate}
+\item An operator contract for derived media stated without reference to any
+  modality, with its non-amplification property presented as an instance of a
+  known meet-semilattice construction rather than as a new theorem
+  (Section~\ref{sec:model}).
+\item A temporal audio instantiation over sample-exact half-open intervals for
+  eight representation operators, each with a declared conservative kernel
+  footprint, together with a footprint-monotonicity result showing that
+  over-approximating the required source set is always safe
+  (Section~\ref{sec:audio}, Proposition~\ref{prop:footprint}).
+\item A signed transport in which interval-level evidence is carried inside
+  C2PA temporal regions of interest and survives derivation and re-signing,
+  demonstrated end-to-end on \Fcontainers{} audio containers with
+  \Ftotal{} round-trips (Section~\ref{sec:transport}, Section~\ref{sec:res-transport}).
+\item An executable conformance suite: \Achecks{} checks over every source word
+  of length up to \Amaxlen{} over $\{\C,\G,\bot\}$, with \Afailed{} failures,
+  and a two-language differential over \Hcases{} frozen cases with \Hdis{}
+  disagreements (Sections~\ref{sec:res-conformance}, \ref{sec:res-oracle}).
+\item A measured demonstration on \Cclips{} mixed-origin clips processed
+  entirely by stock FFmpeg, in which the interval model is validated against
+  the behaviour of software we do not control and the guard bands are shown
+  adequate (Section~\ref{sec:res-corpus}).
+\item A cost measurement showing the bookkeeping is \GffmpegPct{}\% of the
+  processing time it accompanies and that the emitted assertion grows linearly
+  in evidence intervals at \GperInterval{}~B per interval
+  (Section~\ref{sec:res-overhead}).
+\end{enumerate}
+
+Three framing sentences apply throughout. The contract does not infer
+authenticity from acoustic features; it prevents a provenance-aware processing
+chain from promoting a mixed or unverified source interval into a stronger
+captured-only class. An unsigned or provenance-stripped asset is classified as
+unverified, never as synthetic. The contract is orthogonal to passive deepfake
+detectors and to watermarking systems, and composes with either.
+
+Transparency obligations for synthetic content under Article~50 of Regulation
+(EU) 2024/1689 became applicable on 2~August 2026 \citep{euaiact}, which makes
+machine-readable origin claims about derived media operationally relevant. We
+make no legal claim about what any particular disclosure regime requires.
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Detection of synthetic speech.} Anti-spoofing and deepfake-speech
+detection classify a signal by its acoustic traces, with challenge resources
+and surveys documenting both the progress and the generalisation gap when
+detectors meet unseen attacks or unseen codecs
+\citep{wang2025asvspoof5,pham2025survey}. What this line guarantees is a
+decision about a signal. What it does not do is constrain what a derived asset
+may assert about its own sources, and it needs no source evidence to exist.
+The two are complementary: a detector can be run on an asset whose evidence
+chain is intact, and the contract here says nothing about what the detector
+should conclude.
+
+\paragraph{Watermarking and soft bindings.} Localised audio watermarking marks
+generated speech at synthesis time and detects the mark per region
+\citep{sanroman2024audioseal}; C2PA treats watermarking and fingerprinting as
+\emph{soft bindings} used to recover a manifest that has been separated from its
+asset \citep[\S18.10]{c2pa24}. These guarantee recoverability and, in the
+localised case, region-level presence of a mark. They do not define what the
+aggregate evidence claim of a derived asset should be when its sources differ,
+and a region that carries no mark is not thereby captured.
+
+\paragraph{Cryptographic media provenance.} C2PA binds signed assertions and
+transformation history to an asset, defines ingredient relationships
+\texttt{parentOf}, \texttt{componentOf} and \texttt{inputTo}, and supports
+assertions scoped to part of an asset through regions of interest, including
+temporal ranges in normal play time \citep[\S18.2.2.3, \S18.16.3]{c2pa24}.
+Security analyses of the standard and its implementations report problems in
+the cryptographic and trust layers --- timestamp disagreement, certificate
+revocation handling, and inconsistent validator behaviour
+\citep{golaszewski2026c2pa} --- and related work constructs assets whose
+manifest and whose watermark make contradictory claims that each pass their own
+verification, through ordinary editing workflows and without any cryptographic
+compromise \citep{nemecek2026contradictions}. Our concern is a different layer
+again, and it is orthogonal to both: assuming keys are intact, signatures
+verify, and no assertion is omitted in bad faith, is the assertion that a
+conforming derived asset emits conservative with respect to every source
+interval it represents? We read the specification text for a rule of that kind
+and did not find one; the specification governs how assertions are bound and
+validated, not how an aggregate evidence claim over heterogeneous sources
+should be computed.
+
+\paragraph{Provenance for edited audio.} Two recent lines are the closest work
+in this medium. Chunk-localised speech provenance binds short time segments to
+an issuer-signed original through perceptual fingerprints and Merkle
+commitments, addressing exactly the fragility of hard bindings under
+re-encoding \citep{ono2026merklespeech}. Zero-knowledge constructions prove that
+an edit was drawn from an allowed operation set while hiding the source, the
+edits and the device \citep{fu2026trustvoice}. Both provide something this work
+does not: the first re-establishes the link between a time segment and a signed
+original after transport, the second proves edit correctness without disclosure.
+Neither states an aggregation rule for what the derived asset's evidence claim
+may be when the sources it represents disagree, and neither proves a
+non-amplification property.
+
+\paragraph{Provenance models and information flow.} W3C PROV records derivation
+as a graph \citep{w3c2013prov}: a PROV record can state truthfully that a
+segment was derived from a source while a consumer still reads the segment's
+evidence from its boundaries. The algebraic machinery for constraining that
+reading is long established. Provenance semirings annotate derived data so that
+annotations combine associatively and idempotently \citep{green2007provenance};
+lattice models of secure information flow classify objects and require that
+combination move only in the conservative direction
+\citep{denning1976lattice,goguen1982noninterference}. The property we need ---
+that a combination is never stronger than any of its inputs --- is the meet in
+such a structure, and we present it as such rather than as a discovery.
+
+\paragraph{The gap.} Table~\ref{tab:related} places these lines side by side.
+Each row states what that line does guarantee before naming the property it
+leaves unenforced on a derived audio interval. No row provides an
+operator-level complete-source rule instantiated over media time and carried in
+a signed transport; that combination is what this work contributes, and the
+matrix behind the table, with search dates and query strings, is
+Supplementary Note~S2.
+
+\begin{table}[t]
+\centering
+\caption{Positioning. Each row names a guarantee the line already provides, then
+the evidence property it does not, by itself, enforce on a derived audio
+interval. The contribution here is the joint enforcement of the right-hand
+column through representation-only operators, not the reinvention of any
+left-hand guarantee.}
+\label{tab:related}
+\small
+\begin{tabular}{p{0.27\linewidth}p{0.30\linewidth}p{0.33\linewidth}}
+\toprule
+Line of work & Guarantee it provides & Left unenforced on a derived interval \\
+\midrule
+Synthetic-speech detection \citep{wang2025asvspoof5,pham2025survey} &
+A decision about a signal from its acoustic traces &
+What the derived asset may assert about its own sources \\
+\addlinespace
+Localised watermarking and soft bindings \citep{sanroman2024audioseal,c2pa24} &
+Region-level presence of a mark; recovery of a separated manifest &
+Aggregation of heterogeneous source evidence into one claim \\
+\addlinespace
+Cryptographic provenance \citep{c2pa24} &
+Signed assertions, ingredient relationships, temporal regions of interest &
+A rule requiring the derived claim to be conservative over all ingredients \\
+\addlinespace
+C2PA security analysis and cross-layer attacks
+\citep{golaszewski2026c2pa,nemecek2026contradictions} &
+Weaknesses in the trust, timestamp and validator layers; contradictions between
+layers &
+Behaviour of a chain in which every layer is intact and honest \\
+\addlinespace
+Provenance for edited audio \citep{ono2026merklespeech,fu2026trustvoice} &
+Chunk-to-original binding after transport; zero-knowledge edit correctness &
+An aggregation rule when represented sources disagree \\
+\addlinespace
+Provenance graphs and lineage \citep{w3c2013prov} &
+A truthful record of derivation &
+Operator-level monotonicity as an executable contract \\
+\addlinespace
+Provenance semirings and information-flow lattices
+\citep{green2007provenance,denning1976lattice} &
+The algebra of conservative combination &
+A temporal media instantiation with a signed transport \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Threat model}
+\label{sec:threat}
+
+\paragraph{In scope.} Provenance promotion and laundering through
+representation-only transformations, under four conditions: source evidence
+exists; the processing system holds the source-to-output mapping; the operator
+is expected to conform to the contract; and cryptographic primitives and signing
+keys are intact.
+
+\paragraph{Out of scope.} Capture devices that lie about what they recorded;
+compromised signing keys; dishonest certificate authorities; unsigned media of
+unknown origin; speaker identity; the truthfulness of what is said; semantic
+misinformation; waveform-artefact deepfake detection; watermark removal; and
+full provenance stripping followed by construction of a fresh, dishonest trust
+chain. Attacks on the cryptographic and trust layers are the subject of separate
+analyses \citep{golaszewski2026c2pa} and are assumed away here precisely so that
+the residual semantic question is isolated.
+
+\paragraph{Required behaviour when evidence is absent or invalid.} The state is
+\textsc{unverified} or \textsc{invalid}. It is never automatically ``fake'' and
+never automatically ``captured''. An asset can lose its manifest for entirely
+benign reasons, and nothing in this work licenses reading a missing manifest as
+evidence of intent.
+
+\paragraph{Malicious signer.} Cryptographic validity proves that an assertion
+was signed, not that it is true. A signer willing to assert falsehoods can
+produce a valid manifest containing them, and no propagation rule inside the
+processing chain can prevent that. The contract constrains conforming operators;
+it is not a defence against a dishonest issuer. A threat-model matrix pairing
+attacker capability against contract behaviour and against what is explicitly
+not prevented is Supplementary Table~S3.
+
+\section{Formal model}
+\label{sec:model}
+
+\subsection{Evidence records}
+
+Let a source asset be partitioned into elements. Each element $x$ carries an
+evidence record
+\begin{equation}
+e_x = (P_x, S_x, A_x, L_x),
+\end{equation}
+where $P_x$ is provenance, $S_x$ is a partial map from a semantically typed
+support channel to $[0,1]$, $A_x$ records the scope over which each channel is
+declared applicable, and $L_x$ is lineage.
+
+Provenance is a set of ancestry atoms drawn from $\{\C, \G\}$, for
+captured-derived and generated-derived sources. Mixed ancestry is $\{\C,\G\}$
+and is produced only by union; it is never a primitive. The absence of verified
+evidence is a distinct state $\bot$. It is not an atom, and it is never silently
+mapped onto $\C$ or $\G$. The presentation labels \textsc{captured},
+\textsc{generated}, \textsc{mixed} and \textsc{unverified} are rendering
+choices; the normative fields are $P$, $S$, $A$ and $L$. The word
+\textsc{real} is not used as a provenance state anywhere in the model, the
+implementation or the serialisation.
+
+\subsection{The claim order and its meet}
+
+Write $\widehat{\mathcal{C}} = \{\bot\} \cup (2^{\{\C,\G\}} \setminus
+\emptyset)$ for the set of provenance claims, ordered by
+\begin{equation}
+q_1 \sqsubseteq q_2 \iff q_1 = \bot \ \text{ or }\ (q_2 \neq \bot \ \text{and}\
+q_1 \supseteq q_2),
+\label{eq:order}
+\end{equation}
+read ``$q_1$ is no stronger than $q_2$''. A larger atom set is a weaker, less
+specific claim, and $\bot$ --- which asserts nothing --- is the bottom element.
+Under this order $\widehat{\mathcal{C}}$ is a meet-semilattice whose meet is
+\begin{equation}
+q_1 \sqcap q_2 =
+\begin{cases}
+\bot & \text{if } q_1 = \bot \text{ or } q_2 = \bot,\\
+q_1 \cup q_2 & \text{otherwise.}
+\end{cases}
+\label{eq:meet}
+\end{equation}
+
+This is an instance of a standard construction: an idempotent, commutative,
+associative combination with an absorbing element, of the kind used to annotate
+derived data in provenance semirings \citep{green2007provenance} and to
+classify objects in information-flow lattices \citep{denning1976lattice}. We
+record it explicitly rather than deriving it as a novelty.
+
+\subsection{The complete-source operator}
+
+Let a representation operator $T$ produce output element $y$ from the
+\emph{complete required source set} $\Dy = \{x_1, \dots, x_k\}$: every source
+element whose content $y$ represents, including every element inside the kernel
+footprint of the operator that produced it. Write
+$\Dy^{\mu} = \{x \in \Dy : \mu \in A_x\}$ for the sources that declare channel
+$\mu$ applicable. The contract requires:
+
+\begin{description}
+\item[(i) Provenance] $P_y = \bigsqcap_{x \in \Dy} P_x$, that is, the exact
+  union of the required source provenance sets, with $\bot$ absorbing and with
+  no invented ancestry.
+\item[(ii) Support] if $P_y \neq \bot$, $\Dy^{\mu} \neq \emptyset$ and every
+  member of $\Dy^{\mu}$ supplies a value, then
+  $S_y(\mu) = \min_{x \in \Dy^{\mu}} S_x(\mu)$; otherwise the channel is
+  \emph{unavailable}.
+\item[(iii) Applicability] $A_y(\mu) \subseteq \bigcap_{x \in \Dy^{\mu}}
+  A_x(\mu)$; an empty intersection makes the channel unavailable.
+\item[(iv) No partial subsets] a channel applicable to some required source but
+  unreported by it is unavailable on the output; it is never computed from the
+  remaining sources.
+\item[(iv$'$) Unverified absorption for channels] if any required source is in
+  state $\bot$, every numeric channel on the output is unavailable.
+\item[(v) Lineage] $L_y = \bigcup_{x \in \Dy} L_x$, identifying the complete
+  required source set directly or reproducibly.
+\end{description}
+
+Requirement~(iv$'$) is the one place where this model is strictly stronger than
+its spatial predecessor, and it needs a justification. An element in state
+$\bot$ carries no evidence record at all, so nothing is declared about any
+channel over the span it occupies. Computing a numeric channel from the
+remaining, verified sources would be exactly the partial-subset computation
+that~(iv) forbids, applied to the represented span rather than to the channel.
+Making every channel unavailable is the conservative resolution, and it is
+tested separately in the conformance suite.
+
+\subsection{Properties}
+
+\begin{proposition}[Exact union; no promotion]
+\label{prop:union}
+Under~(i), $P_y$ contains every atom present on a required source and no other,
+and $P_y \sqsubseteq P_x$ for every $x \in \Dy$.
+\end{proposition}
+\begin{proof}
+Immediate from~\eqref{eq:meet}: if no source is $\bot$ then $P_y$ is the union,
+which contains each $P_x$ and hence is $\sqsubseteq P_x$ by~\eqref{eq:order};
+if some source is $\bot$ then $P_y = \bot \sqsubseteq q$ for every $q$.
+Membership of an atom in $P_y$ requires membership in some $P_x$, so no ancestry
+is invented.
+\end{proof}
+
+\begin{proposition}[Unverified non-promotion]
+\label{prop:unverified}
+If any $x \in \Dy$ has $P_x = \bot$ then $P_y = \bot$, and no numeric channel is
+emitted.
+\end{proposition}
+\begin{proof}
+Absorption in~\eqref{eq:meet} gives $P_y = \bot$; requirement~(iv$'$) then
+withholds every channel.
+\end{proof}
+
+\begin{proposition}[Typed support and scope non-promotion]
+\label{prop:support}
+For every emitted channel $\mu$, $S_y(\mu) \le S_x(\mu)$ for every
+$x \in \Dy^{\mu}$, and $A_y(\mu)$ is no broader than any $A_x(\mu)$.
+\end{proposition}
+\begin{proof}
+The minimum over a set is bounded above by each member; requirement~(ii) refuses
+to emit unless every applicable source supplies a value, so the minimum is taken
+over the complete applicable set rather than a subset. Repeated intersection
+in~(iii) cannot enlarge a set.
+\end{proof}
+
+\begin{theorem}[Closure under composition]
+\label{thm:composition}
+A finite composition of operators each satisfying~(i)--(v) satisfies~(i)--(v),
+and the composed claim is no stronger than the meet over the union of all
+ancestral required source sets.
+\end{theorem}
+\begin{proof}
+Associativity and commutativity of $\sqcap$ make the composed provenance the
+meet over the union of the ancestral sets, so no ancestor is dropped or
+invented; absorption of $\bot$ is preserved inductively because no later
+operator receives a verified element in place of an unverified ancestor. For a
+channel $\mu$, each operator either refuses the channel or emits a value bounded
+by its applicable inputs, and transitivity of $\le$ bounds the final value by
+every applicable ancestor. Repeated intersection cannot broaden a scope, and
+lineage composes by union of the per-operator source maps.
+\end{proof}
+
+The property in Theorem~\ref{thm:composition} is the standard consequence of
+combining in a meet-semilattice and is stated here for completeness rather than
+as a new result. The next proposition is specific to the temporal setting and is
+what makes the contract implementable against real processing software.
+
+\begin{proposition}[Footprint monotonicity]
+\label{prop:footprint}
+If $\Dy \subseteq \Dy'$ then the claim computed from $\Dy'$ is no stronger than
+the claim computed from $\Dy$, and each emitted channel value is no greater.
+\end{proposition}
+\begin{proof}
+Enlarging the index set of a union can only add atoms, and by~\eqref{eq:order}
+a superset is a weaker claim; adding a source in state $\bot$ sends the claim to
+$\bot$, which is weaker still. For channels, enlarging $\Dy$ can only add
+members to $\Dy^{\mu}$, and the minimum over a larger set is no larger; if an
+added source declares $\mu$ applicable but reports no value, the channel becomes
+unavailable, which is weaker than any value.
+\end{proof}
+
+Proposition~\ref{prop:footprint} is the practical result of this section. It
+means an implementation does not need the exact dependency set of a filtered
+operator: a \emph{conservative over-approximation} is always safe, and only
+under-approximation can promote. That converts an intractable requirement ---
+know exactly which input samples every output sample depends on inside a
+third-party codec --- into a tractable one: declare a bound, and test that the
+bound holds.
+
+\paragraph{Signal transparency (P8).} Finally, the contract must not change the
+audio. We define the canonical essence of an asset as the SHA-256 of its decoded
+stream rendered to signed 16-bit little-endian PCM at the asset's own rate and
+channel count, and require that essence be identical whether the EM assertion or
+the baseline assertion is attached. Whole-file hashes are unusable for this
+purpose, because embedding a manifest changes the file by construction; the
+distinction matters and is measured in Section~\ref{sec:res-transport}.
+
+\section{Audio instantiation}
+\label{sec:audio}
+
+\subsection{Temporal intervals}
+
+All positions are sample indices on a named asset and all intervals are
+half-open $[a,b)$, matching the C2PA convention that ``All start times are
+inclusive of that moment in time, and all end times are, by default, exclusive
+of it'' \citep[\S18.2.2.3]{c2pa24}. A source timeline is a gapless ordered
+partition of an asset into evidence-homogeneous intervals.
+
+An operator emits a set of \emph{map pieces}. A piece states that output range
+$[o_a, o_b)$ represents source range $[s_a, s_b)$ on a named asset, together
+with a footprint radius in source samples. Where pieces overlap --- a mix or an
+overlay --- the required source set of an output interval is the union over
+every piece covering it, so an overlapped region represents both sources.
+The emitted output partition is the pull-back of every source evidence boundary
+across every piece, which gives each emitted interval a stable complete source
+set.
+
+\subsection{The v1 operator set and its kernel footprints}
+
+Table~\ref{tab:operators} gives the eight operators in scope with their mapping
+and declared footprint. Denoising, source separation, speech enhancement and
+generative editing are out of scope: they are not representation-only, and a
+generative edit legitimately introduces new ancestry rather than propagating
+existing ancestry.
+
+The footprint entries deserve comment, because a reviewer will look for an
+off-by-one. For a polyphase resampler the radius follows from the pinned filter
+length and the rate ratio. For MPEG-1 Layer III the long window is 1152 samples
+with 50\% overlap and the encoder introduces a further delay, so the declared
+value covers a full window plus that delay. For overlap-add time stretching it
+covers the analysis window scaled by the tempo factor. For a frame-granular
+selector such as silence removal, the exact retained-sample model and the
+implementation's frame-aligned cut points differ, and the declared value covers
+that difference. In every case the declared value is a bound, not an estimate,
+and Proposition~\ref{prop:footprint} makes an over-declared bound safe. The
+experiment in Section~\ref{sec:res-corpus} measures, for every clip and every
+transformation, whether the bound actually holds against the output of software
+we do not control.
+
+\begin{table}[t]
+\centering
+\caption{The v1 operator set. Footprints are conservative bounds in source
+samples, quoted for the configurations used in the experiments; by
+Proposition~\ref{prop:footprint} an over-declared bound can only weaken the
+emitted claim, while an under-declared bound is a conformance failure.}
+\label{tab:operators}
+\small
+\input{../results/tables/operator_table}
+\end{table}
+
+\subsection{The baseline reference policy}
+\label{sec:baseline}
+
+The comparison policy throughout is \emph{boundary-only, primary-parent
+inheritance}: the derived output inherits from its parent ingredient, evaluated
+at the first and last source elements of the retained region, ignoring kernel
+footprints. It is a \textbf{constructed reference policy}. It is not a
+description of the behaviour of any shipping product, and no claim is made here
+about what any named tool does. Its motivation is the specification text: a
+derived asset's relationship to its input is \texttt{parentOf}, defined as ``The
+current asset is a derived asset or asset rendition of this ingredient''
+\citep[Table~10, \S18.16.3]{c2pa24}, and the minimal way to inherit from a
+parent over a retained region is to read that region's endpoints. The policy is
+minimal by design because the point of the comparison is to isolate one
+mechanism, not to caricature an opponent.
+
+To separate the two shortcuts the baseline combines, the experiments also report
+two intermediate policies: complete-source aggregation that ignores the kernel
+footprint, and boundary-only inheritance that respects it.
+
+\subsection{Signed transport}
+\label{sec:transport}
+
+Evidence is carried as a namespaced C2PA assertion,
+\texttt{mx.aurtech.emaudio.evidence}, with one entry per output evidence
+interval. Each entry gives a temporal region of interest as an \texttt{npt}
+range \citep[\S18.2.2.3]{c2pa24}, the sample-exact bounds alongside it because
+\texttt{npt} strings are lossy at sample resolution, the provenance atom list
+(\texttt{null} for unverified, never an atom), the available support channels,
+their applicability scopes, and the lineage set. Derivation records the source
+as an ingredient with relationship \texttt{parentOf}; the specification requires
+a corresponding \texttt{c2pa.opened} action carrying a hashed-URI reference to
+that ingredient assertion \citep[\S15.11.3.2]{c2pa24}, which the claim generator
+inserts. The full schema, with a worked manifest, is Supplementary Note~S4.
+
+The transport is a bridge, not a re-implementation: signing and validation are
+performed by the official \texttt{c2patool}, so the transport guarantees are
+the tool's. The choice of C2PA is not load-bearing for any claim in this paper.
+The contract is defined over source sets and typed evidence, and the same
+assertion can be carried in a detached signed sidecar; the experiments use C2PA
+because it is the deployed standard and because doing so tests the mapping
+against a real validator.
+
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Study design}
+
+The experiments separate three questions that are easy to conflate: whether the
+implementation realises the stated guarantees (a mathematical question, answered
+by exhaustive enumeration and by differential testing); whether a competing
+metadata rule produces counterexamples on adversarial and on realistic input (a
+mechanism question, answered by frozen fixtures and a labelled corpus); and what
+the contract costs (an engineering question, answered by timed repetitions).
+Exact algebraic properties and finite-state classifications are reported as
+deterministic counts and are not assigned $p$-values. Fixture failure
+frequencies characterise the frozen fixture family and are a \textbf{mechanism
+stress rate}: they are not, and must not be read as, an estimate of how often
+any deployed system promotes provenance.
+
+\subsection{Deterministic fixtures}
+
+Experiment~A enumerates every source word of length $1$ to \Amaxlen{} over
+$\{\C, \G, \bot\}$, giving \Awords{} words, and pushes each through ten operator
+configurations, giving \Acases{} cases. Each case is checked against the full
+property suite and against an independent closed-form oracle that recomputes the
+expected state directly from the operator's nominal source ranges without using
+the evidence algebra; for zero-footprint operators the states must match exactly,
+and for kernel operators the emitted claim may only be weaker.
+
+Experiment~B freezes \Btimelines{} timelines of \Bintervals{} source intervals
+each, generated from a fixed seed, in which the majority of intervals are
+captured and one to four \emph{non-boundary} intervals are replaced by generated
+or unverified evidence. Each is pushed through composition chains of depth $1$
+to \Bdepths{} and, separately, through each operator alone. Because the
+anomalies are deliberately placed away from the boundaries, the baseline's
+failure rate on this family is high by construction; to make that explicit the
+experiment includes a control arm in which anomaly positions are drawn uniformly
+over all positions, for which the baseline's promotion probability has the
+closed form $\binom{n-2}{k}/\binom{n}{k}$ for $k$ anomalies of a single type
+over $n$ positions. Agreement between the measured rate and that closed form is
+an analytic check on the harness.
+
+\subsection{Mixed-origin audio corpus}
+
+\Cclips{} clips are built deterministically, each of the form captured $\vert$
+generated $\vert$ captured with sample-exact ground truth. Captured segments are
+crops of LibriSpeech \texttt{dev-clean} \citep{panayotov2015librispeech},
+licensed CC~BY~4.0 with the licence text read from the file shipped inside the
+archive; generated segments are produced locally by eSpeak~NG formant synthesis
+from phrases written for this study. No speaker is identified, no voice is
+cloned, and no speaker-identity claim is made. Segment durations are matched so
+that the generated region is a modest interior interval rather than a synthetic
+clip with captured fragments attached. Licences, versions, URLs, access dates
+and checksums are recorded in \texttt{DATA\_LICENSES.md} in the repository.
+
+Concatenation and every subsequent transformation are performed by \textbf{stock
+FFmpeg through its command line, with no project code in the signal path}. This
+matters for the same reason a third-party generalizer mattered in the spatial
+setting: the artefact that either does or does not exhibit promotion is produced
+by software the author does not control, and only the evidence policies are
+under study.
+
+\subsection{Metrics}
+
+We report promotion counts and rates, lineage-omission counts, unverified-to-
+verified promotions, support promotions, conformance failures, decoded-essence
+mismatches, manifest validation outcomes, model-versus-implementation sample
+deviations, runtime and metadata size. We deliberately do not report accuracy,
+precision, recall, $F_1$ or AUC: no classifier is evaluated, and detector
+metrics would invite the wrong comparison. Timing is reported as medians with
+interquartile ranges over \Greps{} repetitions with the machine declared.
+
+\subsection{Reproducibility and AI use}
+
+Every number in this manuscript is emitted by code into
+\texttt{results/machine\_readable/}, converted into a \LaTeX{} macro by a
+generator script, and used in the text through that macro; no result is typed by
+hand. Every figure is rendered from the same files. \texttt{run\_all.sh} exits
+non-zero if any conformance check fails. Generative-AI tools were used as
+programming and review assistants during development of the verification tooling
+and in preparing the manuscript; all reported outcomes were produced by executing
+the committed deterministic code, and the author reviewed and verified every
+claim, calculation, code-derived number and reference.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Exhaustive conformance}
+\label{sec:res-conformance}
+
+Over \Awords{} source words and \Acases{} operator cases, the property suite
+and the closed-form oracle together evaluated \Achecks{} checks with
+\Afailed{} failures, including \Acomp{} explicit composition cases. Every named
+regression test passes: \Tpass{} of \Ttotal{}, with \Tfail{} failures
+(Table~\ref{tab:main}).
+
+The suite has teeth. During development it failed on the overlay operator,
+where the implementation evaluated overlapping map pieces independently and so
+emitted a captured claim and a generated claim over the same output interval
+instead of one mixed claim. That was a genuine defect in our own code, found by
+the test named for it, and fixed by making the output partition global across
+pieces. We report it because a conformance suite that has never failed is
+evidence of nothing.
+
+\subsection{Adversarial timelines}
+\label{sec:res-adversarial}
+
+On \Btimelines{} frozen timelines, boundary-only inheritance promoted the
+provenance claim on \BbaseOne{} timelines (\BbaseOnePct{}\%) at composition
+depth~1 and on \BbaseFive{} at depth~\Bdepths{}; complete-source propagation
+produced \BemAll{} promotions summed over every depth, \BemUnver{}
+unverified-to-verified promotions, \BemLineage{} lineage omissions and no
+support promotion. Boundary-only inheritance omitted required lineage on
+\BbaseLineageOne{} timelines at depth~1 and reported \BbaseUnverOne{}
+unverified spans as verified.
+
+The rate does not rise with depth, and that is the finding rather than a flat
+line on a chart: the loss is established at the first derivation and is
+irreversible, because once the interior evidence has been discarded no
+downstream operator can recover it (Figure~\ref{fig:promotion}, left).
+Across the \BopCount{} operators applied singly, baseline promotion ranged from
+\BopMin{}\% to \BopMax{}\%, and complete-source propagation produced
+\BemOpAll{} promotions in total (Figure~\ref{fig:promotion}, centre).
+
+In the control arm, where anomaly positions are uniform over all positions
+rather than confined to the interior, measured baseline rates agreed with the
+closed-form prediction to within \BctrlDev{} in absolute rate
+(\BctrlDevPct{} percentage points) in every cell (Figure~\ref{fig:promotion},
+right). This is the honest reading of the adversarial arm: its near-unity rate
+is a property of the deliberate construction, arithmetically predictable, and
+carries no information about deployed software. The informative quantity is the
+exact zero on the other side.
+
+\subsection{Mixed-origin audio through stock FFmpeg}
+\label{sec:res-corpus}
+
+On \Cclips{} clips, complete-source propagation recovered the evidence interval
+structure exactly --- every boundary, at sample resolution --- for \Cexact{}
+clips, and identified the generated interval with its exact bounds for
+\Cgen{} clips, with no detector, no training and no acoustic feature of any
+kind. Boundary-only inheritance promoted the whole-asset claim to captured-only
+on \Cbase{} clips and omitted required lineage on \CbaseLineage{}; the
+complete-source policy produced \Cem{} promotions and \CemLineage{} lineage
+omissions (Figure~\ref{fig:corpus}, right).
+
+Across \Dtransforms{} transformations and \Druns{} transformation runs
+(Figure~\ref{fig:corpus}, left; Table~\ref{tab:main}), boundary-only inheritance
+promoted on \Dbase{} runs and complete-source propagation on \Dem{}, with
+\DemLineage{} lineage omissions. Two transformations produced \emph{no} baseline
+promotion, and we report that as readily as the rest: overlay declares the
+generated source as a separate top-level ingredient, so a boundary-only reading
+of two ingredients still sees both, and silence removal happened to retain runs
+whose boundaries fell inside the generated region. Not every operator promotes,
+and a paper claiming otherwise would be wrong.
+
+The interval model was validated against FFmpeg's actual output on every run
+where the output was PCM and on a \DdetermN{}-clip subset for the coded
+containers. The largest absolute deviation between predicted and actual output
+sample count was \DsilenceDev{} samples for silence removal, \DstretchDev{} for
+time stretching, \DmpThreeDev{} for MP3 and \DresampleDev{} for resampling. For
+\DguardOK{} transformations the declared guard band covered the observed
+deviation, which is the condition Proposition~\ref{prop:footprint} requires.
+Re-running each transformation and comparing decoded essence gave \Ddeterm{}
+mismatches, so the processing path is deterministic on this machine.
+
+\subsection{Signed transport, derivation and provenance loss}
+\label{sec:res-transport}
+
+Across \Fcontainers{} containers and \Ftotal{} signed round-trips
+(Table~\ref{tab:transport}), signing succeeded and validation reported the
+trusted state under the declared local anchor for \Ftrusted{} assets, with
+\Fvalfail{} validation failures. The EM assertion returned byte-equivalent from
+the validator for \Fassertion{} assets. After derivation with stock FFmpeg,
+re-signing with the parent as an ingredient, and re-validation, \Fderived{}
+derived assets validated and \Fparent{} recorded the \texttt{parentOf}
+relationship.
+
+Signal transparency holds exactly. Decoded essence was identical before signing,
+after signing with the complete-source assertion, and after signing with the
+baseline assertion, with \Fmismatch{} mismatches against the pre-signing
+essence and \FmismatchPolicy{} between the two policies. Over the same assets
+the whole-file hash changed in \Ffilechanged{} of \Ftotal{} cases, which is why
+the comparison is defined on decoded PCM: a file-level test would have reported
+a change in every case and told us nothing.
+
+Under the five provenance-loss conditions over \Eclips{} clips
+(Table~\ref{tab:stripping}), a removed manifest yielded \textsc{unverified} in
+\Estripped{} cases, an asset modified after signing yielded \textsc{invalid} in
+\Etampered{}, and re-encoding without manifest preservation yielded
+\textsc{unverified} in \Ereenc{}. No condition other than a valid manifest ever
+yielded \textsc{captured}, and there were \Eviol{} violations of the
+classification requirement. We do not claim that stripping is detected as
+malicious intent; the result is that the classification degrades in the
+conservative direction.
+
+\subsection{Two-language differential}
+\label{sec:res-oracle}
+
+The Python reference implementation works with interval algebra over pulled-back
+source boundaries. The Node.js oracle evaluates evidence per output sample by
+brute force and run-length-encodes the result. On \Hcases{} frozen
+language-neutral cases the two agreed on interval structure, provenance state,
+lineage set and channel availability with \Hdis{} disagreements, and the maximum
+absolute difference in any emitted support value was \Hdelta{}. Both
+implementations are author-written; this is a differential test against
+transcription and interval-arithmetic error, and it is not evidence of
+independence from the author (Section~\ref{sec:limits}).
+
+\subsection{Cost}
+\label{sec:res-overhead}
+
+Complete-source bookkeeping cost a median \Gem{}~ms per audio-minute against
+\Gbase{}~ms for boundary-only, a ratio of \Gratio{}$\times$, which is
+\GffmpegPct{}\% of the FFmpeg time it accompanies (Table~\ref{tab:overhead};
+Figure~\ref{fig:overhead}). Signing took a median \Gsign{}~ms per asset
+(IQR \GsignQa{}--\GsignQb{}) and validation \Gval{}~ms
+(IQR \GvalQa{}--\GvalQb{}).
+
+Manifest overhead was a median \Gmanifest{}~B per asset, of which the EM
+assertion was \Gassertion{}~B. The manifest cost is dominated by a fixed
+per-asset component --- certificate chain, COSE structure, hard binding --- so
+we report it per asset and give the variable part separately: the assertion
+grows linearly in emitted evidence intervals at \GperInterval{}~B and
+\GperIntervalUs{}~$\mu$s per interval, measured up to \GmaxIntervals{}
+intervals. Evidence cost therefore scales with how many times ancestry actually
+changes along the timeline, not with duration, which is the property a
+long-form or streaming deployment needs. These are single-machine medians for a
+Python reference implementation and are not language-independent constants.
+
+\begin{table}[t]
+\centering
+\caption{Main results. Deterministic fixture rates characterise the frozen
+fixture family and are a mechanism stress rate, not a population prevalence
+estimate.}
+\label{tab:main}
+\small
+\input{../results/tables/main_results}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Signed transport. ``Trusted'' is the validator's state under the
+declared local trust anchor; the test credential is not on the C2PA Conformance
+Program trust list. Essence mismatches compare decoded PCM before and after
+signing.}
+\label{tab:transport}
+\small
+\input{../results/tables/transport_table}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Provenance-loss behaviour. The requirement is that the reported state
+degrade conservatively; no claim is made that a missing manifest indicates
+intent.}
+\label{tab:stripping}
+\small
+\input{../results/tables/stripping_table}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Cost, as medians over \Greps{} repetitions on one machine. These are
+measurements of a Python reference implementation, not language-independent
+constants.}
+\label{tab:overhead}
+\small
+\input{../results/tables/overhead_table}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Claim--evidence boundary. Rows deliberately separate contract
+conformance, mechanism demonstration, transport behaviour and cost, so that
+evidence from one row is not used to authorise a claim in another.}
+\label{tab:boundary}
+\small
+\begin{tabular}{p{0.24\linewidth}p{0.36\linewidth}p{0.34\linewidth}}
+\toprule
+Claim class & Evidence used here & Not established by that evidence \\
+\midrule
+Operator conformance &
+Propositions~\ref{prop:union}--\ref{prop:footprint} and
+Theorem~\ref{thm:composition}; exhaustive finite-state enumeration;
+two-language differential &
+That any deployed system conforms; the prevalence of non-conformance \\
+Mechanism on constructed fixtures &
+\Btimelines{} frozen adversarial timelines with a closed-form control arm &
+Any population rate; the behaviour of any named product \\
+Mechanism on realistic audio &
+\Cclips{} labelled mixed-origin clips processed by stock FFmpeg &
+Balanced coverage of speakers, languages, codecs or editing styles \\
+Interval-model fidelity &
+Predicted versus actual output sample counts on every run, against declared
+guard bands &
+That the bounds hold for other codecs, other FFmpeg builds or other
+configurations \\
+Signed transport &
+\Ftotal{} round-trips through the official tool across \Fcontainers{}
+containers &
+Conformance-program trust; security of the C2PA cryptographic layer \\
+Signal transparency &
+Decoded-PCM SHA-256 identity before and after signing under both policies &
+Perceptual equivalence claims; bit-exactness across different decoders \\
+Cost &
+\Greps{} timed repetitions on one declared machine &
+Cost in a compiled implementation or at broadcast scale \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig1_counterexample.pdf}
+\caption{The minimal temporal counterexample. Five source intervals, of which
+the third is generated-derived. A boundary-only reading of the retained region
+sees captured evidence at both ends and may emit \textsc{captured}; the
+complete-source rule sees $\C+\C+\G+\C+\C$ and emits \textsc{mixed}
+$\{\C,\G\}$. The decoded audio is identical under both policies.}
+\label{fig:counterexample}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig2_architecture.pdf}
+\caption{Where the contract sits. Stock FFmpeg performs the transformation; the
+interval map with its declared kernel footprint determines the complete required
+source set; the complete-source meet produces the emitted evidence; the result
+is serialised as C2PA temporal regions of interest and signed. The evidence path
+never touches the signal path, which is what signal transparency (P8) measures.}
+\label{fig:architecture}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig3_promotion.pdf}
+\caption{Boundary-only versus complete-source inheritance on \Btimelines{}
+deterministic timelines. Left: promotion does not grow with composition depth
+because the loss is established at the first derivation and is irreversible.
+Centre: per-operator rates when each operator is applied alone. Right: control
+arm with anomaly positions uniform over all positions, measured against the
+closed form $\binom{n-2}{k}/\binom{n}{k}$. Percentages quantify mechanism stress
+on a frozen fixture family; they are not real-world prevalence.}
+\label{fig:promotion}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig4_corpus.pdf}
+\caption{Mixed-origin corpus. Left: promotion by transformation over \Cclips{}
+clips processed entirely by stock FFmpeg; overlay and silence removal produce no
+baseline promotion for the structural reasons given in
+Section~\ref{sec:res-corpus}. Right: exact interval recovery and generated-interval
+recovery under the complete-source rule, with promotions and lineage omissions
+at zero.}
+\label{fig:corpus}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig5_overhead.pdf}
+\caption{Cost of carrying interval evidence. The emitted assertion and the
+bookkeeping time both grow linearly in the number of evidence intervals, not in
+audio duration, so cost scales with how often ancestry changes along the
+timeline.}
+\label{fig:overhead}
+\end{figure}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{What is established.} That a complete-source rule is implementable
+over media time against real processing software; that it eliminates promotion
+on every fixture and every corpus clip tested, where a minimal boundary-only
+policy does not; that it can be carried in a deployed signed transport without
+altering the audio; and that its cost is a fraction of a percent of the
+processing it accompanies.
+
+\paragraph{What is not.} No claim is made that any deployed system promotes
+provenance. The baseline is a constructed reference policy and the fixture rates
+are a mechanism stress rate. Nor is the algebra new: the non-amplification
+property is an instance of a meet in a lattice, familiar from provenance
+semirings \citep{green2007provenance} and information-flow models
+\citep{denning1976lattice}. Readers who already accept that algebra should read
+the contribution as the temporal instantiation, the kernel-footprint treatment,
+the transport and the measurements --- which is where the work actually was.
+
+\paragraph{Relation to the provenance standard.} C2PA authenticates signed
+assertions about asset history. The layer addressed here is different: whether
+the evidence assertion emitted by a derived representation is conservative with
+respect to every source interval that representation actually contains. This
+work complements the standard rather than criticising it, and it is implemented
+entirely inside the standard's own extension points --- a namespaced assertion
+and temporal regions of interest --- without requiring any specification change.
+Where the specification's security properties are discussed, we cite a published
+analysis rather than asserting anything ourselves \citep{golaszewski2026c2pa}.
+
+\paragraph{Relation to detectors and watermarks.} These are complementary and
+answer different questions. A detector examines a signal; a watermark marks
+content at generation time; the contract here constrains what a derived asset
+may assert given what its sources asserted. A pipeline can run all three. The
+contract is at its most useful precisely where detectors are weakest --- short
+interior edits inside otherwise genuine recordings --- and it is useless where
+detectors are essential, namely media that arrive with no evidence at all.
+
+\paragraph{Attack surface.} The contract narrows one surface and leaves others
+untouched. It removes the possibility that a conforming chain silently
+strengthens a claim, and it removes the incentive to launder a mixed-origin
+asset by passing it through a benign transformation. It does nothing against a
+malicious signer, a compromised key, or an actor who strips provenance entirely
+and starts a new, dishonest chain. Cryptographic validity proves that an
+assertion was signed, not that it is true.
+
+\paragraph{Extension.} Nothing in Section~\ref{sec:model} refers to audio. The
+instantiation cost for another medium is the interval algebra and the footprint
+table: frames and regions for video, spatial regions for images, character
+ranges for text. We have not built those, and we do not claim them.
+
+\section{Limitations}
+\label{sec:limits}
+
+\paragraph{Independence.} The second-language oracle and the evidence policies
+are author-written. The differential is a test against transcription and
+interval-arithmetic error, not evidence of author independence. Two components
+are outside our control and were deliberately chosen for that reason: all audio
+processing is stock FFmpeg through its command line, and all signing and
+validation is the official \texttt{c2patool}. A third-party reimplementation of
+the contract, and an external reproduction from a clean clone on different
+hardware, would strengthen external validity further; neither exists yet.
+
+\paragraph{Corpus.} \Cclips{} clips from one read-speech corpus and one formant
+synthesiser, at \CcorpusFs{}~Hz, is a deliberate mechanism corpus, not a
+balanced design over speakers, languages, recording conditions, codecs or
+editing styles. It supports the claim that the mechanism is real and that the
+rule works on realistic audio; it does not support any rate claim about audio in
+general.
+
+\paragraph{Footprints are declarations.} The kernel footprints are conservative
+bounds declared for the exact processing configurations used here. They are
+validated against those configurations and no others. A different FFmpeg build,
+resampler setting, codec or tempo factor requires the bound to be re-declared
+and re-tested; Proposition~\ref{prop:footprint} guarantees that erring large is
+safe, not that our particular numbers transfer.
+
+\paragraph{Normalisation is a modelling choice.} Amplitude normalisation derives
+a scalar gain from the whole signal, but the content an output sample represents
+is one source sample. We aggregate over represented content, so the default
+footprint is zero, and we implement and test the maximally conservative
+alternative in which every output sample represents the whole signal. Both
+readings are defensible; we state which one the results use rather than leaving
+it implicit.
+
+\paragraph{Trust anchor.} The signing credential is locally generated and the
+trust anchor locally configured. A trusted validation state in these results
+means trusted under that anchor, not conformance-program trust.
+
+\paragraph{Replay and the analogue hole.} A microphone recording a loudspeaker
+that is playing synthetic speech produces audio that is genuinely captured at
+the sensor layer while its semantic source is synthetic. Every capture-provenance
+system has this limitation and this one is no exception: the contract would
+propagate a captured claim, correctly at the layer it models and misleadingly at
+the layer a reader may care about. The honest response is layering --- capture
+mechanism, media-generation ancestry, speaker identity as separate evidence
+channels --- and v1 deliberately stays at the digital-asset and source-lineage
+level. Nothing here detects re-recording.
+
+\paragraph{Speaker identity and truth.} Identity is not provenance: knowing an
+interval was captured says nothing about who spoke. Neither is truth: a captured
+recording can contain a lie, and the contract says nothing whatsoever about
+semantic content.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+A representation-only transformation may change, simplify, compress, aggregate
+or reorganise content, but it must not silently increase the evidential
+authority of the output relative to the complete source material that output
+represents. In audio that principle has an exact form: provenance is the union
+over the complete required source set, same-channel support is the minimum over
+it, applicability is intersected, lineage is the union, and an unverified source
+interval is absorbing. The underlying algebra is not new, and we have said so;
+what this work provides is the executable temporal contract, the kernel-footprint
+treatment that makes it implementable against real codecs, a signed transport
+inside an existing standard, and measurements showing that the rule eliminates
+promotion on every fixture and clip tested, leaves the decoded audio untouched,
+and costs a fraction of a percent of the processing it accompanies. It does not
+detect deepfakes, it does not establish that speech is truthful, and a valid
+signature proves only that an assertion was signed, not that it is true.
+
+\section*{Data availability}
+
+The mixed-origin corpus is generated deterministically by committed code from
+LibriSpeech \texttt{dev-clean} \citep{panayotov2015librispeech}, licensed
+CC~BY~4.0, fetched by a checksum-pinned script, and from locally generated
+eSpeak~NG output. No human-subject, proprietary or login-walled data is used.
+Licences, versions, URLs, access dates and redistribution clauses are recorded
+in \texttt{DATA\_LICENSES.md}.
+
+\section*{Code availability}
+
+The reference implementation, the second-language oracle, every experiment,
+every frozen fixture and every machine-readable result are public under the MIT
+licence, with pinned tool versions and one-command reproduction. Exact commit,
+release tag, and Zenodo version and concept DOIs are given in the preflight
+report shipped with the release.
+
+\section*{CRediT authorship contribution statement}
+
+\textbf{A. Urias:} Conceptualization, Methodology, Software, Formal analysis,
+Validation, Investigation, Visualization, Writing -- original draft,
+Writing -- review and editing.
+
+\section*{Funding}
+
+The author reports no specific external grant funding for this study.
+
+\section*{Declaration of competing interest}
+
+A. Urias is employed by and holds equity in Aurtech. No product of Aurtech is
+evaluated, named or compared against in this work, and the baseline is a
+constructed reference policy rather than a description of any product. A
+non-conformance found in the author's own implementation during development is
+reported in Section~\ref{sec:res-conformance}.
+
+\section*{Declaration of generative AI and AI-assisted technologies}
+
+During preparation of this work the author used generative-AI tools to assist
+with development and review of the verification and reproducibility tooling,
+manuscript organisation, and language refinement. All reported outcomes were
+produced by executing the committed deterministic code rather than generated by
+these tools. The author reviewed and verified the scientific claims,
+calculations, code-derived results, references and final text, edited the
+material as needed, and takes full responsibility for the content of the
+publication.
+
+\bibliographystyle{elsarticle-num}
+\bibliography{refs}
+
+\end{document}

@@ -1,0 +1,22 @@
+{
+ "boundary_mismatches": 0,
+ "captured_source": "LibriSpeech dev-clean (CC BY 4.0)",
+ "concat_tool": "stock ffmpeg CLI (no project code in the signal path)",
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "node": "v26.0.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.15"
+ },
+ "experiment": "C0_corpus_build",
+ "generated_source": "eSpeak NG 1.52.0 formant synthesis, generated locally",
+ "n_clips": 600,
+ "runtime_s": 124.002,
+ "sample_rate": 16000,
+ "seed": 20260819,
+ "total_samples": 27348448
+}

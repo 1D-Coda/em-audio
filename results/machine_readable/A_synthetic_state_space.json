@@ -1,0 +1,77 @@
+{
+ "alphabet": [
+  "C",
+  "G",
+  "B"
+ ],
+ "checks_failed": 0,
+ "checks_total": 787443,
+ "composition_cases": 363,
+ "element_width_samples": 64,
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "node": "v26.0.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.15"
+ },
+ "expected_state_counts": {
+  "CAPTURED": 1211,
+  "GENERATED": 1211,
+  "MIXED": 7164,
+  "UNVERIFIED": 88799
+ },
+ "experiment": "A_synthetic_state_space",
+ "failures_sample": [],
+ "max_word_length": 8,
+ "operator_cases": 98385,
+ "per_check": {
+  "P1_exact_union": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P2_no_promotion": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P3_unverified_non_promotion": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P4_support_non_promotion": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P5_applicability_non_broadening": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P6_complete_lineage": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P7_composition": {
+   "fail": 0,
+   "pass": 363
+  },
+  "P_footprint_monotone": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "closed_form_state_exact": {
+   "fail": 0,
+   "pass": 49188
+  },
+  "closed_form_state_weaker": {
+   "fail": 0,
+   "pass": 49197
+  }
+ },
+ "runtime_s": 18.741,
+ "words_containing_unverified": 9330,
+ "words_enumerated": 9840,
+ "words_with_mixed_ancestry": 494
+}
