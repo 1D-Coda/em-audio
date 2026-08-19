@@ -30,6 +30,7 @@ results, and writes `results/PREFLIGHT.txt`.
 | FFmpeg | 9.0.1 | the only software in the audio signal path |
 | c2patool | 0.27.2 | C2PA signing and validation |
 | Node.js | 26.0.0 | second-language differential oracle |
+| Piper (piper-tts) | 1.7.0 | neural-TTS robustness arm only |
 | eSpeak NG | 1.52.0 | locally generated synthetic speech |
 | matplotlib | 3.11.1 | figure rendering only |
 
@@ -50,7 +51,7 @@ tests/               named regression tests
 experiments/         experiments A-I, each emitting machine-readable results
 fixtures/            frozen timelines, frozen oracle cases, frozen manifests
 results/             machine_readable/ + tables/ + figures/ + PREFLIGHT.txt
-tools/               corpus fetch, test credential, tables, figures, preflight
+tools/               corpus and voice fetch, test credential, tables, figures, preflight
 ```
 
 ## What each experiment establishes
@@ -67,6 +68,8 @@ tools/               corpus fetch, test credential, tables, figures, preflight
 | H | Do two independent algorithms agree, in both interval geometries? | exact agreement |
 | B2 | Which baseline shortcut causes which failure? | each shortcut fails exactly one arm |
 | I | What does the conservatism cost in evidence? | dilution confined to footprint-wide boundary bands |
+| J | Does the contract ride inside a real C2PA `componentOf` composition? | all compositions trusted, aggregate MIXED, zero essence mismatches |
+| C2 | Does the result survive neural TTS and buried boundaries? | exact recovery, EM zero, on both arms |
 
 ## Scope
 
