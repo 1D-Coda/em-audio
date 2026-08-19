@@ -91,6 +91,49 @@ the standardization paragraph; a second speech corpus behind a login wall
 (Common Voice) — the LJSpeech-voiced neural arm covers the external-validity
 concern within Gate 0C's licence discipline.
 
+## Round-3 hardening (2026-08-19)
+
+A third review round raised three items; all were verified and applied, and one
+correction was found in our own documentation.
+
+1. **Robustness-arm documentation was incomplete, and one line was wrong.**
+   `DATA_LICENSES.md` claimed the voice model files were "committed under
+   `corpus/piper_voices/`", which stopped being true when the 63 MB model was
+   untracked in favour of a fetch script. Corrected, and the entry now records
+   engine version (piper-tts 1.7.0), voice, model-card version, sample rate,
+   training-data licence quoted verbatim from the primary source with URL and
+   access date, SHA-256 digests for both files, and the rejected `lessac`
+   alternative with the reason. `tools/fetch_voice.sh` now verifies both
+   digests and fails on mismatch; tested from a clean state. The pink-noise
+   recipe is recorded as the exact executed command in both `DATA_LICENSES.md`
+   and a new supplementary section.
+
+2. **`c2pa.placed` versus `c2pa.mixed` now justified from the spec text.**
+   Verified against C2PA 2.4 Table 8: `c2pa.mixed` covers the case where
+   "multiple, previously placed (via `c2pa.placed` actions) audio ingredients
+   (e.g., stems, vocals, drums, bass, etc) are combined and optionally
+   transformed". Our fixture concatenates rather than sums, so `c2pa.placed`
+   alone is accurate; `c2pa.mixed` also presupposes `c2pa.placed`, so the
+   placed actions are required either way. An overlay composition would warrant
+   `c2pa.mixed` in addition. Stated in the manuscript.
+
+3. **"We searched the specification" now has empirical support.** The claim is
+   backed by our own composition experiment rather than by assertion alone:
+   every composition carries two ingredients whose declared source types
+   disagree, and the official validator reports each as valid without
+   computing, requiring or remarking on any aggregate over them.
+
+Also added: one paragraph noting that chunk-localised perceptual binding and
+this contract are complementary (transport resilience versus aggregation), with
+an explicit statement that the combination has not been built.
+
+**Not done, on the advice of the same review:** no further experiments. The
+study now covers formal enumeration, adversarial fixtures, a labelled audio
+corpus, neural-TTS and noise robustness, third-party signal processing,
+C2PA-native composition, signed derivation, provenance-loss behaviour, claim
+dilution, two-language differential testing and cost. More would dilute rather
+than strengthen.
+
 ## Verdict
 
 No dimension scores below 4, so no substantive scientific blocker remains.

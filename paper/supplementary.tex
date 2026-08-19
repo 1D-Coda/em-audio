@@ -222,6 +222,44 @@ ingredients, both resolved \texttt{c2pa.placed} references, both source
 \texttt{digitalSourceType} values and the EM aggregate is committed at
 \texttt{fixtures/expected/manifest\_composition\_componentOf.json}.
 
+\section{Robustness-arm materials}
+\label{s:robustness}
+
+The neural arm uses Piper \texttt{piper-tts} 1.7.0 (MIT, VITS architecture)
+with the voice \texttt{en\_US-ljspeech-medium}, whose training data is the LJ
+Speech Dataset. That dataset states ``This dataset is in the public domain in
+the US (and most likely other countries as well)'' and consists of LibriVox
+recordings by Linda Johnson of non-fiction texts published between 1884 and
+1964, all public domain. The \texttt{lessac} voices were considered and
+rejected: their Blizzard 2013 training data carries a restrictive licence. No
+voice of any identified living person is cloned.
+
+The model is fetched rather than committed, by \texttt{tools/fetch\_voice.sh},
+which verifies both files against pinned digests. For
+\texttt{en\_US-ljspeech-medium.onnx} the SHA-256 is
+\texttt{6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22}, and
+for \texttt{en\_US-ljspeech-medium.onnx.json} it is
+\texttt{141d612cc0a95ed7efc1ca936b845c2364967f2e9217c5dbfcf69fc4d6c65860}.
+Voice output is 22\,050~Hz and is resampled to 16~kHz by stock ffmpeg before
+use.
+
+The noise arm generates pink noise locally, seeded by clip index so the arm is
+deterministic, and mixes it under the clip at $-18$~dB. The exact command, as
+executed:
+
+\begin{verbatim}
+ffmpeg -i <clip> \
+  -f lavfi -i "anoisesrc=r=16000:colour=pink:amplitude=0.12:seed=<index>" \
+  -filter_complex "[1:a]volume=-18dB[nz];\
+                   [0:a][nz]amix=inputs=2:duration=first:normalize=0[out]" \
+  -map "[out]" -c:a pcm_s16le <output>
+\end{verbatim}
+
+The noise is modelled as a second generated-derived source covering the whole
+clip, so under the contract every captured segment becomes mixed ancestry while
+the generated segment stays generated, union adding no new atom. Both facts are
+asserted per interval by the experiment.
+
 \section{Reproduction}
 \label{s:repro}
 

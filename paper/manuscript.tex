@@ -293,7 +293,12 @@ own evidence claim must be the conservative reduction over all five rather than
 an inheritance from its parent. We read the specification for a rule of that
 kind and did not find one; the specification governs how assertions are bound
 and validated, not how an aggregate evidence claim over heterogeneous sources
-must be computed.
+must be computed. The reference implementation behaves accordingly, and our own
+composition experiment is the evidence: every one of those compositions carries
+two ingredients whose declared source types disagree, and the official validator
+reports each as valid without computing, requiring, or remarking on any
+aggregate claim over them (Section~\ref{sec:res-composition}). The aggregate in
+those manifests is present because the contract put it there.
 
 \paragraph{Provenance for edited audio.} Two recent lines are the closest work
 in this medium. Chunk-localised speech provenance binds short time segments to
@@ -1000,6 +1005,19 @@ computed by the complete-source rule over the two component timelines. The
 composition is then derived across the ancestry boundary and re-signed with
 \texttt{parentOf}.
 
+The action vocabulary deserves a note, because the specification offers two
+candidates. \texttt{c2pa.mixed} is defined for the case where ``multiple,
+previously placed (via \texttt{c2pa.placed} actions) audio ingredients (e.g.,
+stems, vocals, drums, bass, etc) are combined and optionally transformed''
+\citep[Table~8]{c2pa24}. Our fixture concatenates its two sources in sequence
+rather than summing them, so nothing is combined in that sense and
+\texttt{c2pa.placed} alone is the accurate record; note also that
+\texttt{c2pa.mixed} presupposes \texttt{c2pa.placed}, so the placed actions
+would be required either way. An overlay composition, where two sources sum
+over a shared interval, would warrant \texttt{c2pa.mixed} in addition. The
+choice does not affect the contract: the aggregation rule reads the ingredient
+graph and the interval map, not the action label.
+
 All \Jfixtures{} compositions validated as trusted under the declared anchor,
 with both \texttt{componentOf} ingredients recorded in \Jcomponents{} cases and
 both \texttt{c2pa.placed} references resolved in \Jplaced{}; the EM assertion
@@ -1291,6 +1309,15 @@ interval's label be the meet over everything that flowed into it is precisely a
 community may find that framing the shortest proof that the construction is
 sound; the temporal contribution is the mapping from operators to flows via
 interval maps and footprints.
+
+\paragraph{Composing with adjacent work.} The contract addresses aggregation
+and says nothing about surviving transport, which is what chunk-localised
+perceptual binding addresses \citep{ono2026merklespeech} and this work does
+not. The
+two are complementary rather than competing: a pipeline could use perceptual
+chunk binding to recover evidence after a manifest is stripped, and the
+contract here to decide what the recovered evidence entitles a derived interval
+to claim. We have not built that combination.
 
 \paragraph{Extension.} Nothing in Section~\ref{sec:model} refers to audio. The
 instantiation cost for another medium is the interval algebra and the footprint

@@ -33,20 +33,45 @@ captured audio with a redistributable licence.
 | Redistribution | The generated clips are redistributed under this repository's MIT licence |
 | Determinism | Fixed voice (`en-us`), fixed speed/pitch per clip index, no randomness |
 
-## Supplementary neural-TTS voice (robustness arm)
+## Supplementary neural-TTS voice (robustness arm, experiment C2)
 
 | Field | Value |
 |---|---|
-| Engine | Piper (VITS architecture), MIT-licensed |
-| Voice | `en_US-ljspeech-medium` |
-| Voice training data | LJSpeech dataset: public-domain LibriVox recordings of a public-domain text; the dataset is released into the public domain |
-| Role | generates the synthetic middle segment of the 50-clip neural robustness arm; the model files are committed under `corpus/piper_voices/` |
-| Note | the `lessac` voices were considered and rejected because the underlying Blizzard 2013 data carries a restrictive licence |
+| Engine | Piper, `piper-tts` 1.7.0 (PyPI), VITS architecture |
+| Engine licence | MIT |
+| Voice | `en_US-ljspeech-medium`, model card `piper_version` 1.0.0 |
+| Voice sample rate | 22 050 Hz (resampled to 16 kHz by stock ffmpeg before use) |
+| Voice training data | LJ Speech Dataset (Keith Ito, 2017) |
+| Training-data licence | Public domain. Verbatim from the dataset page: "This dataset is in the public domain in the US (and most likely other countries as well)." |
+| Training-data provenance | LibriVox recordings by Linda Johnson (2016-17) of seven non-fiction books published 1884-1964; both the recordings and the source texts are public domain |
+| Licence URL | https://keithito.com/LJ-Speech-Dataset/ |
+| Access date | 2026-08-19 |
+| Model SHA-256 | `6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22` (`en_US-ljspeech-medium.onnx`) |
+| Config SHA-256 | `141d612cc0a95ed7efc1ca936b845c2364967f2e9217c5dbfcf69fc4d6c65860` (`en_US-ljspeech-medium.onnx.json`) |
+| Retrieval | `tools/fetch_voice.sh`, which calls `python3 -m piper.download_voices en_US-ljspeech-medium` and verifies both checksums. The 63 MB model is fetched rather than committed. |
+| Role | generates the synthetic middle segment of the 50-clip neural arm |
+| Rejected alternative | the `lessac` voices were considered and rejected: their Blizzard 2013 training data is the property of Voice Factory International Inc. and Lessac Technologies Inc. under a restrictive licence, which fails the corpus gate |
 
-## Supplementary noise source (robustness arm)
+No voice of any identified living person is cloned, and no speaker-identity
+claim is made anywhere in this work.
 
-Pink noise generated locally by ffmpeg `anoisesrc`, seeded per clip. No
-third-party material.
+## Supplementary noise source (robustness arm, experiment C2)
+
+Pink noise generated locally by stock ffmpeg, seeded per clip index so the arm
+is deterministic. No third-party material. The exact generation and mix, as
+executed:
+
+```
+ffmpeg -i <clip> \
+  -f lavfi -i "anoisesrc=r=16000:colour=pink:amplitude=0.12:seed=<clip index>" \
+  -filter_complex "[1:a]volume=-18dB[nz];\
+                   [0:a][nz]amix=inputs=2:duration=first:normalize=0[out]" \
+  -map "[out]" -c:a pcm_s16le <output>
+```
+
+The noise is modelled as a second generated-derived source covering the whole
+clip, so under the contract every captured segment becomes mixed ancestry and
+the generated segment stays generated.
 
 ## Tools in the processing path
 
