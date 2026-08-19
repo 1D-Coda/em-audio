@@ -114,7 +114,7 @@
    "baseline_support_promotions": 0,
    "baseline_unverified_to_verified": 7222,
    "em_lineage_omissions": 0,
-   "em_output_intervals": 620000,
+   "em_output_intervals": 1210000,
    "em_promotion_rate": 0.0,
    "em_provenance_promotions": 0,
    "em_support_promotions": 0,
@@ -271,7 +271,7 @@
    "em_rate": 0.0
   }
  },
- "runtime_s": 129.585,
+ "runtime_s": 288.932,
  "sample_rate": 48000,
  "seed": 20260819
 }

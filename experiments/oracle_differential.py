@@ -23,9 +23,17 @@ import em_audio.operators as O
 
 FIXTURES = ROOT / "fixtures"
 ORACLE = ROOT / "oracle_js" / "oracle.js"
-WIDTH = 16
 ALPHABET = ("C", "G", "B")
-MAX_LEN = 6
+# Two interval geometries.  The narrow one exercises the case where kernel
+# footprints span many source intervals.  The wide one exercises the opposite
+# regime -- footprints much smaller than an interval -- in which an
+# interval-granularity implementation of footprint widening agrees with a
+# per-sample one only by coincidence; this battery exists because the
+# claim-dilution experiment caught exactly that coarseness.
+BATTERIES = [
+    {"width": 16, "max_len": 6},
+    {"width": 1024, "max_len": 4},
+]
 
 
 def serialise_evidence(ev) -> Dict[str, object]:
@@ -40,37 +48,40 @@ def serialise_evidence(ev) -> Dict[str, object]:
 def build_cases() -> List[Dict[str, object]]:
     cases = []
     cid = 0
-    for L in range(1, MAX_LEN + 1):
-        for word in itertools.product(*[ALPHABET] * L):
-            n = L * WIDTH
-            tl = timeline_from_word(word, WIDTH)
-            models = [
-                ("trim_all", O.trim("s", n, 0, n)),
-                ("resample_48_16", O.resample("s", n, 48000, 16000)),
-                ("transcode_mp3", O.transcode("s", n, "mp3")),
-                ("transcode_flac", O.transcode("s", n, "flac")),
-                ("normalize", O.normalize("s", n)),
-                ("time_stretch_1.25", O.time_stretch("s", n, 1.25, 48000)),
-                ("concat_self", O.concat([("s", 0, n), ("s", 0, n)])),
-            ]
-            if n >= 3 * WIDTH:
-                models.append(("trim_inner", O.trim("s", n, WIDTH, n - WIDTH)))
-                models.append(("silence_removal",
-                               O.silence_removal("s", [(0, WIDTH), (n - WIDTH, n)])))
-            for name, m in models:
-                cases.append({
-                    "id": cid, "word": "".join(word), "operator": name,
-                    "timelines": {"s": [{"src": i.src, "start": i.start, "end": i.end,
-                                         "ev": serialise_evidence(i.ev)}
-                                        for i in tl.intervals]},
-                    "model": {"n_out": m.n_out,
-                              "pieces": [{"out_start": p.out_start, "out_end": p.out_end,
-                                          "src": p.src, "src_start": p.src_start,
-                                          "src_end": p.src_end, "footprint": p.footprint}
-                                         for p in m.pieces]},
-                    "_py_model": m,
-                })
-                cid += 1
+    for bat in BATTERIES:
+        WIDTH, MAX_LEN = bat["width"], bat["max_len"]
+        for L in range(1, MAX_LEN + 1):
+            for word in itertools.product(*[ALPHABET] * L):
+                n = L * WIDTH
+                tl = timeline_from_word(word, WIDTH)
+                models = [
+                    ("trim_all", O.trim("s", n, 0, n)),
+                    ("resample_48_16", O.resample("s", n, 48000, 16000)),
+                    ("transcode_mp3", O.transcode("s", n, "mp3")),
+                    ("transcode_flac", O.transcode("s", n, "flac")),
+                    ("normalize", O.normalize("s", n)),
+                    ("time_stretch_1.25", O.time_stretch("s", n, 1.25, 48000)),
+                    ("concat_self", O.concat([("s", 0, n), ("s", 0, n)])),
+                ]
+                if n >= 3 * WIDTH:
+                    models.append(("trim_inner", O.trim("s", n, WIDTH, n - WIDTH)))
+                    models.append(("silence_removal",
+                                   O.silence_removal("s", [(0, WIDTH), (n - WIDTH, n)])))
+                for name, m in models:
+                    cases.append({
+                        "id": cid, "word": "".join(word), "operator": name,
+                        "width": WIDTH,
+                        "timelines": {"s": [{"src": i.src, "start": i.start, "end": i.end,
+                                             "ev": serialise_evidence(i.ev)}
+                                            for i in tl.intervals]},
+                        "model": {"n_out": m.n_out,
+                                  "pieces": [{"out_start": p.out_start, "out_end": p.out_end,
+                                              "src": p.src, "src_start": p.src_start,
+                                              "src_end": p.src_end, "footprint": p.footprint}
+                                             for p in m.pieces]},
+                        "_py_model": m,
+                    })
+                    cid += 1
     return cases
 
 
@@ -95,7 +106,7 @@ def main() -> int:
     max_support_delta = 0.0
     for c in cases:
         m = c["_py_model"]
-        tl = timeline_from_word(c["word"], WIDTH)
+        tl = timeline_from_word(c["word"], c["width"])
         tls = {"s": tl}
         ivs = em_intervals(m, tls, footprint_aware=True)
         spans = span_evidence(m, tls, "boundary")
@@ -130,8 +141,8 @@ def main() -> int:
 
     payload = {
         "cases": len(cases), "compared": compared,
-        "alphabet": list(ALPHABET), "max_word_length": MAX_LEN,
-        "element_width_samples": WIDTH,
+        "alphabet": list(ALPHABET),
+        "batteries": BATTERIES,
         "python_algorithm": "interval algebra with pulled-back source boundaries",
         "javascript_algorithm": "brute-force per-output-sample evaluation, run-length encoded",
         "disagreements": len(disagreements),

@@ -47,7 +47,7 @@ em_audio/            reference implementation
   c2pa_bridge.py     signing and validation through the official c2patool
 oracle_js/oracle.js  independent second implementation (different algorithm)
 tests/               named regression tests
-experiments/         experiments A-H, each emitting machine-readable results
+experiments/         experiments A-I, each emitting machine-readable results
 fixtures/            frozen timelines, frozen oracle cases, frozen manifests
 results/             machine_readable/ + tables/ + figures/ + PREFLIGHT.txt
 tools/               corpus fetch, test credential, tables, figures, preflight
@@ -64,7 +64,9 @@ tools/               corpus fetch, test credential, tables, figures, preflight
 | E | What happens when provenance is absent or broken? | never CAPTURED; stripped ⇒ UNVERIFIED |
 | F | Does the signed round-trip work, and is the signal unchanged? | validation passes; decoded essence identical |
 | G | What does the bookkeeping cost? | reported, not gated |
-| H | Do two independent algorithms agree? | exact agreement |
+| H | Do two independent algorithms agree, in both interval geometries? | exact agreement |
+| B2 | Which baseline shortcut causes which failure? | each shortcut fails exactly one arm |
+| I | What does the conservatism cost in evidence? | dilution confined to footprint-wide boundary bands |
 
 ## Scope
 

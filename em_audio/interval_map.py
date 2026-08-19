@@ -191,11 +191,23 @@ def em_intervals(out: DerivedOutput, timelines: Dict[str, Timeline],
         tl = timelines[p.src]
         rate = p.rate
         if rate:
+            # Pull every source evidence boundary back into output coordinates.
+            # When the piece declares a kernel footprint, the *widened* source
+            # range of an output sample starts or stops covering a neighbouring
+            # interval at the pull-backs of b -/+ footprint, not of b itself, so
+            # those shifted positions are cut as well.  Without them the whole
+            # emitted interval inherits the widened source set -- safe under
+            # footprint monotonicity, but needlessly coarse; the claim-dilution
+            # experiment measures exactly this and caught the earlier
+            # interval-granularity behaviour.
+            offsets = (0,) if not (footprint_aware and p.footprint) else \
+                (-p.footprint, 0, p.footprint)
             for b in tl.boundaries():
-                o = p.out_start + (b - p.src_start) / rate
-                oi = int(math.floor(o))
-                if p.out_start < oi < p.out_end:
-                    cuts.add(oi)
+                for off in offsets:
+                    o = p.out_start + (b + off - p.src_start) / rate
+                    for oi in (int(math.floor(o)), int(math.floor(o)) + 1):
+                        if p.out_start < oi < p.out_end:
+                            cuts.add(oi)
     edges = sorted(cuts)
     res: List[OutputInterval] = []
     for oa, ob in zip(edges, edges[1:]):

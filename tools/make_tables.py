@@ -167,13 +167,33 @@ def ablation_table():
                   "Footprint anomaly"))
 
 
+def dilution_table():
+    I = load("I_claim_dilution")
+    rows = []
+    for k in sorted(I["per_transformation"]):
+        v = I["per_transformation"][k]
+        rows.append(f"{esc(k)} & {v['clips']} & "
+                    f"{100*v['median_dilution_fraction']:.2f}\\% & "
+                    f"{100*v['max_dilution_fraction']:.2f}\\% & "
+                    f"{v['clips_with_any_dilution']} \\\\")
+    for c in I["composition_chain"]:
+        rows.append(f"composition depth {c['depth']} & {c['clips']} & "
+                    f"{100*c['median_dilution_fraction']:.2f}\\% & "
+                    f"{100*c['max_dilution_fraction']:.2f}\\% & --- \\\\")
+    write("dilution_table", "\n".join(rows), colspec="lrrrr",
+          header=("Transformation & Clips & Median dilution & Max dilution & "
+                  "Clips affected"))
+
+
 def overhead_table():
     G = load("G_overhead")
+    mins = G["audio_minutes_per_repetition"]
+    em, bs = G["em_bookkeeping_ms_per_repetition"], G["baseline_bookkeeping_ms_per_repetition"]
     r = [
         f"EM bookkeeping & {G['em_ms_per_audio_minute']:.3f} ms / audio-minute & "
-        f"{G['em_bookkeeping_ms_per_repetition']['q1']:.2f}--{G['em_bookkeeping_ms_per_repetition']['q3']:.2f} ms \\\\",
+        f"{em['q1']/mins:.3f}--{em['q3']/mins:.3f} ms / audio-minute \\\\",
         f"Boundary-only bookkeeping & {G['baseline_ms_per_audio_minute']:.3f} ms / audio-minute & "
-        f"{G['baseline_bookkeeping_ms_per_repetition']['q1']:.2f}--{G['baseline_bookkeeping_ms_per_repetition']['q3']:.2f} ms \\\\",
+        f"{bs['q1']/mins:.3f}--{bs['q3']/mins:.3f} ms / audio-minute \\\\",
         f"EM $/$ boundary-only ratio & {G['em_over_baseline_ratio']:.2f}$\\times$ & --- \\\\",
         f"EM as a fraction of FFmpeg time & {100*G['em_over_ffmpeg_fraction']:.3f}\\% & --- \\\\",
         f"C2PA signing & {G['sign_ms']['median']:.1f} ms / asset & "
@@ -195,4 +215,4 @@ def overhead_table():
 
 if __name__ == "__main__":
     operator_table(); main_results(); transport_table(); ablation_table()
-    overhead_table()
+    dilution_table(); overhead_table()

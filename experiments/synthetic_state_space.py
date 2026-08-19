@@ -137,7 +137,20 @@ def main() -> int:
                     if len(failures) < 25:
                         failures.append(f"{''.join(word)}/compose: {chk.detail}")
 
+    # Case-count arithmetic, recorded so the manuscript can quote it exactly:
+    # the inner-trim configuration requires a word of at least 3 elements and
+    # silence removal at least 2, so short words receive a smaller battery.
+    n_len1 = len(ALPHABET)
+    n_len2 = len(ALPHABET) ** 2
+    n_rest = words - n_len1 - n_len2
     payload = {
+        "battery_breakdown": {
+            "words_len1_battery8": n_len1,
+            "words_len2_battery9": n_len2,
+            "words_len3plus_battery10": n_rest,
+            "arithmetic": f"{n_len1}*8 + {n_len2}*9 + {n_rest}*10 = "
+                          f"{n_len1*8 + n_len2*9 + n_rest*10}",
+        },
         "alphabet": list(ALPHABET),
         "max_word_length": MAX_LEN,
         "element_width_samples": WIDTH,

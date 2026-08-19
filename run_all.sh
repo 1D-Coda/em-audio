@@ -48,6 +48,9 @@ step "F  signed round-trip and signal transparency"
 step "G  overhead"
 ( cd experiments && python3 overhead_benchmark.py ) || fail=1
 
+step "I  claim dilution (cost of conservatism)"
+( cd experiments && python3 claim_dilution.py ) || fail=1
+
 step "tables and figures"
 python3 tools/make_tables.py || fail=1
 python3 tools/make_macros.py || fail=1

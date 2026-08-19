@@ -58,7 +58,12 @@ propagation produced \Afailed{} contract failures, \Dem{} promotions and
 transformation runs. Decoded essence was identical before and after signing
 under both policies in \Ftotal{} signed round-trips across
 \Fcontainers{} containers, with \Fmismatch{} mismatches; bookkeeping cost
-\Gem{}~ms per audio-minute, \GffmpegPct{}\% of FFmpeg time. The contract
+\Gem{}~ms per audio-minute, \GffmpegPct{}\% of FFmpeg time, and the
+evidential cost of the footprints is measured rather than assumed: single
+transformations dilute at most \ImaxAnyPct{}\% of a clip's samples, in
+fixed-radius bands at ancestry boundaries, while deep composition chains on
+short assets can dilute most of the asset --- a real, quantified cost of
+conservatism rather than a hidden one. The contract
 constrains what a derived representation may claim about its sources; it does
 not detect deepfakes, does not establish that speech is truthful, and a
 cryptographically valid signature proves only that an assertion was signed, not
@@ -78,7 +83,7 @@ audio forensics \sep synthetic speech \sep chain of custody
 Speech can now be generated convincingly enough that the question ``is this
 recording real?'' is answered less and less reliably by listening to it. Two
 different mechanisms have grown up in response. Detection asks whether a signal
-carries the traces of synthesis \citep{pham2025survey,wang2025asvspoof5}.
+carries the traces of synthesis \citep{pham2025survey,wang2026asvspoof5}.
 Provenance asks what an asset's own cryptographically signed history says about
 where it came from \citep{c2pa24}. These answer different questions, and this
 work is about the second one, so nothing here is a detection result.
@@ -92,9 +97,18 @@ written by whatever software performed the step. The C2PA specification
 describes the relationship such an asset has to its input with the ingredient
 relationship \texttt{parentOf}, whose meaning is given as ``The current asset is
 a derived asset or asset rendition of this ingredient''
-\citep[Table~10, \S18.16.3]{c2pa24}. That is a faithful statement of lineage. It
-is not a rule about what the derived asset's own evidence assertion may say, and
-we found no such rule in the specification text.
+\citep[Table~10, \S18.16.3]{c2pa24}. The specification's vocabulary is in fact
+rich enough to carry everything the problem needs: a composed asset records each
+component as a \texttt{componentOf} ingredient with its own manifest history, a
+generative origin can be marked with a \texttt{digitalSourceType}, and an
+assertion can be scoped to a temporal range. What the text does not prescribe
+--- and we searched it for such a rule --- is the \emph{reduction}: the
+aggregate evidence state a derived interval should emit when the component
+histories it represents disagree. The specification can preserve the component
+histories; it does not define the conservative claim that must be computed over
+them. That distinction is the entire subject of this paper, and it means the
+contribution here is not a competing provenance system but a semantic
+aggregation contract that operates inside the standard's own vocabulary.
 
 The consequence is concrete. Consider five consecutive source intervals of a
 recording whose third interval is generated speech and whose other four are
@@ -119,10 +133,46 @@ An earlier instantiation of that requirement exists for spatial data, where
 derived terrain geometry can overstate the evidence of the source arc it
 replaces \citep{urias2026emtrf}. This work asks whether the requirement is
 usable in a temporal medium with a real signed transport and real processing
-software, and what it costs. It is not a re-presentation of that work: the
-alphabet, the operator set, the interval mapping, the kernel-footprint problem,
-the transport and every reported number are new, and no earlier result is
-reused. The relationship is set out row by row in Supplementary Note~S1.
+software, and what it costs. It is not a re-presentation of that work:
+Table~\ref{tab:inherited} states exactly what is inherited and what is new, no
+earlier result is reused, and the row-by-row transfer analysis is Supplementary
+Note~S1. The short version is that the algebra transfers and almost nothing
+else does: temporal interval maps, the kernel-footprint problem and its
+monotonicity resolution, the guard-band validation against third-party
+processing, signal transparency on decoded PCM, and the signed transport have
+no spatial analogue.
+
+\begin{table}[t]
+\centering
+\caption{Relation to the spatial predecessor \citep{urias2026emtrf}. Inherited
+elements are prior work and are cited, not claimed; every reported number in
+this paper is new.}
+\label{tab:inherited}
+\small
+\begin{tabular}{p{0.46\linewidth}p{0.46\linewidth}}
+\toprule
+Inherited from the spatial work & New in this work \\
+\midrule
+Evidence record $(P,S,A,L)$; provenance as an atom set with mixed by union &
+Temporal required-source sets over half-open sample intervals \\
+\addlinespace
+Same-channel meet by minimum; scope intersection; lineage union &
+The captured/generated alphabet and the capture-support channel \\
+\addlinespace
+Absorbing unverified state &
+Requirement (iv$'$): a $\bot$ source also withholds every numeric channel \\
+\addlinespace
+Non-promotion in the spatial setting &
+Kernel footprints with declared guard bands, validated per clip against stock
+FFmpeg; footprint monotonicity (Proposition~\ref{prop:footprint}) \\
+\addlinespace
+Conformance-test methodology (exhaustive enumeration, frozen fixtures,
+independent oracle) &
+Signal transparency on decoded PCM; signed C2PA transport with temporal
+regions; the claim-dilution cost metric \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 We are equally explicit about what is \emph{not} new. The algebra we use --- a
 meet over a lattice of labels, with union of ancestry and an absorbing bottom
@@ -162,10 +212,13 @@ contribution in what is executable and measured.
   entirely by stock FFmpeg, in which the interval model is validated against
   the behaviour of software we do not control and the guard bands are shown
   adequate (Section~\ref{sec:res-corpus}).
-\item A cost measurement showing the bookkeeping is \GffmpegPct{}\% of the
-  processing time it accompanies and that the emitted assertion grows linearly
-  in evidence intervals at \GperInterval{}~B per interval
-  (Section~\ref{sec:res-overhead}).
+\item A cost measurement on both axes that matter: runtime, where bookkeeping
+  is \GffmpegPct{}\% of the processing time it accompanies and the assertion
+  grows linearly in evidence intervals at \GperInterval{}~B per interval
+  (Section~\ref{sec:res-overhead}); and \emph{evidential} cost, a claim-dilution
+  metric showing that the conservatism the footprints buy is priced in samples
+  per ancestry boundary, not in fractions of the asset
+  (Section~\ref{sec:res-dilution}).
 \end{enumerate}
 
 Three framing sentences apply throughout. The contract does not infer
@@ -187,7 +240,7 @@ make no legal claim about what any particular disclosure regime requires.
 detection classify a signal by its acoustic traces, with challenge resources
 and surveys documenting both the progress and the generalisation gap when
 detectors meet unseen attacks or unseen codecs
-\citep{wang2025asvspoof5,pham2025survey}. What this line guarantees is a
+\citep{wang2026asvspoof5,pham2025survey}. What this line guarantees is a
 decision about a signal. What it does not do is constrain what a derived asset
 may assert about its own sources, and it needs no source evidence to exist.
 The two are complementary: a detector can be run on an asset whose evidence
@@ -218,10 +271,19 @@ compromise \citep{nemecek2026contradictions}. Our concern is a different layer
 again, and it is orthogonal to both: assuming keys are intact, signatures
 verify, and no assertion is omitted in bad faith, is the assertion that a
 conforming derived asset emits conservative with respect to every source
-interval it represents? We read the specification text for a rule of that kind
-and did not find one; the specification governs how assertions are bound and
-validated, not how an aggregate evidence claim over heterogeneous sources
-should be computed.
+interval it represents? The distinction matters because the specification
+already preserves a great deal: a \texttt{componentOf} ingredient carries its
+own manifest, composition is required to record the placed components, and a
+generative component can carry a \texttt{digitalSourceType}
+\citep[\S18.16.3]{c2pa24}. A consumer walking the full ingredient graph could
+in principle reconstruct everything. What the text does not define is the
+aggregate: when a five-second derived interval represents four captured
+components and one generated one, no normative rule states that the interval's
+own evidence claim must be the conservative reduction over all five rather than
+an inheritance from its parent. We read the specification for a rule of that
+kind and did not find one; the specification governs how assertions are bound
+and validated, not how an aggregate evidence claim over heterogeneous sources
+must be computed.
 
 \paragraph{Provenance for edited audio.} Two recent lines are the closest work
 in this medium. Chunk-localised speech provenance binds short time segments to
@@ -269,7 +331,7 @@ left-hand guarantee.}
 \toprule
 Line of work & Guarantee it provides & Left unenforced on a derived interval \\
 \midrule
-Synthetic-speech detection \citep{wang2025asvspoof5,pham2025survey} &
+Synthetic-speech detection \citep{wang2026asvspoof5,pham2025survey} &
 A decision about a signal from its acoustic traces &
 What the derived asset may assert about its own sources \\
 \addlinespace
@@ -389,9 +451,22 @@ record it explicitly rather than deriving it as a novelty.
 \subsection{The complete-source operator}
 
 Let a representation operator $T$ produce output element $y$ from the
-\emph{complete required source set} $\Dy = \{x_1, \dots, x_k\}$: every source
-element whose content $y$ represents, including every element inside the kernel
-footprint of the operator that produced it. Write
+\emph{complete required source set} $\Dy = \{x_1, \dots, x_k\}$. Two notions of
+dependency must be distinguished here, because they diverge for some operators.
+The \emph{representational} dependency of $y$ is the source content $y$ stands
+for --- what a listener at $y$'s position is hearing a representation of. The
+\emph{computational} dependency is the set of source samples that numerically
+influence $y$'s value. The contract governs the representational reading: $\Dy$
+is every source element whose content $y$ represents. The kernel footprint then
+reconciles the two where signal processing makes them bleed together --- a
+resampling filter makes neighbouring content numerically influence $y$, and
+since the direction of that influence cannot be distinguished from
+representation at the contract's level of abstraction, the footprint
+conservatively enlarges $\Dy$ to cover it. The one v1 operator for which the
+two readings diverge completely is amplitude normalisation, whose scalar gain
+is computed from the whole signal while each output sample represents exactly
+one source sample; Section~\ref{sec:limits} states the choice made there and
+its tested alternative. Write
 $\Dy^{\mu} = \{x \in \Dy : \mu \in A_x\}$ for the sources that declare channel
 $\mu$ applicable. The contract requires:
 
@@ -629,8 +704,12 @@ any deployed system promotes provenance.
 \subsection{Deterministic fixtures}
 
 Experiment~A enumerates every source word of length $1$ to \Amaxlen{} over
-$\{\C, \G, \bot\}$, giving \Awords{} words, and pushes each through ten operator
-configurations, giving \Acases{} cases. Each case is checked against the full
+$\{\C, \G, \bot\}$, giving \Awords{} words, and pushes each through up to ten
+operator configurations. Two configurations require a minimum word length ---
+the inner trim needs at least three elements and silence removal at least two
+--- so the \AwordsShortOne{} single-element words receive eight configurations,
+the \AwordsShortTwo{} two-element words nine, and the remaining \AwordsFull{}
+words the full ten, giving \Acases{} cases. Each case is checked against the full
 property suite and against an independent closed-form oracle that recomputes the
 expected state directly from the operator's nominal source ranges without using
 the evidence algebra; for zero-footprint operators the states must match exactly,
@@ -727,7 +806,8 @@ The rate does not rise with depth, and that is the finding rather than a flat
 line on a chart: the loss is established at the first derivation and is
 irreversible, because once the interior evidence has been discarded no
 downstream operator can recover it (Figure~\ref{fig:promotion}, left).
-Across the \BopCount{} operators applied singly, baseline promotion ranged from
+Across the \BopCount{} operator configurations applied singly, baseline
+promotion ranged from
 \BopMin{}\% to \BopMax{}\%, and complete-source propagation produced
 \BemOpAll{} promotions in total (Figure~\ref{fig:promotion}, centre).
 
@@ -849,15 +929,89 @@ classification requirement. We do not claim that stripping is detected as
 malicious intent; the result is that the classification degrades in the
 conservative direction.
 
+\subsection{The cost of conservatism: claim dilution}
+\label{sec:res-dilution}
+
+Zero promotion is only half of a useful result, because safety alone is cheap:
+declaring the whole asset as every sample's dependency is perfectly safe under
+Proposition~\ref{prop:footprint} and perfectly useless, since every interval
+near an ancestry change would collapse to the weaker claim. We therefore also
+measure what the declared footprints cost. The \emph{dilution fraction} of a
+derived output is the fraction of its samples whose footprint-aware evidence
+record is strictly weaker --- a weaker provenance claim, a lost channel, or a
+lower support value --- than the record computed over the nominal represented
+content, which on this corpus is exact by construction.
+
+Measuring this immediately caught a second defect in our own implementation,
+and we report it for the same reason as the first. The reference implementation
+originally applied footprint widening at the granularity of the emitted
+interval partition: an interval whose widened source range touched a
+neighbouring ancestry was assigned the weakened claim over its \emph{entire}
+extent, so a single resampling of a corpus clip reported a dilution fraction of
+one --- safe, by footprint monotonicity, and uselessly conservative. The fix
+refines the output partition at the pull-backs of each source boundary shifted
+by $\pm$ the footprint, after which dilution is confined to footprint-wide
+bands at ancestry boundaries. The two-language differential had not caught this
+because its fixtures used source intervals narrower than every declared
+footprint, a geometry in which the coarse and the exact treatments coincide;
+the oracle corpus now includes a wide-interval battery in which they do not,
+and the fixed implementation agrees with the per-sample oracle on all
+\Hcases{} cases.
+
+After the fix (Table~\ref{tab:dilution}), \IzeroTf{} of \ItfCount{}
+transformations dilute nothing at all, and the remainder dilute the
+footprint-wide neighbourhood of each ancestry boundary: median dilution is
+\IresampleMedianPct{}\% of output samples for resampling,
+\ImpThreeMedianPct{}\% for MP3 transcoding, \IsilenceMedianPct{}\% for silence
+removal and \IstretchMedianPct{}\% for time stretching, with a single-transformation
+worst case of \ImaxAnyPct{}\%. These fractions must be read
+against the corpus geometry: each band has a \emph{fixed radius in samples}
+(the declared footprint plus guard), and the clips average \CmeanDurS{}~s, so
+the same bands on a one-hour asset would occupy a fraction three orders of
+magnitude smaller. The fraction shrinks with asset duration; the absolute band
+does not.
+
+Composition is where conservatism genuinely bites, and we report it as
+measured rather than as hoped: along the five-operator chain the median
+dilution reaches \IchainDeep{}\% by depth~\IchainDepth{}, with a worst case of
+\IchainDeepMax{}\%. Each operator adds its own bands and, where rates change,
+scales the bands inherited from upstream, so on a short asset a deep chain of
+large-footprint operators approaches total dilution. This is the real price of
+declaring conservative bounds instead of knowing exact codec dependencies, and
+it is a cost a deployment can buy back without losing safety: any tighter
+dependency map --- an encoder that reports its true delay, a codec-specific
+footprint smaller than our pinned bound --- reduces dilution and, by
+Proposition~\ref{prop:footprint}, can never introduce promotion, provided it
+remains an over-approximation of the truth. Measuring the cost is what makes
+that engineering trade visible; a contract that only reported its zero
+promotion count would have hidden it.
+
+\begin{table}[t]
+\centering
+\caption{Claim dilution: the fraction of output samples whose footprint-aware
+evidence is strictly weaker than the evidence over the nominal represented
+content, per transformation over \IclipsPerTf{} clips and along a composition
+chain over \IchainClips{} clips. This is the price of the declared guard bands
+when the nominal map is exact.}
+\label{tab:dilution}
+\small
+\input{../results/tables/dilution_table}
+\end{table}
+
 \subsection{Two-language differential}
 \label{sec:res-oracle}
 
 The Python reference implementation works with interval algebra over pulled-back
 source boundaries. The Node.js oracle evaluates evidence per output sample by
-brute force and run-length-encodes the result. On \Hcases{} frozen
-language-neutral cases the two agreed on interval structure, provenance state,
-lineage set and channel availability with \Hdis{} disagreements, and the maximum
-absolute difference in any emitted support value was \Hdelta{}. Both
+brute force and run-length-encodes the result. The frozen corpus spans two
+interval geometries: one in which kernel footprints are wider than every source
+interval, and one in which they are far narrower --- the regime that
+distinguishes a per-sample treatment of footprint widening from an
+interval-granularity one, added after the dilution experiment exposed exactly
+that difference (Section~\ref{sec:res-dilution}). On \Hcases{} cases the two
+implementations agreed on interval structure, provenance state, lineage set and
+channel availability with \Hdis{} disagreements, and the maximum absolute
+difference in any emitted support value was \Hdelta{}. Both
 implementations are author-written; this is a differential test against
 transcription and interval-arithmetic error, and it is not evidence of
 independence from the author (Section~\ref{sec:limits}).
@@ -963,6 +1117,10 @@ Perceptual equivalence claims; bit-exactness across different decoders \\
 Cost &
 \Greps{} timed repetitions on one declared machine &
 Cost in a compiled implementation or at broadcast scale \\
+\addlinespace
+Conservatism cost &
+Per-sample dilution against constructed exact ground truth &
+Dilution against the true (unknowable) dependencies of a third-party codec \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1044,9 +1202,14 @@ the contribution as the temporal instantiation, the kernel-footprint treatment,
 the transport and the measurements --- which is where the work actually was.
 
 \paragraph{Relation to the provenance standard.} C2PA authenticates signed
-assertions about asset history. The layer addressed here is different: whether
-the evidence assertion emitted by a derived representation is conservative with
-respect to every source interval that representation actually contains. This
+assertions about asset history, and its vocabulary already preserves what this
+problem needs: component ingredients with their own manifests, generative
+source types, and temporal regions. The layer addressed here is the reduction
+over that vocabulary: whether the evidence assertion emitted by a derived
+representation is conservative with respect to every source interval that
+representation actually contains. C2PA can carry the component histories; the
+contract defines the aggregate claim a conforming operator must compute from
+them. This
 work complements the standard rather than criticising it, and it is implemented
 entirely inside the standard's own extension points --- a namespaced assertion
 and temporal regions of interest --- without requiring any specification change.
@@ -1100,13 +1263,16 @@ resampler setting, codec or tempo factor requires the bound to be re-declared
 and re-tested; Proposition~\ref{prop:footprint} guarantees that erring large is
 safe, not that our particular numbers transfer.
 
-\paragraph{Normalisation is a modelling choice.} Amplitude normalisation derives
-a scalar gain from the whole signal, but the content an output sample represents
-is one source sample. We aggregate over represented content, so the default
-footprint is zero, and we implement and test the maximally conservative
-alternative in which every output sample represents the whole signal. Both
-readings are defensible; we state which one the results use rather than leaving
-it implicit.
+\paragraph{Normalisation is a modelling choice.} Amplitude normalisation is the
+operator where representational and computational dependency (Section~\ref{sec:model})
+diverge completely: the scalar gain is computed from the whole signal, but the
+content an output sample represents is one source sample. The contract governs
+representational dependency, so the default footprint is zero; the maximally
+conservative alternative --- every output sample represents the whole signal ---
+is implemented and tested as well. Both readings are defensible. The reported
+results use the representational reading, and a deployment that prefers the
+computational one pays the corresponding dilution cost and gains nothing in
+promotion safety, since neither reading can promote.
 
 \paragraph{Trust anchor.} The signing credential is locally generated and the
 trust anchor locally configured. A trusted validation state in these results

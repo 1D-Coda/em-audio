@@ -1,0 +1,125 @@
+{
+ "chain_subset_clips": 200,
+ "composition_chain": [
+  {
+   "clips": 200,
+   "depth": 1,
+   "max_dilution_fraction": 0.0,
+   "median_dilution_fraction": 0.0,
+   "operators": [
+    "trim_inner"
+   ]
+  },
+  {
+   "clips": 200,
+   "depth": 2,
+   "max_dilution_fraction": 0.015856,
+   "median_dilution_fraction": 0.010595,
+   "operators": [
+    "trim_inner",
+    "resample_16_8"
+   ]
+  },
+  {
+   "clips": 200,
+   "depth": 3,
+   "max_dilution_fraction": 0.758421,
+   "median_dilution_fraction": 0.508745,
+   "operators": [
+    "trim_inner",
+    "resample_16_8",
+    "transcode_mp3"
+   ]
+  },
+  {
+   "clips": 200,
+   "depth": 4,
+   "max_dilution_fraction": 0.758421,
+   "median_dilution_fraction": 0.508745,
+   "operators": [
+    "trim_inner",
+    "resample_16_8",
+    "transcode_mp3",
+    "normalize"
+   ]
+  },
+  {
+   "clips": 200,
+   "depth": 5,
+   "max_dilution_fraction": 0.999873,
+   "median_dilution_fraction": 0.857402,
+   "operators": [
+    "trim_inner",
+    "resample_16_8",
+    "transcode_mp3",
+    "normalize",
+    "time_stretch_1.10"
+   ]
+  }
+ ],
+ "definition": "fraction of output samples whose footprint-aware evidence record is strictly weaker (weaker provenance claim, lost channel, or lower support value) than the record computed over the nominal represented content; an upper bound on what the declared footprints cost when the nominal map is exact",
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "node": "v26.0.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.15"
+ },
+ "experiment": "I_claim_dilution",
+ "n_clips": 600,
+ "per_transformation": {
+  "normalize": {
+   "clips": 600,
+   "clips_with_any_dilution": 0,
+   "max_dilution_fraction": 0.0,
+   "mean_dilution_fraction": 0.0,
+   "median_dilution_fraction": 0.0
+  },
+  "resample_16_8": {
+   "clips": 600,
+   "clips_with_any_dilution": 600,
+   "max_dilution_fraction": 0.01385,
+   "mean_dilution_fraction": 0.00878,
+   "median_dilution_fraction": 0.00861
+  },
+  "silence_removal": {
+   "clips": 600,
+   "clips_with_any_dilution": 600,
+   "max_dilution_fraction": 0.328034,
+   "mean_dilution_fraction": 0.170922,
+   "median_dilution_fraction": 0.164806
+  },
+  "time_stretch_1.10": {
+   "clips": 600,
+   "clips_with_any_dilution": 600,
+   "max_dilution_fraction": 0.449153,
+   "mean_dilution_fraction": 0.231396,
+   "median_dilution_fraction": 0.226403
+  },
+  "transcode_flac": {
+   "clips": 600,
+   "clips_with_any_dilution": 0,
+   "max_dilution_fraction": 0.0,
+   "mean_dilution_fraction": 0.0,
+   "median_dilution_fraction": 0.0
+  },
+  "transcode_mp3": {
+   "clips": 600,
+   "clips_with_any_dilution": 600,
+   "max_dilution_fraction": 0.325608,
+   "mean_dilution_fraction": 0.206417,
+   "median_dilution_fraction": 0.202425
+  },
+  "trim_10_90": {
+   "clips": 600,
+   "clips_with_any_dilution": 0,
+   "max_dilution_fraction": 0.0,
+   "mean_dilution_fraction": 0.0,
+   "median_dilution_fraction": 0.0
+  }
+ },
+ "runtime_s": 0.931
+}

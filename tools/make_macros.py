@@ -35,6 +35,11 @@ def main() -> int:
     m["Awords"] = fmt(A["words_enumerated"]); m["Acases"] = fmt(A["operator_cases"])
     m["Achecks"] = fmt(A["checks_total"]); m["Afailed"] = fmt(A["checks_failed"])
     m["Amaxlen"] = fmt(A["max_word_length"]); m["Acomp"] = fmt(A["composition_cases"])
+    bb = A.get("battery_breakdown", {})
+    if bb:
+        m["AwordsShortOne"] = fmt(bb["words_len1_battery8"])
+        m["AwordsShortTwo"] = fmt(bb["words_len2_battery9"])
+        m["AwordsFull"] = fmt(bb["words_len3plus_battery10"])
     # B
     m["Btimelines"] = fmt(B["n_timelines"]); m["Bintervals"] = fmt(B["n_intervals"])
     m["Bdepths"] = fmt(B["max_depth"])
@@ -64,6 +69,7 @@ def main() -> int:
     m["CbaseLineage"] = fmt(C["baseline_lineage_omissions"])
     m["CemLineage"] = fmt(C["em_lineage_omissions"])
     m["CcorpusFs"] = fmt(C0["sample_rate"])
+    m["CmeanDurS"] = f"{C0['total_samples'] / C0['n_clips'] / C0['sample_rate']:.2f}"
     m["CcorpusMismatch"] = fmt(C0["boundary_mismatches"])
     # D
     pt = D["per_transformation"]
@@ -125,6 +131,23 @@ def main() -> int:
                        ("B2_complete_blind", "BTwo"), ("B3_complete_footprint", "BThree")):
         m[short + "Interior"] = fmt(AB["arms"]["interior"]["per_policy"][key]["promotions"])
         m[short + "Footprint"] = fmt(AB["arms"]["footprint"]["per_policy"][key]["promotions"])
+    # I claim dilution
+    I = load("I_claim_dilution")
+    pt_i = I["per_transformation"]
+    worst = max(pt_i.values(), key=lambda v: v["median_dilution_fraction"])
+    m["IclipsPerTf"] = fmt(pt_i["resample_16_8"]["clips"])
+    m["IresampleMedianPct"] = f"{100*pt_i['resample_16_8']['median_dilution_fraction']:.2f}"
+    m["ImpThreeMedianPct"] = f"{100*pt_i['transcode_mp3']['median_dilution_fraction']:.2f}"
+    m["IstretchMedianPct"] = f"{100*pt_i['time_stretch_1.10']['median_dilution_fraction']:.2f}"
+    m["IsilenceMedianPct"] = f"{100*pt_i['silence_removal']['median_dilution_fraction']:.2f}"
+    m["ImaxAnyPct"] = f"{100*max(v['max_dilution_fraction'] for v in pt_i.values()):.2f}"
+    m["IzeroTf"] = fmt(sum(1 for v in pt_i.values() if v["max_dilution_fraction"] == 0))
+    m["ItfCount"] = fmt(len(pt_i))
+    cd = I["composition_chain"]
+    m["IchainDeep"] = f"{100*cd[-1]['median_dilution_fraction']:.2f}"
+    m["IchainDeepMax"] = f"{100*cd[-1]['max_dilution_fraction']:.2f}"
+    m["IchainDepth"] = fmt(cd[-1]["depth"])
+    m["IchainClips"] = fmt(I["chain_subset_clips"])
     # H
     m["Hcases"] = fmt(H["cases"]); m["Hdis"] = fmt(H["disagreements"])
     m["Hdelta"] = f"{H['max_support_abs_difference']:.0f}"

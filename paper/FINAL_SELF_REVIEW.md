@@ -16,6 +16,42 @@ below 4 blocks submission.
 | 9 | Clarity | **4** | The minimal counterexample figure is readable in ten seconds; the structure follows the required arc; the abstract follows the six-move form and ends on the boundary sentence. Not a 5: the paper is dense at 21 pages, two tables are wide, and a professional copy-edit pass would improve it. |
 | 10 | Venue fit | **5** | The target journal's official aims and scope names its primary pillar as "digital evidence and multimedia, with the core qualities of provenance, integrity and authenticity", and runs an explicit track for work strengthening the rigour and reliability of digital-evidence processes. Formal-plus-systems work with no learned model fits without special pleading. |
 
+## Post-review hardening pass (2026-08-19, second session)
+
+An external-style review of the compiled manuscript surfaced four verifiable
+issues; all were confirmed against the code and fixed, and one fix produced a
+new scientific result:
+
+1. **Timing units bug (real).** The overhead table printed the median per
+   audio-minute but the IQR per repetition, putting the median outside its own
+   IQR. Fixed in the table generator; median 0.805 now sits inside 0.798–0.813.
+2. **Case-count arithmetic (real, explainable).** 98,385 ≠ 9,840 × 10 because
+   two operator configurations are length-gated: 3×8 + 9×9 + 9,828×10 = 98,385.
+   The breakdown is now recorded in the experiment payload and stated in Methods.
+3. **References (real).** Pham et al. updated to *Computer Science Review* 57,
+   100757 (2025), DOI 10.1016/j.cosrev.2025.100757; ASVspoof 5 updated to
+   *Computer Speech and Language* 95, 101825 (2026), DOI 10.1016/j.csl.2025.101825.
+   Both verified against publisher records before editing.
+4. **"Usefulness unmeasured" (real, and the most valuable).** The new
+   claim-dilution experiment measured the evidential cost of conservatism — and
+   its first run returned 100 % dilution for filtered operators, exposing a
+   genuine defect: footprint widening was applied at interval granularity
+   rather than sample granularity. Safe (footprint monotonicity) but uselessly
+   conservative. Fixed by refining the partition at ±footprint pull-backs;
+   dilution is now confined to footprint-wide boundary bands. The two-language
+   oracle had missed this because its fixtures used intervals narrower than
+   every footprint; a wide-interval battery was added and the fixed
+   implementation agrees with the per-sample oracle on all cases. Both catches
+   are reported in the manuscript.
+
+Additional positioning work from the same review: the C2PA argument now
+distinguishes "the specification preserves component histories" from "the
+specification does not prescribe the aggregate conservative claim computed over
+them" (with §18.16.3 cited); the inherited-vs-new comparison moved from the
+supplement into a main-text table; and the representational-versus-computational
+dependency distinction is now named explicitly in the model section, resolving
+the normalisation ambiguity.
+
 ## Verdict
 
 No dimension scores below 4, so no substantive scientific blocker remains.

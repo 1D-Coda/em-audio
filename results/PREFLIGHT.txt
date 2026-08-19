@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 185aff43c1d431f91b1ced48f06373ba1b5694be
+commit: 293aa181bddd46595b6da1afd8cec9234489d6fb
 tag: v1.0.0
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
@@ -73,19 +73,23 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 0.8054
-median_baseline_ms_per_audio_minute: 0.3869
-em_over_baseline_ratio: 2.0817
-em_fraction_of_ffmpeg_time: 0.000987
+median_em_ms_per_audio_minute: 0.9491
+median_baseline_ms_per_audio_minute: 0.284
+em_over_baseline_ratio: 3.3416
+em_fraction_of_ffmpeg_time: 0.001427
 median_manifest_overhead_bytes_per_asset: 14854
 median_em_assertion_bytes_per_asset: 1268
 metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 13.2143
-median_validate_ms: 11.0007
+median_sign_ms: 12.3006
+median_validate_ms: 10.2713
 assertion_bytes_per_interval: 332.7
 
+--- I  claim dilution ---
+max_dilution_fraction_any_transformation: 0.449153
+chain_depth5_median_dilution: 0.857402
+
 --- H  two-language differential ---
-oracle_cases: 9804
+oracle_cases: 10860
 oracle_disagreements: 0
 oracle_max_support_difference: 0.0
 

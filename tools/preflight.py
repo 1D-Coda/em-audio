@@ -35,6 +35,9 @@ def git(*args):
 def main() -> int:
     A, B, C0, C, D = load("A_synthetic_state_space"), load("B_adversarial_timelines"), \
         load("C0_corpus_build"), load("C_public_audio_splice"), load("D_transform_matrix")
+    if load("I_claim_dilution") is None:
+        print("missing results: I", file=sys.stderr)
+        return 2
     E, F, G, H = load("E_manifest_stripping"), load("F_c2pa_roundtrip"), \
         load("G_overhead"), load("H_oracle_differential")
     missing = [n for n, x in [("A", A), ("B", B), ("C0", C0), ("C", C), ("D", D),
@@ -134,6 +137,12 @@ def main() -> int:
     add(f"median_validate_ms: {G['validate_ms']['median']}")
     sc = G["assertion_scaling"]
     add(f"assertion_bytes_per_interval: {round((sc[-1]['assertion_bytes'] - sc[0]['assertion_bytes']) / (sc[-1]['emitted_intervals'] - sc[0]['emitted_intervals']), 1)}")
+    add("")
+    I = load("I_claim_dilution")
+    add("--- I  claim dilution ---")
+    add(f"max_dilution_fraction_any_transformation: "
+        f"{max(v['max_dilution_fraction'] for v in I['per_transformation'].values())}")
+    add(f"chain_depth5_median_dilution: {I['composition_chain'][-1]['median_dilution_fraction']}")
     add("")
     add("--- H  two-language differential ---")
     add(f"oracle_cases: {H['cases']}")

@@ -4,6 +4,12 @@
   "G",
   "B"
  ],
+ "battery_breakdown": {
+  "arithmetic": "3*8 + 9*9 + 9828*10 = 98385",
+  "words_len1_battery8": 3,
+  "words_len2_battery9": 9,
+  "words_len3plus_battery10": 9828
+ },
  "checks_failed": 0,
  "checks_total": 787443,
  "composition_cases": 363,
@@ -70,7 +76,7 @@
    "pass": 49197
   }
  },
- "runtime_s": 18.7,
+ "runtime_s": 20.163,
  "words_containing_unverified": 9330,
  "words_enumerated": 9840,
  "words_with_mixed_ancestry": 494
