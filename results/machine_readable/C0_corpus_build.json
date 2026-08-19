@@ -15,7 +15,7 @@
  "experiment": "C0_corpus_build",
  "generated_source": "eSpeak NG 1.52.0 formant synthesis, generated locally",
  "n_clips": 600,
- "runtime_s": 124.002,
+ "runtime_s": 121.961,
  "sample_rate": 16000,
  "seed": 20260819,
  "total_samples": 27348448

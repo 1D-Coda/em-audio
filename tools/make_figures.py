@@ -181,7 +181,13 @@ def fig4():
             color="#c53030", alpha=0.85, height=0.62, label="boundary-only")
     ax.barh(y, [100 * D["per_transformation"][n]["em_promotion_rate"] for n in names],
             color="#2f855a", height=0.62, label="complete-source")
-    ax.set_yticks(y); ax.set_yticklabels([n.replace("_", " ") for n in names], fontsize=6.6)
+    pretty = {"transcode_mp3": "transcode MP3", "transcode_flac": "transcode FLAC",
+              "resample_16_8": "resample 16$\\to$8 kHz", "normalize": "normalisation",
+              "trim_10_90": "trim to middle 80%", "time_stretch_1.10": "time stretch 1.10",
+              "silence_removal": "silence removal",
+              "overlay_generated": "overlay generated"}
+    ax.set_yticks(y); ax.set_yticklabels([pretty.get(n, n.replace("_", " ")) for n in names],
+                                         fontsize=6.6)
     ax.invert_yaxis(); ax.set_xlim(0, 108); ax.set_xlabel("clips with promotion (%)")
     ax.set_title(f"D  {D['n_clips']} mixed-origin clips, stock FFmpeg", fontsize=8.5)
     ax.legend(fontsize=6.6, frameon=False, loc="lower right")

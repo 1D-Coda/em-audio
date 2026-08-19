@@ -1,7 +1,7 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: UNCOMMITTED
-tag: UNCOMMITTED
+commit: d60a58e2edbe74b4bcacdbbb38228d8eddc4c05c
+tag: v1.0.0
 zenodo_version_doi: PENDING - assign at archive time
 zenodo_concept_doi: PENDING - assign at archive time
 
@@ -69,15 +69,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 0.7903
-median_baseline_ms_per_audio_minute: 0.3801
-em_over_baseline_ratio: 2.0794
-em_fraction_of_ffmpeg_time: 0.000962
+median_em_ms_per_audio_minute: 0.8054
+median_baseline_ms_per_audio_minute: 0.3869
+em_over_baseline_ratio: 2.0817
+em_fraction_of_ffmpeg_time: 0.000987
 median_manifest_overhead_bytes_per_asset: 14854
 median_em_assertion_bytes_per_asset: 1268
 metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 14.3475
-median_validate_ms: 11.8688
+median_sign_ms: 13.2143
+median_validate_ms: 11.0007
 assertion_bytes_per_interval: 332.7
 
 --- H  two-language differential ---

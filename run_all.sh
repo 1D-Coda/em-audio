@@ -24,6 +24,9 @@ step "A  exhaustive finite-state conformance"
 step "B  deterministic adversarial timelines"
 ( cd experiments && python3 adversarial_timelines.py ) || fail=1
 
+step "B2 policy ablation"
+( cd experiments && python3 adversarial_timelines.py --ablation ) || fail=1
+
 step "H  two-language differential oracle"
 ( cd experiments && python3 oracle_differential.py ) || fail=1
 

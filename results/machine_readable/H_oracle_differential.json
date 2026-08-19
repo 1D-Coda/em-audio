@@ -25,5 +25,5 @@
  "max_support_abs_difference": 0.0,
  "max_word_length": 6,
  "python_algorithm": "interval algebra with pulled-back source boundaries",
- "runtime_s": 2.724
+ "runtime_s": 2.682
 }

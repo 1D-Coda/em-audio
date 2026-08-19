@@ -4,14 +4,14 @@
    "assertion_bytes": 549,
    "audio_seconds": 0.256,
    "emitted_intervals": 1,
-   "median_ms": 0.0108,
+   "median_ms": 0.0109,
    "source_intervals": 1
   },
   {
    "assertion_bytes": 875,
    "audio_seconds": 0.512,
    "emitted_intervals": 2,
-   "median_ms": 0.02,
+   "median_ms": 0.0199,
    "source_intervals": 2
   },
   {
@@ -25,55 +25,55 @@
    "assertion_bytes": 2840,
    "audio_seconds": 2.048,
    "emitted_intervals": 8,
-   "median_ms": 0.0759,
+   "median_ms": 0.0747,
    "source_intervals": 8
   },
   {
    "assertion_bytes": 5466,
    "audio_seconds": 4.096,
    "emitted_intervals": 16,
-   "median_ms": 0.1513,
+   "median_ms": 0.15,
    "source_intervals": 16
   },
   {
    "assertion_bytes": 10738,
    "audio_seconds": 8.192,
    "emitted_intervals": 32,
-   "median_ms": 0.3038,
+   "median_ms": 0.3011,
    "source_intervals": 32
   },
   {
    "assertion_bytes": 21363,
    "audio_seconds": 16.384,
    "emitted_intervals": 64,
-   "median_ms": 0.6089,
+   "median_ms": 0.6057,
    "source_intervals": 64
   },
   {
    "assertion_bytes": 42671,
    "audio_seconds": 32.768,
    "emitted_intervals": 128,
-   "median_ms": 1.2959,
+   "median_ms": 1.2887,
    "source_intervals": 128
   },
   {
    "assertion_bytes": 85383,
    "audio_seconds": 65.536,
    "emitted_intervals": 256,
-   "median_ms": 2.6798,
+   "median_ms": 2.611,
    "source_intervals": 256
   }
  ],
  "audio_minutes_per_repetition": 1.4081,
  "baseline_bookkeeping_ms_per_repetition": {
-  "max": 0.5577,
-  "median": 0.5352,
-  "min": 0.5305,
+  "max": 0.5685,
+  "median": 0.5448,
+  "min": 0.5375,
   "n": 30,
-  "q1": 0.5335,
-  "q3": 0.538
+  "q1": 0.5435,
+  "q3": 0.5487
  },
- "baseline_ms_per_audio_minute": 0.3801,
+ "baseline_ms_per_audio_minute": 0.3869,
  "clips_per_repetition": 30,
  "em_assertion_bytes": {
   "max": 1270.0,
@@ -85,16 +85,16 @@
  },
  "em_assertion_bytes_per_audio_minute": 25510.3,
  "em_bookkeeping_ms_per_repetition": {
-  "max": 1.3257,
-  "median": 1.1129,
-  "min": 1.104,
+  "max": 1.3392,
+  "median": 1.1341,
+  "min": 1.1197,
   "n": 30,
-  "q1": 1.1112,
-  "q3": 1.1194
+  "q1": 1.1243,
+  "q3": 1.1445
  },
- "em_ms_per_audio_minute": 0.7903,
- "em_over_baseline_ratio": 2.0794,
- "em_over_ffmpeg_fraction": 0.000962,
+ "em_ms_per_audio_minute": 0.8054,
+ "em_over_baseline_ratio": 2.0817,
+ "em_over_ffmpeg_fraction": 0.000987,
  "environment": {
   "c2patool": "c2patool 0.27.2",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
@@ -107,12 +107,12 @@
  },
  "experiment": "G_overhead",
  "ffmpeg_transcode_ms_per_repetition": {
-  "max": 1255.084,
-  "median": 1157.3002,
-  "min": 1132.6383,
+  "max": 1157.1009,
+  "median": 1148.5351,
+  "min": 1125.545,
   "n": 30,
-  "q1": 1152.3503,
-  "q3": 1165.0079
+  "q1": 1131.3725,
+  "q3": 1153.4015
  },
  "machine_dependence_note": "single-machine medians for a Python reference implementation; a compiled implementation will differ, so these are not language-independent constants",
  "manifest_bytes_per_audio_minute": 298723.0,
@@ -128,21 +128,21 @@
  "median_manifest_overhead_bytes_per_asset": 14854,
  "per_minute_caveat": "the corpus clips have a median duration of 2.98 s, and the C2PA manifest overhead is dominated by a fixed per-asset cost (certificate chain, COSE structure, hard binding) rather than by audio duration, so the per-audio-minute figures are extrapolations of a mostly fixed cost and should be read together with the per-asset figures and the interval-scaling table",
  "repetitions": 30,
- "runtime_s": 36.067,
+ "runtime_s": 35.287,
  "sign_ms": {
-  "max": 16.2843,
-  "median": 14.3475,
-  "min": 13.6268,
+  "max": 14.1752,
+  "median": 13.2143,
+  "min": 12.7073,
   "n": 30,
-  "q1": 14.0591,
-  "q3": 14.9194
+  "q1": 13.1174,
+  "q3": 13.424
  },
  "validate_ms": {
-  "max": 13.8545,
-  "median": 11.8688,
-  "min": 11.42,
+  "max": 11.6302,
+  "median": 11.0007,
+  "min": 10.6035,
   "n": 30,
-  "q1": 11.6148,
-  "q3": 12.1503
+  "q1": 10.8712,
+  "q3": 11.1171
  }
 }

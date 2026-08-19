@@ -118,6 +118,13 @@ def main() -> int:
     m["GperInterval"] = f"{(sc[-1]['assertion_bytes']-sc[0]['assertion_bytes'])/(sc[-1]['emitted_intervals']-sc[0]['emitted_intervals']):.0f}"
     m["GperIntervalUs"] = f"{1000*(sc[-1]['median_ms']-sc[0]['median_ms'])/(sc[-1]['emitted_intervals']-sc[0]['emitted_intervals']):.1f}"
     m["GmaxIntervals"] = fmt(sc[-1]["emitted_intervals"])
+    # B2 ablation
+    AB = load("B2_policy_ablation")
+    m["ABcases"] = fmt(AB["arms"]["interior"]["cases"])
+    for key, short in (("B0_boundary_blind", "BZero"), ("B1_boundary_footprint", "BOne"),
+                       ("B2_complete_blind", "BTwo"), ("B3_complete_footprint", "BThree")):
+        m[short + "Interior"] = fmt(AB["arms"]["interior"]["per_policy"][key]["promotions"])
+        m[short + "Footprint"] = fmt(AB["arms"]["footprint"]["per_policy"][key]["promotions"])
     # H
     m["Hcases"] = fmt(H["cases"]); m["Hdis"] = fmt(H["disagreements"])
     m["Hdelta"] = f"{H['max_support_abs_difference']:.0f}"
@@ -126,6 +133,15 @@ def main() -> int:
                        capture_output=True, text=True)
     m["Tpass"] = fmt(t.stdout.count("  PASS  ")); m["Tfail"] = fmt(t.stdout.count("  FAIL  "))
     m["Ttotal"] = fmt(t.stdout.count("  PASS  ") + t.stdout.count("  FAIL  "))
+    # release identity
+    def _git(*a):
+        try:
+            return subprocess.run(["git", *a], cwd=ROOT, capture_output=True,
+                                  text=True).stdout.strip() or "UNCOMMITTED"
+        except Exception:
+            return "UNCOMMITTED"
+    m["Rcommit"] = _git("rev-parse", "HEAD")
+    m["Rtag"] = _git("describe", "--tags", "--always")
     # environment
     env = D["environment"]
     m["Vffmpeg"] = env["ffmpeg"].split()[2]

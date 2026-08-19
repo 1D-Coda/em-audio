@@ -2,5 +2,5 @@
 # dependency: the evidence algebra, interval maps and operator contract are
 # pure standard-library Python.  numpy and matplotlib are used only to render
 # figures from the machine-readable results.
-matplotlib==3.10.7
+matplotlib==3.11.1
 numpy==2.4.6

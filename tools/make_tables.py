@@ -20,8 +20,16 @@ def load(n):
     return json.loads((MR / f"{n}.json").read_text())
 
 
+PRETTY = {
+    "transcode_mp3": "transcode to MP3", "transcode_flac": "transcode to FLAC",
+    "resample_16_8": "resample 16 to 8 kHz", "normalize": "amplitude normalisation",
+    "trim_10_90": "trim to the middle 80\\%", "time_stretch_1.10": "time stretch 1.10",
+    "silence_removal": "silence removal", "overlay_generated": "overlay a generated source",
+}
+
+
 def esc(s):
-    return str(s).replace("_", r"\_")
+    return PRETTY.get(str(s), str(s).replace("_", r"\_"))
 
 
 def write(name, body, colspec=None, header=None):
@@ -121,8 +129,8 @@ def transport_table():
                  f"{v['assertion_roundtrip_identical']} & "
                  f"{v['n'] - v['essence_identical_pre_vs_em']} \\\\")
     write("transport_table", "\n".join(r), colspec="lrrrrrr",
-          header=(r"Container & Assets & Trusted & Derived trusted & \\texttt{parentOf} & "
-                  r"Assertion identical & Essence mismatches"))
+          header=("Container & Assets & Trusted & Derived & \\texttt{parentOf} & "
+                  "Assertion & Essence"))
     order = ["valid_manifest", "manifest_removed", "asset_modified_after_signing",
              "reencoded_without_manifest", "valid_derived_manifest"]
     label = {"valid_manifest": "valid manifest",
@@ -137,6 +145,26 @@ def transport_table():
                     + ", ".join(f"{k} ({v})" for k, v in sorted(t.items())) + r" \\")
     write("stripping_table", "\n".join(rows), colspec="p{0.46\\linewidth}rl",
           header="Condition & Clips & Reported state")
+
+
+def ablation_table():
+    A = load("B2_policy_ablation")
+    label = {"B0_boundary_blind": ("boundary-only", "no"),
+             "B1_boundary_footprint": ("boundary-only", "yes"),
+             "B2_complete_blind": ("complete-source", "no"),
+             "B3_complete_footprint": ("complete-source", "yes")}
+    rows = []
+    for k in ("B0_boundary_blind", "B1_boundary_footprint",
+              "B2_complete_blind", "B3_complete_footprint"):
+        inh, fp = label[k]
+        i = A["arms"]["interior"]["per_policy"][k]
+        f = A["arms"]["footprint"]["per_policy"][k]
+        rows.append(f"{k.split('_')[0]} & {inh} & {fp} & "
+                    f"{i['promotions']:,} ({100*i['promotion_rate']:.0f}\\%) & "
+                    f"{f['promotions']:,} ({100*f['promotion_rate']:.0f}\\%) \\\\".replace(",", "\\,"))
+    write("ablation_table", "\n".join(rows), colspec="llccc",
+          header=("Policy & Inheritance & Kernel footprint & Interior anomaly & "
+                  "Footprint anomaly"))
 
 
 def overhead_table():
@@ -166,4 +194,5 @@ def overhead_table():
 
 
 if __name__ == "__main__":
-    operator_table(); main_results(); transport_table(); overhead_table()
+    operator_table(); main_results(); transport_table(); ablation_table()
+    overhead_table()

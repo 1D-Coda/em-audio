@@ -20,7 +20,8 @@ from typing import Dict, List, Tuple
 from _common import CHANNEL, ROOT, SCOPE, element, emit, timeline_from_word   # noqa: E402
 from em_audio.evidence import (BOT, Evidence, _Bot, aggregate, claim_of, label_of,
                                leq_claim, promotes)
-from em_audio.interval_map import (SourceInterval, Timeline, em_intervals, span_evidence)
+from em_audio.interval_map import (DerivedOutput, MapPiece, SourceInterval, Timeline,
+                                   em_intervals, span_evidence)
 import em_audio.operators as O
 
 SEED = 20260819
@@ -279,5 +280,108 @@ def main() -> int:
     return 1 if fail else 0
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--ablation" not in sys.argv:
     sys.exit(main())
+
+
+# ---------------------------------------------------------------------------
+# Policy ablation, appended as a separate entry point so that the main
+# benchmark above is unchanged.  Two shortcuts are combined in the baseline --
+# boundary-only inheritance and footprint blindness -- and this isolates them.
+# ---------------------------------------------------------------------------
+
+POLICIES = {
+    "B0_boundary_blind": ("boundary", False),
+    "B1_boundary_footprint": ("boundary_fp", True),
+    "B2_complete_blind": ("em_nofp", False),
+    "B3_complete_footprint": ("em", True),
+}
+
+
+def _whole(out, tls, policy_key):
+    if policy_key.startswith("B2") or policy_key.startswith("B3"):
+        fp = policy_key.startswith("B3")
+        return aggregate([i.ev for i in em_intervals(out, tls, footprint_aware=fp)])
+    pol = "boundary_fp" if policy_key.startswith("B1") else "boundary"
+    return aggregate([i.ev for i in span_evidence(out, tls, pol)])
+
+
+def ablation() -> Dict[str, object]:
+    """Two arms.
+
+    interior : the anomaly is inside the nominal represented range (the main
+               benchmark's family).  Only the boundary-only axis matters.
+    footprint: the anomaly sits immediately outside the nominal range of a trim
+               but inside the operator's declared kernel footprint.  Only the
+               footprint axis matters.
+    """
+    rng = random.Random(SEED + 7)
+    res: Dict[str, object] = {}
+
+    for arm in ("interior", "footprint"):
+        counts = {k: {"promotions": 0, "lineage_omissions": 0} for k in POLICIES}
+        n_cases = 0
+        for _ in range(N_TIMELINES):
+            w = ["C"] * N_INTERVALS
+            kind = rng.choice(["G", "B"])
+            if arm == "interior":
+                pos = rng.randint(2, N_INTERVALS - 3)
+                lo, hi = WIDTH, (N_INTERVALS - 1) * WIDTH        # trim drops one at each end
+            else:
+                # anomaly in the first dropped interval: outside [lo,hi) but
+                # within the resampler footprint once it is declared.
+                pos = 0
+                lo, hi = WIDTH, (N_INTERVALS - 1) * WIDTH
+            w[pos] = kind
+            word = "".join(w)
+            tl = source_timeline(word); tls = {"s": tl}
+            n = N_INTERVALS * WIDTH
+
+            if arm == "interior":
+                out = O.trim("s", n, lo, hi)
+                represented = set(range(1, N_INTERVALS - 1))
+            else:
+                # a trim whose pieces carry a footprint large enough to reach
+                # the neighbouring source interval
+                base = O.trim("s", n, lo, hi)
+                p0 = base.pieces[0]
+                out = DerivedOutput(base.n_out,
+                                    [MapPiece(p0.out_start, p0.out_end, p0.src,
+                                              p0.src_start, p0.src_end,
+                                              WIDTH, "trim+footprint")],
+                                    "trim_footprint", {"footprint": WIDTH})
+                represented = set(range(0, N_INTERVALS))
+            n_cases += 1
+
+            truth_syms = {word[k] for k in represented}
+            truth = BOT if "B" in truth_syms else claim_of(truth_syms)
+            need = {f"urn:emaudio:s#el={k}" for k in represented}
+
+            for key in POLICIES:
+                ev = _whole(out, tls, key)
+                if promotes(truth, ev.P):
+                    counts[key]["promotions"] += 1
+                if not need <= ev.L:
+                    counts[key]["lineage_omissions"] += 1
+        res[arm] = {"cases": n_cases,
+                    "per_policy": {k: {**v,
+                                       "promotion_rate": round(v["promotions"] / n_cases, 6)}
+                                   for k, v in counts.items()}}
+    return res
+
+
+if __name__ == "__main__" and "--ablation" in sys.argv:
+    out = ablation()
+    emit("B2_policy_ablation", {
+        "policies": {k: {"inheritance": "boundary-only" if v[0].startswith("boundary")
+                         else "complete-source",
+                         "kernel_footprint": v[1]} for k, v in POLICIES.items()},
+        "arms": out,
+        "note": ("the interior arm isolates the boundary-only shortcut; the footprint arm "
+                 "isolates footprint blindness by placing the anomaly outside the nominal "
+                 "represented range but inside the declared kernel footprint"),
+    })
+    for arm, d in out.items():
+        print(f"  {arm}: " + "  ".join(
+            f"{k.split('_')[0]}={v['promotions']}" for k, v in d["per_policy"].items()))
+    sys.exit(0)

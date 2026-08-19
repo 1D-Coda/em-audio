@@ -150,6 +150,10 @@ contribution in what is executable and measured.
   C2PA temporal regions of interest and survives derivation and re-signing,
   demonstrated end-to-end on \Fcontainers{} audio containers with
   \Ftotal{} round-trips (Section~\ref{sec:transport}, Section~\ref{sec:res-transport}).
+\item A policy ablation showing that complete-source aggregation and declared
+  kernel footprints are each necessary and neither sufficient: removing either
+  one produces promotion on every timeline of the arm it fails
+  (Section~\ref{sec:res-ablation}).
 \item An executable conformance suite: \Achecks{} checks over every source word
   of length up to \Amaxlen{} over $\{\C,\G,\bot\}$, with \Afailed{} failures,
   and a two-language differential over \Hcases{} frozen cases with \Hdis{}
@@ -577,9 +581,10 @@ parent over a retained region is to read that region's endpoints. The policy is
 minimal by design because the point of the comparison is to isolate one
 mechanism, not to caricature an opponent.
 
-To separate the two shortcuts the baseline combines, the experiments also report
-two intermediate policies: complete-source aggregation that ignores the kernel
-footprint, and boundary-only inheritance that respects it.
+The baseline combines two independent shortcuts --- boundary-only inheritance
+and blindness to the kernel footprint --- so the experiments also evaluate the
+two intermediate policies that remove one shortcut each, and report all four
+(Section~\ref{sec:res-ablation}).
 
 \subsection{Signed transport}
 \label{sec:transport}
@@ -735,6 +740,38 @@ is a property of the deliberate construction, arithmetically predictable, and
 carries no information about deployed software. The informative quantity is the
 exact zero on the other side.
 
+\subsection{Which shortcut matters: a policy ablation}
+\label{sec:res-ablation}
+
+The baseline combines two shortcuts, and it is fair to ask which one does the
+damage. Removing them one at a time over \ABcases{} timelines per arm gives an
+unambiguous answer (Table~\ref{tab:ablation}). In the \emph{interior} arm the
+anomaly lies inside the nominal represented range, so only the inheritance axis
+can see it: both boundary-only policies promoted on every timeline
+(\BZeroInterior{} and \BOneInterior{}) and both complete-source policies on none.
+In the \emph{footprint} arm the anomaly lies just outside the nominal range but
+inside the operator's declared kernel footprint, so only the footprint axis can
+see it: both footprint-blind policies promoted on every timeline
+(\BZeroFootprint{} and \BTwoFootprint{}) and both footprint-aware policies on
+none.
+
+Neither axis is redundant and neither is sufficient. Complete-source aggregation
+without a declared footprint fails exactly the case that filtered operators
+create, and a declared footprint without complete-source aggregation fails
+exactly the case that interior edits create. Only the full contract clears both
+arms, which is the argument for specifying them together rather than separately.
+
+\begin{table}[t]
+\centering
+\caption{Policy ablation over \ABcases{} timelines per arm. The interior arm
+places the anomaly inside the nominal represented range; the footprint arm places
+it outside that range but inside the declared kernel footprint. Each shortcut
+fails exactly one arm, and only the full contract clears both.}
+\label{tab:ablation}
+\small
+\input{../results/tables/ablation_table}
+\end{table}
+
 \subsection{Mixed-origin audio through stock FFmpeg}
 \label{sec:res-corpus}
 
@@ -742,7 +779,12 @@ On \Cclips{} clips, complete-source propagation recovered the evidence interval
 structure exactly --- every boundary, at sample resolution --- for \Cexact{}
 clips, and identified the generated interval with its exact bounds for
 \Cgen{} clips, with no detector, no training and no acoustic feature of any
-kind. Boundary-only inheritance promoted the whole-asset claim to captured-only
+kind. The ground truth here is constructed rather than discovered, and that is
+the point: the evidence originates at the capture and generation steps, and the
+question this experiment answers is whether it \emph{survives} a chain of
+representation-only transformations, not whether it could be inferred from the
+signal. Nothing in this experiment supports a claim that generated audio can be
+identified without evidence. Boundary-only inheritance promoted the whole-asset claim to captured-only
 on \Cbase{} clips and omitted required lineage on \CbaseLineage{}; the
 complete-source policy produced \Cem{} promotions and \CemLineage{} lineage
 omissions (Figure~\ref{fig:corpus}, right).
@@ -766,6 +808,16 @@ time stretching, \DmpThreeDev{} for MP3 and \DresampleDev{} for resampling. For
 deviation, which is the condition Proposition~\ref{prop:footprint} requires.
 Re-running each transformation and comparing decoded essence gave \Ddeterm{}
 mismatches, so the processing path is deterministic on this machine.
+
+It is worth being explicit about which parts of this experiment could have
+failed. The zero promotion count under complete-source propagation follows from
+Proposition~\ref{prop:union} once the required source set is correct, so on its
+own it is a check that the implementation matches the algebra --- and it did
+fail, on overlay, during development. The genuinely falsifiable measurements are
+the other two: whether the interval model predicts the output length of software
+we do not control, and whether the declared guard bands actually bound the
+deviation. Either could have come out wrong, and the guard bands would then have
+had to be re-declared and the build would have failed.
 
 \subsection{Signed transport, derivation and provenance loss}
 \label{sec:res-transport}
@@ -843,10 +895,12 @@ estimate.}
 
 \begin{table}[t]
 \centering
-\caption{Signed transport. ``Trusted'' is the validator's state under the
-declared local trust anchor; the test credential is not on the C2PA Conformance
-Program trust list. Essence mismatches compare decoded PCM before and after
-signing.}
+\caption{Signed transport. Columns are, in order: assets signed; assets whose
+validation state was trusted under the declared local anchor (the test credential
+is not on the C2PA Conformance Program trust list); derived assets that validated
+after re-signing; derived assets recording the \texttt{parentOf} ingredient
+relationship; assets whose EM assertion returned byte-equivalent; and
+decoded-essence mismatches before versus after signing.}
 \label{tab:transport}
 \small
 \input{../results/tables/transport_table}
@@ -1104,9 +1158,11 @@ in \texttt{DATA\_LICENSES.md}.
 
 The reference implementation, the second-language oracle, every experiment,
 every frozen fixture and every machine-readable result are public under the MIT
-licence, with pinned tool versions and one-command reproduction. Exact commit,
-release tag, and Zenodo version and concept DOIs are given in the preflight
-report shipped with the release.
+licence, with pinned tool versions and one-command reproduction. The evaluated
+state is release tag \Rtag{} at commit \texttt{\Rcommit}. A Zenodo archive
+with version and concept DOIs is deposited on acceptance and the DOIs added at
+proof stage; the preflight report shipped with the release records the commit,
+the tag, every tool version, and every number quoted in this manuscript.
 
 \section*{CRediT authorship contribution statement}
 
