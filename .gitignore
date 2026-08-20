@@ -8,6 +8,7 @@ corpus/stripping/
 corpus/roundtrip/
 corpus/overhead/
 corpus/composition/
+corpus/support/
 corpus/robustness/
 corpus/piper_voices/
 corpus/fetch.log
