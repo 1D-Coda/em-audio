@@ -29,6 +29,7 @@ Usage:
     python3 tools/calibrate_footprint.py                # every v1 operator
     python3 tools/calibrate_footprint.py transcode_mp3  # one of them
     python3 tools/calibrate_footprint.py --self-test    # prove it can reject
+    python3 tools/calibrate_footprint.py --keep-work    # do not clear the work dir
 """
 from __future__ import annotations
 
@@ -163,18 +164,30 @@ def probe_positions():
 
 
 def main() -> int:
-    if len(sys.argv) > 1 and sys.argv[1] == "--self-test":
+    argv = [a for a in sys.argv[1:] if a != "--keep-work"]
+    keep_work = "--keep-work" in sys.argv
+    if argv and argv[0] == "--self-test":
         return self_test()
-    want = sys.argv[1] if len(sys.argv) > 1 else None
+    want = argv[0] if argv else None
     selected = [c for c in cases() if want is None or c[0] == want]
     if not selected:
         print(f"no such operator: {want}")
         print("known:", ", ".join(c[0] for c in cases()))
         return 2
 
+    # The evidence of record is CALIBRATION.json, which retains every per-probe
+    # row; the audio under WORK is intermediate. Even so, deleting a directory
+    # the caller may have populated is the tool's decision to announce rather
+    # than to make silently.
     if WORK.exists():
-        shutil.rmtree(WORK)
-    WORK.mkdir(parents=True)
+        if keep_work:
+            print(f"keeping existing {WORK.relative_to(ROOT)}; "
+                  f"probe files will be overwritten in place")
+        else:
+            print(f"clearing {WORK.relative_to(ROOT)} "
+                  f"(pass --keep-work to leave it in place)")
+            shutil.rmtree(WORK)
+    WORK.mkdir(parents=True, exist_ok=True)
 
     positions = probe_positions()
 

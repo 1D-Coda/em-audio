@@ -650,3 +650,58 @@ Three reviews have now flagged artifact access. There is still no git remote, so
 the calibration tool cannot be run by anyone else, the repository URL cannot be
 printed, and independent reproduction cannot begin. This is the only open item
 that no amount of further work on the manuscript can close.
+
+
+---
+
+# Round 11: a stale artifact, and a stability claim resting on an unstable statistic
+
+## The artifact drifted one round behind the paper
+
+A reviewer cross-checked the manuscript's claims about the calibration tool
+against the copy they had been sent, found no per-probe retention and no
+self-test, and concluded that the manuscript overstated its artifact. That was
+the correct reading of the evidence available to them, and the fault was
+packaging, not prose: the features were added in round 10, the manuscript was
+updated to describe them, and the file was never re-sent. Their hash
+`d1c472c4` is the pre-round-10 version; the current file is `fcf9ed9b`.
+
+The general rule this earns: **when a claim about an artifact changes, the
+artifact ships with the claim.** A paper and its code drifting apart by a single
+round is how an honest statement becomes an overstatement without anyone
+intending it.
+
+## The timing question, and what it exposed
+
+The same reviewer asked which optimisation reduced the bookkeeping cost from
+1.33 to 0.926 ms per audio-minute. None did. Six back-to-back runs gave 0.9025
+to 0.9491; earlier in the same session the identical code gave 1.30 to 1.36. Two
+tight clusters, far apart, separated by machine state rather than by code.
+
+Answering that with a measurement rather than an assertion produced a defect of
+its own. The first version measured dispersion as the min-max range over five
+runs, and the manuscript said the ratio was tighter "by more than a factor of
+three". Three successive measurements gave factors of 3.6, 2.5 and 1.4. The
+direction held every time; the magnitude did not survive being measured again.
+
+Two things were wrong. The prose asserted a relationship between two
+regenerating macros, so the sentence contradicted its own table as soon as the
+numbers refreshed; the number checker cannot catch that, because the claim lives
+in the relationship rather than in any digit. And a range over five runs is set
+by whichever single run happened to be worst, which makes it the wrong statistic
+for an argument about stability.
+
+It now reports the coefficient of variation over nine independent runs, which
+uses every sample, and the manuscript says why that statistic was chosen. The
+experiment checks its own prediction and reports failure if the ratio is ever
+not the tighter quantity.
+
+## Smaller items from the same review
+
+The calibration tool gained `--keep-work` and now announces its cleanup rather
+than deleting a directory silently. The overhead ratio's provenance, computed
+from unrounded medians, is stated where the ratio appears.
+
+## Standing item
+
+Five reviews have now led with artifact access. There is still no git remote.

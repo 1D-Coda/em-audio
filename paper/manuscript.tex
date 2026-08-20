@@ -1455,10 +1455,20 @@ long-form or streaming deployment needs. These are single-machine medians for a
 Python reference implementation and are not language-independent constants.
 
 One further caveat is worth stating precisely, because the within-run
-interquartile ranges above do not capture it. Repeating the whole pipeline on
-this one machine moved the absolute cost per audio-minute by tens of percent
-between runs, while the ratio to the boundary-only baseline held to within a few
-percent. The reason is structural rather than incidental: both arms are timed in
+interquartile ranges above do not capture it, and it is measured rather than
+asserted. Section~\ref{sec:res-overhead}'s figures come from one run;
+re-running the benchmark as \MstabRepeats{} independent processes gives the
+absolute cost a coefficient of variation of \MstabAbsPct{}\% against
+\MstabRatioPct{}\% for the ratio to the boundary-only baseline, so the ratio is
+the tighter quantity. We report the coefficient of variation rather than the
+observed range because a range over a handful of runs is set by whichever single
+run happened to be worst, and supporting a claim about stability with an
+unstable statistic would defeat the purpose. That is a lower bound on the instability rather than an
+estimate of it: one sitting is one machine state, and across sittings on this
+same machine, with the bookkeeping code unchanged, the absolute figure has moved
+by about a third while the ratio stayed inside its usual band. A reader who
+finds the milliseconds different from the ones printed here has reproduced the
+result correctly. The reason is structural rather than incidental: both arms are timed in
 the same process on the same machine, so whatever sets the absolute scale on a
 given run, thermal state, frequency scaling or competing load, moves the two
 arms together and cancels in their quotient. The ratio is therefore the quantity

@@ -63,6 +63,9 @@ step "F  signed round-trip and signal transparency"
 step "G  overhead"
 ( cd experiments && python3 overhead_benchmark.py ) || fail=1
 
+step "G2 overhead stability across repeated runs"
+( cd experiments && python3 overhead_stability.py ) || fail=1
+
 step "J  C2PA-native componentOf composition"
 ( cd experiments && python3 c2pa_composition.py ) || fail=1
 

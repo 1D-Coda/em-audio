@@ -191,6 +191,11 @@ def main() -> int:
     m["LscopeScopes"] = fmt(L["distinct_scopes"])
     m["LscopeViolations"] = fmt(L["violations"])
     m["LscopeFailBad"] = fmt(L["violations_under_superseded_rule"])
+    M = load("M_overhead_stability")
+    m["MstabRepeats"] = fmt(M["repeats"])
+    m["MstabAbsPct"] = f"{M['em_ms_per_audio_minute']['cv_pct']:.2f}"
+    m["MstabRatioPct"] = f"{M['em_over_baseline_ratio']['cv_pct']:.2f}"
+    m["MstabFactor"] = f"{M['tightness_factor_cv']:.1f}" if M.get("tightness_factor_cv") else "--"
     m["CaptSupport"] = f"{_CS['C']:.2f}"
     m["GenSupport"] = f"{_CS['G']:.2f}"
     m["KresampleSpread"] = fmt(po["resample_16_8"]["max_spread_output_samples"])
