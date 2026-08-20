@@ -170,6 +170,7 @@ def main() -> int:
     m["IchainDepth"] = fmt(cd[-1]["depth"])
     m["IchainClips"] = fmt(I["chain_subset_clips"])
     la = {r["asset_seconds"]: r for r in I["long_asset_chain"]}
+    m["IlongShortPct"] = f"{100*la[2.85]['dilution_fraction']:.2f}"
     m["IlongThirtyPct"] = f"{100*la[30]['dilution_fraction']:.2f}"
     m["IlongThreeHundredPct"] = f"{100*la[300]['dilution_fraction']:.3f}"
     m["IoverlayMedianPct"] = f"{100*pt_i['overlay_generated']['median_dilution_fraction']:.2f}"

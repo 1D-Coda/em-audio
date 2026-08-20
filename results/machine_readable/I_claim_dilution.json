@@ -71,6 +71,15 @@
  "experiment": "I_claim_dilution",
  "long_asset_chain": [
   {
+   "asset_seconds": 2.85,
+   "chain": [
+    "trim_middle_80",
+    "normalize",
+    "transcode_mp3"
+   ],
+   "dilution_fraction": 0.251316
+  },
+  {
    "asset_seconds": 30,
    "chain": [
     "trim_middle_80",
@@ -148,5 +157,5 @@
    "median_dilution_fraction": 0.0
   }
  },
- "runtime_s": 0.924
+ "runtime_s": 0.923
 }

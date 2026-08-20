@@ -149,12 +149,14 @@ def fig3():
     y = np.arange(len(ops))
     ax.barh(y, [100 * B["per_operator_single_step"][o]["baseline_rate"] for o in ops],
             color="#c53030", alpha=0.85, height=0.62, label="boundary-only")
-    ax.barh(y, [100 * B["per_operator_single_step"][o]["em_rate"] for o in ops],
-            color="#2f855a", height=0.62, label="complete-source")
+    # complete-source is zero for every operator, so bars have no extent; show
+    # the series as markers at the origin, as in the corpus figure
+    ax.plot([0] * len(ops), y, "|", color="#2f855a", ms=7, mew=1.8)
     ax.set_yticks(y); ax.set_yticklabels([o.replace("_", " ") for o in ops], fontsize=6.4)
     ax.invert_yaxis(); ax.set_xlabel("promotion rate (%)"); ax.set_xlim(0, 108)
     ax.set_title("B  single operator", fontsize=8.5)
-    ax.legend(fontsize=6.6, frameon=False, loc="lower right")
+    # No legend here: every bar reaches past 90%, so any in-axes legend would sit
+    # on top of data, and the left panel already keys the same two series.
 
     ax = axes[2]
     ks = sorted(B["control_uniform_positions"]["G"], key=int)
@@ -171,45 +173,42 @@ def fig3():
 
 # --- Figure 4: corpus result -------------------------------------------------
 def fig4():
-    C, D = load("C_public_audio_splice"), load("D_transform_matrix")
-    fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.9), gridspec_kw={"width_ratios": [1.45, 1.0],
-                                                                    "wspace": 0.42})
-    ax = axes[0]
-    names = sorted(D["per_transformation"], key=lambda k: -D["per_transformation"][k]["baseline_promotion_rate"])
-    y = np.arange(len(names))
-    ax.barh(y, [100 * D["per_transformation"][n]["baseline_promotion_rate"] for n in names],
-            color="#c53030", alpha=0.85, height=0.62, label="boundary-only")
-    ax.barh(y, [100 * D["per_transformation"][n]["em_promotion_rate"] for n in names],
-            color="#2f855a", height=0.62, label="complete-source")
+    """Per-transformation promotion on the mixed-origin corpus.
+
+    The ground-truth recovery counts that previously occupied a second panel
+    were 600/600/0/0: two bars at the maximum and two at zero, encoding almost
+    nothing and duplicating the main results table. They are reported as numbers
+    in the text instead, and the panel is gone.
+    """
+    D = load("D_transform_matrix")
+    fig, ax = plt.subplots(figsize=(5.4, 2.7))
+    names = sorted(D["per_transformation"],
+                   key=lambda k: -D["per_transformation"][k]["baseline_promotion_rate"])
     pretty = {"transcode_mp3": "transcode MP3", "transcode_flac": "transcode FLAC",
               "resample_16_8": "resample 16$\\to$8 kHz", "normalize": "normalisation",
               "trim_10_90": "trim to middle 80%", "time_stretch_1.10": "time stretch 1.10",
               "silence_removal": "silence removal",
               "overlay_generated": "overlay generated"}
-    ax.set_yticks(y); ax.set_yticklabels([pretty.get(n, n.replace("_", " ")) for n in names],
-                                         fontsize=6.6)
-    ax.invert_yaxis(); ax.set_xlim(0, 108); ax.set_xlabel("clips with promotion (%)")
+    y = np.arange(len(names))
+    ax.barh(y, [100 * D["per_transformation"][n]["baseline_promotion_rate"] for n in names],
+            color="#c53030", alpha=0.85, height=0.62, label="boundary-only")
+    # Complete-source is zero for every transformation, so its bars have no
+    # extent. Drawing a legend swatch that points at nothing on the plot is
+    # confusing, so the series is shown as an explicit marker at the origin and
+    # the label says what the zero means.
+    ax.barh(y, [100 * D["per_transformation"][n]["em_promotion_rate"] for n in names],
+            color="#2f855a", height=0.62)
+    ax.plot([0] * len(names), y, "|", color="#2f855a", ms=9, mew=2.0,
+            label="complete-source (0 for every transformation)")
+    ax.set_yticks(y)
+    ax.set_yticklabels([pretty.get(n, n.replace("_", " ")) for n in names], fontsize=7)
+    ax.invert_yaxis(); ax.set_xlim(0, 108)
+    ax.set_xlabel("clips with promotion (%)")
     ax.set_title(f"D  {D['n_clips']} mixed-origin clips, stock FFmpeg", fontsize=8.5)
-    ax.legend(fontsize=6.6, frameon=False, loc="lower right")
+    ax.legend(fontsize=6.8, frameon=False, loc="lower right")
     for i, n in enumerate(names):
-        v = D["per_transformation"][n]
-        if v["baseline_promotions"] == 0:
-            ax.text(2, i, "0", va="center", fontsize=6.4, color="#4a5568")
-
-    ax = axes[1]
-    labels = ["exact\ninterval\nrecovery", "generated\ninterval\nrecovered",
-              "EM\npromotions", "EM lineage\nomissions"]
-    vals = [C["exact_interval_recovery"], C["generated_interval_recovered"],
-            C["em_provenance_promotions"], C["em_lineage_omissions"]]
-    cols = ["#2f855a", "#2f855a", "#2f855a", "#2f855a"]
-    ax.bar(range(4), vals, color=cols, alpha=0.9, width=0.6)
-    ax.axhline(C["n_clips"], color="#4a5568", ls="--", lw=0.8)
-    ax.text(3.45, C["n_clips"], f" n={C['n_clips']}", va="center", fontsize=6.6, color="#4a5568")
-    ax.set_xticks(range(4)); ax.set_xticklabels(labels, fontsize=6.0)
-    ax.set_ylabel("clips"); ax.set_ylim(0, C["n_clips"] * 1.18)
-    ax.set_title("C  ground-truth recovery", fontsize=8.5)
-    for i, v in enumerate(vals):
-        ax.text(i, v + C["n_clips"] * 0.03, str(v), ha="center", fontsize=7)
+        if D["per_transformation"][n]["baseline_promotions"] == 0:
+            ax.text(1.5, i, "0", va="center", fontsize=7, color="#4a5568")
     save(fig, "fig4_corpus")
 
 
@@ -219,18 +218,36 @@ def fig5():
     sc = G["assertion_scaling"]
     fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6), gridspec_kw={"wspace": 0.35})
     k = [r["emitted_intervals"] for r in sc]
-    ax = axes[0]
-    ax.plot(k, [r["assertion_bytes"] / 1024 for r in sc], "o-", color="#2b6cb0", lw=1.3, ms=4)
-    ax.set_xscale("log", base=2); ax.set_xlabel("evidence intervals per asset")
-    ax.set_ylabel("EM assertion (KiB)")
     per = (sc[-1]["assertion_bytes"] - sc[0]["assertion_bytes"]) / (k[-1] - k[0])
+    per_ms = (sc[-1]["median_ms"] - sc[0]["median_ms"]) / (k[-1] - k[0])
+
+    # Linear axes on both: the claim under test is that cost is LINEAR in the
+    # number of evidence intervals, and only linear axes let a reader check that
+    # by eye.  A log x-axis renders a straight line as an exploding curve and
+    # would argue against the very claim the panel supports.
+    ax = axes[0]
+    ax.plot(k, [r["assertion_bytes"] / 1024 for r in sc], "o", color="#2b6cb0", ms=4,
+            label="measured")
+    ax.plot([0, k[-1]], [sc[0]["assertion_bytes"] / 1024 - per * (sc[0]["emitted_intervals"]) / 1024,
+                         (sc[0]["assertion_bytes"] + per * (k[-1] - k[0])) / 1024],
+            "-", color="#a0aec0", lw=1.0, zorder=0, label="linear fit")
+    ax.set_xlabel("evidence intervals per asset")
+    ax.set_ylabel("EM assertion (KiB)")
+    ax.set_xlim(0, k[-1] * 1.04); ax.set_ylim(0, None)
     ax.set_title(f"assertion size: {per:.0f} B per interval", fontsize=8.5)
+    ax.legend(fontsize=6.6, frameon=False, loc="upper left")
+
     ax = axes[1]
-    ax.plot(k, [r["median_ms"] for r in sc], "s-", color="#6b46c1", lw=1.3, ms=4)
-    ax.set_xscale("log", base=2); ax.set_xlabel("evidence intervals per asset")
+    ax.plot(k, [r["median_ms"] for r in sc], "s", color="#6b46c1", ms=4, label="measured")
+    ax.plot([0, k[-1]], [sc[0]["median_ms"] - per_ms * sc[0]["emitted_intervals"],
+                         sc[0]["median_ms"] + per_ms * (k[-1] - k[0])],
+            "-", color="#a0aec0", lw=1.0, zorder=0, label="linear fit")
+    ax.set_xlabel("evidence intervals per asset")
     ax.set_ylabel("median bookkeeping (ms)")
+    ax.set_xlim(0, k[-1] * 1.04); ax.set_ylim(0, None)
     ax.set_title(f"{G['em_ms_per_audio_minute']:.2f} ms per audio-minute; "
-                 f"{100*G['em_over_ffmpeg_fraction']:.2f}\\% of FFmpeg time", fontsize=8.5)
+                 f"{100*G['em_over_ffmpeg_fraction']:.2f}% of FFmpeg time", fontsize=8.5)
+    ax.legend(fontsize=6.6, frameon=False, loc="upper left")
     save(fig, "fig5_overhead")
 
 

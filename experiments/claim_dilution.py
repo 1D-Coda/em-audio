@@ -183,8 +183,11 @@ def main() -> int:
     # shape of a routine broadcast edit; the bands are the same absolute widths
     # as on the corpus clips, so the fraction shrinks with duration.
     long_rows = []
-    for dur_s in (30, 300):
-        n = dur_s * FS
+    # 2.85 s is the corpus median clip duration: including it holds the operator
+    # sequence fixed and varies only duration, so the comparison isolates asset
+    # length rather than confounding it with a different chain.
+    for dur_s in (2.85, 30, 300):
+        n = int(dur_s * FS)
         g0, g1 = int(0.45 * n), int(0.55 * n)
         tl = Timeline("clip", [
             SourceInterval("clip", 0, g0, Evidence(P=claim_of(["C"]),

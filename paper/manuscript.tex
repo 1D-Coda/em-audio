@@ -33,42 +33,32 @@ Promotion Across Derived Audio Transformations}
 
 \begin{abstract}
 Derived audio can keep its exact waveform while silently strengthening what it
-says about its own origin. Under a minimal boundary-only inheritance policy (a constructed reference policy, not the behaviour of any named product), a clip assembled
-from captured and generated material, then trimmed, resampled and re-encoded,
-emerges described as captured-only: the derived asset inherits from its parent,
-summarised from the boundaries of the retained region rather than from every
-source interval the output actually represents.
-We treat this as a representation problem and specify an operator contract for
-derived audio: provenance is the union over the complete required source set,
-same-channel support is the minimum over it, applicability is intersected,
+says about its own origin. Under a minimal boundary-only inheritance policy (a
+constructed reference policy, not the behaviour of any named product), a clip
+assembled from captured and generated material, then trimmed, resampled and
+re-encoded, emerges described as captured-only. We specify an operator contract
+for derived audio: provenance is the union over the complete required source
+set, same-channel support is the minimum over it, applicability is intersected,
 lineage is the union, and an unverified source interval is absorbing. The
 underlying algebra is an instance of a known meet-semilattice construction and
-is not claimed as new; what is new is the executable temporal instantiation
-over sample-exact intervals with declared kernel footprints, a signed transport
-that carries interval evidence inside C2PA temporal regions of interest, and a
+is not claimed as new. What is new is the executable temporal instantiation over
+sample-exact intervals with declared kernel footprints, a signed transport that
+carries interval evidence inside C2PA temporal regions of interest, and a
 measured demonstration. No model is trained and no acoustic feature is used.
-Across \Achecks{} contract checks over all \Awords{} source words of length up
-to \Amaxlen{} over $\{\C,\G,\bot\}$, \Btimelines{} frozen adversarial
-timelines at \Bdepths{} composition depths, \Cclips{} mixed-origin clips
-transformed by stock FFmpeg through \Dtransforms{} transformations, and
-\Hcases{} cases of a two-language differential oracle, complete-source
-propagation produced \Afailed{} contract failures, \Dem{} promotions and
-\DemLineage{} lineage omissions, while boundary-only inheritance promoted on
-\BbaseOnePct{}\% of adversarial timelines and on \Dbase{} of \Druns{}
-transformation runs. Decoded essence was identical before and after signing
-under both policies in \Ftotal{} signed round-trips across
-\Fcontainers{} containers, with \Fmismatch{} mismatches; bookkeeping cost
-\Gem{}~ms per audio-minute, \GffmpegPct{}\% of FFmpeg time, and the
-evidential cost of the footprints is measured rather than assumed: on the
-short mechanism corpus, single transformations dilute at most \ImaxAnyPct{}\%
-of a clip's samples, in fixed-radius bands at ancestry boundaries; deep
-composition chains on such short assets can dilute most of the asset, while the
-same three-operator broadcast-style chain on a 30-second asset dilutes
-\IlongThirtyPct{}\%. The cost of conservatism is quantified here, not hidden. The contract
-constrains what a derived representation may claim about its sources; it does
-not detect deepfakes, does not establish that speech is truthful, and a
-cryptographically valid signature proves only that an assertion was signed, not
-that it is true.
+Across \Achecks{} contract checks, \Btimelines{} adversarial timelines,
+\Cclips{} mixed-origin clips transformed by stock FFmpeg, and \Hcases{} cases of
+a two-language differential oracle, complete-source propagation produced
+\Afailed{} contract failures, \Dem{} promotions and \DemLineage{} lineage
+omissions, while boundary-only inheritance promoted on \BbaseOnePct{}\% of
+timelines and on \Dbase{} of \Druns{} transformation runs. Decoded essence was
+identical before and after signing in \Ftotal{} signed round-trips, with
+\Fmismatch{} mismatches, at a bookkeeping cost of \Gem{}~ms per audio-minute.
+The evidential cost of the footprints is measured rather than assumed: dilution
+is confined to fixed-radius bands at ancestry boundaries and falls in inverse
+proportion to asset length. The contract constrains what a derived
+representation may claim about its sources; it does not detect deepfakes, does
+not establish that speech is truthful, and a cryptographically valid signature
+proves only that an assertion was signed, not that it is true.
 \end{abstract}
 
 \begin{keyword}
@@ -447,8 +437,12 @@ q_1 \supseteq q_2),
 \label{eq:order}
 \end{equation}
 read ``$q_1$ is no stronger than $q_2$''. A larger atom set is a weaker, less
-specific claim, and $\bot$, which asserts nothing, is the bottom element.
-Under this order $\widehat{\mathcal{C}}$ is a meet-semilattice whose meet is
+specific claim, and $\bot$, which asserts nothing, is the bottom element. The
+relation is reflexive, antisymmetric and transitive, so it is a partial order.
+Two claims always have a greatest lower bound but need not have any upper bound
+at all: $\{\C\}$ and $\{\G\}$ have none, since an upper bound would have to
+be a non-empty subset of both. The structure is therefore a meet-semilattice
+rather than a lattice, and its meet is
 \begin{equation}
 q_1 \sqcap q_2 =
 \begin{cases}
@@ -515,15 +509,18 @@ tested separately in the conformance suite.
 
 \begin{proposition}[Exact union; no promotion]
 \label{prop:union}
-Under~(i), $P_y$ contains every atom present on a required source and no other,
-and $P_y \sqsubseteq P_x$ for every $x \in \Dy$.
+Under~(i), $P_y \sqsubseteq P_x$ for every $x \in \Dy$, and no atom appears in
+$P_y$ that appears in no required source. When no required source is in state
+$\bot$, $P_y$ is exactly the set of atoms present on the required sources.
 \end{proposition}
 \begin{proof}
-Immediate from~\eqref{eq:meet}: if no source is $\bot$ then $P_y$ is the union,
-which contains each $P_x$ and hence is $\sqsubseteq P_x$ by~\eqref{eq:order};
-if some source is $\bot$ then $P_y = \bot \sqsubseteq q$ for every $q$.
-Membership of an atom in $P_y$ requires membership in some $P_x$, so no ancestry
-is invented.
+Immediate from~\eqref{eq:meet}. If some required source is $\bot$ then
+$P_y = \bot$, and $\bot \sqsubseteq q$ for every $q$ by~\eqref{eq:order}, so
+the ordering clause holds and $P_y$ contains no atom at all. Otherwise $P_y$ is
+the union of the required source sets, which contains each $P_x$ and is
+therefore $\sqsubseteq P_x$ by~\eqref{eq:order}, and equals the set of atoms
+present on those sources. In both cases membership of an atom in $P_y$ requires
+membership in some $P_x$, so no ancestry is invented.
 \end{proof}
 
 \begin{proposition}[Unverified non-promotion]
@@ -550,9 +547,9 @@ in~(iii) cannot enlarge a set.
 
 \begin{theorem}[Closure under composition]
 \label{thm:composition}
-A finite composition of operators each satisfying~(i)--(v) satisfies~(i)--(v),
-and the composed claim is no stronger than the meet over the union of all
-ancestral required source sets.
+A finite composition of operators each satisfying~(i)--(v), including~(iv$'$),
+satisfies the same requirements, and the composed claim is no stronger than the
+meet over the union of all ancestral required source sets.
 \end{theorem}
 \begin{proof}
 Associativity and commutativity of $\sqcap$ make the composed provenance the
@@ -861,9 +858,13 @@ exact zero on the other side.
 \caption{Boundary-only versus complete-source inheritance on \Btimelines{}
 deterministic timelines. Left: promotion does not grow with composition depth
 because the loss is established at the first derivation and is irreversible.
-Centre: per-operator rates when each operator is applied alone. Right: control
+Centre: per-operator rates when each operator is applied alone;
+complete-source is zero for every operator and is drawn as a marker at the
+origin, since bars of zero extent would be invisible. Right: control
 arm with anomaly positions uniform over all positions, measured against the
-closed form $\binom{n-2}{k}/\binom{n}{k}$. Percentages quantify mechanism stress
+closed form $\binom{n-2}{k}/\binom{n}{k}$; note the truncated vertical axis
+(80--100\%), chosen so that any divergence between measurement and prediction
+is visible rather than compressed. Percentages quantify mechanism stress
 on a frozen fixture family; they are not real-world prevalence.}
 \label{fig:promotion}
 \end{figure}
@@ -919,10 +920,10 @@ exactly, with \CtwoNeuralEm{} and \CtwoNoiseEm{} promotions respectively. Under 
 correctly stays \textsc{generated}, since union adds no new atom. Boundary-only inheritance promoted the whole-asset claim to captured-only
 on \Cbase{} clips and omitted required lineage on \CbaseLineage{}; the
 complete-source policy produced \Cem{} promotions and \CemLineage{} lineage
-omissions (Figure~\ref{fig:corpus}, right).
+omissions.
 
 Across \Dtransforms{} transformations and \Druns{} transformation runs
-(Figure~\ref{fig:corpus}, left; Table~\ref{tab:main}), boundary-only inheritance
+(Figure~\ref{fig:corpus}; Table~\ref{tab:main}), boundary-only inheritance
 promoted on \Dbase{} runs and complete-source propagation on \Dem{}, with
 \DemLineage{} lineage omissions. Two transformations produced \emph{no} baseline
 promotion, and we report that as readily as the rest: overlay declares the
@@ -953,12 +954,12 @@ had to be re-declared and the build would have failed.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig4_corpus.pdf}
-\caption{Mixed-origin corpus. Left: promotion by transformation over \Cclips{}
-clips processed entirely by stock FFmpeg; overlay and silence removal produce no
-baseline promotion for the structural reasons given in
-Section~\ref{sec:res-corpus}. Right: exact interval recovery and generated-interval
-recovery under the complete-source rule, with promotions and lineage omissions
-at zero.}
+\caption{Promotion by transformation over \Cclips{} mixed-origin clips
+processed entirely by stock FFmpeg. Complete-source propagation is zero for
+every transformation, so its series is drawn as a marker at the origin rather
+than as bars with no extent. Overlay and silence removal produce no baseline
+promotion either, for the structural reasons given in
+Section~\ref{sec:res-corpus}.}
 \label{fig:corpus}
 \end{figure}
 
@@ -1077,13 +1078,22 @@ measured rather than as hoped. The chain is, in order: trim to the middle
 80\%, resample 16 to 8~kHz, transcode to MP3, amplitude normalisation, and
 time stretch by a factor of 1.10 at the post-resampling rate, deliberately front-loading a rate change so that the large MP3 and time-stretch bands are
 scaled by it. Along this chain the median dilution reaches \IchainDeep{}\% by
-depth~\IchainDepth{}, with a worst case of \IchainDeepMax{}\%. Each operator adds its own bands and, where rates change,
-scales the bands inherited from upstream, so on a short asset a deep chain of
-large-footprint operators approaches total dilution. For scale, the same measurement on broadcast-length assets: a routine
-three-operator edit (trim to the middle 80\%, normalise, transcode to MP3) on a
-30-second asset with one interior generated segment dilutes \IlongThirtyPct{}\%
-of its samples, and \IlongThreeHundredPct{}\% on a five-minute asset
-(Table~\ref{tab:dilution}), because the bands are fixed absolute widths. This
+depth~\IchainDepth{}, with a worst case of \IchainDeepMax{}\%. The per-depth series shows each operator contributing its own bands and
+nothing else: depth~4 is identical to depth~3 to the last digit, because the
+operator added there is amplitude normalisation, whose declared footprint is
+zero. On a short asset a chain of large-footprint operators therefore
+approaches total dilution. Whether a rate change also rescales the bands
+inherited from upstream follows from the interval model but is not isolated by
+this design, since the chain's only rate change occurs while no upstream bands
+yet exist; we state it as a property of the model rather than as a measurement. Asset length is the other variable, and it is worth separating from chain
+composition rather than reading both out of one number. Holding the chain fixed
+at a routine three-operator edit (trim to the middle 80\%, normalise, transcode
+to MP3) over an asset with one interior generated segment, and varying only
+duration, dilution is \IlongShortPct{}\% at the corpus median clip length,
+\IlongThirtyPct{}\% at 30~seconds and \IlongThreeHundredPct{}\% at five
+minutes (Table~\ref{tab:dilution}). Each tenfold increase in duration divides
+the fraction by ten, which is what fixed-width bands predict and what the
+measurement confirms. This
 is the real price of declaring conservative bounds instead of knowing exact
 codec dependencies, and it is a cost a deployment can buy back without losing
 safety: any tighter dependency map, such as an encoder that reports its true delay or a codec-specific footprint smaller than our pinned bound, reduces dilution and, by
