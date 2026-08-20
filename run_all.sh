@@ -45,6 +45,9 @@ step "C2 robustness arm (neural TTS + noise overlay)"
 step "D  transformation matrix (stock ffmpeg)"
 ( cd experiments && python3 transform_matrix.py ) || fail=1
 
+step "K  kernel-support containment (impulse probe)"
+( cd experiments && python3 support_containment.py ) || fail=1
+
 step "E  provenance-loss behaviour"
 ( cd experiments && python3 manifest_stripping.py ) || fail=1
 

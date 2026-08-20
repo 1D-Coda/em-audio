@@ -152,6 +152,24 @@ def main() -> int:
     m["JderivedTrusted"] = fmt(J["derived_trusted"])
     m["JderivedMixed"] = fmt(J["derived_mixed"])
     m["Jessence"] = fmt(J["essence_mismatches"])
+    # K support containment
+    K = load("K_support_containment")
+    m["Kprobes"] = fmt(K["total_probes"])
+    m["Kaffected"] = fmt(K["total_affected_output_samples"])
+    m["Koutside"] = fmt(K["total_outside_declared_support"])
+    m["Kops"] = fmt(len(K["per_operator"]))
+    m["KimpulseN"] = fmt(K["source_length_samples"])
+    po = K["per_operator"]
+    m["KresampleMargin"] = fmt(po["resample_16_8"]["min_margin_inside_declared_range"])
+    m["KresampleFp"] = fmt(po["resample_16_8"]["declared_footprint_samples"])
+    m["KmpThreeMargin"] = fmt(po["transcode_mp3"]["min_margin_inside_declared_range"])
+    m["KmpThreeFp"] = fmt(po["transcode_mp3"]["declared_footprint_samples"])
+    m["KstretchMargin"] = fmt(po["time_stretch_1.10"]["min_margin_inside_declared_range"])
+    m["KstretchFp"] = fmt(po["time_stretch_1.10"]["declared_footprint_samples"])
+    m["KmpThreeSpread"] = fmt(po["transcode_mp3"]["max_spread_output_samples"])
+    m["KstretchSpread"] = fmt(po["time_stretch_1.10"]["max_spread_output_samples"])
+    m["KstretchAboveOne"] = fmt(po["time_stretch_1.10"]["probes_with_spread_above_one"])
+    m["KresampleSpread"] = fmt(po["resample_16_8"]["max_spread_output_samples"])
     # I claim dilution
     I = load("I_claim_dilution")
     pt_i = I["per_transformation"]
@@ -198,6 +216,12 @@ def main() -> int:
     m["Vc2patool"] = env["c2patool"].split()[-1]
     m["Vnode"] = env["node"]
     m["Vespeak"] = env["espeak_ng"].split()[3] if len(env["espeak_ng"].split()) > 3 else env["espeak_ng"]
+    # Machine declaration, generated rather than typed: the manuscript states the
+    # timing platform and the checker must not have to whitelist a version string.
+    plat = env.get("platform", "")
+    mac = plat.split("-")[1] if plat.startswith("macOS-") and "-" in plat else ""
+    m["Vos"] = ("macOS " + mac) if mac else plat.split("-")[0]
+    m["Varch"] = env.get("machine", "")
 
     # LaTeX control sequences may contain letters only.
     digits = str.maketrans({"0": "Zero", "1": "One", "2": "Two", "3": "Three",

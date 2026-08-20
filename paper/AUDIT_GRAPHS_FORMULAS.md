@@ -114,3 +114,91 @@ chain's only rate change happens at depth 2 when no upstream bands exist yet.
 The text now reports what the data does isolate, that depth 4 equals depth 3 to
 the last digit because the operator added there declares a zero footprint, and
 labels the rate-scaling as a property of the model rather than a measurement.
+
+
+---
+
+# Round 4: support containment, terminology and table semantics
+
+A fourth review round raised eight points. All eight were verified against the
+source and the specification text, and all eight were correct.
+
+## The substantive one
+
+**Output-length agreement was being treated as evidence of support
+containment.** The text said the guard bands covering the observed
+predicted-versus-actual deviation "is the condition Proposition 4 requires". It
+is not. Proposition 4 requires the declared required-source set to *contain* the
+actual dependency set, and an operator can emit exactly the predicted number of
+samples while depending on source samples outside the declared footprint. The
+transformation matrix bounds mapping and alignment; it says nothing about local
+dependency.
+
+Rather than only weakening the prose, the containment condition is now tested
+directly. **Experiment K** builds two sources identical except at one sample,
+where one carries an added impulse, pushes both through the same stock ffmpeg
+command, decodes both and subtracts. Every output sample whose decoded value
+differs was influenced by that one source sample and by nothing else, because
+the inputs differ nowhere else. Containment holds when the probe position lies
+inside the declared required-source range of every output sample it influenced.
+The threshold is one 16-bit LSB, so an influence far below audibility still
+counts. Across 70 probes over 7 operator configurations, 19,582 output samples
+were influenced and 0 fell outside the declared support.
+
+Two things emerged while building it, both reported in the paper:
+
+- **A harness bug that produced 695 false violations.** The first version
+  decoded every output at the source rate, which resampled the output of a
+  rate-changing operator back up, so output indices no longer matched the
+  model's coordinates. Fixed by decoding at each file's own rate.
+- **Probing against silence badly under-tests signal-dependent operators.** An
+  impulse in an empty buffer is copied through, so every operator looks like a
+  one-to-one map. The probe now carries a deterministic non-silent tone. Time
+  stretching went from an apparent 1-sample dependency to 2,021 samples at the
+  probe positions that land inside an overlap region.
+- **The spread statistic was both wrongly computed and the wrong statistic.**
+  The median took the upper-middle element rather than the true median, and for
+  overlap-add time stretching the median is 1 while the maximum is 2,021,
+  because only 3 of 10 probe positions land in an overlap. Containment is a
+  worst-case property, so the maximum is now reported and the position
+  dependence is stated.
+
+The margins also justify the particular bands rather than merely permitting
+them: the closest any measured influence came to the edge of its declared range
+was 65 samples against a declared 97 for resampling, 898 against 2,304 for MP3,
+and 688 against 2,577 for time stretching.
+
+## The other seven
+
+1. **"Lattice" where the paper proves "meet-semilattice".** Section 4.2 proves
+   the structure has no joins, yet three other places said lattice. Corrected
+   throughout; zero occurrences remain.
+2. **The provenance-semiring characterisation was inaccurate.** The text
+   described the framework as combining annotations "associatively and
+   idempotently" and referred to "absorptive semirings". Idempotence is not part
+   of the general framework and is incompatible with several of its standard
+   instances. Rewritten to describe combination as associative and distributing
+   over alternative derivations, with idempotence attributed to this particular
+   structure.
+3. **The main results table was semantically misleading.** Section A's "0
+   failed" sat under the *Boundary-only* column, where it means nothing, and the
+   regression-test row the text cited did not exist. Section A outcomes now span
+   both comparison columns, and a named-regression-test row was added.
+4. **The machine was said to be declared but never was.** Methods claimed
+   timings were reported "with the machine declared" while no CPU, OS or runtime
+   appeared anywhere. Now stated, and generated from the environment rather than
+   typed so the number checker stays strict.
+5. **The robustness arm was missing from Data Availability.** It named only
+   LibriSpeech and eSpeak NG. It now names the Piper voice, its LJSpeech
+   provenance, the checksum-verified fetch and the seeded noise generation.
+6. **The duration result was over-generalised.** "Falls in inverse proportion to
+   asset length" is conditional on a fixed chain and a fixed boundary count,
+   since more boundaries would place more bands. Now stated conditionally.
+7. **The `c2pa.placed` reading was too categorical.** The specification does not
+   state that concatenation is not mixing, and `c2pa.remixed` explicitly covers
+   re-arranging. The text now says we *interpret* sequential concatenation as
+   placement, notes `c2pa.remixed`, and separates the one part that is not
+   interpretive: `c2pa.mixed` presupposes `c2pa.placed`.
+8. **A preprint was called a "published analysis".** Now "a publicly available
+   security analysis, a preprint at the time of writing", matching the
+   bibliography's own label.

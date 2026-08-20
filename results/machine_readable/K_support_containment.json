@@ -1,0 +1,688 @@
+{
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "node": "v26.0.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.15"
+ },
+ "experiment": "K_support_containment",
+ "failures": [],
+ "impulse_amplitude": 12000,
+ "method": "two sources identical except for a single-sample impulse are pushed through the same stock ffmpeg command; every output sample whose decoded value differs was influenced by that one source sample and by nothing else",
+ "per_operator": {
+  "normalize": {
+   "declared_footprint_samples": 0,
+   "max_samples_outside": 0,
+   "max_spread_output_samples": 1,
+   "median_spread_output_samples": 1.0,
+   "min_margin_inside_declared_range": 0,
+   "per_probe": [
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 64,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 409,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 1622,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 1654,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 2048,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 2441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 2473,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 3655,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 3968,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    }
+   ],
+   "probes": 10,
+   "probes_with_spread_above_one": 0,
+   "total_affected_output_samples": 10,
+   "total_outside_declared_support": 0
+  },
+  "resample_16_8": {
+   "declared_footprint_samples": 97,
+   "max_samples_outside": 0,
+   "max_spread_output_samples": 32,
+   "median_spread_output_samples": 30.5,
+   "min_margin_inside_declared_range": 65,
+   "per_probe": [
+    {
+     "affected_output_samples": 31,
+     "decoded_length": 2048,
+     "k": 64,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 67,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 28,
+     "decoded_length": 2048,
+     "k": 409,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 70,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 28,
+     "decoded_length": 2048,
+     "k": 441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 70,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 32,
+     "decoded_length": 2048,
+     "k": 1622,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 66,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 32,
+     "decoded_length": 2048,
+     "k": 1654,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 65,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 32,
+     "decoded_length": 2048,
+     "k": 2048,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 66,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 29,
+     "decoded_length": 2048,
+     "k": 2441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 68,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 30,
+     "decoded_length": 2048,
+     "k": 2473,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 68,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 30,
+     "decoded_length": 2048,
+     "k": 3655,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 66,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 31,
+     "decoded_length": 2048,
+     "k": 3968,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 67,
+     "outside_declared_support": 0
+    }
+   ],
+   "probes": 10,
+   "probes_with_spread_above_one": 10,
+   "total_affected_output_samples": 303,
+   "total_outside_declared_support": 0
+  },
+  "silence_removal": {
+   "declared_footprint_samples": 2048,
+   "max_samples_outside": 0,
+   "max_spread_output_samples": 1,
+   "median_spread_output_samples": 1.0,
+   "min_margin_inside_declared_range": 1229,
+   "per_probe": [
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3072,
+     "k": 64,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2048,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3072,
+     "k": 409,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2048,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3072,
+     "k": 441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2048,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3072,
+     "k": 1622,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2048,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3072,
+     "k": 1654,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1229,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 0,
+     "decoded_length": 3072,
+     "k": 2048,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": null,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 0,
+     "decoded_length": 3072,
+     "k": 2441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": null,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 0,
+     "decoded_length": 3072,
+     "k": 2473,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": null,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3072,
+     "k": 3655,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1843,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3072,
+     "k": 3968,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1843,
+     "outside_declared_support": 0
+    }
+   ],
+   "probes": 10,
+   "probes_with_spread_above_one": 0,
+   "total_affected_output_samples": 7,
+   "total_outside_declared_support": 0
+  },
+  "time_stretch_1.10": {
+   "declared_footprint_samples": 2577,
+   "max_samples_outside": 0,
+   "max_spread_output_samples": 2021,
+   "median_spread_output_samples": 1.0,
+   "min_margin_inside_declared_range": 688,
+   "per_probe": [
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3746,
+     "k": 64,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2571,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3746,
+     "k": 409,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2537,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3746,
+     "k": 441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2533,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3746,
+     "k": 1622,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2569,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3746,
+     "k": 1654,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2566,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 2021,
+     "decoded_length": 3746,
+     "k": 2048,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 688,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1510,
+     "decoded_length": 3746,
+     "k": 2441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1081,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1510,
+     "decoded_length": 3746,
+     "k": 2473,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1113,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3746,
+     "k": 3655,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2559,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3746,
+     "k": 3968,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 2565,
+     "outside_declared_support": 0
+    }
+   ],
+   "probes": 10,
+   "probes_with_spread_above_one": 3,
+   "total_affected_output_samples": 5048,
+   "total_outside_declared_support": 0
+  },
+  "transcode_flac": {
+   "declared_footprint_samples": 0,
+   "max_samples_outside": 0,
+   "max_spread_output_samples": 1,
+   "median_spread_output_samples": 1.0,
+   "min_margin_inside_declared_range": 0,
+   "per_probe": [
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 64,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 409,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 1622,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 1654,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 2048,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 2441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 2473,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 3655,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 4096,
+     "k": 3968,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    }
+   ],
+   "probes": 10,
+   "probes_with_spread_above_one": 0,
+   "total_affected_output_samples": 10,
+   "total_outside_declared_support": 0
+  },
+  "transcode_mp3": {
+   "declared_footprint_samples": 2304,
+   "max_samples_outside": 0,
+   "max_spread_output_samples": 1848,
+   "median_spread_output_samples": 1536.0,
+   "min_margin_inside_declared_range": 898,
+   "per_probe": [
+    {
+     "affected_output_samples": 623,
+     "decoded_length": 4096,
+     "k": 64,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1533,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1078,
+     "decoded_length": 4096,
+     "k": 409,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1174,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1160,
+     "decoded_length": 4096,
+     "k": 441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1206,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1702,
+     "decoded_length": 4096,
+     "k": 1622,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1200,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1681,
+     "decoded_length": 4096,
+     "k": 1654,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1285,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1844,
+     "decoded_length": 4096,
+     "k": 2048,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1082,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1777,
+     "decoded_length": 4096,
+     "k": 2441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 932,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1848,
+     "decoded_length": 4096,
+     "k": 2473,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 993,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1391,
+     "decoded_length": 4096,
+     "k": 3655,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 1145,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1092,
+     "decoded_length": 4096,
+     "k": 3968,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 898,
+     "outside_declared_support": 0
+    }
+   ],
+   "probes": 10,
+   "probes_with_spread_above_one": 10,
+   "total_affected_output_samples": 14196,
+   "total_outside_declared_support": 0
+  },
+  "trim_10_90": {
+   "declared_footprint_samples": 0,
+   "max_samples_outside": 0,
+   "max_spread_output_samples": 1,
+   "median_spread_output_samples": 1.0,
+   "min_margin_inside_declared_range": 0,
+   "per_probe": [
+    {
+     "affected_output_samples": 0,
+     "decoded_length": 3278,
+     "k": 64,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": null,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3278,
+     "k": 409,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3278,
+     "k": 441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3278,
+     "k": 1622,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3278,
+     "k": 1654,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3278,
+     "k": 2048,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3278,
+     "k": 2441,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3278,
+     "k": 2473,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 1,
+     "decoded_length": 3278,
+     "k": 3655,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": 0,
+     "outside_declared_support": 0
+    },
+    {
+     "affected_output_samples": 0,
+     "decoded_length": 3278,
+     "k": 3968,
+     "max_samples_outside": 0,
+     "min_margin_inside_declared_range": null,
+     "outside_declared_support": 0
+    }
+   ],
+   "probes": 10,
+   "probes_with_spread_above_one": 0,
+   "total_affected_output_samples": 8,
+   "total_outside_declared_support": 0
+  }
+ },
+ "probe_positions": [
+  64,
+  409,
+  441,
+  1622,
+  1654,
+  2048,
+  2441,
+  2473,
+  3655,
+  3968
+ ],
+ "runtime_s": 6.668,
+ "sample_rate": 16000,
+ "source_length_samples": 4096,
+ "threshold": "one 16-bit LSB on decoded PCM; any non-zero difference counts",
+ "total_affected_output_samples": 19582,
+ "total_outside_declared_support": 0,
+ "total_probes": 70
+}

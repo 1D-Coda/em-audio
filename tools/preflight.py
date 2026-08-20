@@ -138,6 +138,12 @@ def main() -> int:
     sc = G["assertion_scaling"]
     add(f"assertion_bytes_per_interval: {round((sc[-1]['assertion_bytes'] - sc[0]['assertion_bytes']) / (sc[-1]['emitted_intervals'] - sc[0]['emitted_intervals']), 1)}")
     add("")
+    K = load("K_support_containment")
+    add("--- K  kernel-support containment ---")
+    add(f"k_probes: {K['total_probes']}")
+    add(f"k_affected_output_samples: {K['total_affected_output_samples']}")
+    add(f"k_outside_declared_support: {K['total_outside_declared_support']}")
+    add("")
     C2 = load("C2_robustness")
     add("--- C2  robustness arm ---")
     add(f"c2_neural_exact: {C2['arms']['neural_tts']['exact']}/{C2['arms']['neural_tts']['n']}")

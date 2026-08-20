@@ -54,8 +54,9 @@ timelines and on \Dbase{} of \Druns{} transformation runs. Decoded essence was
 identical before and after signing in \Ftotal{} signed round-trips, with
 \Fmismatch{} mismatches, at a bookkeeping cost of \Gem{}~ms per audio-minute.
 The evidential cost of the footprints is measured rather than assumed: dilution
-is confined to fixed-radius bands at ancestry boundaries and falls in inverse
-proportion to asset length. The contract constrains what a derived
+is confined to fixed-radius bands at ancestry boundaries, and for the fixed edit
+chain and boundary geometry tested it falls approximately in inverse proportion
+to asset duration. The contract constrains what a derived
 representation may claim about its sources; it does not detect deepfakes, does
 not establish that speech is truthful, and a cryptographically valid signature
 proves only that an assertion was signed, not that it is true.
@@ -164,8 +165,8 @@ regions; the claim-dilution cost metric \\
 \end{tabular}
 \end{table}
 
-We are equally explicit about what is \emph{not} new. The algebra we use, a meet over a lattice of labels with union of ancestry and an absorbing bottom element, is an instance of constructions that are decades old, in
-provenance annotation over absorptive semirings \citep{green2007provenance} and
+We are equally explicit about what is \emph{not} new. The algebra we use, a meet over a semilattice of labels with union of ancestry and an absorbing bottom element, is an instance of constructions that are decades old, in
+semiring-based provenance annotation \citep{green2007provenance} and
 in label lattices for secure information flow
 \citep{denning1976lattice,goguen1982noninterference}. We therefore do not claim
 the non-amplification property as a new theorem. We state it as an instance,
@@ -310,8 +311,12 @@ evidence from its boundaries. Concretely, a PROV graph for the five-interval
 counterexample would contain \texttt{wasDerivedFrom} edges to all five source intervals, a complete and true derivation record, and still say nothing
 about which \emph{claim} the derived segment may emit, because PROV constrains
 the shape of the history, not the aggregation of evidential authority over it. The algebraic machinery for constraining that
-reading is long established. Provenance semirings annotate derived data so that
-annotations combine associatively and idempotently \citep{green2007provenance};
+reading is long established. Provenance semirings annotate derived data with elements of a semiring, so
+that combination is associative and distributes over alternative derivations
+\citep{green2007provenance}. Idempotence is not part of that general framework
+and is in fact incompatible with several of its standard instances; the meet
+used here is idempotent, but that is a property of this particular structure
+rather than of semiring provenance at large.
 lattice models of secure information flow classify objects and require that
 combination move only in the conservative direction
 \citep{denning1976lattice,goguen1982noninterference}. The property we need, that a combination is never stronger than any of its inputs, is the meet in such a structure, and we present it as such rather than as a discovery.
@@ -787,8 +792,11 @@ verified promotions, support promotions, conformance failures, decoded-essence
 mismatches, manifest validation outcomes, model-versus-implementation sample
 deviations, runtime and metadata size. We deliberately do not report accuracy,
 precision, recall, $F_1$ or AUC: no classifier is evaluated, and detector
-metrics would invite the wrong comparison. Timing is reported as medians with
-interquartile ranges over \Greps{} repetitions with the machine declared.
+metrics would invite the wrong comparison. Timing is reported as medians with interquartile ranges over \Greps{}
+repetitions on a single machine: an \Varch{} system running \Vos{},
+Python~\Vpython{}, FFmpeg~\Vffmpeg{} and \texttt{c2patool}~\VcTwopatool{}. The exact processor, operating-system build
+and every tool version are recorded in \texttt{results/PREFLIGHT.txt}, which is
+regenerated on each run.
 
 \subsection{Reproducibility and AI use}
 
@@ -811,8 +819,9 @@ claim, calculation, code-derived number and reference.
 Over \Awords{} source words and \Acases{} operator cases, the property suite
 and the closed-form oracle together evaluated \Achecks{} checks with
 \Afailed{} failures, including \Acomp{} explicit composition cases. Every named
-regression test passes: \Tpass{} of \Ttotal{}, with \Tfail{} failures
-(Table~\ref{tab:main}).
+regression test passes: \Tpass{} of \Ttotal{}, with \Tfail{} failures, and both
+counts appear as their own row in Table~\ref{tab:main} rather than being folded
+into the comparison columns, which do not apply to them.
 
 The suite has teeth. During development it failed on the overlay operator,
 where the implementation evaluated overlapping map pieces independently and so
@@ -938,7 +947,16 @@ containers. The largest absolute deviation between predicted and actual output
 sample count was \DsilenceDev{} samples for silence removal, \DstretchDev{} for
 time stretching, \DmpThreeDev{} for MP3 and \DresampleDev{} for resampling. For
 \DguardOK{} transformations the declared guard band covered the observed
-deviation, which is the condition Proposition~\ref{prop:footprint} requires.
+deviation.
+
+That measurement bounds one thing and not another, and the distinction matters
+enough to state plainly. Agreement between predicted and actual output length
+validates the \emph{mapping and alignment} of the interval model. It does not
+establish the \emph{support containment} that
+Proposition~\ref{prop:footprint} actually requires, because an operator can emit
+exactly the predicted number of samples while depending on source samples
+outside the declared footprint. Containment is tested separately and directly in
+Section~\ref{sec:res-containment}.
 Re-running each transformation and comparing decoded essence gave \Ddeterm{}
 mismatches, so the processing path is deterministic on this machine.
 
@@ -947,8 +965,9 @@ Proposition~\ref{prop:union} once the required source set is correct, so on its
 own it checks that the implementation matches the algebra; on overlay, during
 development, it did not. The genuinely falsifiable measurements are
 the other two: whether the interval model predicts the output length of software
-we do not control, and whether the declared guard bands actually bound the
-deviation. Either could have come out wrong, and the guard bands would then have
+we do not control, and whether the declared guard bands bound that deviation.
+Support containment is a third falsifiable measurement and is made separately in
+Section~\ref{sec:res-containment}. Either could have come out wrong, and the guard bands would then have
 had to be re-declared and the build would have failed.
 
 \begin{figure}[t]
@@ -993,6 +1012,59 @@ classification requirement. We do not claim that stripping is detected as
 malicious intent; the result is that the classification degrades in the
 conservative direction.
 
+\subsection{Kernel-support containment}
+\label{sec:res-containment}
+
+Proposition~\ref{prop:footprint} needs the declared required-source set to
+contain the actual dependency set, and that is a statement about which source
+samples influence which output samples, not about how many output samples there
+are. We test it directly. For each of \Kops{} operator configurations and each
+of ten probe positions, two \KimpulseN{}-sample sources are built that are
+identical except at one sample, where one carries an added impulse. Both are
+pushed through the same stock FFmpeg command and both outputs are decoded. Every
+output sample whose decoded value differs was influenced by that one source
+sample and by nothing else, because the inputs differ nowhere else. Containment
+holds when the probe position lies inside the declared required-source range of
+every output sample it influenced. The comparison is made on 16-bit PCM at a
+threshold of one least significant bit, so an influence far below audibility
+still counts as a dependency.
+
+The probe carries a deterministic non-silent tone rather than silence, which
+turned out to matter: against silence every operator here appears to map one
+source sample to one output sample, because an impulse in an empty buffer is
+simply copied through. Against real content the same operators spread it. Lossy
+transcoding spreads a single source sample across up to \KmpThreeSpread{}
+output samples and does so at every probe position, and resampling across up to
+\KresampleSpread{}. Overlap-add time stretching is the interesting case: its
+spread is strongly position-dependent, reaching \KstretchSpread{} output samples
+at the \KstretchAboveOne{} probe positions that land inside an overlap region
+and one sample at the rest. A declaration derived from the median would have
+been badly wrong for that operator, which is why the containment test is run
+against the worst case rather than a typical one.
+
+Across \Kprobes{} probes, \Kaffected{} output samples were influenced and
+\Koutside{} of them fell outside the declared support
+(Table~\ref{tab:containment}). The bands are also not merely adequate but
+reasonably tight: the closest any measured influence came to the edge of its
+declared range was \KresampleMargin{} samples for resampling against a declared
+footprint of \KresampleFp{}, \KmpThreeMargin{} against \KmpThreeFp{} for MP3,
+and \KstretchMargin{} against \KstretchFp{} for time stretching. A larger
+declaration would have been equally safe and more dilutive, so this is the
+measurement that justifies the particular numbers rather than merely permitting
+them.
+
+\begin{table}[t]
+\centering
+\caption{Kernel-support containment. Each operator is probed with a
+single-sample impulse at ten positions; every output sample whose decoded value
+changes was influenced by that one source sample. The margin is the closest any
+measured influence came to the edge of the declared range, so a small margin
+means a tight declaration and a large one means a conservative declaration.}
+\label{tab:containment}
+\small
+\input{../results/tables/containment_table}
+\end{table}
+
 \subsection{C2PA-native heterogeneous composition}
 \label{sec:res-composition}
 
@@ -1011,11 +1083,15 @@ candidates. \texttt{c2pa.mixed} is defined for the case where ``multiple,
 previously placed (via \texttt{c2pa.placed} actions) audio ingredients (e.g.,
 stems, vocals, drums, bass, etc) are combined and optionally transformed''
 \citep[Table~8]{c2pa24}. Our fixture concatenates its two sources in sequence
-rather than summing them, so nothing is combined in that sense and
-\texttt{c2pa.placed} alone is the accurate record; note also that
-\texttt{c2pa.mixed} presupposes \texttt{c2pa.placed}, so the placed actions
-would be required either way. An overlay composition, where two sources sum
-over a shared interval, would warrant \texttt{c2pa.mixed} in addition. The
+rather than summing them, and we interpret sequential concatenation as placement
+rather than mixing. The specification does not settle the question either way:
+it neither states that concatenation is not mixing, nor excludes
+\texttt{c2pa.remixed}, which covers ``transformation of a previously recorded
+audio asset'' including re-arranging \citep[Table~8]{c2pa24}. What is not a
+matter of interpretation is that \texttt{c2pa.mixed} presupposes
+\texttt{c2pa.placed}, so the placed actions are required under any reading, and
+an overlay composition in which two sources sum over a shared interval would
+warrant \texttt{c2pa.mixed} in addition. The
 choice does not affect the contract: the aggregation rule reads the ingredient
 graph and the interval map, not the action label.
 
@@ -1091,9 +1167,11 @@ at a routine three-operator edit (trim to the middle 80\%, normalise, transcode
 to MP3) over an asset with one interior generated segment, and varying only
 duration, dilution is \IlongShortPct{}\% at the corpus median clip length,
 \IlongThirtyPct{}\% at 30~seconds and \IlongThreeHundredPct{}\% at five
-minutes (Table~\ref{tab:dilution}). Each tenfold increase in duration divides
-the fraction by ten, which is what fixed-width bands predict and what the
-measurement confirms. This
+minutes (Table~\ref{tab:dilution}). Each tenfold increase in duration divides the fraction by ten. That is what
+fixed-width bands predict when the number of ancestry boundaries is held fixed,
+which it is here, and it is what the measurement shows. It is not a claim that
+the relation holds for an arbitrary chain or an arbitrary boundary count, since
+more boundaries would place more bands. This
 is the real price of declaring conservative bounds instead of knowing exact
 codec dependencies, and it is a cost a deployment can buy back without losing
 safety: any tighter dependency map, such as an encoder that reports its true delay or a codec-specific footprint smaller than our pinned bound, reduces dilution and, by
@@ -1262,7 +1340,7 @@ processing it accompanies.
 \paragraph{What is not.} No claim is made that any deployed system promotes
 provenance. The baseline is a constructed reference policy and the fixture rates
 are a mechanism stress rate. Nor is the algebra new: the non-amplification
-property is an instance of a meet in a lattice, familiar from provenance
+property is an instance of a meet in a semilattice, familiar from provenance
 semirings \citep{green2007provenance} and information-flow models
 \citep{denning1976lattice}. Readers who already accept that algebra should read
 the contribution as the temporal instantiation, the kernel-footprint treatment, the transport and the measurements, which is where the work actually was.
@@ -1278,8 +1356,9 @@ contract defines the aggregate claim a conforming operator must compute from
 them. This
 work complements the standard rather than criticising it, and it is implemented
 entirely inside the standard's own extension points, a namespaced assertion and temporal regions of interest, without requiring any specification change.
-Where the specification's security properties are discussed, we cite a published
-analysis rather than asserting anything ourselves \citep{golaszewski2026c2pa}.
+Where the specification's security properties are discussed, we cite a publicly
+available security analysis, a preprint at the time of writing, rather than
+asserting anything ourselves \citep{golaszewski2026c2pa}.
 
 \paragraph{Relation to detectors and watermarks.} These are complementary and
 answer different questions. A detector examines a signal; a watermark marks
@@ -1415,9 +1494,14 @@ signature proves only that an assertion was signed, not that it is true.
 The mixed-origin corpus is generated deterministically by committed code from
 LibriSpeech \texttt{dev-clean} \citep{panayotov2015librispeech}, licensed
 CC~BY~4.0, fetched by a checksum-pinned script, and from locally generated
-eSpeak~NG output. No human-subject, proprietary or login-walled data is used.
-Licences, versions, URLs, access dates and redistribution clauses are recorded
-in \texttt{DATA\_LICENSES.md}.
+eSpeak~NG output. The robustness arm also uses a Piper neural
+text-to-speech voice trained on the public-domain LJ Speech corpus, fetched and
+checksum-verified by \texttt{tools/fetch\_voice.sh} rather than committed, and
+pink noise generated locally by FFmpeg with a per-clip seed. No human-subject,
+proprietary or login-walled data is used, and no voice of any identified living
+person is cloned. Licences, tool and model versions, URLs, access dates,
+file digests, the noise-generation command and redistribution clauses are all
+recorded in \texttt{DATA\_LICENSES.md}.
 
 \section*{Code availability}
 

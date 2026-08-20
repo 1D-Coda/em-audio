@@ -80,16 +80,29 @@ def operator_table():
           header="Operator & Source mapping & Footprint & Reason")
 
 
+def _regression_counts():
+    """Run the named regression suite and count its outcomes."""
+    import subprocess, sys as _s
+    out = subprocess.run([_s.executable, str(ROOT / "tests" / "test_contract.py")],
+                         capture_output=True, text=True).stdout
+    p_, f_ = out.count("  PASS  "), out.count("  FAIL  ")
+    return {"total": p_ + f_, "passed": p_, "failed": f_}
+
+
 def main_results():
     A, B, C, D, H = (load("A_synthetic_state_space"), load("B_adversarial_timelines"),
                      load("C_public_audio_splice"), load("D_transform_matrix"),
                      load("H_oracle_differential"))
+    T = _regression_counts()
     r = []
     r.append(r"\multicolumn{4}{l}{\textit{A\quad Exhaustive finite-state conformance}} \\")
     r.append(f"Source words over $\\{{C,G,\\bot\\}}$, length $\\le 8$ & {A['words_enumerated']:,} & "
              f"--- & --- \\\\")
     r.append(f"Operator cases & {A['operator_cases']:,} & --- & --- \\\\")
-    r.append(f"Contract checks & {A['checks_total']:,} & {A['checks_failed']} failed & --- \\\\")
+    r.append(f"Contract checks (all failure classes) & {A['checks_total']:,} & "
+             f"\\multicolumn{{2}}{{c}}{{{A['checks_failed']} failed}} \\\\")
+    r.append(f"Named regression tests & {T['total']} & "
+             f"\\multicolumn{{2}}{{c}}{{{T['passed']} passed, {T['failed']} failed}} \\\\")
     r.append(r"\addlinespace")
     r.append(r"\multicolumn{4}{l}{\textit{B\quad Deterministic adversarial timelines "
              r"(10\,000 frozen fixtures, 64 intervals)}} \\")
@@ -167,6 +180,21 @@ def ablation_table():
                   "Footprint anomaly"))
 
 
+def containment_table():
+    K = load("K_support_containment")
+    rows = []
+    for k in sorted(K["per_operator"]):
+        v = K["per_operator"][k]
+        marg = v["min_margin_inside_declared_range"]
+        rows.append(f"{esc(k)} & {v['declared_footprint_samples']:,} & "
+                    f"{v['total_affected_output_samples']:,} & "
+                    f"{'---' if marg is None else format(marg, ',')} & "
+                    f"{v['total_outside_declared_support']} \\\\".replace(",", "\\,"))
+    write("containment_table", "\n".join(rows), colspec="lrrrr",
+          header=("Operator & Declared footprint & Influenced output samples & "
+                  "Min.\\ margin & Outside support"))
+
+
 def dilution_table():
     I = load("I_claim_dilution")
     rows = []
@@ -218,4 +246,4 @@ def overhead_table():
 
 if __name__ == "__main__":
     operator_table(); main_results(); transport_table(); ablation_table()
-    dilution_table(); overhead_table()
+    containment_table(); dilution_table(); overhead_table()
