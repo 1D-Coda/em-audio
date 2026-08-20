@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json, subprocess, sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 ROOT = Path(__file__).resolve().parents[1]
 MR = ROOT / "results" / "machine_readable"
@@ -169,6 +170,19 @@ def main() -> int:
     m["KmpThreeSpread"] = fmt(po["transcode_mp3"]["max_spread_output_samples"])
     m["KstretchSpread"] = fmt(po["time_stretch_1.10"]["max_spread_output_samples"])
     m["KstretchAboveOne"] = fmt(po["time_stretch_1.10"]["probes_with_spread_above_one"])
+    m["Kcontexts"] = fmt(len(K["signal_contexts"]))
+    m["KsilenceFp"] = fmt(po["silence_removal"]["declared_footprint_samples"])
+    m["KsilenceMargin"] = fmt(po["silence_removal"]["min_margin_inside_declared_range"])
+    m["KsilenceReach"] = fmt(po["silence_removal"]["max_measured_reach_source_samples"])
+    m["KmpThreeReach"] = fmt(po["transcode_mp3"]["max_measured_reach_source_samples"])
+    m["KstretchReach"] = fmt(po["time_stretch_1.10"]["max_measured_reach_source_samples"])
+    m["KresampleReach"] = fmt(po["resample_16_8"]["max_measured_reach_source_samples"])
+    # MP3 footprint constants, so the manuscript never types them
+    import em_audio.operators as _O
+    m["MpThreeKernel"] = fmt(_O.MP3_FOOTPRINT)
+    m["MpThreeGuard"] = fmt(_O.GUARD_BAND["transcode"])
+    m["MpThreeDeclared"] = fmt(_O.MP3_FOOTPRINT + _O.GUARD_BAND["transcode"])
+    m["MpThreeWindow"] = fmt(_O.MP3_WINDOW)
     m["KresampleSpread"] = fmt(po["resample_16_8"]["max_spread_output_samples"])
     # I claim dilution
     I = load("I_claim_dilution")

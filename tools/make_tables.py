@@ -84,7 +84,7 @@ def operator_table():
         ("resample 16 to 8 kHz", r"$n_\mathrm{out}\!\cdot\!f_\mathrm{in}/f_\mathrm{out}$",
          fp_r, O.GUARD_BAND["resample"], "polyphase FIR"),
         ("transcode (MP3)", "1:1", O.MP3_FOOTPRINT, O.GUARD_BAND["transcode"],
-         "MDCT window + encoder delay"),
+         "MDCT window + delay; see note"),
         ("transcode (FLAC)", "1:1", O.FLAC_FOOTPRINT, 0, "lossless"),
         ("amplitude normalisation", "1:1", 0, O.GUARD_BAND["normalize"],
          "scalar gain; see note"),
@@ -96,7 +96,7 @@ def operator_table():
          "sample-wise sum"),
     ]
     for name, mapping, kern, guard, why in spec:
-        declared = max(kern, guard) if name.startswith("transcode (MP3)") else kern + guard
+        declared = kern + guard          # additive for every operator
         rows.append(f"{name} & {mapping} & {kern:,} & {guard:,} & {declared:,} & {why} \\\\"
                     .replace(",", "\\,"))
     write("operator_table", "\n".join(rows),
@@ -208,12 +208,13 @@ def containment_table():
         marg = v["min_margin_inside_declared_range"]
         label = esc(k) + ("$^{\\dagger}$" if k == "normalize" else "")
         rows.append(f"{label} & {v['declared_footprint_samples']:,} & "
+                    f"{v['max_measured_reach_source_samples']:,} & "
                     f"{v['total_affected_output_samples']:,} & "
                     f"{'---' if marg is None else format(marg, ',')} & "
                     f"{v['total_outside_declared_support']} \\\\".replace(",", "\\,"))
-    write("containment_table", "\n".join(rows), colspec="lrrrr",
-          header=("Operator & Declared footprint & Influenced output samples & "
-                  "Min.\\ margin & Outside support"))
+    write("containment_table", "\n".join(rows), colspec="lrrrrr",
+          header=("Operator & Declared & Measured reach & Influenced samples & "
+                  "Headroom & Outside"))
 
 
 def dilution_table():

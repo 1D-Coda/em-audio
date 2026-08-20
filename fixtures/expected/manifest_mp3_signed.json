@@ -1,7 +1,7 @@
 {
- "active_manifest": "urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44",
+ "active_manifest": "urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5",
  "manifests": {
-  "urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44": {
+  "urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5": {
    "assertions": [
     {
      "data": {
@@ -11,7 +11,7 @@
         "parameters": {
          "ingredients": [
           {
-           "hash": "W5rSonCkzt5WcXopozrZn0z2pvPeYXft/xcuo2+GjHY=",
+           "hash": "TpwyE520wfNuA6vyimG+oh2yCvE2agp5e2T2sE8t+tI=",
            "url": "self#jumbf=c2pa.assertions/c2pa.ingredient.v3"
           }
          ]
@@ -203,13 +203,13 @@
    "ingredients": [
     {
      "format": "audio/mpeg",
-     "instance_id": "xmp:iid:8a0a5545-3950-42ff-b3b7-b2952e56519d",
+     "instance_id": "xmp:iid:8c44d8d6-9c40-4d21-8b1f-206bd3336804",
      "label": "c2pa.ingredient.v3",
      "relationship": "parentOf"
     }
    ],
-   "instance_id": "xmp:iid:786318ce-85c7-4716-a422-750c58f8f9e1",
-   "label": "urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44",
+   "instance_id": "xmp:iid:c86af40c-ed25-48d1-9429-28475c8b71cd",
+   "label": "urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5",
    "signature_info": {
     "alg": "Es256",
     "cert_serial_number": "482979767099638256303983048383099196994797948726",
@@ -227,55 +227,55 @@
     {
      "code": "signingCredential.trusted",
      "explanation": "signing certificate trusted, found in System trust anchors",
-     "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.signature"
     },
     {
      "code": "claimSignature.insideValidity",
      "explanation": "claim signature valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.signature"
     },
     {
      "code": "claimSignature.validated",
      "explanation": "claim signature valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.signature"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
-     "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.assertions/c2pa.hash.data"
+     "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.assertions/c2pa.hash.data"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient.v3",
-     "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.assertions/c2pa.ingredient.v3"
+     "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.assertions/c2pa.ingredient.v3"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
-     "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.assertions/c2pa.actions.v2"
+     "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.assertions/c2pa.actions.v2"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/mx.aurtech.emaudio.evidence",
-     "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.assertions/mx.aurtech.emaudio.evidence"
+     "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.assertions/mx.aurtech.emaudio.evidence"
     },
     {
      "code": "assertion.dataHash.match",
      "explanation": "data hash valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.assertions/c2pa.hash.data"
+     "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.assertions/c2pa.hash.data"
     }
    ]
   },
   "ingredientDeltas": [
    {
-    "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.assertions/c2pa.ingredient.v3",
+    "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.assertions/c2pa.ingredient.v3",
     "validationDeltas": {
      "failure": [],
      "informational": [
       {
        "code": "ingredient.unknownProvenance",
        "explanation": "no title: ingredient does not have provenance",
-       "url": "self#jumbf=/c2pa/urn:c2pa:313f29c4-5972-4306-8589-7ce23acaef44/c2pa.assertions/c2pa.ingredient.v3"
+       "url": "self#jumbf=/c2pa/urn:c2pa:62c63fdc-0aea-45e7-93d3-fa40859663c5/c2pa.assertions/c2pa.ingredient.v3"
       }
      ],
      "success": []

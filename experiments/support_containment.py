@@ -36,26 +36,70 @@ import em_audio.operators as O
 
 WORK = ROOT / "corpus" / "support"
 FS = 16_000
-N = 4096                     # source length in samples
-IMPULSE = 12000              # large enough to dominate, small enough not to clip
+# 16384 rather than 4096: the largest declared footprint is 2577 samples, and at
+# 4096 that spans the whole source, so every containment check would pass
+# trivially for the large-footprint operators. At 16384 the footprint covers
+# about a sixth of the source and the test can actually fail.
+N = 16384                    # source length in samples
+# The perturbation is scaled to each context's carrier rather than fixed. A
+# fixed amplitude was 200x the near-threshold carrier, which does not perturb an
+# adaptive operator's input so much as replace it: a lossy encoder re-allocates
+# bits globally and a WSOLA correlation search locks onto the injected sample
+# instead of the signal, so the measured "dependency" is really the operator
+# choosing a different mode. A proportionate probe measures dependency at a
+# fixed operating point, which is what the footprint is meant to bound.
+IMPULSE_RATIO = 2.0          # impulse amplitude as a multiple of carrier peak
+IMPULSE_FLOOR = 256          # keep the perturbation clear of the 16-bit floor
 BASE_AMP = 6000              # non-silent base: see base_signal()
 
 
-def base_signal() -> List[int]:
-    """A deterministic non-silent carrier.
+CONTEXTS = ("tone", "near_threshold", "transient", "dense")
+
+
+def base_signal(kind: str = "tone") -> List[int]:
+    """A deterministic non-silent carrier, in one of four signal contexts.
 
     Probing against silence under-tests signal-dependent operators: a lossy
     encoder given near-silence, or an overlap-add stretcher given one impulse in
     an empty buffer, may pass the impulse through untouched and appear to have a
-    one-sample dependency it does not have in normal operation. The base is a
-    fixed low-frequency tone plus a deterministic alternating component, so every
-    analysis window has real content to interact with, and it is generated
-    without any random source so the probe stays reproducible.
+    one-sample dependency it does not have in normal operation. Four contexts are
+    used because encoder and stretcher behaviour is content-dependent, and a
+    single carrier would leave the bound validated against one operating regime:
+
+      tone            a steady low-frequency tone, the ordinary case;
+      near_threshold  the same at roughly one part in a hundred amplitude, where
+                      a lossy encoder allocates fewest bits and quantisation is
+                      coarsest;
+      transient       repeated sharp onsets followed by decay, which is what
+                      drives an overlap-add stretcher hardest;
+      dense           a sum of many inharmonic partials, spectrally crowded so
+                      the encoder's masking decisions are most active.
+
+    All four are generated arithmetically with no random source, so the probe is
+    reproducible.
     """
     import math
-    return [int(BASE_AMP * (0.7 * math.sin(2 * math.pi * 220.0 * i / FS)
-                            + 0.3 * (1 if i % 7 < 3 else -1)))
-            for i in range(N)]
+    out = []
+    for i in range(N):
+        t = i / FS
+        if kind == "tone":
+            v = BASE_AMP * (0.7 * math.sin(2 * math.pi * 220.0 * t)
+                            + 0.3 * (1 if i % 7 < 3 else -1))
+        elif kind == "near_threshold":
+            v = (BASE_AMP / 100.0) * (0.7 * math.sin(2 * math.pi * 220.0 * t)
+                                      + 0.3 * (1 if i % 7 < 3 else -1))
+        elif kind == "transient":
+            phase = i % 512
+            env = math.exp(-phase / 40.0)
+            v = BASE_AMP * env * math.sin(2 * math.pi * 1500.0 * t)
+        elif kind == "dense":
+            v = 0.0
+            for h, f in enumerate((311.0, 523.7, 787.1, 1103.3, 1471.9, 1873.7), 1):
+                v += (BASE_AMP / 6.0) * math.sin(2 * math.pi * f * t + h)
+        else:
+            raise ValueError(kind)
+        out.append(max(-32768, min(32767, int(v))))
+    return out
 
 
 def write_wav(path: Path, samples: List[int]) -> None:
@@ -77,21 +121,23 @@ def decode(path: Path) -> List[int]:
     return list(struct.unpack(f"<{len(raw)//2}h", raw[:len(raw)//2*2]))
 
 
-def probe(name: str, run, model, k: int, wd: Path) -> Dict[str, object]:
+def probe(name: str, run, model, k: int, wd: Path, ctx: str = "tone") -> Dict[str, object]:
     """Return the containment verdict for a single impulse at source sample k."""
-    carrier = base_signal()
-    base, spike = wd / f"base_{k}.wav", wd / f"spike_{k}.wav"
+    carrier = base_signal(ctx)
+    peak = max(1, max(abs(x) for x in carrier))
+    amp = int(max(IMPULSE_FLOOR, min(24000, IMPULSE_RATIO * peak)))
+    base, spike = wd / f"base_{ctx}_{k}.wav", wd / f"spike_{ctx}_{k}.wav"
     write_wav(base, carrier)
-    s = list(carrier); s[k] = max(-32768, min(32767, s[k] + IMPULSE))
+    s = list(carrier); s[k] = max(-32768, min(32767, s[k] + amp))
     write_wav(spike, s)
     ext = "mp3" if "mp3" in name else ("flac" if "flac" in name else "wav")
-    ob, os_ = wd / f"ob_{k}.{ext}", wd / f"os_{k}.{ext}"
+    ob, os_ = wd / f"ob_{ctx}_{k}.{ext}", wd / f"os_{ctx}_{k}.{ext}"
     run(base, ob); run(spike, os_)
     a, b = decode(ob), decode(os_)
     n = min(len(a), len(b))
     affected = [i for i in range(n) if a[i] != b[i]]
 
-    outside, worst = 0, 0
+    outside, worst, beyond_extent, reach = 0, 0, 0, 0
     margin = None            # smallest distance from k to the edge of a declared range
     for o in affected:
         lo = hi = None
@@ -99,18 +145,44 @@ def probe(name: str, run, model, k: int, wd: Path) -> Dict[str, object]:
             if p.out_start <= o < p.out_end:
                 lo, hi = p.source_range(o, o + 1, with_footprint=True)
                 break
-        if lo is None:                       # output sample no piece claims
-            outside += 1; worst = max(worst, N); continue
+        if lo is None:
+            # The operator emitted an output sample the model does not claim,
+            # i.e. it produced more output than predicted. That is a MAPPING
+            # deviation, bounded by the guard band and measured by the
+            # transformation matrix; it is not a support-containment violation,
+            # and counting it as one would repeat the exact conflation this
+            # experiment exists to avoid. Containment for such a sample is
+            # checked against the covering piece's whole declared source range.
+            beyond_extent += 1
+            p = model.pieces[-1]
+            lo, hi = p.source_range(p.out_start, p.out_end, with_footprint=True)
         if not (lo <= k < hi):
             outside += 1
             worst = max(worst, lo - k if k < lo else k - hi + 1)
         else:
             m = min(k - lo, hi - 1 - k)
             margin = m if margin is None else min(margin, m)
-    return {"k": k, "affected_output_samples": len(affected),
+        # How far outside the NOMINAL (footprint-free) source range this
+        # influence reached. This is the quantity a declared footprint has to
+        # cover, so reporting it makes the declaration checkable against a
+        # measurement rather than against an assertion, and it regenerates on
+        # every run instead of being quoted from a past one.
+        for p2 in model.pieces:
+            if p2.out_start <= o < p2.out_end:
+                nlo, nhi = p2.source_range(o, o + 1, with_footprint=False)
+                if k < nlo:
+                    reach = max(reach, nlo - k)
+                elif k >= nhi:
+                    reach = max(reach, k - nhi + 1)
+                break
+    return {"k": k, "context": ctx, "impulse_amplitude": amp,
+            "carrier_peak": peak,
+            "affected_output_samples": len(affected),
+            "output_samples_beyond_modelled_extent": beyond_extent,
             "outside_declared_support": outside,
             "max_samples_outside": worst,
             "min_margin_inside_declared_range": margin,
+            "max_measured_reach_source_samples": reach,
             "decoded_length": n}
 
 
@@ -148,11 +220,22 @@ def main() -> int:
     failures: List[str] = []
     for name, model, run in cases:
         wd = WORK / name; wd.mkdir(parents=True)
-        rows = [probe(name, run, model, k, wd) for k in positions]
+        rows = [probe(name, run, model, k, wd, ctx)
+                for ctx in CONTEXTS for k in positions]
         outside = sum(r["outside_declared_support"] for r in rows)
         affected = sum(r["affected_output_samples"] for r in rows)
+        by_ctx = {c: [r for r in rows if r["context"] == c] for c in CONTEXTS}
         results[name] = {
             "probes": len(rows),
+            "contexts": list(CONTEXTS),
+            "per_context_outside": {c: sum(r["outside_declared_support"] for r in v)
+                                    for c, v in by_ctx.items()},
+            "per_context_max_spread": {c: max(r["affected_output_samples"] for r in v)
+                                       for c, v in by_ctx.items()},
+            "output_samples_beyond_modelled_extent": sum(
+                r["output_samples_beyond_modelled_extent"] for r in rows),
+            "max_measured_reach_source_samples": max(
+                r["max_measured_reach_source_samples"] for r in rows),
             "total_affected_output_samples": affected,
             "total_outside_declared_support": outside,
             "max_samples_outside": max(r["max_samples_outside"] for r in rows),
@@ -178,8 +261,9 @@ def main() -> int:
               f"outside {outside}  max_outside {results[name]['max_samples_outside']}")
 
     payload = {
-        "source_length_samples": N, "sample_rate": FS, "impulse_amplitude": IMPULSE,
+        "source_length_samples": N, "sample_rate": FS, "impulse_ratio_to_carrier_peak": IMPULSE_RATIO,
         "probe_positions": positions,
+        "signal_contexts": list(CONTEXTS),
         "threshold": "one 16-bit LSB on decoded PCM; any non-zero difference counts",
         "method": ("two sources identical except for a single-sample impulse are pushed "
                    "through the same stock ffmpeg command; every output sample whose "

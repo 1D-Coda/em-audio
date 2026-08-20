@@ -81,7 +81,12 @@ def _codec_args(codec: str, bitrate: str = "128k") -> List[str]:
         # frame size from a FLAC input stream
         return ["-c:a", "flac", "-frame_size", "4096"]
     if codec == "mp3":
-        return ["-c:a", "libmp3lame", "-b:a", bitrate]
+        # The bit reservoir is pinned to its default (enabled) rather than left
+        # implicit. It makes the encoder stateful across frames, so the declared
+        # MP3 footprint is an empirically validated bound for this configuration
+        # and not a consequence of the MDCT window alone; see the containment
+        # experiment. Pinning changes no output byte, it removes an assumption.
+        return ["-c:a", "libmp3lame", "-b:a", bitrate, "-reservoir", "1"]
     raise ValueError(codec)
 
 

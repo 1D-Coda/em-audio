@@ -5,11 +5,11 @@ Operator & Source mapping & Kernel & Guard & Declared & Reason \\
 trim / crop & 1:1 on the retained range & 0 & 0 & 0 & exact \\
 concatenate & 1:1 per part & 0 & 0 & 0 & exact \\
 resample 16 to 8 kHz & $n_\mathrm{out}\!\cdot\!f_\mathrm{in}/f_\mathrm{out}$ & 33 & 64 & 97 & polyphase FIR \\
-transcode (MP3) & 1:1 & 1\,728 & 2\,304 & 2\,304 & MDCT window + encoder delay \\
+transcode (MP3) & 1:1 & 1\,728 & 576 & 2\,304 & MDCT window + delay; see note \\
 transcode (FLAC) & 1:1 & 0 & 0 & 0 & lossless \\
 amplitude normalisation & 1:1 & 0 & 0 & 0 & scalar gain; see note \\
 time stretch 1.10 & $t_\mathrm{src}=\tau\; t_\mathrm{out}$ & 529 & 2\,048 & 2\,577 & overlap-add window \\
-silence removal & explicit retained runs & 0 & 2\,048 & 2\,048 & frame-granular selector \\
+silence removal & explicit retained runs & 0 & 4\,096 & 4\,096 & frame-granular selector \\
 mix / overlay & 1:1 from every covering source & 0 & 0 & 0 & sample-wise sum \\
 \bottomrule
 \end{tabular}

@@ -43,10 +43,18 @@ GUARD_BAND = {
     "trim": 0,
     "concat": 0,
     "resample": 64,
-    "transcode": 2304,
+    # One MPEG-1 Layer III granule. The guard absorbs frame-alignment slack
+    # between the exact integer model and the encoder's granule boundaries; it
+    # is added to the kernel radius, as for every other operator, rather than
+    # being an independent floor.
+    "transcode": MP3_ENCODER_DELAY,
     "normalize": 0,
     "time_stretch": 2048,
-    "silence_removal": 2048,
+    # Raised from 2048 after the containment probe measured a frame-granular
+    # reach of 3261 source samples past a retained run's start: a selector can
+    # emit a frame that begins before the requested cut. The declared bound must
+    # contain what was measured, so it is set above it with margin.
+    "silence_removal": 4096,
     "overlay": 0,
 }
 
@@ -90,7 +98,7 @@ def resample(src: str, n_src: int, fs_in: int, fs_out: int,
 def transcode(src: str, n_src: int, codec: str) -> DerivedOutput:
     fp = {"mp3": MP3_FOOTPRINT, "flac": FLAC_FOOTPRINT, "wav": 0}[codec]
     if codec == "mp3":
-        fp = max(fp, GUARD_BAND["transcode"])
+        fp += GUARD_BAND["transcode"]          # kernel + guard, as elsewhere
     return DerivedOutput(n_src, [MapPiece(0, n_src, src, 0, n_src, fp, f"transcode:{codec}")],
                          "transcode", {"codec": codec, "footprint": fp})
 

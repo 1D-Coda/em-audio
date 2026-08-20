@@ -271,3 +271,90 @@ reading the source.
 9. **The clean-clone description overstated slightly.** "Self-contained" is now
    "self-contained conditional on the two checksum-pinned external artefacts",
    in both the manuscript and the reproduction record.
+
+
+---
+
+# Round 6: six corrections, and an "optional" item that found a real defect
+
+All six points verified and applied. Two produced findings larger than the point
+that prompted them.
+
+## The MP3 arithmetic, and what it was hiding
+
+The conjecture in the review was exactly right: 1728 + 576 = 2304. The
+implementation used `max(kernel, guard)` with the guard set to 2304, which
+produced the correct declared value by coincidence while breaking the additive
+relationship every other row obeyed. The guard is now 576, one MPEG-1 Layer III
+granule, which is a principled frame-alignment quantity, and the operator uses
+kernel + guard like everything else. The declared value is unchanged, so no
+result moved, and all nine rows are additive.
+
+The bit-reservoir observation was also correct. `libmp3lame` defaults to
+`reservoir=1`, confirmed by encoding with and without: the default is
+byte-identical to `-reservoir 1` and differs from `-reservoir 0`. The reservoir
+is left enabled, since a stateful encoder is the harder test, but it is now
+pinned explicitly rather than inherited, and the declared footprint is described
+as an empirically validated bound for that frozen configuration rather than a
+consequence of the MDCT window alone.
+
+## The optional item was not optional
+
+Adding three further signal contexts to the containment probe was offered as an
+optional hardening. It broke containment, and the diagnosis produced two
+findings.
+
+**The probe design was wrong.** A fixed impulse amplitude was roughly two
+hundred times the carrier in the low-level context. That does not perturb an
+adaptive operator's input so much as replace it: the lossy encoder re-allocated
+bits globally and the overlap-add stretcher re-selected its correlation lag, so
+the measured "dependency" was really the operator choosing a different mode. The
+perturbation is now a fixed multiple of each context's peak.
+
+**One declared bound was genuinely inadequate.** A short probe passes trivially
+for large-footprint operators, because a 2577-sample declaration spans a whole
+short source. Lengthening the probe until the declaration covered a fraction of
+the source made the test able to fail, and silence removal failed: a
+frame-granular selector reached 3277 source samples before a retained run's
+start, against a guard then declared at 2048. That is under-declaration, the one
+direction Proposition 4 does not forgive. The band is now 4096.
+
+Both are reported in the manuscript rather than silently corrected, and the
+episode produced a limitation worth having: **a fixed footprint bounds
+dependency at an operating point, not across mode changes.** A change large
+enough to restructure an encoder's decisions is not a representation-only
+transformation of the interval it lands in.
+
+## The build gate caught the author
+
+Writing up those findings, four numbers were typed by hand: two reproducible
+constants, and two measurements, one of which came from a configuration that no
+longer exists. `check_numbers.py` failed the build. The response was not to
+whitelist them but to make the quantity measurable: the containment experiment
+now reports, per operator, the **maximum measured reach** beyond the nominal
+footprint-free source range, so containment is the comparison of a measured
+reach against a declared bound and both regenerate on every run.
+
+| Operator | Declared | Measured reach | Headroom |
+|---|---:|---:|---:|
+| resample 16 to 8 kHz | 97 | 32 | 65 |
+| transcode to MP3 | 2,304 | 1,555 | 749 |
+| time stretch 1.10 | 2,577 | 1,906 | 671 |
+| silence removal | 4,096 | 3,277 | 819 |
+
+## Also fixed
+
+The double-counted "declared footprint plus guard"; the support domain lifted to
+$\mathcal{S} = \{\bot_\mu\} \cup [0,1]$ with $\bot_\mu \preceq s$, making
+Propositions 2 to 4 formal rather than partly semantic; and "any conforming
+validator" narrowed to the pipeline actually demonstrated with the official
+tool.
+
+## One incident worth recording
+
+A pipeline run failed with 56 errors that were disk exhaustion, not defects:
+roughly 1.2 GB of gitignored per-experiment working directories had accumulated
+across the session and filled the volume. `run_all.sh` returned a failure rather
+than passing silently, which is the correct behaviour under an error class that
+had never been exercised. No data was lost: all 17 result files remained valid
+and the tagged release was untouched.

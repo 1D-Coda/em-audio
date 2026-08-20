@@ -1,13 +1,13 @@
-\begin{tabular}{lrrrr}
+\begin{tabular}{lrrrrr}
 \toprule
-Operator & Declared footprint & Influenced output samples & Min.\ margin & Outside support \\
+Operator & Declared & Measured reach & Influenced samples & Headroom & Outside \\
 \midrule
-amplitude normalisation$^{\dagger}$ & 0 & 10 & 0 & 0 \\
-resample 16 to 8 kHz & 97 & 303 & 65 & 0 \\
-silence removal & 2\,048 & 7 & 1\,229 & 0 \\
-time stretch 1.10 & 2\,577 & 5\,048 & 688 & 0 \\
-transcode to FLAC & 0 & 10 & 0 & 0 \\
-transcode to MP3 & 2\,304 & 14\,196 & 898 & 0 \\
-trim to the middle 80\% & 0 & 8 & 0 & 0 \\
+amplitude normalisation$^{\dagger}$ & 0 & 0 & 40 & 0 & 0 \\
+resample 16 to 8 kHz & 97 & 32 & 1\,131 & 65 & 0 \\
+silence removal & 4\,096 & 3\,277 & 28 & 819 & 0 \\
+time stretch 1.10 & 2\,577 & 1\,906 & 10\,971 & 671 & 0 \\
+transcode to FLAC & 0 & 0 & 40 & 0 & 0 \\
+transcode to MP3 & 2\,304 & 1\,555 & 39\,763 & 749 & 0 \\
+trim to the middle 80\% & 0 & 0 & 32 & 0 & 0 \\
 \bottomrule
 \end{tabular}

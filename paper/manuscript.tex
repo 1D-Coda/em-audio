@@ -425,9 +425,21 @@ evidence record
 \begin{equation}
 e_x = (P_x, S_x, A_x, L_x),
 \end{equation}
-where $P_x$ is provenance, $S_x$ is a partial map from a semantically typed
-support channel to $[0,1]$, $A_x$ records the scope over which each channel is
-declared applicable, and $L_x$ is lineage.
+where $P_x$ is provenance, $S_x$ maps each semantically typed support channel
+to a value in the lifted domain
+\begin{equation}
+\mathcal{S} = \{\bot_{\mu}\} \cup [0,1],
+\qquad \bot_{\mu} \preceq s \ \text{ for every } s \in [0,1],
+\label{eq:supportdomain}
+\end{equation}
+$A_x$ records the scope over which each channel is declared applicable, and
+$L_x$ is lineage. The lift matters for the propositions below. A channel can be
+\emph{unavailable}, written $\bot_{\mu}$, and an unavailable channel must count
+as weaker than any numeric value it could have carried, otherwise
+``no emitted channel value is greater'' would be silent about the case where a
+channel disappears entirely. Ordering $\bot_{\mu}$ below all of $[0,1]$ makes
+that case formal rather than merely intuitive, and $\preceq$ on $\mathcal{S}$ is
+the usual order on $[0,1]$ extended with $\bot_{\mu}$ as least element.
 
 Provenance is a set of ancestry atoms drawn from $\{\C, \G\}$, for
 captured-derived and generated-derived sources. Mixed ancestry is $\{\C,\G\}$
@@ -547,7 +559,7 @@ withholds every channel.
 
 \begin{proposition}[Typed support and scope non-promotion]
 \label{prop:support}
-For every emitted channel $\mu$, $S_y(\mu) \le S_x(\mu)$ for every
+For every channel $\mu$, $S_y(\mu) \preceq S_x(\mu)$ in $\mathcal{S}$ for every
 $x \in \Dy^{\mu}$, and $A_y(\mu)$ is no broader than any $A_x(\mu)$.
 \end{proposition}
 \begin{proof}
@@ -582,7 +594,8 @@ what makes the contract implementable against real processing software.
 \begin{proposition}[Footprint monotonicity]
 \label{prop:footprint}
 If $\Dy \subseteq \Dy'$ then the claim computed from $\Dy'$ is no stronger than
-the claim computed from $\Dy$, and each emitted channel value is no greater.
+the claim computed from $\Dy$, and for every channel $\mu$ the value computed
+from $\Dy'$ is $\preceq$ the value computed from $\Dy$ in $\mathcal{S}$.
 \end{proposition}
 \begin{proof}
 Enlarging the index set of a union can only add atoms, and by~\eqref{eq:order}
@@ -590,7 +603,8 @@ a superset is a weaker claim; adding a source in state $\bot$ sends the claim to
 $\bot$, which is weaker still. For channels, enlarging $\Dy$ can only add
 members to $\Dy^{\mu}$, and the minimum over a larger set is no larger; if an
 added source declares $\mu$ applicable but reports no value, the channel becomes
-unavailable, which is weaker than any value.
+$\bot_{\mu}$, which is $\preceq$ every element of $[0,1]$ by
+\eqref{eq:supportdomain}. Both cases therefore move down $\mathcal{S}$.
 \end{proof}
 
 Proposition~\ref{prop:footprint} is the practical result of this section. It
@@ -651,9 +665,20 @@ introduces new ancestry rather than propagating existing ancestry.
 
 The footprint entries deserve comment, because a reviewer will look for an
 off-by-one. For a polyphase resampler the radius follows from the pinned filter
-length and the rate ratio. For MPEG-1 Layer III the long window is 1152 samples
-with 50\% overlap and the encoder introduces a further delay, so the declared
-value covers a full window plus that delay. For overlap-add time stretching it
+length and the rate ratio. For MPEG-1 Layer III the long window is \MpThreeWindow{} samples
+with 50\% overlap and the encoder introduces a further delay, giving a kernel
+radius of \MpThreeKernel{}, to which one granule of frame-alignment guard,
+\MpThreeGuard{} samples, is added. That derivation is necessary but not
+sufficient, and we are explicit about why: the pinned encoder is
+\texttt{libmp3lame} with its bit reservoir enabled, which we now set explicitly
+rather than inherit, and a reservoir carries bits across frame boundaries, so the
+encoder is stateful in a way no window-and-delay argument fully captures. The
+declared \MpThreeDeclared{} is therefore an \emph{empirically validated bound
+for this frozen configuration}, confirmed by the containment probes of
+Section~\ref{sec:res-containment}, which measured an actual reach of
+\KmpThreeReach{} source samples, rather than a codec-wide support theorem. A
+different bitrate, encoder or reservoir setting requires the bound to be
+re-probed. For overlap-add time stretching it
 covers the analysis window scaled by the tempo factor. For a frame-granular
 selector such as silence removal, the exact retained-sample model and the
 implementation's frame-aligned cut points differ, and the declared value covers
@@ -1044,8 +1069,8 @@ are. We test it directly. The probe covers \Kops{} of the eight transformations 
 the matrix; overlay is excluded because a single-source temporal impulse is not
 the relevant test for it. Its required-source set is by construction every source
 covering the output interval, and the sample-wise sum has no temporal kernel at
-all, so there is no footprint to under-declare. For each configuration and each
-of ten probe positions, two \KimpulseN{}-sample sources are built that are
+all, so there is no footprint to under-declare. For each configuration, each of
+\Kcontexts{} signal contexts and each of ten probe positions, two \KimpulseN{}-sample sources are built that are
 identical except at one sample, where one carries an added impulse. Both are
 pushed through the same stock FFmpeg command and both outputs are decoded. The
 entire difference between the paired outputs is attributable to that one source
@@ -1056,10 +1081,17 @@ whose value it changed. The comparison is made on 16-bit PCM at a
 threshold of one least significant bit, so an influence far below audibility
 still counts as a dependency.
 
-The probe carries a deterministic non-silent tone rather than silence, which
-turned out to matter: against silence every operator here appears to map one
-source sample to one output sample, because an impulse in an empty buffer is
-simply copied through. Against real content the same operators spread it. Lossy
+Two properties of the probe had to be got right, and getting them wrong first
+is what showed why they matter. The carrier must not be silence: against silence
+every operator here appears to map one source sample to one output sample,
+because an impulse in an empty buffer is simply copied through. And the
+perturbation must be proportionate to the carrier. An earlier version used a
+fixed impulse amplitude, which was roughly two hundred times the carrier in the
+low-level context; that does not perturb an adaptive operator's input so much as
+replace it, and both the lossy encoder and the overlap-add stretcher responded by
+re-deciding globally rather than locally. The perturbation is now a fixed
+multiple of each context's peak. Against real content at a proportionate level,
+the same operators spread a single sample widely. Lossy
 transcoding spreads a single source sample across up to \KmpThreeSpread{}
 output samples and does so at every probe position, and resampling across up to
 \KresampleSpread{}. Overlap-add time stretching is the interesting case: its
@@ -1071,22 +1103,39 @@ against the worst case rather than a typical one.
 
 Across \Kprobes{} probes, \Kaffected{} output samples were influenced and
 \Koutside{} of them fell outside the declared support
-(Table~\ref{tab:containment}). The bands are also not merely adequate but
-reasonably tight: the closest any measured influence came to the edge of its
-declared range was \KresampleMargin{} samples for resampling against a declared
-footprint of \KresampleFp{}, \KmpThreeMargin{} against \KmpThreeFp{} for MP3,
-and \KstretchMargin{} against \KstretchFp{} for time stretching. A larger
-declaration would have been equally safe and more dilutive, so this is the
-measurement that justifies the particular numbers rather than merely permitting
-them.
+(Table~\ref{tab:containment}). Every context produced influence for every
+operator, so no row passes vacuously by the probe simply having no effect.
+
+That zero was not free, and the route to it is the argument for running this
+experiment at all. A shorter probe than the one reported here passes trivially
+for the large-footprint operators, because a declared footprint of \KstretchFp{}
+samples spans a whole short source; lengthening the probe until the footprint
+covers a fraction of it made the test able to fail, and it did. Silence removal
+failed: a frame-granular selector emitted a frame beginning \KsilenceReach{}
+source samples before a retained run's start, well beyond the guard band
+declared for it at the time. That is an under-declaration, which is the one
+direction Proposition~\ref{prop:footprint} does not forgive. The band was raised
+to \KsilenceFp{} samples, above the measured reach, and the operator now
+contains with a margin of \KsilenceMargin{}. We report this rather than
+quietly shipping the corrected number because it is the clearest evidence that
+the declared bounds are measured rather than asserted. The bands are also not merely adequate but
+reasonably tight, which matters because a larger one would be equally safe and
+more dilutive. Resampling's influence reached \KresampleReach{} source samples
+against a declaration of \KresampleFp{}, MP3's reached \KmpThreeReach{} against
+\KmpThreeFp{}, and time stretching's reached \KstretchReach{} against
+\KstretchFp{}. Each declaration sits above its measured reach with headroom
+rather than far above it, which is what justifies these particular numbers
+instead of merely permitting them.
 
 \begin{table}[t]
 \centering
 \caption{Kernel-support containment. Each operator is probed with a
-single-sample impulse at ten positions; every output sample whose decoded value
-changes was influenced by that one source sample. The margin is the closest any
-measured influence came to the edge of the declared range, so a small margin
-means a tight declaration and a large one means a conservative declaration.
+proportionate single-sample impulse at ten positions in each of \Kcontexts{}
+signal contexts. The measured reach is the furthest any influence extended
+beyond the nominal, footprint-free source range, so containment compares two
+concrete quantities rather than resting on an assertion: it holds exactly when
+the reach does not exceed the declaration. Headroom is the difference, so a
+small headroom means a tight declaration and a large one a conservative one.
 $^{\dagger}$~Amplitude normalisation's declared footprint is
 \emph{representational}: an output sample represents one source sample, while
 the scalar gain depends computationally on the whole signal. The probe therefore
@@ -1176,7 +1225,8 @@ footprint-wide neighbourhood of each ancestry boundary: median dilution is
 removal and \IstretchMedianPct{}\% for time stretching, with a single-transformation
 worst case of \ImaxAnyPct{}\%. These fractions must be read
 against the corpus geometry: each band has a \emph{fixed radius in samples}
-(the declared footprint plus guard), and the clips average \CmeanDurS{}~s, so
+(the declared footprint of Table~\ref{tab:operators}, which already includes the
+guard), and the clips average \CmeanDurS{}~s, so
 the same bands on a one-hour asset would occupy a fraction three orders of
 magnitude smaller. The fraction shrinks with asset duration; the absolute band
 does not.
@@ -1423,9 +1473,10 @@ Nothing observes or modifies the signal path, which is why signal transparency
 holds by construction rather than by care. Because the assertion schema and the
 temporal regions are ordinary C2PA extension points, adoption requires no
 specification change; a claim generator that emits the assertion and a consumer
-that reads it interoperate through any conforming validator today, and the
-schema is published with the repository as a baseline for derived-audio
-manifests.
+that reads it can interoperate through a conforming C2PA validation pipeline,
+which we demonstrate with the official \texttt{c2patool} and have not tested
+against other validator implementations. The schema is published with the
+repository as a baseline for derived-audio manifests.
 
 \paragraph{An information-flow reading.} The contract can equally be read as an
 integrity property in the classical information-flow sense
@@ -1496,6 +1547,21 @@ wider than declared. Kernel radii could equally be derived from codec
 specifications where those state window and delay constants. Neither pass is
 implemented as a tool here; both inherit their safety from footprint
 monotonicity, since a calibration that errs large cannot promote.
+
+\paragraph{Footprints bound dependency at an operating point, not across mode
+changes.} The containment probe measures how far a \emph{proportionate} local
+change propagates. Adaptive operators do not have a single dependency structure:
+a lossy encoder re-allocates bits globally, and an overlap-add stretcher
+re-selects its correlation lag, when the input changes enough to alter those
+decisions. We observed exactly that when an early version of the probe perturbed
+a low-level carrier with an impulse two hundred times its amplitude, and the
+influence of one source sample reached most of the output. No fixed footprint
+bounds that, and none should be claimed to: the declared bounds constrain
+dependency for changes that leave the operator's mode decisions intact, which is
+the regime a representation-only pipeline operates in. A change large enough to
+restructure an encoder's decisions is not a representation-only transformation
+of the interval it lands in, and the honest scope of
+Proposition~\ref{prop:footprint} in practice is bounded accordingly.
 
 \paragraph{Normalisation is a modelling choice.} Amplitude normalisation is the
 operator where representational and computational dependency (Section~\ref{sec:model})

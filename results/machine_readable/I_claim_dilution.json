@@ -124,9 +124,9 @@
   "silence_removal": {
    "clips": 600,
    "clips_with_any_dilution": 600,
-   "max_dilution_fraction": 0.328034,
-   "mean_dilution_fraction": 0.170922,
-   "median_dilution_fraction": 0.164806
+   "max_dilution_fraction": 0.583333,
+   "mean_dilution_fraction": 0.325321,
+   "median_dilution_fraction": 0.313373
   },
   "time_stretch_1.10": {
    "clips": 600,
@@ -157,5 +157,5 @@
    "median_dilution_fraction": 0.0
   }
  },
- "runtime_s": 1.428
+ "runtime_s": 1.333
 }
