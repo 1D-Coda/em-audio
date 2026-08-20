@@ -3,8 +3,11 @@
 Performed 2026-08-20 by the author, on the same machine that produced the
 original results. This is **not** independent reproduction and is not offered as
 such. What it establishes is narrower and still worth having: that the tagged
-release is self-contained, and that no reported result depends on a file left
-behind in a working directory.
+release's code and reproducibility workflow are self-contained **conditional on
+the two checksum-pinned external artefacts**, and that no reported result
+depends on a file left behind in a working directory. It is not a claim that the
+repository carries everything it needs with no network at all; it carries
+everything except two artefacts it fetches and verifies.
 
 ## Method
 

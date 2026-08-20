@@ -97,7 +97,14 @@ assertion can be scoped to a temporal range. What the text does not prescribe, a
 aggregate evidence state a derived interval should emit when the component
 histories it represents disagree. The specification can preserve the component
 histories; it does not define the conservative claim that must be computed over
-them. That distinction is the entire subject of this paper, and it means the
+them. The coalition's July 2026 implementation guidance on identifying synthetic
+and non-synthetic content sharpens the same boundary from the other side
+\citep{c2pa2026synthetic}: it develops the vocabulary for declaring AI
+involvement, including \texttt{digitalSourceType}, an AI-disclosure assertion
+and regions of interest that localise which segments of audio or video were
+affected. That is guidance on how to \emph{represent} what happened to part of
+an asset, and it is complementary to what this paper supplies, which is the rule
+for what a derived interval may \emph{claim} once its parts disagree. That distinction is the entire subject of this paper, and it means the
 contribution here is not a competing provenance system but a semantic
 aggregation contract that operates inside the standard's own vocabulary.
 
@@ -158,7 +165,7 @@ Kernel footprints with declared guard bands, validated per clip against stock
 FFmpeg; footprint monotonicity (Proposition~\ref{prop:footprint}) \\
 \addlinespace
 Conformance-test methodology (exhaustive enumeration, frozen fixtures,
-independent oracle) &
+separately implemented oracle) &
 Signal transparency on decoded PCM; signed C2PA transport with temporal
 regions; the claim-dilution cost metric \\
 \bottomrule
@@ -651,17 +658,27 @@ covers the analysis window scaled by the tempo factor. For a frame-granular
 selector such as silence removal, the exact retained-sample model and the
 implementation's frame-aligned cut points differ, and the declared value covers
 that difference. In every case the declared value is a bound, not an estimate,
-and Proposition~\ref{prop:footprint} makes an over-declared bound safe. The
-experiment in Section~\ref{sec:res-corpus} measures, for every clip and every
-transformation, whether the bound actually holds against the output of software
-we do not control.
+and Proposition~\ref{prop:footprint} makes an over-declared bound safe. Two separate experiments check these numbers against software we do not
+control. Section~\ref{sec:res-corpus} validates temporal mapping and alignment,
+by comparing predicted with actual output length on every clip and every
+transformation. Section~\ref{sec:res-containment} probes kernel-support
+containment directly, by measuring which source samples actually influence which
+output samples. The first bounds the guard column and the second bounds the
+kernel column, and neither substitutes for the other.
 
 \begin{table}[t]
 \centering
-\caption{The v1 operator set. Footprints are conservative bounds in source
-samples, quoted for the configurations used in the experiments; by
+\caption{The v1 operator set. The kernel column is a support bound taken from
+the pinned algorithm configuration; the guard column absorbs the difference
+between an exact integer interval model and a real implementation's
+frame-granular behaviour; the declared footprint is what the implementation
+uses, and is what Section~\ref{sec:res-containment} probes. All values are in
+source samples for the configurations used in the experiments. By
 Proposition~\ref{prop:footprint} an over-declared bound can only weaken the
-emitted claim, while an under-declared bound is a conformance failure.}
+emitted claim, while an under-declared bound is a conformance failure. The
+normalisation row is a representational footprint: its scalar gain depends
+computationally on the whole signal, and Section~\ref{sec:limits} states the
+choice and its tested alternative.}
 \label{tab:operators}
 \small
 \input{../results/tables/operator_table}
@@ -1023,14 +1040,19 @@ conservative direction.
 Proposition~\ref{prop:footprint} needs the declared required-source set to
 contain the actual dependency set, and that is a statement about which source
 samples influence which output samples, not about how many output samples there
-are. We test it directly. For each of \Kops{} operator configurations and each
+are. We test it directly. The probe covers \Kops{} of the eight transformations in
+the matrix; overlay is excluded because a single-source temporal impulse is not
+the relevant test for it. Its required-source set is by construction every source
+covering the output interval, and the sample-wise sum has no temporal kernel at
+all, so there is no footprint to under-declare. For each configuration and each
 of ten probe positions, two \KimpulseN{}-sample sources are built that are
 identical except at one sample, where one carries an added impulse. Both are
-pushed through the same stock FFmpeg command and both outputs are decoded. Every
-output sample whose decoded value differs was influenced by that one source
-sample and by nothing else, because the inputs differ nowhere else. Containment
-holds when the probe position lies inside the declared required-source range of
-every output sample it influenced. The comparison is made on 16-bit PCM at a
+pushed through the same stock FFmpeg command and both outputs are decoded. The
+entire difference between the paired outputs is attributable to that one source
+sample, because the inputs differ nowhere else; every other source sample still
+contributes to both outputs, but identically. Containment holds when the probe
+position lies inside the declared required-source range of every output sample
+whose value it changed. The comparison is made on 16-bit PCM at a
 threshold of one least significant bit, so an influence far below audibility
 still counts as a dependency.
 
@@ -1064,7 +1086,12 @@ them.
 single-sample impulse at ten positions; every output sample whose decoded value
 changes was influenced by that one source sample. The margin is the closest any
 measured influence came to the edge of the declared range, so a small margin
-means a tight declaration and a large one means a conservative declaration.}
+means a tight declaration and a large one means a conservative declaration.
+$^{\dagger}$~Amplitude normalisation's declared footprint is
+\emph{representational}: an output sample represents one source sample, while
+the scalar gain depends computationally on the whole signal. The probe therefore
+confirms the representational reading and does not show that the computational
+dependency is zero, which it is not.}
 \label{tab:containment}
 \small
 \input{../results/tables/containment_table}
@@ -1302,8 +1329,14 @@ Balanced coverage of speakers, languages, codecs or editing styles \\
 Interval-model fidelity &
 Predicted versus actual output sample counts on every run, against declared
 guard bands &
-That the bounds hold for other codecs, other FFmpeg builds or other
-configurations \\
+Kernel-support containment, which is a different property, measured separately;
+and that the bounds hold for other codecs, builds or configurations \\
+\addlinespace
+Kernel-support containment &
+Paired impulse probes at ten positions across \Kops{} operator configurations,
+compared on decoded PCM at one least significant bit &
+Containment for probe positions, signals, codecs or configurations not tested;
+the probe bounds the operators as configured here, not the operator class \\
 Signed transport &
 \Ftotal{} round-trips through the official tool across \Fcontainers{}
 containers &
@@ -1428,10 +1461,11 @@ are outside our control and were deliberately chosen for that reason: all audio
 processing is stock FFmpeg through its command line, and all signing and
 validation is the official \texttt{c2patool}. The pipeline has been reproduced from a
 clean clone of the tagged release, which is a weaker check than it sounds and is
-worth stating precisely: it establishes that the repository is self-contained
-and that the results do not depend on files left in a working directory, and it
-was performed by the author on the same machine, so it is not independent
-reproduction. A third-party reimplementation of the contract, and a reproduction
+worth stating precisely: it establishes that the code and
+reproducibility workflow are self-contained conditional on the two
+checksum-pinned external artefacts, and that no result depends on a file left in
+a working directory; it was performed by the author on the same machine, so it
+is not independent reproduction. A third-party reimplementation of the contract, and a reproduction
 by someone else on different hardware, would strengthen external validity
 further; neither exists yet.
 
@@ -1447,13 +1481,21 @@ bounds declared for the exact processing configurations used here. They are
 validated against those configurations and no others. A different FFmpeg build,
 resampler setting, codec or tempo factor requires the bound to be re-declared
 and re-tested; Proposition~\ref{prop:footprint} guarantees that erring large is
-safe, not that our particular numbers transfer. The re-declaration need not be
-manual: because the transformation-matrix experiment already measures
-model-versus-implementation deviation per run, a conforming pipeline can run
-the same measurement as an automated calibration pass: push a deterministic reference signal through the unknown configuration, measure the maximum sample deviation, and set the guard band from the measurement plus margin. Footprints
-could equally be derived from codec specifications where those state window and
-delay constants. Neither is implemented here; both inherit their safety from
-footprint monotonicity, since a calibration that errs large cannot promote.
+safe, not that our particular numbers transfer. The re-declaration need not be manual,
+but it needs two passes rather than one, because the two columns of
+Table~\ref{tab:operators} bound different things. A \emph{mapping-guard}
+calibration pushes a deterministic reference signal through the unknown
+configuration and sets the guard band from the maximum output-length deviation
+plus a margin, which is the measurement the transformation matrix already makes.
+A \emph{support-footprint} calibration sweeps a single-sample impulse across the
+input and sets the kernel radius from the widest measured influence plus a
+margin, which is the measurement Section~\ref{sec:res-containment} makes.
+Substituting the first for the second is exactly the conflation this paper had
+to correct in its own draft: output length can be exact while the dependency is
+wider than declared. Kernel radii could equally be derived from codec
+specifications where those state window and delay constants. Neither pass is
+implemented as a tool here; both inherit their safety from footprint
+monotonicity, since a calibration that errs large cannot promote.
 
 \paragraph{Normalisation is a modelling choice.} Amplitude normalisation is the
 operator where representational and computational dependency (Section~\ref{sec:model})

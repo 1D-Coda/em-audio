@@ -56,30 +56,6 @@ def write(name, body, colspec=None, header=None):
     print(f"[table] results/tables/{name}.tex")
 
 
-def operator_table():
-    rows = []
-    spec = [
-        ("trim / crop", "1:1 on the retained range", "0", "exact"),
-        ("concatenate", "1:1 per part", "0", "exact"),
-        ("resample", r"$n_\mathrm{out}\!\cdot\!f_\mathrm{in}/f_\mathrm{out}$",
-         f"{O._fp_resample(16000, 8000)}", "polyphase FIR"),
-        ("transcode (MP3)", "1:1", f"{max(O.MP3_FOOTPRINT, O.GUARD_BAND['transcode'])}",
-         "MDCT window + encoder delay"),
-        ("transcode (FLAC)", "1:1", f"{O.FLAC_FOOTPRINT}", "lossless"),
-        ("amplitude normalisation", "1:1", "0 (strict: whole signal)", "scalar gain"),
-        ("time stretch", r"$t_\mathrm{src}=\tau\,t_\mathrm{out}$",
-         f"{int(0.030*16000*1.10)+1+O.GUARD_BAND['time_stretch']}", "overlap-add window"),
-        ("silence removal", "explicit retained runs", f"{O.GUARD_BAND['silence_removal']}",
-         "frame-granular selector"),
-        ("mix / overlay", "1:1 from every covering source", "0", "sample-wise sum"),
-    ]
-    for name, mapping, fp, why in spec:
-        rows.append(f"{name} & {mapping} & {fp} & {why} \\\\")
-    write("operator_table", "\n".join(rows),
-          colspec=r"p{0.24\linewidth}p{0.24\linewidth}rp{0.27\linewidth}",
-          header="Operator & Source mapping & Footprint & Reason")
-
-
 def _regression_counts():
     """Run the named regression suite and count its outcomes."""
     import subprocess, sys as _s
@@ -87,6 +63,45 @@ def _regression_counts():
                          capture_output=True, text=True).stdout
     p_, f_ = out.count("  PASS  "), out.count("  FAIL  ")
     return {"total": p_ + f_, "passed": p_, "failed": f_}
+
+
+def operator_table():
+    """Operator table with the kernel radius and the mapping guard shown apart.
+
+    The paper distinguishes the two: the kernel radius is a support bound taken
+    from the pinned algorithm configuration, and the guard band absorbs the
+    difference between an exact integer interval model and a real
+    implementation's frame-granular behaviour. Reporting only their sum invited a
+    reader to compare a bare kernel radius in one table against a kernel-plus-
+    guard figure in another, which is exactly what happened.
+    """
+    fp_r = O._fp_resample(16000, 8000)
+    fp_st = int(0.030 * 16000 * 1.10) + 1
+    rows = []
+    spec = [
+        ("trim / crop", "1:1 on the retained range", 0, O.GUARD_BAND["trim"], "exact"),
+        ("concatenate", "1:1 per part", 0, O.GUARD_BAND["concat"], "exact"),
+        ("resample 16 to 8 kHz", r"$n_\mathrm{out}\!\cdot\!f_\mathrm{in}/f_\mathrm{out}$",
+         fp_r, O.GUARD_BAND["resample"], "polyphase FIR"),
+        ("transcode (MP3)", "1:1", O.MP3_FOOTPRINT, O.GUARD_BAND["transcode"],
+         "MDCT window + encoder delay"),
+        ("transcode (FLAC)", "1:1", O.FLAC_FOOTPRINT, 0, "lossless"),
+        ("amplitude normalisation", "1:1", 0, O.GUARD_BAND["normalize"],
+         "scalar gain; see note"),
+        ("time stretch 1.10", r"$t_\mathrm{src}=\tau\; t_\mathrm{out}$",
+         fp_st, O.GUARD_BAND["time_stretch"], "overlap-add window"),
+        ("silence removal", "explicit retained runs", 0, O.GUARD_BAND["silence_removal"],
+         "frame-granular selector"),
+        ("mix / overlay", "1:1 from every covering source", 0, O.GUARD_BAND["overlay"],
+         "sample-wise sum"),
+    ]
+    for name, mapping, kern, guard, why in spec:
+        declared = max(kern, guard) if name.startswith("transcode (MP3)") else kern + guard
+        rows.append(f"{name} & {mapping} & {kern:,} & {guard:,} & {declared:,} & {why} \\\\"
+                    .replace(",", "\\,"))
+    write("operator_table", "\n".join(rows),
+          colspec=r"p{0.19\linewidth}p{0.20\linewidth}rrrp{0.20\linewidth}",
+          header=("Operator & Source mapping & Kernel & Guard & Declared & Reason"))
 
 
 def main_results():
@@ -99,10 +114,15 @@ def main_results():
     r.append(f"Source words over $\\{{C,G,\\bot\\}}$, length $\\le 8$ & {A['words_enumerated']:,} & "
              f"--- & --- \\\\")
     r.append(f"Operator cases & {A['operator_cases']:,} & --- & --- \\\\")
-    r.append(f"Contract checks (all failure classes) & {A['checks_total']:,} & "
-             f"\\multicolumn{{2}}{{c}}{{{A['checks_failed']} failed}} \\\\")
-    r.append(f"Named regression tests & {T['total']} & "
-             f"\\multicolumn{{2}}{{c}}{{{T['passed']} passed, {T['failed']} failed}} \\\\")
+    # These rows are not a boundary-only versus complete-source comparison, so
+    # they span every column after the label rather than placing a value under a
+    # comparison header where a reader would misread it as that policy's result.
+    r.append(f"Contract checks & "
+             f"\\multicolumn{{3}}{{l}}{{{A['checks_total']:,} checks, "
+             f"{A['checks_failed']} failed}} \\\\")
+    r.append(f"Named regression tests & "
+             f"\\multicolumn{{3}}{{l}}{{{T['total']} tests, {T['passed']} passed, "
+             f"{T['failed']} failed}} \\\\")
     r.append(r"\addlinespace")
     r.append(r"\multicolumn{4}{l}{\textit{B\quad Deterministic adversarial timelines "
              r"(10\,000 frozen fixtures, 64 intervals)}} \\")
@@ -186,7 +206,8 @@ def containment_table():
     for k in sorted(K["per_operator"]):
         v = K["per_operator"][k]
         marg = v["min_margin_inside_declared_range"]
-        rows.append(f"{esc(k)} & {v['declared_footprint_samples']:,} & "
+        label = esc(k) + ("$^{\\dagger}$" if k == "normalize" else "")
+        rows.append(f"{label} & {v['declared_footprint_samples']:,} & "
                     f"{v['total_affected_output_samples']:,} & "
                     f"{'---' if marg is None else format(marg, ',')} & "
                     f"{v['total_outside_declared_support']} \\\\".replace(",", "\\,"))

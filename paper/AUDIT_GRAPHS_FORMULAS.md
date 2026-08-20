@@ -202,3 +202,72 @@ and 688 against 2,577 for time stretching.
 8. **A preprint was called a "published analysis".** Now "a publicly available
    security analysis, a preprint at the time of writing", matching the
    bibliography's own label.
+
+
+---
+
+# Round 5: eleven corrections, two of them worse than reported
+
+All eleven points were verified against the source, the rendered PDF and the
+C2PA site, and all eleven were correct. Two had a cause the review had not seen.
+
+## The two that were worse than described
+
+**The 33-versus-97 footprint inconsistency had a structural cause.** Table 3's
+33 was the bare kernel radius for the 16 to 8 kHz configuration; the containment
+experiment's 97 was that same radius plus the 64-sample guard band. Two
+different quantities were both being labelled "declared footprint", which is
+precisely the distinction the paper had just spent a section establishing. The
+fix is therefore not a footnote but a restructured table: Table 3 now carries
+**Kernel**, **Guard** and **Declared** as separate columns computed from the
+implementation constants, so resampling reads 33 + 64 = 97 and reconciles with
+the containment table by construction.
+
+**The results-table defect was genuinely not fixed the first time.** The
+previous round replaced the misplaced value with `\multicolumn{2}{c}`, which
+centres across the two comparison columns. Because column 3 holds narrow
+right-aligned numbers, the centred text still landed under *Boundary-only* in the
+rendering. The error was in the checking, not only in the fix: the `.tex` source
+was inspected instead of the rendered page. Extracting the PDF layout confirmed
+"0 failed" sat at the same horizontal position as "9,455 (94.5\%)". Section A
+rows now span columns 2 to 4, left aligned, so no value sits under either
+comparison header. Verified by re-extracting the rendered layout rather than by
+reading the source.
+
+## The other nine
+
+1. **Section 5.2 still asserted that the transformation matrix tests whether the
+   footprint bound holds.** It now states that Section 7.4 validates mapping and
+   alignment, Section 7.6 probes support containment, and neither substitutes
+   for the other.
+2. **The Limitations calibration proposal repeated the same conflation.** It is
+   now split into a mapping-guard calibration, driven by output-length
+   deviation, and a support-footprint calibration, driven by an impulse sweep,
+   with an explicit note that substituting the first for the second is the error
+   this paper had to correct in its own draft.
+3. **The normalisation row in the containment table implied a measured
+   computational support of zero.** It now carries a dagger: the zero is a
+   representational footprint, the gain depends computationally on the whole
+   signal, and the probe confirms the representational reading only.
+4. **The claim--evidence boundary had no row for the containment experiment.**
+   Added, with what it does not establish stated: containment for probe
+   positions, signals, codecs or configurations not tested.
+5. **"Influenced by that one source sample and by nothing else" was
+   attackable.** Every other source sample does contribute to every output
+   sample. The claim is now that the paired *difference* is attributable to the
+   perturbed sample, because the other contributions are identical in both runs.
+6. **The seven-versus-eight configuration count was unexplained.** Overlay is
+   excluded because its required-source set is by construction every covering
+   source and the sample-wise sum has no temporal kernel, so there is no
+   footprint to under-declare.
+7. **Table 1 still said "independent oracle"** while the paper elsewhere denies
+   author independence. Now "separately implemented oracle".
+8. **The July 2026 C2PA implementation guidance was missing.** Checking it
+   helped rather than hurt: it develops the vocabulary for representing AI
+   involvement, including `digitalSourceType`, an AI-disclosure assertion and
+   regions of interest localising affected audio segments, and defines no
+   aggregation rule. It is cited as sharpening the same boundary from the other
+   side.
+9. **The clean-clone description overstated slightly.** "Self-contained" is now
+   "self-contained conditional on the two checksum-pinned external artefacts",
+   in both the manuscript and the reproduction record.
