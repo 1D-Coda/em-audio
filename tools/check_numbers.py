@@ -25,6 +25,25 @@ ALLOWED = {
 NUM = re.compile(r"(?<![\\A-Za-z0-9._{])(\d[\d.,]*)(?![\d}])")
 
 
+def check_supplement_pointers(manuscript: str, supplement: str) -> list[str]:
+    """Every 'Supplementary Note/Table SN' must resolve to something the
+    supplement actually numbers. A pointer at a table is only valid if the
+    supplement captions that many tables, which it will not do while its
+    longtables carry no caption."""
+    import re
+    problems = []
+    n_sections = len(re.findall(r"^\\section\{", supplement, re.M))
+    n_captions = len(re.findall(r"\\caption\{", supplement))
+    for kind, num in re.findall(r"Supplementary (Note|Table)~?S(\d+)", manuscript):
+        n = int(num)
+        limit = n_sections if kind == "Note" else n_captions
+        if n > limit:
+            problems.append(
+                f"Supplementary {kind} S{n} does not resolve: the supplement has "
+                f"{limit} numbered {'sections' if kind == 'Note' else 'captioned tables'}")
+    return problems
+
+
 def main() -> int:
     if not NUMBERS.exists():
         print("results/numbers.tex missing; run tools/make_macros.py", file=sys.stderr)
@@ -57,9 +76,17 @@ def main() -> int:
         for tok, ctx in offenders[:25]:
             print(f"  {tok!r}  ...{ctx}...")
         return 1
-    print("no hand-typed result numbers found in the manuscript source")
-    return 0
+    supp = (ROOT / "paper" / "supplementary.tex").read_text(encoding="utf-8")
+    dangling = check_supplement_pointers(text, supp)
+    if dangling:
+        print(f"{len(dangling)} dangling supplement pointer(s):")
+        for d in dangling:
+            print(f"  {d}")
+        return 1
 
+    print("no hand-typed result numbers found in the manuscript source")
+    print("all supplement pointers resolve")
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())

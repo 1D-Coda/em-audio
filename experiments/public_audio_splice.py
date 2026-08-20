@@ -9,13 +9,12 @@ from __future__ import annotations
 import json, sys, time
 from typing import Dict, List
 
-from _common import CHANNEL, ROOT, SCOPE, emit                        # noqa: E402
+from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from em_audio.evidence import (BOT, Evidence, _Bot, aggregate, claim_of, label_of, promotes)
 from em_audio.interval_map import SourceInterval, Timeline, em_intervals, span_evidence
 import em_audio.operators as O
 
 CORPUS = ROOT / "corpus"
-CAPTURE_SUPPORT = {"C": 0.90, "G": 0.10}
 
 
 def timeline_of(rec: Dict[str, object]) -> Timeline:

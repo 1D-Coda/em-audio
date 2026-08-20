@@ -21,7 +21,7 @@ import json, shutil, subprocess, sys, time, wave
 from pathlib import Path
 from typing import Dict, List
 
-from _common import CHANNEL, ROOT, SCOPE, emit                        # noqa: E402
+from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from em_audio import ffmpeg_ops as F
 from em_audio.evidence import Evidence, aggregate, claim_of, promotes
 from em_audio.interval_map import SourceInterval, Timeline, em_intervals, span_evidence
@@ -32,7 +32,6 @@ WORK = CORPUS / "robustness"
 VOICE = CORPUS / "piper_voices" / "en_US-ljspeech-medium.onnx"
 FS = 16_000
 N_CLIPS = 50
-CAPTURE_SUPPORT = {"C": 0.90, "G": 0.10}
 
 PHRASES = [
     "the quarterly figures were revised on tuesday",

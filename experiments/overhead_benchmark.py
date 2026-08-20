@@ -10,7 +10,7 @@ import json, shutil, statistics, sys, time
 from pathlib import Path
 from typing import Dict, List
 
-from _common import CHANNEL, ROOT, SCOPE, emit                        # noqa: E402
+from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from _signing import signer                                          # noqa: E402
 from em_audio import c2pa_bridge as B, ffmpeg_ops as F
 from em_audio.evidence import Evidence, aggregate, claim_of
@@ -23,7 +23,6 @@ WORK = CORPUS / "overhead"
 FS = 16_000
 REPS = 30
 N_CLIPS = 30
-CAPTURE_SUPPORT = {"C": 0.90, "G": 0.10}
 
 
 def iqr(xs: List[float]):

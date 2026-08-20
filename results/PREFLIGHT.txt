@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 423287e315b89d5d382edb3dab5b0261cb6a011f
+commit: 68ad88ac3ad31a430db3f0180d5877d99c34a974
 tag: v1.0.0
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
@@ -21,7 +21,7 @@ cpu: arm64
 --- A  exhaustive finite-state conformance ---
 words_enumerated: 9840
 operator_cases: 98385
-checks_total: 787443
+checks_total: 885828
 checks_failed: 0
 composition_cases: 363
 
@@ -73,15 +73,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 0.954
-median_baseline_ms_per_audio_minute: 0.2772
-em_over_baseline_ratio: 3.442
-em_fraction_of_ffmpeg_time: 0.001449
+median_em_ms_per_audio_minute: 1.3012
+median_baseline_ms_per_audio_minute: 0.3864
+em_over_baseline_ratio: 3.3676
+em_fraction_of_ffmpeg_time: 0.001501
 median_manifest_overhead_bytes_per_asset: 14854
 median_em_assertion_bytes_per_asset: 1268
 metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 12.7541
-median_validate_ms: 10.8207
+median_sign_ms: 16.946
+median_validate_ms: 13.6803
 assertion_bytes_per_interval: 332.7
 
 --- K  kernel-support containment ---
@@ -111,6 +111,6 @@ oracle_disagreements: 0
 oracle_max_support_difference: 0.0
 
 --- totals ---
-tests_total: 28
-tests_passed: 28
+tests_total: 29
+tests_passed: 29
 tests_failed: 0

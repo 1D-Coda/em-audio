@@ -134,6 +134,8 @@ class Evidence:
                 raise ValueError(f"support {k}={v} outside [0,1]")
             if k not in self.A:
                 raise ValueError(f"channel {k} carries a value but is not declared applicable")
+            if not self.A[k]:
+                raise ValueError(f"channel {k} carries a value but is applicable nowhere")
 
     # -- convenience -----------------------------------------------------
     @property

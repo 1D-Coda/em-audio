@@ -183,6 +183,18 @@ def main() -> int:
                   if i["state"] != "UNVERIFIED"),
           json.dumps([(i["state"], i["provenance"]) for i in bot_assert["intervals"]]))
 
+    # Clause (ii)'s antecedent omitted a non-empty applicability condition, so a
+    # channel narrowed to an empty scope under (iii) would still have been
+    # required to carry a value. P4 iterates S and P5 iterates A, so neither
+    # excluded the result on its own.
+    try:
+        Evidence(P=frozenset({"a"}), S={"c": 0.5}, A={"c": frozenset()},
+                 L=frozenset({"a"}))
+        nowhere_rejected = False
+    except ValueError:
+        nowhere_rejected = True
+    check("a support value applicable nowhere is unconstructible", nowhere_rejected)
+
     print(f"\n{len(FAILURES)} failing test(s)" if FAILURES else "\nall tests passed")
     return 1 if FAILURES else 0
 

@@ -11,7 +11,7 @@ import json, shutil, sys, time
 from pathlib import Path
 from typing import Dict, List
 
-from _common import CHANNEL, ROOT, SCOPE, emit                        # noqa: E402
+from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from _signing import signer                                          # noqa: E402
 from em_audio import c2pa_bridge as B, ffmpeg_ops as F
 from em_audio.essence import essence_hash
@@ -24,7 +24,6 @@ CORPUS = ROOT / "corpus"
 WORK = CORPUS / "stripping"
 FS = 16_000
 N_CLIPS = 60
-CAPTURE_SUPPORT = {"C": 0.90, "G": 0.10}
 
 
 def timeline_of(rec) -> Timeline:

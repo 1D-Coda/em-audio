@@ -18,7 +18,7 @@
  },
  "experiment": "E_manifest_stripping",
  "n_clips": 60,
- "runtime_s": 10.345,
+ "runtime_s": 12.926,
  "scope_note": "an absent or invalid manifest is reported UNVERIFIED or INVALID; no claim is made that stripping indicates malicious intent",
  "state_tally": {
   "asset_modified_after_signing": {

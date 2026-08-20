@@ -23,6 +23,19 @@ FILLER = ("it is worth noting|it is important to note|it is worth being explicit
           "the reality is|\\blet's\\b|serves as|\\bboasts\\b")
 
 
+def check_rendered_periods(pdf_path):
+    """elsarticle's \\paragraph appends its own period, so a heading that already
+    ends in one renders as two. The source reads correctly either way, so this
+    is only visible in the built PDF and only worth checking there."""
+    import subprocess
+    try:
+        txt = subprocess.run(["pdftotext", str(pdf_path), "-"],
+                             capture_output=True, text=True).stdout
+    except FileNotFoundError:
+        return []
+    return sorted(set(re.findall(r"[A-Za-z][a-z]+\.\.", txt)))
+
+
 def main() -> int:
     fail = 0
     for path in TARGETS:
@@ -41,6 +54,14 @@ def main() -> int:
                 print(f"   {label}: {sorted(set(h.lower() for h in hits))}")
         if dashes:
             fail = 1
+
+        pdf = path.with_suffix(".pdf")
+        if pdf.exists():
+            doubled = check_rendered_periods(pdf)
+            if doubled:
+                print(f"   {len(doubled)} doubled period(s) in the rendered PDF: "
+                      f"{doubled[:6]}")
+                fail = 1
     return fail
 
 

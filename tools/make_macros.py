@@ -183,6 +183,11 @@ def main() -> int:
     m["MpThreeGuard"] = fmt(_O.GUARD_BAND["transcode"])
     m["MpThreeDeclared"] = fmt(_O.MP3_FOOTPRINT + _O.GUARD_BAND["transcode"])
     m["MpThreeWindow"] = fmt(_O.MP3_WINDOW)
+    # the v1 channel's two declaration-derived values, from one definition
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "experiments"))
+    from _common import CAPTURE_SUPPORT as _CS
+    m["CaptSupport"] = f"{_CS['C']:.2f}"
+    m["GenSupport"] = f"{_CS['G']:.2f}"
     m["KresampleSpread"] = fmt(po["resample_16_8"]["max_spread_output_samples"])
     # I claim dilution
     I = load("I_claim_dilution")

@@ -430,3 +430,92 @@ never named, and are now described. The dilution caption said "declared guard
 bands" where the radius is the declared footprint, which already includes the
 margin. Theorem 1's proof still said "transitivity of $\le$" after the support
 domain was lifted, and now uses $\preceq$. One sentence began lowercase.
+
+
+---
+
+# Round 8: two reviews of very unequal quality, and a defect underneath one of them
+
+## The reviews sort out differently
+
+Review A raised seven issues. Six were **already addressed** in the current text:
+footprint locality with re-validation guidance, the oracle threat-to-validity
+framing, the amplitude-normalisation dual reading, the silence-removal
+re-declaration caveat and the dilution qualification. Its minor-flaws section was
+worse than unhelpful: the claimed "Reply -> Replay" typo does not exist, the
+claimed page-2 line-number artefact does not exist (no `lineno` package is
+loaded), and two of its three "inconsistencies" quote the same string twice
+("codec" vs "codec", "Figure 1" vs "Figure 1").
+
+Review B's quantitative audit, by contrast, checked out line for line against the
+result JSON: every dilution figure, 3,600/4,800 = 75% including which two
+operators do not promote, 9,455/10,000, and the zero-event bounds.
+
+## The defect underneath the applicability clause
+
+Review B was right that clause (iii) read $A_y(\mu) \subseteq \bigcap A_x(\mu)$
+where every sibling clause is an equality, while the abstract, both proofs and
+the conclusion all say "intersected".
+
+Verifying that surfaced something the review did not reach. Clause (ii)'s
+antecedent never mentioned $A_y(\mu)$, so a channel narrowed to an empty scope
+under (iii) would still be **required** to carry a value: a number declared
+applicable nowhere. Nothing excluded it. P4 iterates $S$, P5 iterates $A$, and
+the `Evidence` invariant rejected a missing key but not an empty scope. The bad
+record was confirmed constructible.
+
+Fixed at three levels: (iii) is now the equality with an explicit narrowing
+allowance, (ii) carries the applicability condition, the constructor rejects an
+empty scope, and a new conformance check `P8_channel_scope_agreement` runs over
+the full enumeration (98,385 cases, total checks 787,443 -> 885,828). The
+regression test fails when the invariant is reverted.
+
+## Where the subagent over-reached
+
+On lineage, the verification agent proposed redefining a lineage token as
+asset-plus-range. That was wrong: temporal placement **is** carried, by the
+per-interval decomposition, since every serialised record has its own `samples`
+bounds. Redefining the token would duplicate that. The real defects were smaller
+and different: the hedge "directly or reproducibly" was never defined and is
+unachievable for `concat` and `silence_removal`, which serialise only `n_parts`
+and `n_runs`, and the clause never said where placement lives. Repaired
+accordingly.
+
+Worth recording as a pattern: a verification agent that finds a real problem will
+sometimes propose a fix scaled to its own analysis rather than to the problem.
+
+## The typed-channel claim was false, the gap behind it real
+
+Review B asserted the channels are not exercised concretely. They are:
+`capture-support` aggregates 0.90 and 0.10 to 0.10 by minimum inside a
+c2patool-validated `Trusted` manifest. But the manuscript named the channel
+exactly once, so a reader could not have known. Now introduced properly, and
+`CAPTURE_SUPPORT` is hoisted from seven duplicate definitions into one.
+
+## Two defects the build could not see
+
+**Doubled periods, 30 of 30 paragraph heads.** `elsarticle`'s `\paragraph`
+appends its own period, so a heading already ending in one renders as two. The
+source was correct; only the built PDF showed it. Caught by Review B, fixed here
+and in the supplement, and `prose_audit.py` now extracts the rendered PDF and
+fails on recurrence.
+
+**A dangling supplement pointer**, which neither review pinned. The supplement's
+two longtables carry no `\caption{}`, so `\thetable` is never used and there is
+no Table S3 at all, only Section S3. `check_numbers.py` now resolves every
+supplement pointer against what the supplement actually numbers.
+
+## A reproducibility finding from running the pipeline repeatedly
+
+Across nine measurements on one machine the absolute bookkeeping cost per
+audio-minute spanned 0.954 to 1.362 ms, a spread of roughly 43%, while the ratio
+to the boundary-only baseline stayed between 3.34 and 3.44, a spread of 3%. Both
+arms are timed in the same process, so thermal state, frequency scaling and
+competing load move them together and cancel in the quotient. The within-run
+interquartile ranges do not capture this, because it is between-run variation.
+
+The manuscript now says the ratio is the quantity to carry across machines and
+that a reader reproducing the work should expect the ratio to survive and the
+milliseconds not to. This also corrects a mistaken diagnosis made mid-session:
+0.954 ms was the fast outlier, not a clean baseline, and the 1.31 ms figures
+were typical rather than degraded.

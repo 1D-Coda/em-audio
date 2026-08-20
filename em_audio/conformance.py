@@ -108,6 +108,26 @@ def p4_support_non_promotion(out: DerivedOutput, timelines: Dict[str, Timeline],
     return Check("P4_support_non_promotion", True, f"{len(intervals)} intervals")
 
 
+# --- P8 ---------------------------------------------------------------------
+
+def p8_channel_scope_agreement(out: "DerivedOutput", timelines: Dict[str, Timeline],
+                               intervals: Sequence[OutputInterval]) -> Check:
+    """Every valued channel carries a non-empty scope, and every scoped channel
+    carries a value. P4 iterates S and P5 iterates A, so neither on its own
+    excludes a value declared applicable nowhere."""
+    for iv in intervals:
+        valued, scoped = set(iv.ev.S), set(iv.ev.A)
+        if valued != scoped:
+            return Check("P8_channel_scope_agreement", False,
+                         f"[{iv.out_start},{iv.out_end}) valued {sorted(valued)} "
+                         f"but scoped {sorted(scoped)}")
+        for mu, scope in iv.ev.A.items():
+            if not scope:
+                return Check("P8_channel_scope_agreement", False,
+                             f"[{iv.out_start},{iv.out_end}) channel {mu} scoped to nothing")
+    return Check("P8_channel_scope_agreement", True, f"{len(intervals)} intervals")
+
+
 # --- P5 ---------------------------------------------------------------------
 
 def p5_applicability_non_broadening(out: DerivedOutput, timelines: Dict[str, Timeline],
@@ -189,5 +209,6 @@ def run_property_suite(out: DerivedOutput, timelines: Dict[str, Timeline]) -> Li
         p4_support_non_promotion(out, timelines, ivs),
         p5_applicability_non_broadening(out, timelines, ivs),
         p6_complete_lineage(out, timelines, ivs),
+        p8_channel_scope_agreement(out, timelines, ivs),
         p_footprint_monotone(out, timelines),
     ]

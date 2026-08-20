@@ -11,7 +11,7 @@
   "words_len3plus_battery10": 9828
  },
  "checks_failed": 0,
- "checks_total": 787443,
+ "checks_total": 885828,
  "composition_cases": 363,
  "element_width_samples": 64,
  "environment": {
@@ -63,6 +63,10 @@
    "fail": 0,
    "pass": 363
   },
+  "P8_channel_scope_agreement": {
+   "fail": 0,
+   "pass": 98385
+  },
   "P_footprint_monotone": {
    "fail": 0,
    "pass": 98385
@@ -76,7 +80,7 @@
    "pass": 49197
   }
  },
- "runtime_s": 28.395,
+ "runtime_s": 29.148,
  "words_containing_unverified": 9330,
  "words_enumerated": 9840,
  "words_with_mixed_ancestry": 494

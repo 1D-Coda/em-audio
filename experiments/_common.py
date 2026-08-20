@@ -14,6 +14,11 @@ from em_audio.interval_map import SourceInterval, Timeline           # noqa: E40
 CHANNEL = "capture-support"
 SCOPE = frozenset({"digital-asset"})
 
+# Declaration-derived support for the corpus and transport experiments. The
+# exhaustive synthetic enumeration sweeps the domain positionally instead, in
+# element() below, so that every value in S is exercised rather than two.
+CAPTURE_SUPPORT = {"C": 0.90, "G": 0.10}
+
 
 def element(kind: str, k: int, n: int, src: str = "s") -> Evidence:
     """Deterministic evidence element for symbol ``kind`` at position ``k``."""

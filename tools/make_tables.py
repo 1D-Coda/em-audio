@@ -140,7 +140,7 @@ def main_results():
     r.append(r"\addlinespace")
     r.append(r"\multicolumn{4}{l}{\textit{C--D\quad Mixed-origin audio corpus, "
              r"stock-FFmpeg processing}} \\")
-    r.append(f"Exact interval recovery & {C['n_clips']} & --- & "
+    r.append(f"Exact propagation of constructed interval evidence & {C['n_clips']} & --- & "
              f"{C['exact_interval_recovery']} \\\\")
     for k in sorted(D["per_transformation"]):
         v = D["per_transformation"][k]
