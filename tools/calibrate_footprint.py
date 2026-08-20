@@ -7,9 +7,14 @@ tool. This is that tool.
   * the MAPPING pass pushes a deterministic reference signal through the
     configuration and reports the largest output-length deviation from the
     interval model, which is what the implementation margin has to cover;
-  * the SUPPORT pass sweeps a proportionate impulse across the input and
-    reports the furthest any single source sample influenced the output beyond
-    the nominal source range, which is what the declared footprint has to cover.
+  * the SUPPORT pass places a proportionate impulse at ten prespecified source
+    positions, in each of four signal contexts, and reports the furthest any
+    single source sample influenced the output beyond the nominal source range,
+    which is what the declared footprint has to cover. It is a probe at chosen
+    positions, not an exhaustive sweep: ten of sixteen thousand source samples
+    are struck, so the tool cannot discover a mode transition that occurs only
+    at an untested position. The positions are the operators' own cut points and
+    edges, where an under-declaration shows up first.
 
 Substituting the first for the second is the conflation the paper had to correct
 in its own draft: output length can be exact while the dependency is wider than
@@ -23,10 +28,12 @@ single direction the contract does not forgive.
 Usage:
     python3 tools/calibrate_footprint.py                # every v1 operator
     python3 tools/calibrate_footprint.py transcode_mp3  # one of them
+    python3 tools/calibrate_footprint.py --self-test    # prove it can reject
 """
 from __future__ import annotations
 
 import json
+import math
 import shutil
 import sys
 from pathlib import Path
@@ -64,14 +71,25 @@ def mapping_pass(name, run, model, wd):
 
 
 def support_pass(name, run, model, wd, positions):
-    """Furthest measured influence beyond the nominal source range."""
+    """Furthest measured influence beyond the nominal source range.
+
+    Returns the per-probe rows as well as the aggregate, so a reader can audit
+    which position and context produced the reach rather than trusting a single
+    maximum.
+    """
     reach = outside = 0
+    rows = []
     for ctx in CONTEXTS:
         for k in positions:
             r = probe(name, run, model, k, wd, ctx)
             reach = max(reach, r["max_measured_reach_source_samples"])
             outside += r["outside_declared_support"]
-    return reach, outside
+            rows.append({"context": ctx, "source_position": k,
+                         "impulse_amplitude": r["impulse_amplitude"],
+                         "affected_output_samples": r["affected_output_samples"],
+                         "reach_source_samples": r["max_measured_reach_source_samples"],
+                         "outside_declared_support": r["outside_declared_support"]})
+    return reach, outside, rows
 
 
 def cases():
@@ -94,7 +112,59 @@ def cases():
     ]
 
 
+def self_test() -> int:
+    """Deliberately under-declare a footprint and require the tool to reject it.
+
+    A calibration tool that has only ever certified declarations has not been
+    shown to detect a bad one. This shrinks a known-good declaration below its
+    own measured reach and fails unless the run reports UNDER-DECLARED, so the
+    negative case is exercised rather than assumed.
+    """
+    name, model, run = [c for c in cases() if c[0] == "transcode_mp3"][0]
+    wd = WORK / "selftest"
+    if wd.exists():
+        shutil.rmtree(wd)
+    wd.mkdir(parents=True)
+    positions = probe_positions()
+
+    reach, outside, _ = support_pass(name, run, model, wd, positions)
+    if not reach:
+        print("self-test inconclusive: no measurable reach for the probe operator")
+        return 1
+
+    # shrink every piece's declaration to just below the measured reach
+    bad = reach - 1
+    for piece in model.pieces:
+        object.__setattr__(piece, "footprint", bad) if hasattr(piece, "__dataclass_fields__") \
+            else setattr(piece, "footprint", bad)
+    reach2, outside2, _ = support_pass(name, run, model, wd, positions)
+    detected = outside2 > 0 or bad < reach2
+
+    print(f"self-test: {name} measured reach {reach}, declaration forced to {bad}")
+    print(f"  samples outside the shrunken declaration: {outside2}")
+    if detected:
+        print("  PASS: the tool rejects a declaration below its measured reach")
+        return 0
+    print("  FAIL: an under-declaration went undetected")
+    return 1
+
+
+def probe_positions():
+    """The same positions the containment experiment uses.
+
+    A calibration that probed fewer places than the validation could report a
+    smaller reach than the validation later measures, and so recommend a
+    declaration the validation rejects. It must not under-measure relative to
+    its own check.
+    """
+    return sorted({64, N // 10, N // 10 + 32, int(0.4 * N) - 16,
+                   int(0.4 * N) + 16, N // 2, int(0.6 * N) - 16,
+                   int(0.6 * N) + 16, N - N // 10 - 32, N - 128})
+
+
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "--self-test":
+        return self_test()
     want = sys.argv[1] if len(sys.argv) > 1 else None
     selected = [c for c in cases() if want is None or c[0] == want]
     if not selected:
@@ -106,13 +176,7 @@ def main() -> int:
         shutil.rmtree(WORK)
     WORK.mkdir(parents=True)
 
-    # The same positions the containment experiment uses. A calibration that
-    # probed fewer places than the validation could report a smaller reach than
-    # the validation later measures, and so recommend a declaration the
-    # validation rejects. It must not under-measure relative to its own check.
-    positions = sorted({64, N // 10, N // 10 + 32, int(0.4 * N) - 16,
-                        int(0.4 * N) + 16, N // 2, int(0.6 * N) - 16,
-                        int(0.6 * N) + 16, N - N // 10 - 32, N - 128})
+    positions = probe_positions()
 
     print(f"{'operator':20s} {'declared':>9s} {'reach':>7s} {'map dev':>8s} "
           f"{'recommend':>10s}  verdict")
@@ -121,9 +185,12 @@ def main() -> int:
         wd = WORK / name
         wd.mkdir(parents=True)
         dev = mapping_pass(name, run, model, wd)
-        reach, outside = support_pass(name, run, model, wd, positions)
+        reach, outside, probe_rows = support_pass(name, run, model, wd, positions)
         declared = model.pieces[0].footprint
-        recommend = (int(reach * (1 + MARGIN_FRACTION)) + MARGIN_FLOOR_SAMPLES
+        # ceiling, not truncation: this is advisory today, but a caller that
+        # promotes it to a declared bound must not inherit a one-sample
+        # under-round from the arithmetic.
+        recommend = (math.ceil(reach * (1 + MARGIN_FRACTION)) + MARGIN_FLOOR_SAMPLES
                      if reach else 0)
         # Containment is the requirement; the advisory margin is policy. An
         # existing declaration that contains its measured reach is sound even if
@@ -145,7 +212,8 @@ def main() -> int:
                      "recommended_footprint_samples": recommend,
                      "samples_outside_declared_support": outside,
                      "contains_measurement": ok,
-                     "meets_advisory_margin": bool(ok and (not reach or declared >= recommend))})
+                     "meets_advisory_margin": bool(ok and (not reach or declared >= recommend)),
+                     "probes": probe_rows})
 
     out = ROOT / "results" / "machine_readable" / "CALIBRATION.json"
     out.write_text(json.dumps({

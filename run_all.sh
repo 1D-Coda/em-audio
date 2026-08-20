@@ -24,6 +24,9 @@ step "A  exhaustive finite-state conformance"
 step "A2 applicability scope battery"
 ( cd experiments && python3 scope_battery.py ) || fail=1
 
+step "A3 calibration tool self-test (must reject an under-declaration)"
+python3 tools/calibrate_footprint.py --self-test || fail=1
+
 step "B  deterministic adversarial timelines"
 ( cd experiments && python3 adversarial_timelines.py ) || fail=1
 

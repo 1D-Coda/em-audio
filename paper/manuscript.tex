@@ -1437,7 +1437,9 @@ independence from the author (Section~\ref{sec:limits}).
 \label{sec:res-overhead}
 
 Complete-source bookkeeping cost a median \Gem{}~ms per audio-minute against
-\Gbase{}~ms for boundary-only, a ratio of \Gratio{}$\times$, which is
+\Gbase{}~ms for boundary-only, a ratio of \Gratio{}$\times$ computed from the
+unrounded medians rather than from the two figures as printed, which differ in
+the last place they are quoted to, and which is
 \GffmpegPct{}\% of the FFmpeg time it accompanies (Table~\ref{tab:overhead};
 Figure~\ref{fig:overhead}). Signing took a median \Gsign{}~ms per asset
 (IQR \GsignQa{}--\GsignQb{}) and validation \Gval{}~ms
@@ -1702,7 +1704,15 @@ specifications where those state window and delay constants. Both passes are imp
 \texttt{tools/calibrate\_footprint.py}, which reports the measured reach, the
 largest output-length deviation and a recommended declaration for each
 operator, and exits non-zero if any declaration fails to contain its own
-measured reach. Run against the v1 operators it reproduces the reaches of
+measured reach. Its support pass is a probe at ten prespecified positions in
+each of \Kcontexts{} contexts, not an exhaustive sweep, so it cannot discover a
+mode transition occurring only at an untested position; the positions are the
+operators' own cut points and edges, where an under-declaration shows up first.
+It retains every per-probe record rather than the maximum alone, so a reader can
+see which position and context produced the reach. A self-test shrinks a known
+declaration below its own measured reach and fails unless the run rejects it,
+which is what distinguishes a tool that certifies declarations from one that has
+been shown to detect a bad one; it runs in the pipeline. Run against the v1 operators it reproduces the reaches of
 Section~\ref{sec:res-containment} exactly, which is the cross-check that the
 tool measures the same quantity the validation does. It separates the
 requirement from the policy: containment of the measured reach is what

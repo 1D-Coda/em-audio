@@ -601,3 +601,52 @@ The code-availability statement said the artifacts "are public under the MIT
 licence". There is no git remote; nothing has been published. The sentence now
 describes what holds, MIT licensing and one-command reproduction, and defers the
 URL rather than asserting availability a reader cannot act on.
+
+
+---
+
+# Round 10: the tool that had never been shown to fail
+
+Two findings, both about code written in the previous round.
+
+## The docstring overclaimed, in a paper about not overclaiming
+
+The calibration tool's own documentation said its support pass "sweeps a
+proportionate impulse across the input". It strikes ten positions out of
+sixteen thousand, 0.061% of the input. "Sweep" implies exhaustive; this is a
+probe at chosen positions. Both the tool and the manuscript now say so, along
+with why those positions were chosen, the operators' own cut points and edges,
+where an under-declaration surfaces first, and what the design cannot do, which
+is discover a mode transition occurring only at an untested position.
+
+## The tool had only ever certified, never rejected
+
+The sharper finding. The calibration tool had run seven times and passed seven
+times. Its ability to detect an under-declaration was assumed, never
+demonstrated, which is the same defect as a conformance suite that has never
+failed. Two rounds earlier this exact principle went into the transferable
+checklist, "make sure the probe CAN fail before believing it passed", and it was
+not applied to the tool that was written to enforce it.
+
+There is now a `--self-test` that forces MP3's declared footprint to 1,554,
+exactly one sample below its measured reach of 1,555, and fails unless the run
+rejects it. It detects one sample outside, the tightest demonstration the
+measurement allows, and it runs in the pipeline on every invocation.
+
+## Smaller repairs from the same review
+
+The advisory margin truncated where it should have taken a ceiling, differing by
+one sample in three of four operators. Harmless while the margin is advisory, a
+silent under-round if a caller ever promotes it to a declared bound. All 280
+per-probe records are now retained rather than the maximum alone, so a reader can
+see which position and context produced each reach; MP3's worst is the dense
+context at position 8192. And the overhead ratio is computed from unrounded
+medians, so dividing the two printed figures gives 3.41 where the paper reports
+3.38; the text now says which.
+
+## What remains outside the code
+
+Three reviews have now flagged artifact access. There is still no git remote, so
+the calibration tool cannot be run by anyone else, the repository URL cannot be
+printed, and independent reproduction cannot begin. This is the only open item
+that no amount of further work on the manuscript can close.

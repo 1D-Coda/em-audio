@@ -12,6 +12,328 @@
       "measured_reach_source_samples": 0,
       "meets_advisory_margin": true,
       "operator": "trim_10_90",
+      "probes": [
+        {
+          "affected_output_samples": 0,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        }
+      ],
       "recommended_footprint_samples": 0,
       "samples_outside_declared_support": 0
     },
@@ -22,6 +344,328 @@
       "measured_reach_source_samples": 32,
       "meets_advisory_margin": false,
       "operator": "resample_16_8",
+      "probes": [
+        {
+          "affected_output_samples": 31,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 33,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 32,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 32,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 32,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 28,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 27,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 28,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 27,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 32,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 31,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 33,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 32,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 32,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 32,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 21,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 20,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 21,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 21,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 20,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 21,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 20,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 23,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 21,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 22,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 22,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 25,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 19,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 18,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 19,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 23,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 21,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 22,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 22,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 24,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 32,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 32,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 28,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 27,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 28,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 27,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 32,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 32,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 31,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 30,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 29,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 29,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 29,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 31,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 30,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 32,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 32,
+          "source_position": 16256
+        }
+      ],
       "recommended_footprint_samples": 104,
       "samples_outside_declared_support": 0
     },
@@ -32,6 +676,328 @@
       "measured_reach_source_samples": 0,
       "meets_advisory_margin": true,
       "operator": "transcode_flac",
+      "probes": [
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        }
+      ],
       "recommended_footprint_samples": 0,
       "samples_outside_declared_support": 0
     },
@@ -42,7 +1008,329 @@
       "measured_reach_source_samples": 1555,
       "meets_advisory_margin": true,
       "operator": "transcode_mp3",
-      "recommended_footprint_samples": 2007,
+      "probes": [
+        {
+          "affected_output_samples": 623,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 771,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1680,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1105,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1675,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1000,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1753,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1220,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1777,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1226,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1823,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1307,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1668,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 997,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1654,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1016,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1770,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1222,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 834,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1026,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 257,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 770,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 243,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1054,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 237,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1271,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 232,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1066,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 206,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1034,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 235,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1541,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 257,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1490,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 236,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1522,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 196,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1051,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 184,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1299,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 645,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 734,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1215,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 880,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1254,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 799,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1330,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 932,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1019,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 862,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1251,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 906,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1072,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 742,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1299,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 797,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1342,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1058,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 808,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 907,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 570,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 689,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1418,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1138,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1276,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1474,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 992,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1177,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1038,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1153,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1233,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1555,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1389,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1428,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1334,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1460,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 990,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1157,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 748,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1493,
+          "source_position": 16256
+        }
+      ],
+      "recommended_footprint_samples": 2008,
       "samples_outside_declared_support": 0
     },
     {
@@ -52,6 +1340,328 @@
       "measured_reach_source_samples": 0,
       "meets_advisory_margin": true,
       "operator": "normalize",
+      "probes": [
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        }
+      ],
       "recommended_footprint_samples": 0,
       "samples_outside_declared_support": 0
     },
@@ -62,7 +1672,329 @@
       "measured_reach_source_samples": 1906,
       "meets_advisory_margin": true,
       "operator": "time_stretch_1.10",
-      "recommended_footprint_samples": 2446,
+      "probes": [
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 6,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 9,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 13,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 2023,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1906,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 2023,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1874,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 27,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 19,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 15,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1508,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1601,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 9,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 6,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 9,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 13,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1736,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1906,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1736,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1874,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 27,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 19,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 15,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1263,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1602,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 9,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 649,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 1053,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 105,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 108,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 32,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 35,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 198,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 360,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 363,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 287,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 6,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 163,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 167,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 317,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 320,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 146,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 308,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 311,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 125,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        }
+      ],
+      "recommended_footprint_samples": 2447,
       "samples_outside_declared_support": 0
     },
     {
@@ -72,7 +2004,329 @@
       "measured_reach_source_samples": 3277,
       "meets_advisory_margin": false,
       "operator": "silence_removal",
-      "recommended_footprint_samples": 4160,
+      "probes": [
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 3277,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 205,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "tone",
+          "impulse_amplitude": 12000,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 3277,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 205,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "near_threshold",
+          "impulse_amplitude": 256,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 3277,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 205,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "transient",
+          "impulse_amplitude": 10918,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 64
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1638
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 1670
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 6537
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 3277,
+          "source_position": 6569
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 8192
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9814
+        },
+        {
+          "affected_output_samples": 0,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 9846
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 205,
+          "source_position": 14714
+        },
+        {
+          "affected_output_samples": 1,
+          "context": "dense",
+          "impulse_amplitude": 11396,
+          "outside_declared_support": 0,
+          "reach_source_samples": 0,
+          "source_position": 16256
+        }
+      ],
+      "recommended_footprint_samples": 4161,
       "samples_outside_declared_support": 0
     }
   ],
