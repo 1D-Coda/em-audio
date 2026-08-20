@@ -1,7 +1,6 @@
 {
- "boundary_mismatches": 0,
- "captured_source": "LibriSpeech dev-clean (CC BY 4.0)",
- "concat_tool": "stock ffmpeg CLI (no project code in the signal path)",
+ "distinct_scopes": 5,
+ "enlargement_cases": 441,
  "environment": {
   "c2patool": "c2patool 0.27.2",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
@@ -12,11 +11,10 @@
   "processor": "arm",
   "python": "3.11.15"
  },
- "experiment": "C0_corpus_build",
- "generated_source": "eSpeak NG 1.52.0 formant synthesis, generated locally",
- "n_clips": 600,
- "runtime_s": 132.395,
- "sample_rate": 16000,
- "seed": 20260819,
- "total_samples": 27348448
+ "experiment": "L_scope_battery",
+ "monotone": 441,
+ "purpose": "applicability cases the single-scope audio corpus cannot reach: disjoint and overlapping scopes, and the inapplicable-to-applicable transition that Proposition 4 turns on",
+ "unconstructible_skipped": 184,
+ "violations": 0,
+ "violations_under_superseded_rule": 80
 }

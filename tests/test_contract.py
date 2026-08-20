@@ -106,9 +106,17 @@ def main() -> int:
     b = Evidence(P=claim_of([C]), S={}, A={CH: SC}, L=frozenset({"u2"}))
     check("channel applicable to a source but unreported makes the output unavailable",
           CH not in aggregate([a, b]).S)
+    # A source to which the channel is not applicable at all used to be skipped,
+    # leaving the channel computed from the rest. That is the same partial-subset
+    # situation as the case above, and it is what broke Proposition 4 for
+    # channels: enlarging D_y by a source that declares an otherwise
+    # inapplicable channel raised it from unavailable to a value. Requirement
+    # (iv) now covers both halves, so the channel is withheld.
     d = Evidence(P=claim_of([C]), S={}, A={}, L=frozenset({"u3"}))
-    check("channel inapplicable to a source does not enter the meet",
-          aggregate([a, d]).S.get(CH) == 0.5)
+    check("channel inapplicable to a required source is withheld, not computed "
+          "from the rest", CH not in aggregate([a, d]).S)
+    check("so enlarging D_y cannot raise a channel from unavailable to a value",
+          CH not in aggregate([a, d]).S and aggregate([a]).S.get(CH) == 0.5)
 
     # --- scope ------------------------------------------------------------
     x = Evidence(P=claim_of([C]), S={CH: 0.5}, A={CH: frozenset({"p", "q"})}, L=frozenset({"u"}))

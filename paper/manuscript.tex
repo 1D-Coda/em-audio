@@ -158,10 +158,13 @@ Same-channel meet by minimum; scope intersection; lineage union &
 The captured/generated alphabet and the capture-support channel \\
 \addlinespace
 Absorbing unverified state &
+Requirement (iv): a channel not applicable to \emph{every} required source is
+withheld, not computed from the rest \\
+\addlinespace
 Requirement (iv$'$): a $\bot$ source also withholds every numeric channel \\
 \addlinespace
 Non-promotion in the spatial setting &
-Kernel footprints with declared guard bands, validated per clip against stock
+Kernel footprints with declared source-support bounds, validated per clip against stock
 FFmpeg; footprint monotonicity (Proposition~\ref{prop:footprint}) \\
 \addlinespace
 Conformance-test methodology (exhaustive enumeration, frozen fixtures,
@@ -197,7 +200,8 @@ contribution in what is executable and measured.
   demonstrated end-to-end on \Fcontainers{} audio containers with \Ftotal{}
   round-trips, plus a C2PA-native heterogeneous composition in which signed
   captured and generated sources become \texttt{componentOf} ingredients with
-  spec-conformant \texttt{c2pa.placed} references and the EM aggregate rides
+  \texttt{c2pa.placed} references, under a documented profile reading of the
+  action vocabulary, and the EM aggregate rides
   alongside (Sections~\ref{sec:transport}, \ref{sec:res-transport},
   \ref{sec:res-composition}).
 \item A policy ablation showing that complete-source aggregation and declared
@@ -210,7 +214,7 @@ contribution in what is executable and measured.
   disagreements (Sections~\ref{sec:res-conformance}, \ref{sec:res-oracle}).
 \item A measured demonstration on \Cclips{} mixed-origin clips processed
   entirely by stock FFmpeg, in which the interval model is validated against
-  the behaviour of software we do not control and the guard bands are shown
+  the behaviour of software we do not control and the declared footprints are shown
   adequate (Section~\ref{sec:res-corpus}).
 \item A cost measurement on both axes that matter: runtime, where bookkeeping
   is \GffmpegPct{}\% of the processing time it accompanies and the assertion
@@ -533,17 +537,26 @@ $\mu$ applicable. The contract requires:
   without it a channel narrowed to an empty scope under~(iii) would still be
   required to carry a value, which would be a number declared applicable
   nowhere.
-\item[(iii) Applicability] $A_y(\mu) = \bigcap_{x \in \Dy^{\mu}}
-  A_x(\mu)$; an empty intersection makes the channel unavailable. An
-  implementation may declare a narrower scope $A_y'(\mu) \subseteq A_y(\mu)$
-  and withhold the channel outside it, but never a broader one. That is the one
-  direction in which a conforming implementation may depart from the canonical
-  reduction, and it is the containment rather than the equality that the
-  conformance check tests, since a narrower scope cannot promote. The reference
-  implementation emits the exact intersection.
-\item[(iv) No partial subsets] a channel applicable to some required source but
-  unreported by it is unavailable on the output; it is never computed from the
-  remaining sources.
+\item[(iii) Applicability] the \emph{canonical} scope is
+  $A_y(\mu) = \bigcap_{x \in \Dy^{\mu}} A_x(\mu)$, and an empty intersection
+  makes the channel unavailable. A \emph{conforming} operator may emit any
+  $A_y'(\mu) \subseteq A_y(\mu)$, withholding the channel outside it, but never
+  a broader one. Conformance is the containment, since a narrower scope cannot
+  promote; the equality names the canonical reduction, which is what the
+  reference implementation emits. Statements quantifying over operators that
+  satisfy~(i) to~(v), Theorem~\ref{thm:composition} in particular, are to be
+  read in this conforming sense, so that an operator emitting a narrower scope
+  is covered rather than excluded by the equality.
+\item[(iv) No partial subsets] a channel is available on the output only if
+  every required source declares it applicable \emph{and} supplies a value:
+  formally $\Dy^{\mu} = \Dy$ is required, not merely
+  $\Dy^{\mu} \neq \emptyset$. A channel applicable to some required source but
+  unreported by it is unavailable, and so is one that is not applicable to some
+  required source at all. In neither case is it computed from the remaining
+  sources. The two halves are the same principle, and the second is what makes
+  Proposition~\ref{prop:footprint} hold for channels: without it, enlarging
+  $\Dy$ by a source that declares an otherwise inapplicable channel would raise
+  that channel from unavailable to a value, which is a strengthening.
 \item[(iv$'$) Unverified absorption for channels] if any required source is in
   state $\bot$, every numeric channel on the output is unavailable.
 \item[(v) Lineage] $L_y = \bigcup_{x \in \Dy} L_x$, identifying the complete
@@ -556,8 +569,15 @@ $\mu$ applicable. The contract requires:
   disambiguate.
 \end{description}
 
-Requirement~(iv$'$) is the one place where this model is strictly stronger than
-its spatial predecessor, and it needs a justification. An element in state
+Requirements~(iv) and~(iv$'$) are where this model is strictly stronger than its
+spatial predecessor, and both need a justification. The strengthening in~(iv) is
+the demand that $\Dy^{\mu} = \Dy$ rather than merely $\Dy^{\mu} \neq
+\emptyset$: a channel not applicable to some required source is withheld rather
+than computed from the rest. It costs expressiveness, since sources carrying
+different channel schemas now yield no channel at all on a shared interval
+rather than a partial one, and that is the price of
+Proposition~\ref{prop:footprint} holding for channels at all. The
+strengthening in~(iv$'$) is the companion rule for $\bot$. An element in state
 $\bot$ carries no evidence record at all, so nothing is declared about any
 channel over the span it occupies. Computing a numeric channel from the
 remaining, verified sources would be exactly the partial-subset computation
@@ -636,11 +656,29 @@ from $\Dy'$ is $\preceq$ the value computed from $\Dy$ in $\mathcal{S}$.
 \begin{proof}
 Enlarging the index set of a union can only add atoms, and by~\eqref{eq:order}
 a superset is a weaker claim; adding a source in state $\bot$ sends the claim to
-$\bot$, which is weaker still. For channels, enlarging $\Dy$ can only add
-members to $\Dy^{\mu}$, and the minimum over a larger set is no larger; if an
-added source declares $\mu$ applicable but reports no value, the channel becomes
-$\bot_{\mu}$, which is $\preceq$ every element of $[0,1]$ by
-\eqref{eq:supportdomain}. Both cases therefore move down $\mathcal{S}$.
+$\bot$, which is weaker still.
+
+For channels the argument runs through~(iv), which requires
+$\Dy^{\mu} = \Dy$ for availability. Suppose $\mu$ is available on $\Dy'$. Then
+every member of $\Dy'$ declares $\mu$ applicable and supplies a value, so every
+member of $\Dy \subseteq \Dy'$ does too, and $\mu$ is available on $\Dy$ as
+well; the emitted value is a minimum over the larger set $\Dy'$, which is no
+larger than the minimum over $\Dy$. Suppose instead $\mu$ is unavailable on
+$\Dy$. Some member of $\Dy$ then fails to declare $\mu$ applicable, fails to
+supply a value, or is in state $\bot$; that same member lies in $\Dy'$, so $\mu$
+is unavailable on $\Dy'$ as well, and $\bot_{\mu} \preceq \bot_{\mu}$. The
+remaining case is an added source whose scope empties the intersection
+in~(iii): requirements~(ii) and~(iii) then withhold the channel, giving
+$\bot_{\mu}$, which by~\eqref{eq:supportdomain} is $\preceq$ every element of
+$[0,1]$. Every case therefore moves down $\mathcal{S}$.
+
+The condition $\Dy^{\mu} = \Dy$ carries the weight here. Under the weaker
+condition $\Dy^{\mu} \neq \emptyset$ the statement would be false, and
+concretely so: take $\Dy = \{x_1\}$ with $\mu$ not applicable to $x_1$, so the
+channel is unavailable, and enlarge to $\Dy' = \{x_1, x_2\}$ where $x_2$
+declares $\mu$ applicable with some value $v \in [0,1]$. The channel would rise
+from $\bot_{\mu}$ to $v$, and $\bot_{\mu} \prec v$ for every such $v$, so
+enlarging the required-source set would have strengthened the claim.
 \end{proof}
 
 Proposition~\ref{prop:footprint} is the practical result of this section. It
@@ -673,16 +711,26 @@ partition of an asset into evidence-homogeneous intervals.
 \texttt{digital-asset}. It is the degree to which an interval's own record
 supports a capture claim for that interval, on the lifted domain
 $\mathcal{S}$; it is not a detector output and is not calibrated against any
-acoustic measurement. The corpus and transport experiments assign
+acoustic measurement. What this instantiation demonstrates about the channel is
+therefore schema and conformance, that a typed channel aggregates by minimum,
+absorbs correctly, intersects its scope and survives the signed transport, and
+not that the particular numbers carry forensic meaning. A deployment supplying
+a calibrated score would inherit the algebra unchanged and would owe its own
+validation of what the score means. The corpus and transport experiments assign
 the two declaration-derived values \CaptSupport{} to captured-derived and
 \GenSupport{} to generated-derived source intervals, so a mixed interval
 aggregates to \GenSupport{} by the minimum in~(ii); the exhaustive
 enumeration of Section~\ref{sec:res-conformance} instead sweeps the domain
 positionally, so that every value in $\mathcal{S}$ is exercised rather than
-two. One channel is enough to exercise every rule the model states about
-channels, since (ii) governs the value, (iii) the scope, (iv) the
-partial-subset case and (iv$'$) absorption, and all four are checked over the
-full enumeration and carried through the signed transport.
+two. One channel is enough to exercise the value rules this
+instantiation relies on, since (ii) governs the value, (iv) the partial-subset
+case and (iv$'$) absorption, and all three are checked over the full enumeration
+and carried through the signed transport. It is deliberately not a strong test
+of~(iii). A single scope cannot exhibit disjoint or partially overlapping
+scopes, nor a channel applicable to one required source and not another, and
+that last case is the one Proposition~\ref{prop:footprint} turns on. Those
+cases are covered instead by a synthetic battery over \LscopeScopes{} scopes,
+reported in Section~\ref{sec:res-conformance}.
 
 An operator emits a set of \emph{map pieces}. A piece states that output range
 $[o_a, o_b)$ represents source range $[s_a, s_b)$ on a named asset, together
@@ -840,7 +888,7 @@ $\{\C, \G, \bot\}$, giving \Awords{} words, and pushes each through up to ten
 operator configurations. Two configurations require a minimum word length: the inner trim needs at least three elements and silence removal at least two. So the \AwordsShortOne{} single-element words receive eight configurations,
 the \AwordsShortTwo{} two-element words nine, and the remaining \AwordsFull{}
 words the full ten, giving \Acases{} cases. Each case is checked against the full
-property suite and against an independent closed-form oracle that recomputes the
+property suite and against a separate closed-form oracle that recomputes the
 expected state directly from the operator's nominal source ranges without using
 the evidence algebra; for zero-footprint operators the states must match exactly,
 and for kernel operators the emitted claim may only be weaker.
@@ -923,6 +971,27 @@ and the closed-form oracle together evaluated \Achecks{} checks with
 regression test passes: \Tpass{} of \Ttotal{}, with \Tfail{} failures, and both
 counts appear as their own row in Table~\ref{tab:main} rather than being folded
 into the comparison columns, which do not apply to them.
+
+That enumeration carries one channel over one scope, which is what the audio
+instantiation uses, so it cannot reach the applicability cases of~(iii). A
+separate synthetic battery covers those: over \LscopeScopes{} scopes, chosen so
+that pairs are disjoint, nested and partially overlapping, it enumerates
+\LscopeCases{} source-set enlargements and checks each against
+Proposition~\ref{prop:footprint}, with \LscopeViolations{} violations.
+
+The battery earns its place, because it is what the audio corpus could not have
+told us. An earlier version of requirement~(iv) withheld a channel only when a
+required source declared it applicable and reported no value, leaving a source
+to which the channel was not applicable at all to be silently skipped. Under
+that rule the enumeration of this section still passed every one of its
+\Achecks{} checks, because in the v1 instantiation every source that is not
+$\bot$ declares the one channel and every $\bot$ source is absorbed
+by~(iv$'$). The battery fails it in \LscopeFailBad{} of its \LscopeCases{}
+cases, each an enlargement that raised the channel from unavailable to a
+value. The monotonicity check had the same blind spot in the same place: it
+compared a channel's value only when the channel was present on both sides, so
+the one transition that breaks the proposition was the one comparison it
+skipped. Both are fixed, and the battery runs in the pipeline.
 
 The suite has teeth. During development it failed on the overlay operator,
 where the implementation evaluated overlapping map pieces independently and so
@@ -1047,7 +1116,7 @@ where the output was PCM and on a \DdetermN{}-clip subset for the coded
 containers. The largest absolute deviation between predicted and actual output
 sample count was \DsilenceDev{} samples for silence removal, \DstretchDev{} for
 time stretching, \DmpThreeDev{} for MP3 and \DresampleDev{} for resampling. For
-\DguardOK{} transformations the declared guard band covered the observed
+\DguardOK{} transformations the declared mapping margin covered the observed
 deviation.
 
 That measurement bounds one thing and not another, and the distinction matters
@@ -1066,9 +1135,9 @@ Proposition~\ref{prop:union} once the required source set is correct, so on its
 own it checks that the implementation matches the algebra; on overlay, during
 development, it did not. The genuinely falsifiable measurements are
 the other two: whether the interval model predicts the output length of software
-we do not control, and whether the declared guard bands bound that deviation.
+we do not control, and whether the declared mapping margin bounds that deviation.
 Support containment is a third falsifiable measurement and is made separately in
-Section~\ref{sec:res-containment}. Either could have come out wrong, and the guard bands would then have
+Section~\ref{sec:res-containment}. Either could have come out wrong, and the declared footprints would then have
 had to be re-declared and the build would have failed.
 
 \begin{figure}[t]
@@ -1181,7 +1250,7 @@ for the large-footprint operators, because a declared footprint of \KstretchFp{}
 samples spans a whole short source; lengthening the probe until the footprint
 covers a fraction of it made the test able to fail, and it did. Silence removal
 failed: a frame-granular selector emitted a frame beginning \KsilenceReach{}
-source samples before a retained run's start, well beyond the guard band
+source samples before a retained run's start, well beyond the margin
 declared for it at the time. That is an under-declaration, which is the one
 direction Proposition~\ref{prop:footprint} does not forgive. The band was raised
 to \KsilenceFp{} samples, above the measured reach, and the operator now
@@ -1234,7 +1303,9 @@ previously placed (via \texttt{c2pa.placed} actions) audio ingredients (e.g.,
 stems, vocals, drums, bass, etc) are combined and optionally transformed''
 \citep[Table~8]{c2pa24}. Our fixture concatenates its two sources in sequence
 rather than summing them, and we interpret sequential concatenation as placement
-rather than mixing. The specification does not settle the question either way:
+rather than mixing. We label that a \emph{documented profile decision} rather
+than a normative reading, because the specification does not settle the boundary
+and we have no validator consensus to cite for it. The specification does not settle the question either way:
 it neither states that concatenation is not mixing, nor excludes
 \texttt{c2pa.remixed}, which covers ``transformation of a previously recorded
 audio asset'' including re-arranging \citep[Table~8]{c2pa24}. What is not a
@@ -1466,7 +1537,7 @@ Kernel-support containment, which is a different property, measured separately;
 and that the bounds hold for other codecs, builds or configurations \\
 \addlinespace
 Kernel-support containment &
-Paired impulse probes at ten positions across \Kops{} operator configurations,
+\Kprobes{} probes: ten positions in each of \Kcontexts{} signal contexts across \Kops{} operator configurations,
 compared on decoded PCM at one least significant bit &
 Containment for probe positions, signals, codecs or configurations not tested;
 the probe bounds the operators as configured here, not the operator class \\
@@ -1616,10 +1687,10 @@ validated against those configurations and no others. A different FFmpeg build,
 resampler setting, codec or tempo factor requires the bound to be re-declared
 and re-tested; Proposition~\ref{prop:footprint} guarantees that erring large is
 safe, not that our particular numbers transfer. The re-declaration need not be manual,
-but it needs two passes rather than one, because the two columns of
+but it needs two passes rather than one, because the analytical and implementation-margin components of
 Table~\ref{tab:operators} bound different things. A \emph{mapping-guard}
 calibration pushes a deterministic reference signal through the unknown
-configuration and sets the guard band from the maximum output-length deviation
+configuration and sets the mapping margin from the maximum output-length deviation
 plus a margin, which is the measurement the transformation matrix already makes.
 A \emph{support-footprint} calibration sweeps a single-sample impulse across the
 input and sets the kernel radius from the widest measured influence plus a
@@ -1627,9 +1698,20 @@ margin, which is the measurement Section~\ref{sec:res-containment} makes.
 Substituting the first for the second is exactly the conflation this paper had
 to correct in its own draft: output length can be exact while the dependency is
 wider than declared. Kernel radii could equally be derived from codec
-specifications where those state window and delay constants. Neither pass is
-implemented as a tool here; both inherit their safety from footprint
-monotonicity, since a calibration that errs large cannot promote.
+specifications where those state window and delay constants. Both passes are implemented as
+\texttt{tools/calibrate\_footprint.py}, which reports the measured reach, the
+largest output-length deviation and a recommended declaration for each
+operator, and exits non-zero if any declaration fails to contain its own
+measured reach. Run against the v1 operators it reproduces the reaches of
+Section~\ref{sec:res-containment} exactly, which is the cross-check that the
+tool measures the same quantity the validation does. It separates the
+requirement from the policy: containment of the measured reach is what
+soundness needs, whereas the recommended margin, a fraction of the reach with a
+floor, is a conservatism choice the tool reports but does not enforce. Two of
+the declarations shipped here sit below that advisory margin while containing
+their reach, and are marked as such rather than quietly raised. Both passes
+inherit their safety from footprint monotonicity, since a calibration that errs
+large cannot promote.
 
 \paragraph{Measured footprints are local to the operating points tested} The
 containment probe measures how far a proportionate local change propagates at
@@ -1711,8 +1793,11 @@ recorded in \texttt{DATA\_LICENSES.md}.
 \section*{Code availability}
 
 The reference implementation, the second-language oracle, every experiment,
-every frozen fixture and every machine-readable result are public under the MIT
-licence, with pinned tool versions and one-command reproduction. The evaluated
+every frozen fixture and every machine-readable result are released under the
+MIT licence, with pinned tool versions and one-command reproduction. The
+repository URL is supplied with the submission and printed here at proof stage;
+we state it that way rather than asserting public availability the reader cannot
+yet act on. The evaluated
 state is release tag \Rtag{}. Its exact commit hash is recorded in
 \texttt{results/PREFLIGHT.txt}, which is regenerated on every run and shipped
 with the release; that report also carries every tool version and every number

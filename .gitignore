@@ -10,6 +10,7 @@ corpus/overhead/
 corpus/composition/
 corpus/support/
 corpus/robustness/
+corpus/calibration/
 corpus/piper_voices/
 corpus/fetch.log
 

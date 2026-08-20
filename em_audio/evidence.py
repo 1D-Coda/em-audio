@@ -181,6 +181,14 @@ def aggregate(sources: Iterable[Evidence]) -> Evidence:
         applicable = [e for e in D if mu in e.A]
         if not applicable:                       # cannot happen, but explicit
             continue
+        if len(applicable) != len(D):
+            # Requirement (iv) forbids computing a channel from a subset of the
+            # required sources when one of them declares it and reports nothing.
+            # A source to which the channel is not applicable at all is the same
+            # situation, and withholding here is what makes enlarging D_y
+            # monotone: without it, adding a source that declares an otherwise
+            # inapplicable channel would raise it from unavailable to a value.
+            continue
         scope = frozenset.intersection(*[e.A[mu] for e in applicable])
         if not scope:
             continue                             # empty intersection -> unavailable

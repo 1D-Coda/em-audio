@@ -519,3 +519,85 @@ that a reader reproducing the work should expect the ratio to survive and the
 milliseconds not to. This also corrects a mistaken diagnosis made mid-session:
 0.954 ms was the fast outlier, not a clean baseline, and the 1.31 ms figures
 were typical rather than degraded.
+
+
+---
+
+# Round 9: a false proposition, and the check that was blind in the same way
+
+## The counterexample was real, and the blind spot was threefold
+
+A reviewer produced a counterexample to Proposition 4's support clause: with
+$\Dy = \{x_1\}$ where channel $\mu$ is not applicable to $x_1$, the channel is
+unavailable; enlarging to $\Dy' = \{x_1, x_2\}$ where $x_2$ declares $\mu$ with
+value $v$ makes it $v$. Since $\bot_\mu \prec v$, enlarging the required-source
+set strengthened the claim. It reproduces in the implementation.
+
+The proof's gap was the sentence "enlarging $\Dy$ can only add members to
+$\Dy^{\mu}$, and the minimum over a larger set is no larger", which silently
+assumes $\Dy^{\mu} \neq \emptyset$. Going from empty to non-empty moves up.
+
+What made this worth more than a one-paragraph repair is that
+`P_footprint_monotone` had the identical gap: it compared a channel only when
+present on both sides, `if mu in n.ev.S and v > n.ev.S[mu]`, so the one
+transition that breaks the proposition was the one comparison it skipped. Proof,
+check and implementation shared a single blind spot.
+
+## The decision, and why the harder repair won
+
+Two repairs were available. Weaken the proposition to channels already
+applicable on $\Dy$, or strengthen requirement~(iv) so a channel is available
+only when $\Dy^{\mu} = \Dy$.
+
+The second was chosen. The first narrows a claim to fit a system that remains
+unsound precisely in the regime the paper recommends: over-declaring the
+dependency set can emit support derived from a source the output does not
+depend on. The second makes the claim true, unifies (iv) with the
+partial-subset principle it already states for applicable-but-unreported
+sources, and costs nothing measured, since all 98,385 cases and 885,828 checks
+pass identically under both rules.
+
+The cost is expressiveness, and it is now stated in the paper rather than left
+implicit: sources carrying different channel schemas yield no channel on a
+shared interval rather than a partial one. That is conservatism where the
+alternative was unsoundness.
+
+A third option, separating "not applicable" from "applicable but unavailable" so
+the states are incomparable, was rejected. It repairs the order theory without
+repairing the semantics: over-declaring would still emit a value derived from a
+non-dependency, and the model would look sound while keeping the hazard.
+
+## The battery that would have caught it
+
+The v1 enumeration cannot reach these cases: one channel over one scope, every
+non-$\bot$ source declaring it, every $\bot$ source absorbed by~(iv$'$). A
+synthetic battery over five scopes, disjoint, nested and partially overlapping,
+enumerates 441 source-set enlargements. Under the repaired rule, zero
+violations. Under the superseded rule, **80**, including the reviewer's exact
+case. The battery measures both rules on every run, so the reason the rule
+changed regenerates instead of being asserted.
+
+## The calibration tool
+
+The manuscript had said outright that neither calibration pass was implemented.
+Both now are. Writing it exposed two flaws in its own design. A flat safety
+constant recommended 608 samples for a resampler whose reach is 32, so the
+margin is proportional with a floor. More seriously, the first version probed
+six positions where the validation uses ten: a calibration that under-measures
+relative to its own validation can recommend a declaration the validation then
+rejects. With the positions matched, the tool's reaches equal the containment
+experiment's on all seven operators, which is the cross-check that both measure
+the same quantity.
+
+It also separates requirement from policy. Containment of the measured reach is
+soundness; the advisory margin is conservatism. Two shipped declarations sit
+below the advisory while containing their reach, and are marked rather than
+quietly raised, since raising them costs dilution and would launder a policy
+preference as a safety finding.
+
+## One claim that was not true
+
+The code-availability statement said the artifacts "are public under the MIT
+licence". There is no git remote; nothing has been published. The sentence now
+describes what holds, MIT licensing and one-command reproduction, and defers the
+URL rather than asserting availability a reader cannot act on.

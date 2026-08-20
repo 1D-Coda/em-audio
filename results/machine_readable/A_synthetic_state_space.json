@@ -63,7 +63,7 @@
    "fail": 0,
    "pass": 363
   },
-  "P8_channel_scope_agreement": {
+  "P9_channel_scope_agreement": {
    "fail": 0,
    "pass": 98385
   },
@@ -80,7 +80,7 @@
    "pass": 49197
   }
  },
- "runtime_s": 29.148,
+ "runtime_s": 29.574,
  "words_containing_unverified": 9330,
  "words_enumerated": 9840,
  "words_with_mixed_ancestry": 494

@@ -1,0 +1,87 @@
+{
+  "margin_policy": {
+    "floor_samples": 64,
+    "fraction_of_reach": 0.25
+  },
+  "note": "mapping and support are measured separately on purpose: an exact output length does not imply a contained dependency",
+  "operators": [
+    {
+      "contains_measurement": true,
+      "declared_footprint_samples": 0,
+      "max_output_length_deviation_samples": 0,
+      "measured_reach_source_samples": 0,
+      "meets_advisory_margin": true,
+      "operator": "trim_10_90",
+      "recommended_footprint_samples": 0,
+      "samples_outside_declared_support": 0
+    },
+    {
+      "contains_measurement": true,
+      "declared_footprint_samples": 97,
+      "max_output_length_deviation_samples": 0,
+      "measured_reach_source_samples": 32,
+      "meets_advisory_margin": false,
+      "operator": "resample_16_8",
+      "recommended_footprint_samples": 104,
+      "samples_outside_declared_support": 0
+    },
+    {
+      "contains_measurement": true,
+      "declared_footprint_samples": 0,
+      "max_output_length_deviation_samples": 0,
+      "measured_reach_source_samples": 0,
+      "meets_advisory_margin": true,
+      "operator": "transcode_flac",
+      "recommended_footprint_samples": 0,
+      "samples_outside_declared_support": 0
+    },
+    {
+      "contains_measurement": true,
+      "declared_footprint_samples": 2304,
+      "max_output_length_deviation_samples": 0,
+      "measured_reach_source_samples": 1555,
+      "meets_advisory_margin": true,
+      "operator": "transcode_mp3",
+      "recommended_footprint_samples": 2007,
+      "samples_outside_declared_support": 0
+    },
+    {
+      "contains_measurement": true,
+      "declared_footprint_samples": 0,
+      "max_output_length_deviation_samples": 0,
+      "measured_reach_source_samples": 0,
+      "meets_advisory_margin": true,
+      "operator": "normalize",
+      "recommended_footprint_samples": 0,
+      "samples_outside_declared_support": 0
+    },
+    {
+      "contains_measurement": true,
+      "declared_footprint_samples": 2577,
+      "max_output_length_deviation_samples": 413,
+      "measured_reach_source_samples": 1906,
+      "meets_advisory_margin": true,
+      "operator": "time_stretch_1.10",
+      "recommended_footprint_samples": 2446,
+      "samples_outside_declared_support": 0
+    },
+    {
+      "contains_measurement": true,
+      "declared_footprint_samples": 4096,
+      "max_output_length_deviation_samples": 205,
+      "measured_reach_source_samples": 3277,
+      "meets_advisory_margin": false,
+      "operator": "silence_removal",
+      "recommended_footprint_samples": 4160,
+      "samples_outside_declared_support": 0
+    }
+  ],
+  "probe_positions": 10,
+  "signal_contexts": [
+    "tone",
+    "near_threshold",
+    "transient",
+    "dense"
+  ],
+  "tool": "calibrate_footprint"
+}

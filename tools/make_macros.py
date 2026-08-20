@@ -186,6 +186,11 @@ def main() -> int:
     # the v1 channel's two declaration-derived values, from one definition
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "experiments"))
     from _common import CAPTURE_SUPPORT as _CS
+    L = load("L_scope_battery")
+    m["LscopeCases"] = fmt(L["enlargement_cases"])
+    m["LscopeScopes"] = fmt(L["distinct_scopes"])
+    m["LscopeViolations"] = fmt(L["violations"])
+    m["LscopeFailBad"] = fmt(L["violations_under_superseded_rule"])
     m["CaptSupport"] = f"{_CS['C']:.2f}"
     m["GenSupport"] = f"{_CS['G']:.2f}"
     m["KresampleSpread"] = fmt(po["resample_16_8"]["max_spread_output_samples"])

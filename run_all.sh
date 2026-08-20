@@ -21,6 +21,9 @@ python3 tests/test_contract.py || fail=1
 step "A  exhaustive finite-state conformance"
 ( cd experiments && python3 synthetic_state_space.py ) || fail=1
 
+step "A2 applicability scope battery"
+( cd experiments && python3 scope_battery.py ) || fail=1
+
 step "B  deterministic adversarial timelines"
 ( cd experiments && python3 adversarial_timelines.py ) || fail=1
 
