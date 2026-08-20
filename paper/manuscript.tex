@@ -1000,7 +1000,12 @@ baseline assertion, with \Fmismatch{} mismatches against the pre-signing
 essence and \FmismatchPolicy{} between the two policies. Over the same assets
 the whole-file hash changed in \Ffilechanged{} of \Ftotal{} cases, which is why
 the comparison is defined on decoded PCM: a file-level test would have reported
-a change in every case and told us nothing.
+a change in every case and told us nothing. Reproducing the pipeline from a
+clean clone makes the same point from the other direction. Comparing the two
+runs asset by asset, every decoded-essence hash agreed and no signed-file hash
+did, because each signature carries its own timestamp. A reproducibility check
+defined on file bytes would have declared this pipeline irreproducible; defined
+on decoded essence, it reproduces exactly.
 
 Under the five provenance-loss conditions over \Eclips{} clips
 (Table~\ref{tab:stripping}), a removed manifest yielded \textsc{unverified} in
@@ -1421,9 +1426,14 @@ are author-written. The differential is a test against transcription and
 interval-arithmetic error, not evidence of author independence. Two components
 are outside our control and were deliberately chosen for that reason: all audio
 processing is stock FFmpeg through its command line, and all signing and
-validation is the official \texttt{c2patool}. A third-party reimplementation of
-the contract, and an external reproduction from a clean clone on different
-hardware, would strengthen external validity further; neither exists yet.
+validation is the official \texttt{c2patool}. The pipeline has been reproduced from a
+clean clone of the tagged release, which is a weaker check than it sounds and is
+worth stating precisely: it establishes that the repository is self-contained
+and that the results do not depend on files left in a working directory, and it
+was performed by the author on the same machine, so it is not independent
+reproduction. A third-party reimplementation of the contract, and a reproduction
+by someone else on different hardware, would strengthen external validity
+further; neither exists yet.
 
 \paragraph{Corpus.} \Cclips{} clips from one read-speech corpus and one formant
 synthesiser, at \CcorpusFs{}~Hz, is a deliberate mechanism corpus, not a

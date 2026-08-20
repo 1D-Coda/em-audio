@@ -33,5 +33,5 @@
  "javascript_algorithm": "brute-force per-output-sample evaluation, run-length encoded",
  "max_support_abs_difference": 0.0,
  "python_algorithm": "interval algebra with pulled-back source boundaries",
- "runtime_s": 5.013
+ "runtime_s": 4.723
 }

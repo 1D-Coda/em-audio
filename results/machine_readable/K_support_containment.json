@@ -678,7 +678,7 @@
   3655,
   3968
  ],
- "runtime_s": 6.668,
+ "runtime_s": 6.388,
  "sample_rate": 16000,
  "source_length_samples": 4096,
  "threshold": "one 16-bit LSB on decoded PCM; any non-zero difference counts",

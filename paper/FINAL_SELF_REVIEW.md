@@ -134,6 +134,45 @@ C2PA-native composition, signed derivation, provenance-loss behaviour, claim
 dilution, two-language differential testing and cost. More would dilute rather
 than strengthen.
 
+## Round-4 hardening (2026-08-20)
+
+A fourth review round raised eight points; all eight were verified against the
+source and the C2PA specification text, and all eight were correct.
+
+**The substantive one.** The manuscript treated agreement between predicted and
+actual output length as satisfying the condition Proposition 4 requires. It does
+not. Proposition 4 requires the declared required-source set to *contain* the
+actual dependency set, and an operator can emit exactly the predicted sample
+count while depending on source samples outside its declared footprint. The
+transformation matrix bounds mapping and alignment; it is silent on local
+dependency.
+
+The fix was to test containment directly rather than only to weaken the
+sentence. Experiment K builds two sources identical except at one sample, where
+one carries an added impulse, pushes both through the same stock ffmpeg command
+and subtracts the decoded outputs. Across 70 probes over 7 operator
+configurations, 19,582 output samples were influenced and none fell outside the
+declared support. The margins also justify the particular bands rather than
+merely permitting them: 65 samples of headroom against a declared 97 for
+resampling, 898 against 2,304 for MP3, 688 against 2,577 for time stretching.
+
+Building it exposed three further defects, all reported in the manuscript: a
+harness bug that produced 695 false violations by decoding rate-changed output
+at the source rate; the discovery that probing against silence under-tests
+signal-dependent operators, since an impulse in an empty buffer is copied
+through unchanged; and a spread statistic that was both miscomputed and the
+wrong statistic, since containment is worst-case and overlap-add stretching has
+a median spread of 1 against a maximum of 2,021.
+
+**The other seven**, all applied: three stray uses of "lattice" where the paper
+proves meet-semilattice; an inaccurate characterisation of provenance semirings
+as idempotent, which they are not in general; a results table placing section
+A's "0 failed" under the boundary-only comparison column, plus a cited
+regression-test row that did not exist; a timing machine that Methods claimed
+was declared but never was; a robustness arm missing from Data Availability; an
+unconditioned inverse-proportion claim about duration; and a preprint described
+as a published analysis.
+
 ## Verdict
 
 No dimension scores below 4, so no substantive scientific blocker remains.
