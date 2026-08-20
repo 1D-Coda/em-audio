@@ -705,3 +705,47 @@ from unrounded medians, is stated where the ratio appears.
 ## Standing item
 
 Five reviews have now led with artifact access. There is still no git remote.
+
+
+---
+
+# Round 12: benchmark provenance, and a claim about a file the file did not keep
+
+The review asked for CPU model, fixture size, warm-up policy and launch
+details. Half of it already existed: repetitions, clips per repetition and
+audio-minutes per repetition were recorded all along. Two things were genuinely
+missing, and one of them was a claim the artifact did not honour.
+
+## The processor was recorded as an architecture
+
+`platform.processor()` returns `arm` on this machine and the preflight report
+recorded `cpu: arm64`. That is not reproducible provenance for a timing result:
+"arm64" spans parts that differ several-fold in single-core throughput. The
+environment block now captures the model through `sysctl` on Darwin and
+`/proc/cpuinfo` elsewhere, giving Apple M3 Max, 14 logical cores, 36 GiB.
+
+The sharper half is that the manuscript already said "the exact processor,
+operating-system build and every tool version are recorded in
+\texttt{results/PREFLIGHT.txt}". The exact processor was not in that file. A
+sentence describing an artifact had drifted from what the artifact contained,
+which is the same failure as the stale calibration script one round earlier,
+in a different direction: there the code lagged the claim, here the report did.
+
+## The warm-up policy was unstated because there is none
+
+The benchmark has no warm-up iteration; the first repetition sits inside the
+median with the other twenty-nine. Rather than assert that this cannot matter,
+the experiment now measures it: discarding the first repetition moves the median
+by 0.08%, well under the run-to-run variation reported alongside. The policy and
+the check are both stated, so a reader does not have to wonder whether a cold
+iteration is buried in the figure.
+
+Also recorded, because they are limitations rather than features: a single
+process, launched with no processor-affinity or power-management control.
+
+## Corroboration of the previous round
+
+The same review observed the absolute cost moving 0.926 to 1.304 ms, +40.8%,
+while the ratio held at 3.36 to 3.38, and accepted it as "exactly the pattern
+expected if machine state affects both arms similarly". The stability experiment
+added in the previous round is what made that legible rather than suspicious.

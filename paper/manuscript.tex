@@ -942,10 +942,16 @@ mismatches, manifest validation outcomes, model-versus-implementation sample
 deviations, runtime and metadata size. We deliberately do not report accuracy,
 precision, recall, $F_1$ or AUC: no classifier is evaluated, and detector
 metrics would invite the wrong comparison. Timing is reported as medians with interquartile ranges over \Greps{}
-repetitions on a single machine: an \Varch{} system running \Vos{},
-Python~\Vpython{}, FFmpeg~\Vffmpeg{} and \texttt{c2patool}~\VcTwopatool{}. The exact processor, operating-system build
+repetitions on a single machine: an \Vcpu{} with \Vcores{} logical cores and
+\Vram{}~GiB, running \Vos{}, Python~\Vpython{}, FFmpeg~\Vffmpeg{} and
+\texttt{c2patool}~\VcTwopatool{}. The exact processor, operating-system build
 and every tool version are recorded in \texttt{results/PREFLIGHT.txt}, which is
-regenerated on each run.
+regenerated on each run. Each repetition processes \Gclips{} clips in a single
+process, launched with no processor-affinity or power-management control, and
+there is no warm-up iteration: the first repetition is inside the median like
+any other. That last choice is checked rather than assumed, since discarding the
+first repetition moves the median by \GfirstIterPct{}\%, which is smaller than
+the run-to-run variation reported below.
 
 \subsection{Reproducibility and AI use}
 

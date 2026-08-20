@@ -1,30 +1,33 @@
 {
  "baseline_ms_per_audio_minute": {
-  "cv_pct": 0.518,
-  "max": 0.3949,
-  "mean": 0.3899,
-  "min": 0.3879,
-  "range_pct": 1.8
+  "cv_pct": 1.0,
+  "max": 0.4042,
+  "mean": 0.3988,
+  "min": 0.3928,
+  "range_pct": 2.9
  },
  "em_ms_per_audio_minute": {
-  "cv_pct": 0.636,
-  "max": 1.3254,
-  "mean": 1.3072,
-  "min": 1.2998,
-  "range_pct": 1.97
+  "cv_pct": 1.316,
+  "max": 1.366,
+  "mean": 1.3381,
+  "min": 1.3151,
+  "range_pct": 3.87
  },
  "em_over_baseline_ratio": {
-  "cv_pct": 0.231,
-  "max": 3.363,
-  "mean": 3.3527,
-  "min": 3.3412,
-  "range_pct": 0.65
+  "cv_pct": 0.805,
+  "max": 3.393,
+  "mean": 3.3556,
+  "min": 3.3037,
+  "range_pct": 2.7
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "14",
+  "cpu_model": "Apple M3 Max",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "machine": "arm64",
+  "memory_bytes": "38654705664",
   "node": "v26.0.0",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "processor": "arm",
@@ -34,7 +37,7 @@
  "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
  "ratio_is_tighter_than_absolute": true,
  "repeats": 9,
- "runtime_s": 354.199,
+ "runtime_s": 350.38,
  "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
- "tightness_factor_cv": 2.75
+ "tightness_factor_cv": 1.63
 }

@@ -46,6 +46,22 @@ def timeline_of(rec) -> Timeline:
     return Timeline("clip", ivs)
 
 
+
+def _first_iteration_effect(samples=None):
+    """How much the median moves if the first repetition is discarded.
+
+    A benchmark with no warm-up should say so and then show that it does not
+    matter, rather than leaving a reader to wonder whether a cold first
+    iteration is inside the reported median.
+    """
+    xs = list(samples or [])
+    if len(xs) < 3:
+        return None
+    import statistics
+    full, trimmed = statistics.median(xs), statistics.median(xs[1:])
+    return round(100.0 * (full - trimmed) / trimmed, 3) if trimmed else None
+
+
 def main() -> int:
     t0 = time.time()
     index = json.loads((CORPUS / "corpus_index.json").read_text())[:N_CLIPS]
@@ -127,6 +143,14 @@ def main() -> int:
                         "audio_seconds": round(n / FS, 3)})
     payload = {
         "repetitions": REPS, "clips_per_repetition": N_CLIPS,
+        "warm_up_policy": ("none; the first repetition is included and the "
+                           "reported statistic is a median over all of them, so "
+                           "a single cold iteration cannot move it. The claim is "
+                           "checked rather than assumed: see "
+                           "first_iteration_effect_pct"),
+        "first_iteration_effect_pct": _first_iteration_effect(em_ms),
+        "launch": "python3 experiments/overhead_benchmark.py, single process, "
+                  "no affinity or power-management control",
         "audio_minutes_per_repetition": round(total_minutes, 4),
         "em_bookkeeping_ms_per_repetition": summarise(em_ms),
         "baseline_bookkeeping_ms_per_repetition": summarise(base_ms),

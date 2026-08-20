@@ -192,6 +192,12 @@ def main() -> int:
     m["LscopeViolations"] = fmt(L["violations"])
     m["LscopeFailBad"] = fmt(L["violations_under_superseded_rule"])
     M = load("M_overhead_stability")
+    G = load("G_overhead")
+    m["Vcpu"] = G["environment"]["cpu_model"]
+    m["Vcores"] = fmt(int(G["environment"]["cpu_count_logical"]))
+    m["Vram"] = f"{int(G['environment']['memory_bytes']) / 2**30:.0f}"
+    m["GfirstIterPct"] = f"{G['first_iteration_effect_pct']:.2f}"
+    m["Gclips"] = fmt(G["clips_per_repetition"])
     m["MstabRepeats"] = fmt(M["repeats"])
     m["MstabAbsPct"] = f"{M['em_ms_per_audio_minute']['cv_pct']:.2f}"
     m["MstabRatioPct"] = f"{M['em_over_baseline_ratio']['cv_pct']:.2f}"

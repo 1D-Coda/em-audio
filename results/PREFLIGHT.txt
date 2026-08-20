@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: ba01697eda645b47cc21e4ff996dee340664556f
+commit: 213722b000d179ae0ff0c372eb93712e3c614afe
 tag: v1.0.0
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
@@ -16,7 +16,10 @@ node: v26.0.0
 espeak_ng: eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data
 c2pa_spec_version: 2.4 (April 2026)
 os: macOS-26.5.2-arm64-arm-64bit
-cpu: arm64
+cpu: Apple M3 Max
+cpu_arch: arm64
+cpu_count_logical: 14
+memory_gib: 36
 
 --- A  exhaustive finite-state conformance ---
 words_enumerated: 9840
@@ -73,15 +76,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 1.3042
-median_baseline_ms_per_audio_minute: 0.3862
-em_over_baseline_ratio: 3.3774
-em_fraction_of_ffmpeg_time: 0.00152
+median_em_ms_per_audio_minute: 1.3486
+median_baseline_ms_per_audio_minute: 0.3964
+em_over_baseline_ratio: 3.4018
+em_fraction_of_ffmpeg_time: 0.001478
 median_manifest_overhead_bytes_per_asset: 14854
 median_em_assertion_bytes_per_asset: 1268
 metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 16.2922
-median_validate_ms: 13.3984
+median_sign_ms: 17.9564
+median_validate_ms: 14.6806
 assertion_bytes_per_interval: 332.7
 
 --- K  kernel-support containment ---

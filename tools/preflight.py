@@ -67,7 +67,22 @@ def main() -> int:
     add(f"espeak_ng: {_v(['espeak-ng', '--version'])}")
     add("c2pa_spec_version: 2.4 (April 2026)")
     add(f"os: {platform.platform()}")
-    add(f"cpu: {platform.machine()}")
+    # The manuscript says this file records the exact processor. platform.machine()
+    # gives the architecture only, which does not identify the part a timing
+    # result depends on, so take the model recorded by the experiments.
+    _env = {}
+    for _f in sorted(MR.glob("*.json")):
+        try:
+            _env = json.loads(_f.read_text()).get("environment") or _env
+        except Exception:
+            pass
+        if _env.get("cpu_model"):
+            break
+    add(f"cpu: {_env.get('cpu_model', platform.machine())}")
+    add(f"cpu_arch: {platform.machine()}")
+    add(f"cpu_count_logical: {_env.get('cpu_count_logical', 'unavailable')}")
+    _mem = _env.get("memory_bytes", "")
+    add(f"memory_gib: {int(_mem) / 2**30:.0f}" if _mem.isdigit() else "memory_gib: unavailable")
     add("")
     add("--- A  exhaustive finite-state conformance ---")
     add(f"words_enumerated: {A['words_enumerated']}")

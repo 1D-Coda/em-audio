@@ -60,9 +60,12 @@
  "definition": "fraction of output samples whose footprint-aware evidence record is strictly weaker (weaker provenance claim, lost channel, or lower support value) than the record computed over the nominal represented content; an upper bound on what the declared footprints cost when the nominal map is exact",
  "environment": {
   "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "14",
+  "cpu_model": "Apple M3 Max",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "machine": "arm64",
+  "memory_bytes": "38654705664",
   "node": "v26.0.0",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "processor": "arm",
@@ -157,5 +160,5 @@
    "median_dilution_fraction": 0.0
   }
  },
- "runtime_s": 1.369
+ "runtime_s": 1.459
 }

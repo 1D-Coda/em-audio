@@ -36,6 +36,40 @@ def timeline_from_word(word: Sequence[str], width: int = 1, src: str = "s") -> T
     return Timeline(src, ivs)
 
 
+def _cpu_model() -> str:
+    """The processor model, which platform.processor() reduces to 'arm'.
+
+    A benchmark that reports only the architecture cannot be recreated: 'arm64'
+    covers parts that differ several-fold in single-core throughput.
+    """
+    try:
+        if sys.platform == "darwin":
+            out = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"],
+                                 capture_output=True, text=True).stdout.strip()
+            if out:
+                return out
+        else:
+            for line in Path("/proc/cpuinfo").read_text().splitlines():
+                if line.lower().startswith("model name"):
+                    return line.split(":", 1)[1].strip()
+    except Exception:
+        pass
+    return platform.processor() or platform.machine() or "unavailable"
+
+
+def _memory_bytes() -> str:
+    try:
+        if sys.platform == "darwin":
+            return subprocess.run(["sysctl", "-n", "hw.memsize"],
+                                  capture_output=True, text=True).stdout.strip()
+        for line in Path("/proc/meminfo").read_text().splitlines():
+            if line.startswith("MemTotal"):
+                return str(int(line.split()[1]) * 1024)
+    except Exception:
+        pass
+    return "unavailable"
+
+
 def env() -> Dict[str, str]:
     def _v(cmd):
         try:
@@ -47,6 +81,9 @@ def env() -> Dict[str, str]:
         "platform": platform.platform(),
         "machine": platform.machine(),
         "processor": platform.processor() or platform.machine(),
+        "cpu_model": _cpu_model(),
+        "cpu_count_logical": str(os.cpu_count() or "unavailable"),
+        "memory_bytes": _memory_bytes(),
         "ffmpeg": _v(["ffmpeg", "-version"]),
         "c2patool": _v(["c2patool", "--version"]),
         "node": _v(["node", "-v"]),

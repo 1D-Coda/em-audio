@@ -16,9 +16,12 @@
  "element_width_samples": 64,
  "environment": {
   "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "14",
+  "cpu_model": "Apple M3 Max",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "machine": "arm64",
+  "memory_bytes": "38654705664",
   "node": "v26.0.0",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "processor": "arm",
@@ -80,7 +83,7 @@
    "pass": 49197
   }
  },
- "runtime_s": 30.313,
+ "runtime_s": 29.13,
  "words_containing_unverified": 9330,
  "words_enumerated": 9840,
  "words_with_mixed_ancestry": 494
