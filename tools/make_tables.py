@@ -100,8 +100,8 @@ def operator_table():
         rows.append(f"{name} & {mapping} & {kern:,} & {guard:,} & {declared:,} & {why} \\\\"
                     .replace(",", "\\,"))
     write("operator_table", "\n".join(rows),
-          colspec=r"p{0.19\linewidth}p{0.20\linewidth}rrrp{0.20\linewidth}",
-          header=("Operator & Source mapping & Kernel & Guard & Declared & Reason"))
+          colspec=r"p{0.19\linewidth}p{0.19\linewidth}rrrp{0.21\linewidth}",
+          header=("Operator & Source mapping & Analytical & Margin & Declared & Basis"))
 
 
 def main_results():

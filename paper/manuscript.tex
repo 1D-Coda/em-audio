@@ -298,8 +298,24 @@ reports each as valid without computing, requiring, or remarking on any
 aggregate claim over them (Section~\ref{sec:res-composition}). The aggregate in
 those manifests is present because the contract put it there.
 
-\paragraph{Provenance for edited audio.} Two recent lines are the closest work
-in this medium. Chunk-localised speech provenance binds short time segments to
+\paragraph{Inferring audio provenance from the signal.} A separate line carries
+the name of this problem and solves a different half of it.
+Recent work formulates \emph{audio provenance analysis} as the reconstruction of
+content reuse and parent-child relations across a heterogeneous collection with
+no prior knowledge of its contents \citep{gerhardt2024provenance}, combining
+partial audio matching with phylogeny to build directed acyclic graphs that
+identify the least altered version in a near-duplicate cluster and trace reuse
+within it, including multi-source compositions and transcoded material. What
+that line guarantees is a reconstructed lineage where none was recorded. It is
+complementary to the problem here in the most direct way: their method infers a
+graph from an unknown signal, and the contract here assumes signed source
+evidence already exists and constrains how a known representation operator may
+aggregate and propagate it. Neither substitutes for the other, and a pipeline
+could reasonably use inference to recover a lineage and this contract to decide
+what the recovered lineage entitles a derived interval to claim.
+
+\paragraph{Provenance for edited audio.} Two further lines are the closest work
+that assumes evidence rather than inferring it. Chunk-localised speech provenance binds short time segments to
 an issuer-signed original through perceptual fingerprints and Merkle
 commitments, addressing exactly the fragility of hard bindings under
 re-encoding \citep{ono2026merklespeech}. Zero-knowledge constructions prove that
@@ -324,7 +340,7 @@ that combination is associative and distributes over alternative derivations
 and is in fact incompatible with several of its standard instances; the meet
 used here is idempotent, but that is a property of this particular structure
 rather than of semiring provenance at large.
-lattice models of secure information flow classify objects and require that
+Lattice models of secure information flow classify objects and require that
 combination move only in the conservative direction
 \citep{denning1976lattice,goguen1982noninterference}. The property we need, that a combination is never stronger than any of its inputs, is the meet in such a structure, and we present it as such rather than as a discovery.
 
@@ -366,6 +382,11 @@ C2PA security analysis and cross-layer attacks
 Weaknesses in the trust, timestamp and validator layers; contradictions between
 layers &
 Behaviour of a chain in which every layer is intact and honest \\
+\addlinespace
+Audio provenance analysis \citep{gerhardt2024provenance} &
+Reconstruction of reuse and parent-child relations from unknown signals, via
+partial matching and phylogeny &
+What a derived interval may claim once its recorded evidence disagrees \\
 \addlinespace
 Provenance for edited audio \citep{ono2026merklespeech,fu2026trustvoice} &
 Chunk-to-original binding after transport; zero-knowledge edit correctness &
@@ -581,7 +602,7 @@ meet over the union of the ancestral sets, so no ancestor is dropped or
 invented; absorption of $\bot$ is preserved inductively because no later
 operator receives a verified element in place of an unverified ancestor. For a
 channel $\mu$, each operator either refuses the channel or emits a value bounded
-by its applicable inputs, and transitivity of $\le$ bounds the final value by
+by its applicable inputs, and transitivity of $\preceq$ bounds the final value by
 every applicable ancestor. Repeated intersection cannot broaden a scope, and
 lineage composes by union of the per-operator source maps.
 \end{proof}
@@ -684,20 +705,27 @@ selector such as silence removal, the exact retained-sample model and the
 implementation's frame-aligned cut points differ, and the declared value covers
 that difference. In every case the declared value is a bound, not an estimate,
 and Proposition~\ref{prop:footprint} makes an over-declared bound safe. Two separate experiments check these numbers against software we do not
-control. Section~\ref{sec:res-corpus} validates temporal mapping and alignment,
-by comparing predicted with actual output length on every clip and every
-transformation. Section~\ref{sec:res-containment} probes kernel-support
-containment directly, by measuring which source samples actually influence which
-output samples. The first bounds the guard column and the second bounds the
-kernel column, and neither substitutes for the other.
+control, and it is worth being exact about which quantity each one bounds.
+Section~\ref{sec:res-corpus} characterises temporal mapping deviation, by
+comparing predicted with actual output length, which is what informs the
+implementation margin. Section~\ref{sec:res-containment} tests whether the
+\emph{declared} footprint contains the measured source influence. It does not
+independently validate the analytical column: for two operators the measured
+reach exceeds the analytical support and is contained only by the declaration as
+a whole, which is the honest reading of those measurements and the reason the
+declaration rather than either component is what an implementation uses.
 
 \begin{table}[t]
 \centering
-\caption{The v1 operator set. The kernel column is a support bound taken from
-the pinned algorithm configuration; the guard column absorbs the difference
-between an exact integer interval model and a real implementation's
-frame-granular behaviour; the declared footprint is what the implementation
-uses, and is what Section~\ref{sec:res-containment} probes. All values are in
+\caption{The v1 operator set. The analytical column is a support radius derived
+from the pinned algorithm configuration; the margin covers implementation
+behaviour that the analysis does not capture, such as frame-granular cut points
+and a correlation search range; the declared footprint is their sum, is what the
+implementation uses, and is the quantity
+Section~\ref{sec:res-containment} probes. For two operators the measured
+influence exceeds the analytical radius and is contained by the declaration, so
+the columns are two contributions to one bound rather than two independently
+validated bounds. All values are in
 source samples for the configurations used in the experiments. By
 Proposition~\ref{prop:footprint} an over-declared bound can only weaken the
 emitted claim, while an under-declared bound is a conformance failure. The
@@ -1091,7 +1119,17 @@ low-level context; that does not perturb an adaptive operator's input so much as
 replace it, and both the lossy encoder and the overlap-add stretcher responded by
 re-deciding globally rather than locally. The perturbation is now a fixed
 multiple of each context's peak. Against real content at a proportionate level,
-the same operators spread a single sample widely. Lossy
+the same operators spread a single sample widely.
+
+The \Kcontexts{} contexts are chosen so that the operators are probed where each
+behaves differently rather than at one operating point: a steady low-frequency
+tone, the ordinary case; the same tone at roughly one part in a hundred
+amplitude, where a lossy encoder allocates fewest bits and quantisation is
+coarsest; repeated sharp onsets with exponential decay, which drives an
+overlap-add stretcher hardest; and a sum of six inharmonic partials, spectrally
+crowded so that the encoder's masking decisions are most active. All four are
+generated arithmetically with no random source; the exact parameters are in
+\texttt{experiments/support\_containment.py}. Lossy
 transcoding spreads a single source sample across up to \KmpThreeSpread{}
 output samples and does so at every probe position, and resampling across up to
 \KresampleSpread{}. Overlap-add time stretching is the interesting case: its
@@ -1267,8 +1305,9 @@ promotion count would have hidden it.
 \caption{Claim dilution: the fraction of output samples whose footprint-aware
 evidence is strictly weaker than the evidence over the nominal represented
 content, per transformation over \IclipsPerTf{} clips and along a composition
-chain over \IchainClips{} clips. This is the price of the declared guard bands
-when the nominal map is exact.}
+chain over \IchainClips{} clips. This is the price of the declared footprints,
+which combine analytical support with implementation margin, when the nominal map
+is exact.}
 \label{tab:dilution}
 \small
 \input{../results/tables/dilution_table}
@@ -1377,8 +1416,8 @@ Mechanism on realistic audio &
 \Cclips{} labelled mixed-origin clips processed by stock FFmpeg &
 Balanced coverage of speakers, languages, codecs or editing styles \\
 Interval-model fidelity &
-Predicted versus actual output sample counts on every run, against declared
-guard bands &
+Predicted versus actual output sample counts on every PCM run and on a
+\DdetermN{}-clip subset for the coded containers, against declared margins &
 Kernel-support containment, which is a different property, measured separately;
 and that the bounds hold for other codecs, builds or configurations \\
 \addlinespace
@@ -1548,20 +1587,24 @@ specifications where those state window and delay constants. Neither pass is
 implemented as a tool here; both inherit their safety from footprint
 monotonicity, since a calibration that errs large cannot promote.
 
-\paragraph{Footprints bound dependency at an operating point, not across mode
-changes.} The containment probe measures how far a \emph{proportionate} local
-change propagates. Adaptive operators do not have a single dependency structure:
-a lossy encoder re-allocates bits globally, and an overlap-add stretcher
-re-selects its correlation lag, when the input changes enough to alter those
-decisions. We observed exactly that when an early version of the probe perturbed
-a low-level carrier with an impulse two hundred times its amplitude, and the
-influence of one source sample reached most of the output. No fixed footprint
-bounds that, and none should be claimed to: the declared bounds constrain
-dependency for changes that leave the operator's mode decisions intact, which is
-the regime a representation-only pipeline operates in. A change large enough to
-restructure an encoder's decisions is not a representation-only transformation
-of the interval it lands in, and the honest scope of
-Proposition~\ref{prop:footprint} in practice is bounded accordingly.
+\paragraph{Measured footprints are local to the operating points tested.} The
+containment probe measures how far a proportionate local change propagates at
+the signal contexts and probe positions used. Adaptive operators do not have one
+dependency structure: a lossy encoder re-allocates bits and an overlap-add
+stretcher re-selects its correlation lag when the input changes enough to alter
+those decisions, and we saw exactly that when an early version of the probe
+perturbed a low-level carrier with an impulse two hundred times its amplitude,
+after which one source sample influenced most of the output. The correct
+conclusion is narrow. The declared footprints characterise dependency around the
+tested operating points; they do not establish a universal support radius over
+every input-induced mode transition, and an operator remains representation-only
+whether or not its internal decisions are input-adaptive. Note also what is
+\emph{not} being claimed: a whole-asset footprint would bound any such
+transition trivially, so the open question is the size of a local radius, not
+whether a bound exists. Where an implementation cannot supply or validate a local
+radius, declaring whole-asset dependency remains available and remains safe under
+Proposition~\ref{prop:footprint}, at the dilution cost quantified in
+Section~\ref{sec:res-dilution}.
 
 \paragraph{Normalisation is a modelling choice.} Amplitude normalisation is the
 operator where representational and computational dependency (Section~\ref{sec:model})

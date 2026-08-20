@@ -358,3 +358,75 @@ across the session and filled the volume. `run_all.sh` returned a failure rather
 than passing silently, which is the correct behaviour under an error class that
 had never been exercised. No data was lost: all 17 result files remained valid
 and the tagged release was untouched.
+
+
+---
+
+# Round 7: a conceptual error of my own, and a missing paper with the problem's name on it
+
+Eight points, all verified and all correct. Two were substantive.
+
+## The kernel/guard claim was wrong, and my own data said so
+
+The manuscript claimed that Section 7.4 bounds the guard column and Section 7.6
+bounds the kernel column. The containment measurements contradict that:
+
+| Operator | Analytical | Measured reach | Reach within analytical? |
+|---|---:|---:|---|
+| silence removal | 0 | 3,277 | no |
+| time stretch 1.10 | 529 | 1,906 | no |
+| transcode MP3 | 1,728 | 1,555 | yes |
+| resample 16 to 8 kHz | 33 | 32 | yes |
+
+For two operators the measured influence is contained only by the declaration as
+a whole, so the containment experiment validates the **declared footprint** and
+never the analytical column independently. This was a clean case of a sentence
+written to describe a tidy separation that the experiment did not actually
+establish, in a paper whose whole subject is not claiming more than the evidence
+supports.
+
+The columns are now **Analytical / Margin / Declared**, the text says Section 7.4
+characterises mapping deviation and informs the margin while Section 7.6 tests
+the declaration, and the caption states outright that for two operators the
+reach exceeds the analytical radius.
+
+## The mode-change limitation was indefensible as written
+
+It said a change large enough to restructure an encoder's decisions "is not a
+representation-only transformation". That is wrong: a transcoder is
+representation-only whether or not its internal bit allocation is input-adaptive,
+which is a property of the operator and not of the diagnostic perturbation. It
+also said "no fixed footprint bounds that", which is literally false, since a
+whole-asset footprint does.
+
+Rewritten to what is actually supported: the measured footprints characterise
+dependency around the tested operating points and do not establish a universal
+support radius over every input-induced mode transition; the open question is the
+size of a local radius rather than whether a bound exists; and an implementation
+that cannot validate a local radius may declare whole-asset dependency, which
+remains safe under Proposition 4 at the dilution cost already quantified.
+
+## A directly relevant paper was missing
+
+Gerhardt, Cuccovillo and Aichroth, *Audio Provenance Analysis in Heterogeneous
+Media Sets*, CVPR 2024 Workshop on Media Forensics, pages 4387-4396. A paper
+with the phrase "audio provenance analysis" in its title, absent from a
+manuscript about audio provenance, is an obvious opening for any reviewer in
+that community.
+
+It is adjacency rather than duplication, and citing it strengthens the novelty
+argument rather than weakening it. Their method reconstructs reuse and
+parent-child relations from an unknown signal using partial matching and
+phylogeny; this contract assumes signed evidence already exists and constrains
+how a known operator may aggregate it. It now has a Related Work paragraph and a
+Table 2 row saying exactly that.
+
+## Five smaller corrections
+
+The claim-evidence row said interval-model fidelity was checked "on every run",
+where Section 7.4 says every PCM run plus a 100-clip subset for the coded
+containers; the row now matches. The four probe signal contexts were counted but
+never named, and are now described. The dilution caption said "declared guard
+bands" where the radius is the declared footprint, which already includes the
+margin. Theorem 1's proof still said "transitivity of $\le$" after the support
+domain was lifted, and now uses $\preceq$. One sentence began lowercase.
