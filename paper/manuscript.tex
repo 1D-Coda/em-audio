@@ -117,7 +117,11 @@ decoded audio is bit-identical either way. Only the evidential claim differs
 whole point: an examiner reading a captured-only claim over an interval that
 contains generated speech is being told something stronger than the sources
 support, by a chain in which no signature was forged and no cryptographic
-primitive failed.
+primitive failed. The same difference decides an automated answer wherever a
+disclosure obligation is discharged by reading a manifest rather than by
+inspecting a signal, which is the direction deployment is moving; a promotion
+there is not a missed detection but a confident wrong answer, delivered with a
+valid signature attached and no indication that anything was lost.
 
 We call this \emph{provenance promotion}: a derived representation acquiring a
 stronger evidential claim than the complete source material it represents,
@@ -830,7 +834,15 @@ current asset is a derived asset or asset rendition of this ingredient''
 \citep[Table~10, \S18.16.3]{c2pa24}, and the minimal way to inherit from a
 parent over a retained region is to read that region's endpoints. The policy is
 minimal by design because the point of the comparison is to isolate one
-mechanism, not to caricature an opponent.
+mechanism, not to caricature an opponent. It is also not an arbitrary choice of
+opponent. Since the specification does not define the reduction, every
+implementation that derives an asset has to supply one, whether deliberately or
+by default, and inheriting from the parent at the retained region's endpoints is
+the reading its own \texttt{parentOf} vocabulary most directly suggests. The
+gap being measured is therefore in the standard rather than in anyone's code,
+which is why the comparison can be made honestly without naming a product, and
+why we would expect independently written implementations to differ here until a
+reduction is specified.
 
 The baseline combines two independent shortcuts, boundary-only inheritance and blindness to the kernel footprint, so the experiments also evaluate the
 two intermediate policies that remove one shortcut each, and report all four
@@ -1690,7 +1702,14 @@ checksum-pinned external artefacts, and that no result depends on a file left in
 a working directory; it was performed by the author on the same machine, so it
 is not independent reproduction. A third-party reimplementation of the contract, and a reproduction
 by someone else on different hardware, would strengthen external validity
-further; neither exists yet.
+further; neither exists yet. What such an implementer needs is nevertheless
+supplied rather than left implicit: requirements~(i) to~(v) fix the reduction,
+the property suite is written against those requirements rather than against our
+code, and its \Acases{} enumerated cases are a conformance target any
+independent implementation can be run against. We would regard disagreement
+between such an implementation and ours as the more informative outcome, since
+it would locate an ambiguity in the specification of the contract, which is the
+part of this work that is meant to outlive the reference code.
 
 \paragraph{Corpus} \Cclips{} clips from one read-speech corpus and one formant
 synthesiser, at \CcorpusFs{}~Hz, is a deliberate mechanism corpus, not a
