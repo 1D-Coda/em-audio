@@ -174,6 +174,7 @@ def main() -> int:
     m["KsilenceFp"] = fmt(po["silence_removal"]["declared_footprint_samples"])
     m["KsilenceMargin"] = fmt(po["silence_removal"]["min_margin_inside_declared_range"])
     m["KsilenceReach"] = fmt(po["silence_removal"]["max_measured_reach_source_samples"])
+    m["KoutsideTotal"] = fmt(sum(v["total_outside_declared_support"] for v in po.values()))
     m["KmpThreeReach"] = fmt(po["transcode_mp3"]["max_measured_reach_source_samples"])
     m["KstretchReach"] = fmt(po["time_stretch_1.10"]["max_measured_reach_source_samples"])
     m["KresampleReach"] = fmt(po["resample_16_8"]["max_measured_reach_source_samples"])

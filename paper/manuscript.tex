@@ -1208,6 +1208,26 @@ conservative direction.
 \subsection{Kernel-support containment}
 \label{sec:res-containment}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig5_containment.pdf}
+\caption{Kernel-support containment. Each operator configuration was probed
+with a proportionate single-sample impulse at ten prespecified positions in each
+of \Kcontexts{} deterministic signal contexts, \Kprobes{} probes in total.
+Filled circles are the furthest any one source sample was measured to influence
+the output beyond the nominal source range; open diamonds are the declared
+footprint. The axis is the measurement as a percentage of its own declaration,
+because the operators span two orders of magnitude in samples and a shared
+linear axis would hide the tightest row; absolute counts are given as direct
+labels. Containment requires the measurement to fall at or left of its
+declaration, and \KoutsideTotal{} influenced samples fell outside. Silence
+removal is the reason this experiment exists: an earlier declaration was
+exceeded, the probe detected it, and the band was raised to \KsilenceFp{}
+samples. These are measurements of the frozen configurations tested, not
+universal codec constants.}
+\label{fig:containment}
+\end{figure}
+
 Proposition~\ref{prop:footprint} needs the declared required-source set to
 contain the actual dependency set, and that is a statement about which source
 samples influence which output samples, not about how many output samples there
@@ -1351,6 +1371,23 @@ representative composition manifest is frozen as a fixture in the repository.
 
 \subsection{The cost of conservatism: claim dilution}
 \label{sec:res-dilution}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig6_dilution.pdf}
+\caption{What the declared footprints cost. (A) Dilution for a single
+transformation over \IclipsPerTf{} clips: filled circles are medians, bars reach the
+maximum, and open circles are exact zeros drawn as marks so that a zero is
+legible as a result rather than as missing data. (B) Dilution through a
+composition chain, median with the maximum envelope. (C) The same depth-three
+chain over three asset durations on logarithmic axes, showing that fixed-width
+bands occupy a smaller fraction of a longer asset. Panel C holds the chain and
+the boundary count fixed and is not a claim about arbitrary chains: more
+ancestry boundaries would place more bands. Dilution is a weaker claim over part
+of an asset, never a stronger one, so this is the price of conservatism and not
+a failure mode.}
+\label{fig:dilution}
+\end{figure}
 
 Zero promotion is only half of a useful result, because safety alone is cheap:
 declaring the whole asset as every sample's dependency is perfectly safe under
@@ -1591,7 +1628,7 @@ Dilution against the true (unknowable) dependencies of a third-party codec \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{fig5_overhead.pdf}
+\includegraphics[width=\linewidth]{fig7_overhead.pdf}
 \caption{Cost of carrying interval evidence. The emitted assertion and the
 bookkeeping time both grow linearly in the number of evidence intervals, not in
 audio duration, so cost scales with how often ancestry changes along the

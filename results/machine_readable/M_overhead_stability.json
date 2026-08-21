@@ -1,24 +1,24 @@
 {
  "baseline_ms_per_audio_minute": {
-  "cv_pct": 0.83,
-  "max": 0.4012,
-  "mean": 0.3964,
-  "min": 0.3919,
-  "range_pct": 2.37
+  "cv_pct": 0.723,
+  "max": 0.4008,
+  "mean": 0.3968,
+  "min": 0.3912,
+  "range_pct": 2.45
  },
  "em_ms_per_audio_minute": {
-  "cv_pct": 1.312,
-  "max": 1.3616,
-  "mean": 1.3363,
-  "min": 1.3099,
-  "range_pct": 3.95
+  "cv_pct": 0.8,
+  "max": 1.3493,
+  "mean": 1.3373,
+  "min": 1.3153,
+  "range_pct": 2.58
  },
  "em_over_baseline_ratio": {
-  "cv_pct": 0.853,
-  "max": 3.4027,
-  "mean": 3.3715,
-  "min": 3.3326,
-  "range_pct": 2.1
+  "cv_pct": 0.456,
+  "max": 3.3972,
+  "mean": 3.3702,
+  "min": 3.3543,
+  "range_pct": 1.28
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -37,7 +37,7 @@
  "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
  "ratio_is_tighter_than_absolute": true,
  "repeats": 9,
- "runtime_s": 348.331,
+ "runtime_s": 358.681,
  "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
- "tightness_factor_cv": 1.54
+ "tightness_factor_cv": 1.75
 }

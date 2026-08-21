@@ -248,7 +248,7 @@ def fig5():
     ax.set_title(f"{G['em_ms_per_audio_minute']:.2f} ms per audio-minute; "
                  f"{100*G['em_over_ffmpeg_fraction']:.2f}% of FFmpeg time", fontsize=8.5)
     ax.legend(fontsize=6.6, frameon=False, loc="upper left")
-    save(fig, "fig5_overhead")
+    save(fig, "fig7_overhead")
 
 
 if __name__ == "__main__":

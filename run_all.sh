@@ -77,6 +77,9 @@ python3 tools/make_tables.py || fail=1
 python3 tools/make_macros.py || fail=1
 python3 tools/make_highlights.py || fail=1
 python3 tools/make_figures.py || fail=1
+python3 tools/make_figures_new.py || fail=1
+python3 tools/figure_qa.py || fail=1
+python3 tools/make_figure_docs.py || fail=1
 
 step "preflight report"
 python3 tools/preflight.py || fail=1
