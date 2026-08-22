@@ -252,4 +252,6 @@ def fig5():
 
 
 if __name__ == "__main__":
-    fig1(); fig2(); fig3(); fig4(); fig5()
+    # fig3 and the two new figures are built by tools/make_figures_new.py,
+    # which uses the shared palette in tools/figstyle.py
+    fig1(); fig2(); fig4(); fig5()

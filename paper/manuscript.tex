@@ -1053,16 +1053,19 @@ exact zero on the other side.
 \centering
 \includegraphics[width=\linewidth]{fig3_promotion.pdf}
 \caption{Boundary-only versus complete-source inheritance on \Btimelines{}
-deterministic timelines. Left: promotion does not grow with composition depth
-because the loss is established at the first derivation and is irreversible.
-Centre: per-operator rates when each operator is applied alone;
-complete-source is zero for every operator and is drawn as a marker at the
-origin, since bars of zero extent would be invisible. Right: control
-arm with anomaly positions uniform over all positions, measured against the
-closed form $\binom{n-2}{k}/\binom{n}{k}$; note the truncated vertical axis
-(80--100\%), chosen so that any divergence between measurement and prediction
-is visible rather than compressed. Percentages quantify mechanism stress
-on a frozen fixture family; they are not real-world prevalence.}
+deterministic timelines. (A) Promotion does not grow with composition depth,
+because the loss is established at the first derivation and no downstream
+operator can recover evidence already discarded. (B) Each operator applied
+alone, as a pair of marks per row: filled circles are boundary-only, open
+diamonds are complete-source. Complete-source is zero for every operator and is
+drawn as a mark rather than as a bar of no extent, so that a zero reads as the
+result it is and not as missing data. (C) Control arm with anomaly positions
+uniform over all positions, measured against the closed form
+$\binom{n-2}{k}/\binom{n}{k}$. Its vertical axis is truncated to 80--100\%,
+marked on the panel, so that any divergence between measurement and prediction
+is visible rather than compressed; the truncation exposes prediction error and
+is not a prevalence estimate. Percentages throughout quantify mechanism stress
+on a frozen fixture family and are not real-world prevalence.}
 \label{fig:promotion}
 \end{figure}
 
@@ -1375,17 +1378,20 @@ representative composition manifest is frozen as a fixture in the repository.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig6_dilution.pdf}
-\caption{What the declared footprints cost. (A) Dilution for a single
-transformation over \IclipsPerTf{} clips: filled circles are medians, bars reach the
-maximum, and open circles are exact zeros drawn as marks so that a zero is
-legible as a result rather than as missing data. (B) Dilution through a
-composition chain, median with the maximum envelope. (C) The same depth-three
-chain over three asset durations on logarithmic axes, showing that fixed-width
-bands occupy a smaller fraction of a longer asset. Panel C holds the chain and
-the boundary count fixed and is not a claim about arbitrary chains: more
-ancestry boundaries would place more bands. Dilution is a weaker claim over part
-of an asset, never a stronger one, so this is the price of conservatism and not
-a failure mode.}
+\caption{What the declared footprints cost. (A) Dilution through a composition
+chain, median with the maximum envelope. The cost compounds with depth and is
+the headline of this figure, which is why it takes the full width. The plateau
+at depth four is amplitude normalisation, whose declared representational
+footprint is zero and which therefore adds none. (B) Dilution for a single
+transformation over \IclipsPerTf{} clips: filled circles are medians, bars
+reach the maximum, and open circles are exact zeros drawn as marks so that a
+zero is legible as a result rather than as missing data. (C) The same
+depth-three chain over three asset durations on logarithmic axes, showing that
+fixed-width bands occupy a smaller fraction of a longer asset. Panel C holds the
+chain and the boundary count fixed and is not a claim about arbitrary chains:
+more ancestry boundaries would place more bands. Dilution is a weaker claim over
+part of an asset, never a stronger one, so this is the price of conservatism and
+not a failure mode.}
 \label{fig:dilution}
 \end{figure}
 

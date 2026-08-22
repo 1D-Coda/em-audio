@@ -115,6 +115,112 @@ def fig_containment():
     save(fig, "fig5_containment")
 
 
+# --- Figure: adversarial validation -----------------------------------------
+
+def fig_adversarial():
+    """Experiment B, in three panels.
+
+    The middle panel was a bar chart in which every bar reached past 90%, which
+    spends most of its width restating that the baseline promotes almost always
+    and leaves the complete-source series with no extent to draw. It is now a
+    paired row per operator, so the comparison is the gap between two marks and
+    the zero is a mark rather than an absence.
+    """
+    B = load("B_adversarial_timelines")
+    # Three panels in a row give each about a third of the width, which is not
+    # enough for the nine operator labels in panel B. The two small line panels
+    # share the top row and the label-hungry panel takes the full width below.
+    fig, axd = plt.subplot_mosaic([["A", "C"], ["B", "B"]],
+                                  figsize=(7.0, 5.0), constrained_layout=True,
+                                  height_ratios=[1.0, 1.25])
+
+    # Panel A: promotion against composition depth
+    ax = axd["A"]
+    depths = sorted(B["per_depth"], key=int)
+    xs = [int(d) for d in depths]
+    base = [100 * B["per_depth"][d]["baseline_promotion_rate"] for d in depths]
+    em = [100 * B["per_depth"][d]["em_promotion_rate"] for d in depths]
+    ax.plot(xs, base, marker=S.M_BASE, color=S.BASE, lw=1.3, ms=4.2, zorder=3)
+    ax.plot(xs, em, marker=S.M_EM, color=S.EM, lw=1.3, ms=4.0,
+            markerfacecolor="white", markeredgewidth=1.1, zorder=3)
+    ax.set_ylim(-6, 112)
+    ax.set_xlim(0.6, 5.4)
+    ax.set_xticks(xs)
+    ax.set_xlabel("composition depth")
+    ax.set_ylabel("spans with promotion (%)")
+    ax.grid(axis="y", linestyle=":")
+    ax.set_axisbelow(True)
+    ax.annotate("boundary-only", xy=(xs[1], base[1]), xytext=(0, 10),
+                textcoords="offset points", fontsize=7.0, color=S.BASE,
+                ha="center")
+    # Placed in the empty band between the two series, with a leader, rather
+    # than beside the marks it describes: at this scale the two series sit at
+    # the extremes of the axis and any label level with the zero line lands on
+    # top of it.
+    ax.annotate("complete-source:\n0 at every depth", xy=(3, em[2]),
+                xytext=(3, 34), fontsize=7.0, color=S.EM, ha="center",
+                va="center", linespacing=1.35,
+                arrowprops=dict(arrowstyle="-", color=S.EM, lw=0.6))
+    ax.set_title("adversarial timelines", fontsize=8.4, loc="left")
+    S.panel_tag(ax, "A", dx=-0.13)
+
+    # Panel B: one row per operator, baseline against complete-source
+    ax = axd["B"]
+    per = B["per_operator_single_step"]
+    ops = sorted(per, key=lambda k: per[k]["baseline_rate"])
+    for i, o in enumerate(ops):
+        b = 100 * per[o]["baseline_rate"]
+        e = 100 * per[o]["em_rate"]
+        ax.plot([e, b], [i, i], color=S.MARGIN, linewidth=2.6,
+                solid_capstyle="round", zorder=1)
+        ax.scatter([b], [i], s=26, marker=S.M_BASE, color=S.BASE, zorder=4)
+        ax.scatter([e], [i], s=26, marker=S.M_EM, facecolor="white",
+                   edgecolor=S.EM, linewidth=1.1, zorder=4)
+    ax.set_yticks(range(len(ops)))
+    ax.set_yticklabels([S.label_of(o) for o in ops], fontsize=7.6)
+    ax.set_xlabel("promotion rate (%)")
+    ax.set_xlim(-9, 112)
+    ax.set_ylim(-0.8, len(ops) - 0.2)
+    ax.grid(axis="x", linestyle=":")
+    ax.set_axisbelow(True)
+    ax.set_title("single operator", fontsize=8.4, loc="left")
+    S.panel_tag(ax, "A", dx=-0.055)
+    # No series labels here. Panel A already keys the same two series with the
+    # same marker shapes, and this panel is too narrow to carry both without
+    # them colliding; a second key would be clutter, not clarity.
+
+    # Panel C: measured against the closed form
+    ax = axd["C"]
+    ks = sorted(B["control_uniform_positions"]["G"], key=int)
+    kx = [int(k) for k in ks]
+    meas = [100 * B["control_uniform_positions"]["G"][k]["measured_baseline_rate"]
+            for k in ks]
+    pred = [100 * B["control_uniform_positions"]["G"][k]["closed_form_baseline_rate"]
+            for k in ks]
+    ax.plot(kx, pred, "-", color=S.PREDICT, lw=1.2, zorder=2)
+    ax.plot(kx, meas, linestyle="none", marker=S.M_MEASURED, color=S.MEASURED,
+            ms=4.2, zorder=3)
+    ax.set_xticks(kx)
+    ax.set_xlim(0.6, 4.4)
+    ax.set_ylim(80, 101)
+    ax.set_xlabel("injected anomalies $k$")
+    ax.set_ylabel("baseline rate (%)")
+    ax.grid(axis="y", linestyle=":")
+    ax.set_axisbelow(True)
+    ax.annotate("closed form", xy=(kx[-1], pred[-1]), xytext=(-3, -11),
+                textcoords="offset points", fontsize=7.0, color=S.PREDICT,
+                ha="right")
+    ax.annotate("measured", xy=(kx[0], meas[0]), xytext=(4, 4),
+                textcoords="offset points", fontsize=7.0, color=S.MEASURED,
+                ha="left")
+    ax.set_title("control arm", fontsize=8.4, loc="left")
+    S.panel_tag(ax, "C", dx=-0.14)
+    ax.text(0.97, 0.95, "axis truncated", transform=ax.transAxes,
+            fontsize=6.8, ha="right", va="top", color="#666666")
+
+    save(fig, "fig3_promotion")
+
+
 # --- Figure: the cost of conservatism ---------------------------------------
 
 def fig_dilution():
@@ -123,11 +229,16 @@ def fig_dilution():
     chain = I["composition_chain"]
     longa = I["long_asset_chain"]
 
-    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.7), constrained_layout=True,
-                             gridspec_kw={"width_ratios": [1.5, 1.0, 1.0]})
+    # The composition-depth panel carries the headline of this figure, that the
+    # cost compounds to most of a short asset by depth five, so it takes the
+    # full width. The per-transformation rows and the duration trend share the
+    # row beneath; the operator labels still fit at half width.
+    fig, axd = plt.subplot_mosaic([["depth", "depth"], ["ops", "dur"]],
+                                  figsize=(7.0, 5.2), constrained_layout=True,
+                                  height_ratios=[1.0, 1.05])
 
-    # Panel A: single transformation, median with maximum whisker
-    ax = axes[0]
+    # Panel B: single transformation, median with maximum whisker
+    ax = axd["ops"]
     rows = sorted(per.items(), key=lambda kv: kv[1]["median_dilution_fraction"])
     for i, (key, v) in enumerate(rows):
         med = 100 * v["median_dilution_fraction"]
@@ -145,18 +256,18 @@ def fig_dilution():
             S.zero_marker(ax, 0, i, colour=S.MEASURED, marker=S.M_MEASURED,
                           size=22)
     ax.set_yticks(range(len(rows)))
-    ax.set_yticklabels([S.label_of(k) for k, _ in rows], fontsize=7.2)
+    ax.set_yticklabels([S.label_of(k) for k, _ in rows], fontsize=7.0)
     ax.set_xlabel("output samples diluted (%)")
     ax.set_xlim(-3, 62)
     ax.grid(axis="x", linestyle=":")
     ax.set_axisbelow(True)
-    S.panel_tag(ax, "A", dx=-0.34)
-    ax.text(0.98, 0.04, "dot: median\nbar: maximum\nopen: exact zero",
+    S.panel_tag(ax, "B", dx=-0.30)
+    ax.text(0.98, 0.06, "dot: median   bar: maximum\nopen: exact zero",
             transform=ax.transAxes, fontsize=6.8, ha="right", va="bottom",
             color="#555555", linespacing=1.4)
 
-    # Panel B: dilution through composition depth
-    ax = axes[1]
+    # Panel A: dilution through composition depth, the headline of this figure
+    ax = axd["depth"]
     d = [r["depth"] for r in chain]
     med = [100 * r["median_dilution_fraction"] for r in chain]
     mx = [100 * r["max_dilution_fraction"] for r in chain]
@@ -172,8 +283,8 @@ def fig_dilution():
     ax.set_ylim(-4, 108)
     ax.grid(axis="y", linestyle=":")
     ax.set_axisbelow(True)
-    S.panel_tag(ax, "B", dx=-0.20)
-    ax.set_xlim(0.6, 6.9)
+    S.panel_tag(ax, "A", dx=-0.055)
+    ax.set_xlim(0.75, 5.62)
     ax.annotate("maximum", xy=(d[-1], mx[-1]), xytext=(7, 3),
                 textcoords="offset points", fontsize=6.9, ha="left",
                 color="#777777")
@@ -191,7 +302,7 @@ def fig_dilution():
                     arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
 
     # Panel C: one fixed chain, longer assets
-    ax = axes[2]
+    ax = axd["dur"]
     secs = [r["asset_seconds"] for r in longa]
     frac = [100 * r["dilution_fraction"] for r in longa]
     ax.plot(secs, frac, color=S.MEASURED, marker=S.M_MEASURED, markersize=3.8,
@@ -208,7 +319,7 @@ def fig_dilution():
         ax.annotate(f"{y:.2f}%", xy=(x, y), xytext=off,
                     textcoords="offset points", fontsize=6.9, ha=ha,
                     color="#444444")
-    S.panel_tag(ax, "C", dx=-0.20)
+    S.panel_tag(ax, "C", dx=-0.14)
     ax.set_ylim(min(frac) * 0.42, max(frac) * 2.6)
     # The explanation of this trend belongs in the caption: a three-line note
     # cannot sit in a panel this size without landing on the curve or on a data
@@ -219,5 +330,6 @@ def fig_dilution():
 
 if __name__ == "__main__":
     S.apply()
+    fig_adversarial()
     fig_containment()
     fig_dilution()

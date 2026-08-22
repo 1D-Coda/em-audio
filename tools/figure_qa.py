@@ -107,7 +107,7 @@ def check(fig, name):
     for t, bb, ax in boxes:
         if ax is None:
             continue
-        pad = 1.0
+        pad = 2.5
         hits = 0
         for artist in list(ax.lines) + list(ax.collections):
             if isinstance(artist, Line2D):
@@ -158,7 +158,8 @@ def main() -> int:
 
     S.apply()
     bad = 0
-    for builder, name in ((N.fig_containment, "fig5_containment"),
+    for builder, name in ((N.fig_adversarial, "fig3_promotion"),
+                          (N.fig_containment, "fig5_containment"),
                           (N.fig_dilution, "fig6_dilution")):
         # rebuild without saving so the live figure can be inspected
         saved, captured = N.save, {}
