@@ -175,6 +175,10 @@ def main() -> int:
     m["KsilenceMargin"] = fmt(po["silence_removal"]["min_margin_inside_declared_range"])
     m["KsilenceReach"] = fmt(po["silence_removal"]["max_measured_reach_source_samples"])
     m["KoutsideTotal"] = fmt(sum(v["total_outside_declared_support"] for v in po.values()))
+    Dm = load("D_transform_matrix")["per_transformation"]
+    m["DbasePromo"] = fmt(sum(v["baseline_promotions"] for v in Dm.values()))
+    m["DemPromo"] = fmt(sum(v["em_promotions"] for v in Dm.values()))
+    m["DtotalRuns"] = fmt(load("D_transform_matrix")["n_clips"] * len(Dm))
     m["KmpThreeReach"] = fmt(po["transcode_mp3"]["max_measured_reach_source_samples"])
     m["KstretchReach"] = fmt(po["time_stretch_1.10"]["max_measured_reach_source_samples"])
     m["KresampleReach"] = fmt(po["resample_16_8"]["max_measured_reach_source_samples"])

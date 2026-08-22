@@ -37,6 +37,76 @@ def save(fig, name):
     print(f"[figure] results/figures/{name}.pdf")
 
 
+# --- Figure: promotion on the mixed-origin corpus ---------------------------
+
+def fig_corpus():
+    """Per-transformation promotion, as a paired row rather than as bars.
+
+    Six baseline values sit at 100%, two at zero, and complete-source is zero
+    everywhere, so a bar chart spends its whole width restating that most bars
+    are full and draws the series that matters as nothing at all. The pair of
+    marks per row makes the comparison the gap, and the counts are written
+    directly so the reader does not have to read a rate off an axis.
+    """
+    D = load("D_transform_matrix")
+    per = D["per_transformation"]
+    n = D["n_clips"]
+    rows = sorted(per, key=lambda k: (-per[k]["baseline_promotion_rate"], k))
+
+    fig, ax = plt.subplots(figsize=(6.8, 3.4), constrained_layout=True)
+
+    for i, key in enumerate(rows):
+        b = 100 * per[key]["baseline_promotion_rate"]
+        e = 100 * per[key]["em_promotion_rate"]
+        bn, en = per[key]["baseline_promotions"], per[key]["em_promotions"]
+        if b > 0:
+            ax.plot([e, b], [i, i], color=S.MARGIN, linewidth=3.0,
+                    solid_capstyle="round", zorder=1)
+            ax.scatter([b], [i], s=36, marker=S.M_BASE, color=S.BASE, zorder=4)
+            ax.text(b + 3.0, i, f"{bn:,}/{n:,}", fontsize=7.2, va="center",
+                    color=S.BASE)
+        else:
+            # A structural zero: the baseline cannot promote here either, and
+            # the reason belongs on the row rather than in the caption alone.
+            ax.scatter([b], [i], s=36, marker=S.M_BASE, facecolor="white",
+                       edgecolor=S.BASE, linewidth=1.2, zorder=4)
+            ax.text(4.0, i, f"{bn}/{n:,}, a structural zero", fontsize=7.0,
+                    va="center", color="#777777")
+        ax.scatter([e], [i], s=36, marker=S.M_EM, facecolor="white",
+                   edgecolor=S.EM, linewidth=1.2, zorder=5)
+
+    ax.set_yticks(range(len(rows)))
+    ax.set_yticklabels([S.label_of(k) for k in rows], fontsize=7.8)
+    ax.set_xlabel("clips with promotion (%)")
+    ax.set_xlim(-6, 128)
+    ax.set_ylim(-1.35, len(rows) - 0.30)
+    ax.set_xticks([0, 25, 50, 75, 100])
+    ax.grid(axis="x", linestyle=":", zorder=0)
+    ax.set_axisbelow(True)
+
+    tr = ax.get_xaxis_transform()
+    ax.annotate("complete-source", xy=(0, 1.005), xytext=(0, 1.085),
+                xycoords=tr, textcoords=tr, fontsize=7.3, color=S.EM,
+                ha="left", annotation_clip=False,
+                arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
+    ax.annotate("boundary-only", xy=(100, 1.005), xytext=(100, 1.085),
+                xycoords=tr, textcoords=tr, fontsize=7.3, color=S.BASE,
+                ha="center", annotation_clip=False,
+                arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
+
+    tot_b = sum(per[k]["baseline_promotions"] for k in per)
+    tot_e = sum(per[k]["em_promotions"] for k in per)
+    tot_runs = n * len(per)
+    ax.set_title(f"Boundary-only promoted in {tot_b:,} of {tot_runs:,} "
+                 f"transformation runs; complete-source in {tot_e:,}",
+                 fontsize=8.6, loc="left", pad=26)
+    ax.text(0.5, -1.15, "open marks are exact zeros, drawn so that a zero reads "
+            "as a result rather than as missing data", fontsize=6.9,
+            color="#666666", va="center")
+
+    save(fig, "fig4_corpus")
+
+
 # --- Figure: declared footprint versus measured dependency reach ------------
 
 def fig_containment():
@@ -331,5 +401,6 @@ def fig_dilution():
 if __name__ == "__main__":
     S.apply()
     fig_adversarial()
+    fig_corpus()
     fig_containment()
     fig_dilution()

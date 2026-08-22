@@ -14,6 +14,7 @@ Latest run:
 
 ```
 [qa] fig3_promotion: clean (13 text elements)
+[qa] fig4_corpus: clean (12 text elements)
 [qa] fig5_containment: clean (13 text elements)
 [qa] fig6_dilution: clean (16 text elements)
 [qa] every figure clean: no overlapping text, no unreadable type
@@ -35,9 +36,9 @@ Latest run:
 | `fig1_counterexample` | 54,663 | 170,783 | no |
 | `fig2_architecture` | 20,036 | 96,869 | no |
 | `fig3_promotion` | 27,189 | 190,503 | yes |
-| `fig4_corpus` | 19,444 | 77,359 | no |
+| `fig4_corpus` | 17,801 | 147,098 | yes |
 | `fig5_containment` | 21,184 | 121,453 | yes |
 | `fig6_dilution` | 23,764 | 201,388 | yes |
-| `fig7_overhead` | 19,483 | 113,277 | no |
+| `fig7_overhead` | 18,894 | 113,702 | no |
 
 Vector PDF is what the manuscript includes; PNG previews are 300 dpi; SVG is provided for editing.

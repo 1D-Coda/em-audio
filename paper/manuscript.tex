@@ -217,9 +217,13 @@ contribution in what is executable and measured.
   and a two-language differential over \Hcases{} frozen cases with \Hdis{}
   disagreements (Sections~\ref{sec:res-conformance}, \ref{sec:res-oracle}).
 \item A measured demonstration on \Cclips{} mixed-origin clips processed
-  entirely by stock FFmpeg, in which the interval model is validated against
-  the behaviour of software we do not control and the declared footprints are shown
-  adequate (Section~\ref{sec:res-corpus}).
+  entirely by stock FFmpeg, in which the temporal interval mapping is validated
+  against the behaviour of software we do not control
+  (Section~\ref{sec:res-corpus}), while the declared source-support footprints
+  are tested separately by differential influence probes
+  (Section~\ref{sec:res-containment}). The two are different questions and are
+  not established by the same measurement: agreement on output length says
+  nothing about how far a dependency reaches.
 \item A cost measurement on both axes that matter: runtime, where bookkeeping
   is \GffmpegPct{}\% of the processing time it accompanies and the assertion
   grows linearly in evidence intervals at \GperInterval{}~B per interval
@@ -763,9 +767,13 @@ its common implementations are compositions of operators already in scope, a rat
 two, with the composed footprint the composition of theirs; a phase-vocoder
 implementation would instead declare its own analysis-window footprint, exactly
 as time stretching does. A named regression test exercises the composite.
-Denoising, source separation, speech enhancement and generative editing are out
-of scope: they are not representation-only, and a generative edit legitimately
-introduces new ancestry rather than propagating existing ancestry.
+Denoising, source separation and speech enhancement are out of scope for v1 for
+a narrower reason than that they are not representation-only, which we do not
+assert: their source-to-output dependency structure and operator semantics
+require modelling and validation of their own, and they are not assumed here to
+admit the local footprints the current operator set uses. Generative editing differs for a
+further reason, and a more basic one: it may legitimately introduce new ancestry
+rather than propagate existing ancestry.
 
 The footprint entries deserve comment, because a reviewer will look for an
 off-by-one. For a polyphase resampler the radius follows from the pinned filter
@@ -838,11 +846,15 @@ mechanism, not to caricature an opponent. It is also not an arbitrary choice of
 opponent. Since the specification does not define the reduction, every
 implementation that derives an asset has to supply one, whether deliberately or
 by default, and inheriting from the parent at the retained region's endpoints is
-the reading its own \texttt{parentOf} vocabulary most directly suggests. The
-gap being measured is therefore in the standard rather than in anyone's code,
-which is why the comparison can be made honestly without naming a product, and
-why we would expect independently written implementations to differ here until a
-reduction is specified.
+the reading its own \texttt{parentOf} vocabulary most directly suggests. What is
+therefore underspecified is the semantic reduction: the ingredient and temporal
+vocabulary can preserve the required source histories, but the specification does
+not normatively require the conservative aggregate claim studied here. The
+constructed baseline isolates one consequence of that underspecification without
+attributing it to any named implementation, and we make no claim about how
+deployed software behaves; that would need a survey this paper does not
+contain. C2PA supplies the vocabulary and the signed graph, and what this work
+supplies is the reduction contract computed over them.
 
 The baseline combines two independent shortcuts, boundary-only inheritance and blindness to the kernel footprint, so the experiments also evaluate the
 two intermediate policies that remove one shortcut each, and report all four
@@ -1165,11 +1177,16 @@ had to be re-declared and the build would have failed.
 \centering
 \includegraphics[width=\linewidth]{fig4_corpus.pdf}
 \caption{Promotion by transformation over \Cclips{} mixed-origin clips
-processed entirely by stock FFmpeg. Complete-source propagation is zero for
-every transformation, so its series is drawn as a marker at the origin rather
-than as bars with no extent. Overlay and silence removal produce no baseline
-promotion either, for the structural reasons given in
-Section~\ref{sec:res-corpus}.}
+processed entirely by stock FFmpeg, \DtotalRuns{} transformation runs in all.
+Each row is a pair of marks: a filled circle for the boundary-only reference
+policy and an open diamond for complete-source propagation, with counts written
+directly rather than read off the axis. Boundary-only promoted in
+\DbasePromo{} of \DtotalRuns{} runs and complete-source in \DemPromo{}.
+Generated-source overlay and silence removal produce no baseline promotion
+either, for the structural reasons given in Section~\ref{sec:res-corpus}, and
+are marked as such rather than left to look like missing rows. The baseline is a
+constructed reference policy, not the behaviour of any named deployed product,
+and these are counts over a frozen corpus rather than a prevalence estimate.}
 \label{fig:corpus}
 \end{figure}
 
@@ -1753,6 +1770,34 @@ independent implementation can be run against. We would regard disagreement
 between such an implementation and ours as the more informative outcome, since
 it would locate an ambiguity in the specification of the contract, which is the
 part of this work that is meant to outlive the reference code.
+
+\paragraph{What an independent reproduction would have to compare} Because such
+a reproduction is the single largest outstanding item, we state in advance what
+it should record and, more importantly, how its outputs should be classified, so
+that the criteria are fixed before any result exists rather than chosen after
+one arrives. The environment to record is the person or group, the machine,
+operating system, hardware, runtime and tool versions, and the release tag and
+commit reproduced. The execution to record is a clean clone, dependency
+installation, a full \texttt{run\_all.sh}, and a comparison of the emitted
+machine-readable results against the ones shipped with that tag.
+
+The classification matters more than the checklist. Two kinds of output must be
+compared against different expectations. The \emph{deterministic} outputs are
+those a correct reimplementation must match exactly: conformance counts and
+pass/fail totals, promotion classifications, lineage sets, interval structure,
+support-channel behaviour, and decoded essence digests. The
+\emph{environment-dependent} outputs are those that should be expected to
+differ and whose difference is not a defect: wall-clock timings and their
+interquartile ranges, the absolute cost figures discussed in
+Section~\ref{sec:res-overhead}, and the bytes of a freshly signed file, which
+differ because signing incorporates a timestamp. A reproduction reporting
+identical timings would be the surprising result, not a reassuring one.
+
+Any difference in the first class should be classified rather than absorbed, as
+an environment difference, a tool-version difference, an ambiguity in the
+contract's specification, or a genuine discrepancy, and reported as such
+whichever it turns out to be. No such reproduction has been performed at the
+time of writing, and nothing in this paper should be read as reporting one.
 
 \paragraph{Corpus} \Cclips{} clips from one read-speech corpus and one formant
 synthesiser, at \CcorpusFs{}~Hz, is a deliberate mechanism corpus, not a

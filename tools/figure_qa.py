@@ -159,6 +159,7 @@ def main() -> int:
     S.apply()
     bad = 0
     for builder, name in ((N.fig_adversarial, "fig3_promotion"),
+                          (N.fig_corpus, "fig4_corpus"),
                           (N.fig_containment, "fig5_containment"),
                           (N.fig_dilution, "fig6_dilution")):
         # rebuild without saving so the live figure can be inspected
