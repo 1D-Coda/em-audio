@@ -157,8 +157,8 @@ Table~\ref{tab:inherited} states exactly what is inherited and what is new, no
 earlier result is reused, and the row-by-row transfer analysis is Supplementary
 Note~S1. The short version is that the algebra transfers and almost nothing
 else does: temporal interval maps, the kernel-footprint problem and its
-monotonicity resolution, the guard-band validation against third-party
-processing, signal transparency on decoded PCM, and the signed transport have
+monotonicity resolution, the mapping and source-support validations against
+third-party processing, signal transparency on decoded PCM, and the signed transport have
 no spatial analogue.
 
 \begin{table}[t]
@@ -185,8 +185,10 @@ withheld, not computed from the rest \\
 Requirement (iv$'$): a $\bot$ source also withholds every numeric channel \\
 \addlinespace
 Non-promotion in the spatial setting &
-Kernel footprints with declared source-support bounds, validated per clip against stock
-FFmpeg; footprint monotonicity (Proposition~\ref{prop:footprint}) \\
+Kernel footprints with declared source-support bounds; temporal mapping
+validated per clip against stock FFmpeg and source-support containment tested
+separately by differential influence probes; footprint monotonicity
+(Proposition~\ref{prop:footprint}) \\
 \addlinespace
 Conformance-test methodology (exhaustive enumeration, frozen fixtures,
 separately implemented oracle) &
@@ -1610,11 +1612,15 @@ finds the milliseconds different from the ones printed here has reproduced the
 result correctly. The remaining detail is structural rather than incidental: both arms are timed in
 the same process on the same machine, so whatever sets the absolute scale on a
 given run, thermal state, frequency scaling or competing load, moves the two
-arms together and cancels in their quotient. The ratio is therefore the quantity
-to carry across machines, and the absolute figures should be read as
-order-of-magnitude evidence that the bookkeeping is cheap rather than as
-reproducible constants. A reader reproducing these numbers should expect the
-ratio to survive and the milliseconds not to.
+arms together and cancels in their quotient. The ratio is therefore the more
+appropriate quantity to compare across machines, though its actual cross-machine
+stability is an external-validity question this paper does not answer: every
+measurement here is from one machine, and cancelling common-mode variation
+within a machine is not the same as cancelling the difference between two. The
+absolute figures should be read as order-of-magnitude evidence that the
+bookkeeping is cheap rather than as reproducible constants. A reader reproducing
+these numbers should expect the ratio to be the more comparable of the two and
+the milliseconds not to match.
 
 \begin{table}[t]
 \centering
@@ -1726,7 +1732,7 @@ timeline.}
 \paragraph{What is established} That a complete-source rule is implementable
 over media time against real processing software; that it eliminates promotion
 on every fixture and every corpus clip tested, where a minimal boundary-only
-policy does not; that it can be carried in a deployed signed transport without
+policy does not; that it can be carried in an existing signed provenance standard without
 altering the audio; and that its cost is a fraction of a percent of the
 processing it accompanies.
 
