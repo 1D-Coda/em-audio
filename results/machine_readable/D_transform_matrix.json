@@ -31,7 +31,7 @@
    "mean_baseline_intervals": 1.0,
    "mean_em_intervals": 3.0,
    "median_em_assertion_bytes": 1277,
-   "median_runtime_ms": 81.84,
+   "median_runtime_ms": 59.361,
    "model_vs_ffmpeg_max_abs_sample_dev": 0,
    "model_vs_ffmpeg_median_abs_sample_dev": 0.0,
    "n": 600
@@ -49,7 +49,7 @@
    "mean_baseline_intervals": 2.0,
    "mean_em_intervals": 4.997,
    "median_em_assertion_bytes": 2028,
-   "median_runtime_ms": 42.153,
+   "median_runtime_ms": 30.521,
    "model_vs_ffmpeg_max_abs_sample_dev": 0,
    "model_vs_ffmpeg_median_abs_sample_dev": 0.0,
    "n": 600
@@ -67,7 +67,7 @@
    "mean_baseline_intervals": 1.0,
    "mean_em_intervals": 5.0,
    "median_em_assertion_bytes": 2079,
-   "median_runtime_ms": 40.841,
+   "median_runtime_ms": 29.532,
    "model_vs_ffmpeg_max_abs_sample_dev": 0,
    "model_vs_ffmpeg_median_abs_sample_dev": 0.0,
    "n": 600
@@ -85,7 +85,7 @@
    "mean_baseline_intervals": 2.0,
    "mean_em_intervals": 4.543,
    "median_em_assertion_bytes": 2031,
-   "median_runtime_ms": 40.584,
+   "median_runtime_ms": 29.369,
    "model_vs_ffmpeg_max_abs_sample_dev": 681,
    "model_vs_ffmpeg_median_abs_sample_dev": 243.0,
    "n": 600
@@ -103,7 +103,7 @@
    "mean_baseline_intervals": 1.0,
    "mean_em_intervals": 4.998,
    "median_em_assertion_bytes": 2070,
-   "median_runtime_ms": 41.642,
+   "median_runtime_ms": 30.136,
    "model_vs_ffmpeg_max_abs_sample_dev": 471,
    "model_vs_ffmpeg_median_abs_sample_dev": 146.5,
    "n": 600
@@ -121,7 +121,7 @@
    "mean_baseline_intervals": 1.0,
    "mean_em_intervals": 3.0,
    "median_em_assertion_bytes": 1270,
-   "median_runtime_ms": 42.252,
+   "median_runtime_ms": 30.541,
    "model_vs_ffmpeg_max_abs_sample_dev": 0,
    "model_vs_ffmpeg_median_abs_sample_dev": 0.0,
    "n": 600
@@ -139,7 +139,7 @@
    "mean_baseline_intervals": 1.0,
    "mean_em_intervals": 5.0,
    "median_em_assertion_bytes": 2051,
-   "median_runtime_ms": 47.568,
+   "median_runtime_ms": 34.318,
    "model_vs_ffmpeg_max_abs_sample_dev": 31,
    "model_vs_ffmpeg_median_abs_sample_dev": 0.0,
    "n": 600
@@ -157,14 +157,14 @@
    "mean_baseline_intervals": 1.0,
    "mean_em_intervals": 3.0,
    "median_em_assertion_bytes": 1260,
-   "median_runtime_ms": 40.735,
+   "median_runtime_ms": 29.762,
    "model_vs_ffmpeg_max_abs_sample_dev": 0,
    "model_vs_ffmpeg_median_abs_sample_dev": 0.0,
    "n": 600
   }
  },
  "processing_path": "stock ffmpeg CLI only; no project code in the signal path",
- "runtime_s": 341.615,
+ "runtime_s": 249.239,
  "transformations": [
   "normalize",
   "overlay_generated",

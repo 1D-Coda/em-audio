@@ -78,6 +78,19 @@ def main() -> int:
             pass
         if _env.get("cpu_model"):
             break
+    _stab = MR / "M_overhead_stability.json"
+    if _stab.exists():
+        _m = json.loads(_stab.read_text())
+        add("")
+        add("benchmark stability, one process per row")
+        add(f"  cv definition: {_m.get('cv_definition', 'n/a')}")
+        for _r in _m.get("runs", []):
+            add(f"  run {_r['run']}: em {_r['em_ms_per_audio_minute']} ms, "
+                f"baseline {_r['baseline_ms_per_audio_minute']} ms, "
+                f"ratio {_r['em_over_baseline_ratio']}")
+        add(f"  absolute cv: {_m['em_ms_per_audio_minute']['cv_pct']}%")
+        add(f"  ratio cv: {_m['em_over_baseline_ratio']['cv_pct']}%")
+        add("")
     add(f"cpu: {_env.get('cpu_model', platform.machine())}")
     add(f"cpu_arch: {platform.machine()}")
     add(f"cpu_count_logical: {_env.get('cpu_count_logical', 'unavailable')}")

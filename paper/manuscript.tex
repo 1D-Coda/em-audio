@@ -1,6 +1,20 @@
 \documentclass[preprint,3p,11pt]{elsarticle}
 
 \usepackage{amsmath,amssymb,amsthm}
+
+% Float placement. The two-row figures run to about 5.5 inches once scaled to
+% the text width, and with their captions they exceed the default \topfraction
+% of 0.7. LaTeX then defers them, and because floats cannot overtake one
+% another, every later figure queues behind the first deferred one and the whole
+% set lands at the end of the document. These fractions let a tall float take
+% the page it needs near the text that refers to it.
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.72}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{3}
 \usepackage{stmaryrd}  % \bigsqcap
 \usepackage{booktabs}
 \usepackage{graphicx}
@@ -245,7 +259,7 @@ Transparency obligations for synthetic content under Article~50 of Regulation
 machine-readable origin claims about derived media operationally relevant. We
 make no legal claim about what any particular disclosure regime requires.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{fig1_counterexample.pdf}
 \caption{The minimal temporal counterexample. Five source intervals, of which
@@ -748,7 +762,7 @@ The emitted output partition is the pull-back of every source evidence boundary
 across every piece, which gives each emitted interval a stable complete source
 set.
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{fig2_architecture.pdf}
 \caption{Where the contract sits. Stock FFmpeg performs the transformation; the
@@ -1061,7 +1075,7 @@ is a property of the deliberate construction, arithmetically predictable, and
 carries no information about deployed software. The informative quantity is the
 exact zero on the other side.
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{fig3_promotion.pdf}
 \caption{Boundary-only versus complete-source inheritance on \Btimelines{}
@@ -1173,7 +1187,7 @@ Support containment is a third falsifiable measurement and is made separately in
 Section~\ref{sec:res-containment}. Either could have come out wrong, and the declared footprints would then have
 had to be re-declared and the build would have failed.
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{fig4_corpus.pdf}
 \caption{Promotion by transformation over \Cclips{} mixed-origin clips
@@ -1234,7 +1248,7 @@ conservative direction.
 \subsection{Kernel-support containment}
 \label{sec:res-containment}
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{fig5_containment.pdf}
 \caption{Kernel-support containment. Each operator configuration was probed
@@ -1398,7 +1412,7 @@ representative composition manifest is frozen as a fixture in the repository.
 \subsection{The cost of conservatism: claim dilution}
 \label{sec:res-dilution}
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{fig6_dilution.pdf}
 \caption{What the declared footprints cost. (A) Dilution through a composition
@@ -1538,6 +1552,16 @@ changes along the timeline, not with duration, which is the property a
 long-form or streaming deployment needs. These are single-machine medians for a
 Python reference implementation and are not language-independent constants.
 
+The two slopes deserve to be read differently, and a reader comparing revisions
+of this paper will see why. The byte figure is deterministic: it is the size of
+a serialised assertion, so it reproduces exactly and has not moved. The
+microsecond figure is wall clock, and it moves with machine state exactly as the
+absolute costs above do; it has differed by tens of percent between sittings on
+this one machine with the bookkeeping code unchanged. Neither is a defect. The
+first is a property of the format and the second is a measurement of one
+interpreter on one machine, and only the first should be expected to reproduce
+to its printed precision.
+
 One further caveat is worth stating precisely, because the within-run
 interquartile ranges above do not capture it, and it is measured rather than
 asserted. Section~\ref{sec:res-overhead}'s figures come from one run;
@@ -1669,7 +1693,7 @@ Dilution against the true (unknowable) dependencies of a third-party codec \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{fig7_overhead.pdf}
 \caption{Cost of carrying interval evidence. The emitted assertion and the

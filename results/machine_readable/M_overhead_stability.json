@@ -1,24 +1,25 @@
 {
  "baseline_ms_per_audio_minute": {
-  "cv_pct": 0.943,
-  "max": 0.4007,
-  "mean": 0.3962,
-  "min": 0.3899,
-  "range_pct": 2.77
+  "cv_pct": 4.61,
+  "max": 0.3067,
+  "mean": 0.285,
+  "min": 0.2743,
+  "range_pct": 11.81
  },
+ "cv_definition": "sample standard deviation over the mean, in percent, with Bessel's correction",
  "em_ms_per_audio_minute": {
-  "cv_pct": 1.436,
-  "max": 1.3693,
-  "mean": 1.3303,
-  "min": 1.3058,
-  "range_pct": 4.86
+  "cv_pct": 4.729,
+  "max": 1.05,
+  "mean": 0.9712,
+  "min": 0.9266,
+  "range_pct": 13.32
  },
  "em_over_baseline_ratio": {
-  "cv_pct": 0.821,
-  "max": 3.4181,
-  "mean": 3.3575,
-  "min": 3.3174,
-  "range_pct": 3.04
+  "cv_pct": 1.743,
+  "max": 3.5146,
+  "mean": 3.4076,
+  "min": 3.3112,
+  "range_pct": 6.14
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -38,7 +39,63 @@
  "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
  "ratio_is_tighter_than_absolute": true,
  "repeats": 9,
- "runtime_s": 376.998,
+ "runs": [
+  {
+   "baseline_ms_per_audio_minute": 0.2781,
+   "em_ms_per_audio_minute": 0.9774,
+   "em_over_baseline_ratio": 3.5146,
+   "run": 1
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.3067,
+   "em_ms_per_audio_minute": 1.0155,
+   "em_over_baseline_ratio": 3.3112,
+   "run": 2
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.278,
+   "em_ms_per_audio_minute": 0.9521,
+   "em_over_baseline_ratio": 3.425,
+   "run": 3
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.2743,
+   "em_ms_per_audio_minute": 0.9266,
+   "em_over_baseline_ratio": 3.3782,
+   "run": 4
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.303,
+   "em_ms_per_audio_minute": 1.05,
+   "em_over_baseline_ratio": 3.4651,
+   "run": 5
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.2751,
+   "em_ms_per_audio_minute": 0.9322,
+   "em_over_baseline_ratio": 3.3884,
+   "run": 6
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.2755,
+   "em_ms_per_audio_minute": 0.9349,
+   "em_over_baseline_ratio": 3.3935,
+   "run": 7
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.2779,
+   "em_ms_per_audio_minute": 0.9347,
+   "em_over_baseline_ratio": 3.3632,
+   "run": 8
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.2967,
+   "em_ms_per_audio_minute": 1.0175,
+   "em_over_baseline_ratio": 3.4296,
+   "run": 9
+  }
+ ],
+ "runtime_s": 280.661,
  "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
- "tightness_factor_cv": 1.75
+ "tightness_factor_cv": 2.71
 }

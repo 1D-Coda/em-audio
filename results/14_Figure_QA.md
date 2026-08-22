@@ -39,6 +39,6 @@ Latest run:
 | `fig4_corpus` | 25,853 | 254,706 | yes |
 | `fig5_containment` | 21,184 | 121,453 | yes |
 | `fig6_dilution` | 23,764 | 201,388 | yes |
-| `fig7_overhead` | 18,897 | 112,925 | no |
+| `fig7_overhead` | 18,967 | 118,844 | no |
 
 Vector PDF is what the manuscript includes; PNG previews are 300 dpi; SVG is provided for editing.

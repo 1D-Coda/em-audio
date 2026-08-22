@@ -89,6 +89,15 @@ def main() -> int:
         "purpose": ("whether the absolute cost or the ratio survives being "
                     "measured again on the same machine"),
         "repeats": REPEATS,
+        # The individual runs, so a reader can recompute the dispersion rather
+        # than trust a summary of it. A coefficient of variation quoted without
+        # its samples cannot be checked.
+        "runs": [{"run": i + 1, "em_ms_per_audio_minute": e,
+                  "baseline_ms_per_audio_minute": b,
+                  "em_over_baseline_ratio": r}
+                 for i, (e, b, r) in enumerate(zip(em, base, ratio))],
+        "cv_definition": ("sample standard deviation over the mean, in percent, "
+                          "with Bessel's correction"),
         "em_ms_per_audio_minute": s_em,
         "baseline_ms_per_audio_minute": spread(base),
         "em_over_baseline_ratio": s_ratio,
