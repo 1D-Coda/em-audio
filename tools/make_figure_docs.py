@@ -68,9 +68,9 @@ def main() -> int:
         for el, src in SOURCES[name]:
             lines.append(f"| {el} | `{src}` |")
         lines.append("")
-    (ROOT / "results" / "FIGURE_DATA_SOURCES.md").write_text(
+    (ROOT / "results" / "13_Figure_Data_Sources.md").write_text(
         "\n".join(lines), encoding="utf-8")
-    print("[docs] results/FIGURE_DATA_SOURCES.md")
+    print("[docs] results/13_Figure_Data_Sources.md")
 
     qa = subprocess.run([sys.executable, str(ROOT / "tools" / "figure_qa.py")],
                         capture_output=True, text=True, cwd=ROOT)
@@ -120,9 +120,9 @@ def main() -> int:
         doc.append(f"| `{name}` | {a:,} | {b:,} | {c} |")
     doc += ["", "Vector PDF is what the manuscript includes; PNG previews are "
             "300 dpi; SVG is provided for editing."]
-    (ROOT / "results" / "FIGURE_QA.md").write_text("\n".join(doc) + "\n",
+    (ROOT / "results" / "14_Figure_QA.md").write_text("\n".join(doc) + "\n",
                                                    encoding="utf-8")
-    print("[docs] results/FIGURE_QA.md")
+    print("[docs] results/14_Figure_QA.md")
     return 0 if qa.returncode == 0 else 1
 
 

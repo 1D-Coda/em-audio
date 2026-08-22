@@ -44,6 +44,62 @@ def check_supplement_pointers(manuscript: str, supplement: str) -> list[str]:
     return problems
 
 
+def check_bundle_docs():
+    """Internal bundle documents must not contradict the manuscript.
+
+    These are hand-written and nothing regenerates them, so they drift silently:
+    one shipped a superseded conformance total for two days while the manuscript
+    carried the current one, and a reader comparing the two would have found the
+    paper disagreeing with its own record.
+
+    The match is on a number together with the words naming it, not on magnitude.
+    A first version of this check flagged anything within a factor of four of a
+    live value, which reported the correct influenced-sample count as a stale
+    operator-case count. A check that cries wolf gets ignored, which is worse
+    than not having it.
+    """
+    import json
+    sub = ROOT.parent / "EM_Audio_Submission_2026-08-19"
+    if not sub.is_dir():
+        return []
+    mr = ROOT / "results" / "machine_readable"
+    A = json.loads((mr / "A_synthetic_state_space.json").read_text())
+    K = json.loads((mr / "K_support_containment.json").read_text())
+
+    # (regex naming the quantity, current value). The number may sit on either
+    # side of the words, so both orders are matched.
+    # [ \t] rather than \s: \s crosses newlines, so a machine-readable dump with
+    # "operator_cases: 98385" on one line and "checks_total: ..." on the next
+    # matched as though the first number named checks. The guard reported two
+    # such phantoms before this was tightened.
+    live = [
+        # up to two intervening words, so "885,828 exhaustive checks" is caught
+        (r"([\d,]{5,})[ \t]+(?:[a-z-]+[ \t]+){0,2}checks", A["checks_total"]),
+        (r"([\d,]{5,})[ \t]+(?:[a-z-]+[ \t]+){0,2}operator cases",
+         A["operator_cases"]),
+        (r"([\d,]{5,})[ \t]+(?:[a-z-]+[ \t]+){0,2}output samples",
+         K["total_affected_output_samples"]),
+    ]
+
+    problems = []
+    for doc in sorted(sub.glob("*.md")) + sorted(sub.glob("*.txt")):
+        # The audit report is an append-only history and quotes superseded
+        # values on purpose, to record what changed and why.
+        if "Audit_Graphs_Formulas" in doc.name:
+            continue
+        text = doc.read_text(encoding="utf-8", errors="ignore")
+        for pat, cur in live:
+            for tok in set(re.findall(pat, text, re.I)):
+                try:
+                    val = int(tok.replace(",", ""))
+                except ValueError:
+                    continue
+                if val != cur:
+                    problems.append(f"{doc.name}: {tok} where the current "
+                                    f"value is {cur:,}")
+    return sorted(set(problems))
+
+
 def main() -> int:
     if not NUMBERS.exists():
         print("results/numbers.tex missing; run tools/make_macros.py", file=sys.stderr)
@@ -84,8 +140,16 @@ def main() -> int:
             print(f"  {d}")
         return 1
 
+    stale = check_bundle_docs()
+    if stale:
+        print(f"{len(stale)} possibly superseded number(s) in the bundle:")
+        for d in stale[:10]:
+            print(f"  {d}")
+        return 1
+
     print("no hand-typed result numbers found in the manuscript source")
     print("all supplement pointers resolve")
+    print("bundle documents agree with the current results")
     return 0
 
 if __name__ == "__main__":

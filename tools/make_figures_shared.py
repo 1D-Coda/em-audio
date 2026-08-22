@@ -1,8 +1,13 @@
-"""The two figures added in the visualisation upgrade.
+"""The figures built on the shared visual language in tools/figstyle.py.
 
-Both are generated entirely from results/machine_readable/. No measured number
-is typed here: if a value is absent from the result files the figure fails
-rather than being drawn from a remembered figure.
+Four of the manuscript's seven figures live here: adversarial validation, the
+mixed-origin corpus, kernel-support containment and claim dilution. The
+remaining three, the counterexample, the architecture diagram and the cost
+scaling, are in tools/make_figures.py.
+
+Every figure is generated entirely from results/machine_readable/. No measured
+number is typed here: if a value is absent from the result files the figure
+fails rather than being drawn from a remembered one.
 """
 from __future__ import annotations
 

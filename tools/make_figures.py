@@ -168,6 +168,6 @@ def fig5():
 
 
 if __name__ == "__main__":
-    # fig3 and the two new figures are built by tools/make_figures_new.py,
-    # which uses the shared palette in tools/figstyle.py
+    # fig3 to fig6 are built by tools/make_figures_shared.py, which uses the
+    # shared palette in tools/figstyle.py
     fig1(); fig2(); fig5()

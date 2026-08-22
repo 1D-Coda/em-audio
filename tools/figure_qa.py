@@ -154,7 +154,7 @@ def check(fig, name):
 
 def main() -> int:
     import figstyle as S
-    import make_figures_new as N
+    import make_figures_shared as N
 
     S.apply()
     bad = 0
