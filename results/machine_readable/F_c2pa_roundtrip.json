@@ -33,8 +33,8 @@
    "file_hash_changed_by_signing": 40,
    "median_em_assertion_bytes": 1270,
    "median_manifest_overhead_bytes": 14912,
-   "median_sign_ms": 15.61,
-   "median_validate_ms": 12.87,
+   "median_sign_ms": 16.5,
+   "median_validate_ms": 13.5,
    "n": 40,
    "parentOf_recorded": 40,
    "sign_ok": 40,
@@ -53,8 +53,8 @@
    "file_hash_changed_by_signing": 40,
    "median_em_assertion_bytes": 2049,
    "median_manifest_overhead_bytes": 15492,
-   "median_sign_ms": 15.74,
-   "median_validate_ms": 12.76,
+   "median_sign_ms": 17.58,
+   "median_validate_ms": 14.66,
    "n": 40,
    "parentOf_recorded": 40,
    "sign_ok": 40,
@@ -73,8 +73,8 @@
    "file_hash_changed_by_signing": 40,
    "median_em_assertion_bytes": 1269,
    "median_manifest_overhead_bytes": 14858,
-   "median_sign_ms": 15.54,
-   "median_validate_ms": 12.9,
+   "median_sign_ms": 15.29,
+   "median_validate_ms": 12.73,
    "n": 40,
    "parentOf_recorded": 40,
    "sign_ok": 40,
@@ -82,7 +82,7 @@
    "validate_valid_or_better": 40
   }
  },
- "runtime_s": 33.951,
+ "runtime_s": 34.617,
  "signal_transparency_method": "SHA-256 of decoded PCM (s16le at the asset's own rate); whole-file hashes are not used because embedding a manifest changes the file",
  "trust_note": "signed with a locally generated test credential and a locally configured trust anchor; the credential is not on the C2PA Conformance Program trust list, so 'Trusted' here means trusted under the declared local anchor, not conformance-program trust"
 }

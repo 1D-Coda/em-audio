@@ -30,5 +30,5 @@
  "neural_tts_engine": "Piper (VITS architecture), voice en_US-ljspeech-medium; LJSpeech source data is public domain",
  "noise_source": "ffmpeg anoisesrc, pink, -18 dB, locally generated, seeded per clip",
  "note": "the evidence algebra reads no acoustic features, so these arms test the pipeline machinery under different signal character, not a detector",
- "runtime_s": 17.17
+ "runtime_s": 16.957
 }

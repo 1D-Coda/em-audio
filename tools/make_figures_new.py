@@ -136,17 +136,17 @@ def fig_corpus():
     S.panel_tag(ax, "B", dx=-0.055)
     tr2 = ax.get_xaxis_transform()          # x in data, y in axes fraction
     ax.annotate("one claim over\nthe whole output", xy=(min(bi), 1.005),
-                xytext=(min(bi), 1.16), xycoords=tr2, textcoords=tr2,
+                xytext=(min(bi), 1.115), xycoords=tr2, textcoords=tr2,
                 fontsize=6.9, color=S.BASE, ha="center", linespacing=1.3,
                 annotation_clip=False,
                 arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
     ax.annotate("the intervals that carry\nthe contradicting evidence",
-                xy=(max(ei), 1.005), xytext=(max(ei), 1.16),
+                xy=(max(ei), 1.005), xytext=(max(ei), 1.115),
                 xycoords=tr2, textcoords=tr2, fontsize=6.9, color=S.EM,
                 ha="center", linespacing=1.3, annotation_clip=False,
                 arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
     ax.set_title("Why it happens: the baseline discards the intervals that "
-                 "would have contradicted it", fontsize=8.4, loc="left", pad=34)
+                 "would have contradicted it", fontsize=8.4, loc="left", pad=44)
 
     save(fig, "fig4_corpus")
 

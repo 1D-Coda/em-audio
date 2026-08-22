@@ -1721,8 +1721,11 @@ detectors are essential, namely media that arrive with no evidence at all.
 
 \paragraph{Attack surface} The contract narrows one surface and leaves others
 untouched. It removes the possibility that a conforming chain silently
-strengthens a claim, and it removes the incentive to launder a mixed-origin
-asset by passing it through a benign transformation. It does nothing against a
+strengthens a claim, and it closes this provenance-laundering pathway within a
+conforming transformation chain: a mixed-origin asset can no longer be cleaned
+by passing it through a benign operator. The incentive itself is untouched,
+as the rest of this paragraph makes plain; what changes is that this particular
+route no longer works. It does nothing against a
 malicious signer, a compromised key, or an actor who strips provenance entirely
 and starts a new, dishonest chain. Cryptographic validity proves that an
 assertion was signed, not that it is true.
@@ -1833,7 +1836,7 @@ resampler setting, codec or tempo factor requires the bound to be re-declared
 and re-tested; Proposition~\ref{prop:footprint} guarantees that erring large is
 safe, not that our particular numbers transfer. The re-declaration need not be manual,
 but it needs two passes rather than one, because the analytical and implementation-margin components of
-Table~\ref{tab:operators} bound different things. A \emph{mapping-guard}
+Table~\ref{tab:operators} bound different things. A \emph{mapping/alignment-margin}
 calibration pushes a deterministic reference signal through the unknown
 configuration and sets the mapping margin from the maximum output-length deviation
 plus a margin, which is the measurement the transformation matrix already makes.
