@@ -83,6 +83,8 @@ def main() -> int:
         _m = json.loads(_stab.read_text())
         add("")
         add("benchmark stability, one process per row")
+        add(f"  measured: {_m.get('measured_utc', 'n/a')} UTC, "
+            f"load average {_m.get('load_average_1_5_15', 'n/a')}")
         add(f"  cv definition: {_m.get('cv_definition', 'n/a')}")
         for _r in _m.get("runs", []):
             add(f"  run {_r['run']}: em {_r['em_ms_per_audio_minute']} ms, "

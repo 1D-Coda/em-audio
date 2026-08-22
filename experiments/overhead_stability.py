@@ -50,6 +50,21 @@ def spread(xs):
             "cv_pct": round(cv, 3)}
 
 
+def _utc_now():
+    import datetime
+    return datetime.datetime.now(datetime.timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%SZ")
+
+
+def _load_average():
+    """System load at the moment of measurement, or None where unavailable."""
+    import os
+    try:
+        return [round(x, 2) for x in os.getloadavg()]
+    except (OSError, AttributeError):
+        return None
+
+
 def main() -> int:
     t0 = time.time()
     src = RESULTS / "G_overhead.json"
@@ -98,6 +113,12 @@ def main() -> int:
                  for i, (e, b, r) in enumerate(zip(em, base, ratio))],
         "cv_definition": ("sample standard deviation over the mean, in percent, "
                           "with Bessel's correction"),
+        # Timing rows without their machine state cannot be interpreted: the
+        # same code on the same machine has given a 4.7% and a 16.8% coefficient
+        # of variation depending on what else was running. These two fields are
+        # what makes a spread figure attributable rather than mysterious.
+        "measured_utc": _utc_now(),
+        "load_average_1_5_15": _load_average(),
         "em_ms_per_audio_minute": s_em,
         "baseline_ms_per_audio_minute": spread(base),
         "em_over_baseline_ratio": s_ratio,

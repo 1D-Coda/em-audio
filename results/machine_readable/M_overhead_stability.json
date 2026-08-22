@@ -1,25 +1,25 @@
 {
  "baseline_ms_per_audio_minute": {
-  "cv_pct": 16.662,
-  "max": 0.6443,
-  "mean": 0.5198,
-  "min": 0.3953,
-  "range_pct": 62.99
+  "cv_pct": 3.887,
+  "max": 0.3071,
+  "mean": 0.2904,
+  "min": 0.2735,
+  "range_pct": 12.29
  },
  "cv_definition": "sample standard deviation over the mean, in percent, with Bessel's correction",
  "em_ms_per_audio_minute": {
-  "cv_pct": 16.827,
-  "max": 2.2131,
-  "mean": 1.7649,
-  "min": 1.3317,
-  "range_pct": 66.19
+  "cv_pct": 3.498,
+  "max": 1.0359,
+  "mean": 0.9816,
+  "min": 0.9248,
+  "range_pct": 12.01
  },
  "em_over_baseline_ratio": {
-  "cv_pct": 1.169,
-  "max": 3.4622,
-  "mean": 3.3943,
-  "min": 3.3446,
-  "range_pct": 3.52
+  "cv_pct": 1.255,
+  "max": 3.4358,
+  "mean": 3.3803,
+  "min": 3.3094,
+  "range_pct": 3.82
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -36,66 +36,72 @@
  },
  "experiment": "M_overhead_stability",
  "interpretation": "the ratio cancels common-mode variation; it is much tighter when machine state moves both arms together and has no advantage on a quiet machine, so a sitting in which it is not tighter is consistent with the mechanism rather than a failure of it",
+ "load_average_1_5_15": [
+  4.14,
+  4.36,
+  4.31
+ ],
+ "measured_utc": "2026-08-22T14:45:18Z",
  "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
  "ratio_is_tighter_than_absolute": true,
  "repeats": 9,
  "runs": [
   {
-   "baseline_ms_per_audio_minute": 0.6443,
-   "em_ms_per_audio_minute": 2.2131,
-   "em_over_baseline_ratio": 3.4349,
+   "baseline_ms_per_audio_minute": 0.3043,
+   "em_ms_per_audio_minute": 1.0072,
+   "em_over_baseline_ratio": 3.3094,
    "run": 1
   },
   {
-   "baseline_ms_per_audio_minute": 0.3953,
-   "em_ms_per_audio_minute": 1.3317,
-   "em_over_baseline_ratio": 3.3687,
+   "baseline_ms_per_audio_minute": 0.2807,
+   "em_ms_per_audio_minute": 0.9502,
+   "em_over_baseline_ratio": 3.3855,
    "run": 2
   },
   {
-   "baseline_ms_per_audio_minute": 0.6412,
-   "em_ms_per_audio_minute": 2.1529,
-   "em_over_baseline_ratio": 3.3576,
+   "baseline_ms_per_audio_minute": 0.2876,
+   "em_ms_per_audio_minute": 0.9831,
+   "em_over_baseline_ratio": 3.4179,
    "run": 3
   },
   {
-   "baseline_ms_per_audio_minute": 0.4862,
-   "em_ms_per_audio_minute": 1.626,
-   "em_over_baseline_ratio": 3.3446,
+   "baseline_ms_per_audio_minute": 0.2735,
+   "em_ms_per_audio_minute": 0.9248,
+   "em_over_baseline_ratio": 3.3814,
    "run": 4
   },
   {
-   "baseline_ms_per_audio_minute": 0.4755,
-   "em_ms_per_audio_minute": 1.6196,
-   "em_over_baseline_ratio": 3.4059,
+   "baseline_ms_per_audio_minute": 0.292,
+   "em_ms_per_audio_minute": 0.9973,
+   "em_over_baseline_ratio": 3.4154,
    "run": 5
   },
   {
-   "baseline_ms_per_audio_minute": 0.4392,
-   "em_ms_per_audio_minute": 1.4824,
-   "em_over_baseline_ratio": 3.3751,
+   "baseline_ms_per_audio_minute": 0.2805,
+   "em_ms_per_audio_minute": 0.949,
+   "em_over_baseline_ratio": 3.3831,
    "run": 6
   },
   {
-   "baseline_ms_per_audio_minute": 0.4802,
-   "em_ms_per_audio_minute": 1.6627,
-   "em_over_baseline_ratio": 3.4622,
+   "baseline_ms_per_audio_minute": 0.2981,
+   "em_ms_per_audio_minute": 0.9898,
+   "em_over_baseline_ratio": 3.3206,
    "run": 7
   },
   {
-   "baseline_ms_per_audio_minute": 0.5671,
-   "em_ms_per_audio_minute": 1.9134,
-   "em_over_baseline_ratio": 3.3742,
+   "baseline_ms_per_audio_minute": 0.3071,
+   "em_ms_per_audio_minute": 1.0359,
+   "em_over_baseline_ratio": 3.3733,
    "run": 8
   },
   {
-   "baseline_ms_per_audio_minute": 0.5496,
-   "em_ms_per_audio_minute": 1.8824,
-   "em_over_baseline_ratio": 3.4251,
+   "baseline_ms_per_audio_minute": 0.2902,
+   "em_ms_per_audio_minute": 0.9969,
+   "em_over_baseline_ratio": 3.4358,
    "run": 9
   }
  ],
- "runtime_s": 434.529,
+ "runtime_s": 257.987,
  "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
- "tightness_factor_cv": 14.39
+ "tightness_factor_cv": 2.79
 }

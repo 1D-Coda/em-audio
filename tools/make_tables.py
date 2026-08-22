@@ -282,6 +282,10 @@ def raw_evidence_tables():
     rows.append(f"CV (\\%) & {M['em_ms_per_audio_minute']['cv_pct']:.3f} & "
                 f"{M['baseline_ms_per_audio_minute']['cv_pct']:.3f} & "
                 f"{M['em_over_baseline_ratio']['cv_pct']:.3f} \\\\")
+    rows.append("\\midrule")
+    rows.append(f"\\multicolumn{{4}}{{l}}{{\\footnotesize measured "
+                f"{M.get('measured_utc', 'n/a')} UTC, load average "
+                f"{M.get('load_average_1_5_15', 'n/a')}}} \\\\")
     write("benchmark_rows", "\n".join(rows), colspec="lrrr",
           header=("Process & EM (ms/audio-min) & Baseline (ms/audio-min) & Ratio"))
 

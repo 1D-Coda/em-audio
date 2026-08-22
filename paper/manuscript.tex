@@ -66,7 +66,10 @@ a two-language differential oracle, complete-source propagation produced
 omissions, while boundary-only inheritance promoted on \BbaseOnePct{}\% of
 timelines and on \Dbase{} of \Druns{} transformation runs. Decoded essence was
 identical before and after signing in \Ftotal{} signed round-trips, with
-\Fmismatch{} mismatches, at a bookkeeping cost of \Gem{}~ms per audio-minute.
+\Fmismatch{} mismatches, at a bookkeeping cost of \Gratio{}$\times$ the
+boundary-only baseline, or \Gem{}~ms per audio-minute on one machine. The ratio
+is the portable figure of the two: repeated measurement moves the absolute
+milliseconds by far more than it moves their quotient.
 The evidential cost of the footprints is measured rather than assumed: dilution
 is confined to fixed-radius bands at ancestry boundaries, and for the fixed edit
 chain and boundary geometry tested it falls approximately in inverse proportion
@@ -1551,6 +1554,18 @@ intervals. Evidence cost therefore scales with how many times ancestry actually
 changes along the timeline, not with duration, which is the property a
 long-form or streaming deployment needs. These are single-machine medians for a
 Python reference implementation and are not language-independent constants.
+
+One figure from this section is portable and the rest are not, and the ordering
+matters more than the values. The ratio to the boundary-only baseline is the
+result to carry: it is what a different machine can be expected to reproduce.
+The absolute milliseconds are order-of-magnitude context, establishing that the
+bookkeeping is cheap rather than fixing how cheap. Repeated measurement on this
+one machine has given coefficients of variation for the absolute cost differing
+by more than a factor of three between sittings, from a quiet machine to a busy
+one, while the ratio stayed inside a narrow band throughout. Every stability
+figure quoted here carries the time it was measured and the load average at that
+moment, in Supplementary Note~S8, so a reader can see which of the two regimes
+produced it.
 
 The two slopes deserve to be read differently, and a reader comparing revisions
 of this paper will see why. The byte figure is deterministic: it is the size of
