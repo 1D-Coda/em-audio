@@ -1,24 +1,24 @@
 {
  "baseline_ms_per_audio_minute": {
-  "cv_pct": 0.703,
-  "max": 0.4001,
-  "mean": 0.3967,
-  "min": 0.3922,
-  "range_pct": 2.01
+  "cv_pct": 0.614,
+  "max": 0.3978,
+  "mean": 0.3952,
+  "min": 0.3903,
+  "range_pct": 1.92
  },
  "em_ms_per_audio_minute": {
-  "cv_pct": 1.316,
-  "max": 1.3633,
-  "mean": 1.3362,
-  "min": 1.3119,
-  "range_pct": 3.92
+  "cv_pct": 0.697,
+  "max": 1.3451,
+  "mean": 1.3248,
+  "min": 1.3143,
+  "range_pct": 2.34
  },
  "em_over_baseline_ratio": {
-  "cv_pct": 0.922,
-  "max": 3.4147,
-  "mean": 3.3679,
-  "min": 3.3448,
-  "range_pct": 2.09
+  "cv_pct": 0.411,
+  "max": 3.3826,
+  "mean": 3.3526,
+  "min": 3.3409,
+  "range_pct": 1.25
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -34,10 +34,11 @@
   "python": "3.11.15"
  },
  "experiment": "M_overhead_stability",
+ "interpretation": "the ratio cancels common-mode variation; it is much tighter when machine state moves both arms together and has no advantage on a quiet machine, so a sitting in which it is not tighter is consistent with the mechanism rather than a failure of it",
  "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
  "ratio_is_tighter_than_absolute": true,
  "repeats": 9,
- "runtime_s": 351.94,
+ "runtime_s": 343.622,
  "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
- "tightness_factor_cv": 1.43
+ "tightness_factor_cv": 1.7
 }

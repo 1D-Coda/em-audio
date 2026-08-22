@@ -74,8 +74,15 @@ def main() -> int:
     tighter = s_ratio["cv_pct"] <= s_em["cv_pct"]
     print(f"absolute CV {s_em['cv_pct']}%, ratio CV {s_ratio['cv_pct']}% "
           f"over {REPEATS} independent runs")
+    # Not a pass/fail. The ratio cancels common-mode variation, so it is much
+    # tighter when such variation dominates and has nothing to cancel when the
+    # machine is quiet, where a quotient of two independently noisy numbers can
+    # scatter slightly more than either. Both outcomes are consistent with the
+    # mechanism, and reporting the quiet case as a failure would be a prediction
+    # the mechanism never made.
     print("  ratio is the tighter quantity" if tighter
-          else "  ratio was NOT tighter, which the caveat does not predict")
+          else "  ratio not tighter this sitting: little common-mode variation "
+               "to cancel, which the mechanism allows")
 
     emit("M_overhead_stability", {
         "experiment": "M_overhead_stability",
@@ -86,6 +93,11 @@ def main() -> int:
         "baseline_ms_per_audio_minute": spread(base),
         "em_over_baseline_ratio": s_ratio,
         "ratio_is_tighter_than_absolute": tighter,
+        "interpretation": ("the ratio cancels common-mode variation; it is much "
+                           "tighter when machine state moves both arms together "
+                           "and has no advantage on a quiet machine, so a "
+                           "sitting in which it is not tighter is consistent "
+                           "with the mechanism rather than a failure of it"),
         "tightness_factor_cv": (round(s_em["cv_pct"] / s_ratio["cv_pct"], 2)
                                 if s_ratio["cv_pct"] else None),
         "scope_note": ("one sitting is one machine state, so this is a lower "

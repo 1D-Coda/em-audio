@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 929bfaf89f235f6b4f04c354033a0ac7abbbd855
+commit: cc1230c50051761089ccfe713cb6645a3b08dd36
 tag: v1.0.0
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
@@ -76,15 +76,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 1.3373
-median_baseline_ms_per_audio_minute: 0.3944
-em_over_baseline_ratio: 3.3904
-em_fraction_of_ffmpeg_time: 0.001436
+median_em_ms_per_audio_minute: 1.3212
+median_baseline_ms_per_audio_minute: 0.3945
+em_over_baseline_ratio: 3.3493
+em_fraction_of_ffmpeg_time: 0.001507
 median_manifest_overhead_bytes_per_asset: 14854
 median_em_assertion_bytes_per_asset: 1268
 metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 15.5432
-median_validate_ms: 12.9998
+median_sign_ms: 15.4586
+median_validate_ms: 12.9356
 assertion_bytes_per_interval: 332.7
 
 --- K  kernel-support containment ---

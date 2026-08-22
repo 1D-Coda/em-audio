@@ -1184,7 +1184,13 @@ directly rather than read off the axis. Boundary-only promoted in
 \DbasePromo{} of \DtotalRuns{} runs and complete-source in \DemPromo{}.
 Generated-source overlay and silence removal produce no baseline promotion
 either, for the structural reasons given in Section~\ref{sec:res-corpus}, and
-are marked as such rather than left to look like missing rows. The baseline is a
+are marked as such rather than left to look like missing rows. (B) The mechanism
+behind panel A, measured in the same runs: the mean number of evidence intervals
+each policy emits per output. Boundary-only inheritance emits one interval for
+most transformations, a single claim spanning the whole output, while
+complete-source propagation emits three to five. The promotion in panel A is a
+consequence of that collapse, since an interval that no longer exists cannot
+carry the evidence that would have contradicted the endpoints. The baseline is a
 constructed reference policy, not the behaviour of any named deployed product,
 and these are counts over a frozen corpus rather than a prevalence estimate.}
 \label{fig:corpus}
@@ -1537,16 +1543,30 @@ interquartile ranges above do not capture it, and it is measured rather than
 asserted. Section~\ref{sec:res-overhead}'s figures come from one run;
 re-running the benchmark as \MstabRepeats{} independent processes gives the
 absolute cost a coefficient of variation of \MstabAbsPct{}\% against
-\MstabRatioPct{}\% for the ratio to the boundary-only baseline, so the ratio is
-the tighter quantity. We report the coefficient of variation rather than the
-observed range because a range over a handful of runs is set by whichever single
-run happened to be worst, and supporting a claim about stability with an
-unstable statistic would defeat the purpose. That is a lower bound on the instability rather than an
-estimate of it: one sitting is one machine state, and across sittings on this
-same machine, with the bookkeeping code unchanged, the absolute figure has moved
-by about a third while the ratio stayed inside its usual band. A reader who
+\MstabRatioPct{}\% for the ratio to the boundary-only baseline. We report the
+coefficient of variation rather than the observed range because a range over a
+handful of runs is set by whichever single run happened to be worst, and
+supporting a claim about stability with an unstable statistic would defeat the
+purpose.
+
+What the ratio does is cancel \emph{common-mode} variation, and it is worth
+being exact about when that helps, because the two figures above do not always
+favour it. Both arms are timed in the same process on the same machine, so a
+shift in thermal state, clock frequency or competing load moves them together
+and divides out. When such a shift dominates, the ratio is much the tighter
+quantity. When it is negligible, on a quiet machine within a single sitting,
+there is little common mode left to cancel, and a quotient of two independently
+noisy measurements can carry slightly more relative scatter than either. We have
+observed both, and the repeated-run figures quoted here are sometimes one case
+and sometimes the other.
+
+The case that matters for a reader reproducing this work is the first. Across
+sittings on this same machine, with the bookkeeping code unchanged, the absolute
+figure has moved by about a third while the ratio stayed inside its usual band,
+which is the regime a reproduction weeks later is in rather than the regime of
+nine processes launched back to back. A reader who
 finds the milliseconds different from the ones printed here has reproduced the
-result correctly. The reason is structural rather than incidental: both arms are timed in
+result correctly. The remaining detail is structural rather than incidental: both arms are timed in
 the same process on the same machine, so whatever sets the absolute scale on a
 given run, thermal state, frequency scaling or competing load, moves the two
 arms together and cancels in their quotient. The ratio is therefore the quantity

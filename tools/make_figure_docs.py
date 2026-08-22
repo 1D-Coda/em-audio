@@ -27,7 +27,10 @@ SOURCES = {
         ("panel C, closed-form control", "B_adversarial_timelines.json -> control_uniform_positions"),
     ],
     "fig4_corpus": [
-        ("promotion by transformation", "D_transform_matrix.json -> per_transformation"),
+        ("panel A, promotion by transformation",
+         "D_transform_matrix.json -> per_transformation[*].baseline_promotions / em_promotions"),
+        ("panel B, intervals emitted per output",
+         "D_transform_matrix.json -> per_transformation[*].mean_baseline_intervals / mean_em_intervals"),
     ],
     "fig5_containment": [
         ("measured reach", "K_support_containment.json -> per_operator[*].max_measured_reach_source_samples"),

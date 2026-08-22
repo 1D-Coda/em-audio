@@ -53,7 +53,17 @@ def fig_corpus():
     n = D["n_clips"]
     rows = sorted(per, key=lambda k: (-per[k]["baseline_promotion_rate"], k))
 
-    fig, ax = plt.subplots(figsize=(6.8, 3.4), constrained_layout=True)
+    # Two panels, because the promotion count alone is the least informative
+    # quantity this experiment produced: six identical values, two structural
+    # zeros and a series that is zero throughout. The uniformity is the result
+    # and is not made truer by decoration. What the run also measured, and never
+    # showed, is why it happens: the boundary-only policy collapses a
+    # five-interval timeline into one claim, and an interval that no longer
+    # exists cannot carry the evidence that contradicts the endpoints.
+    fig, axd = plt.subplot_mosaic([["outcome", "outcome"], ["why", "why"]],
+                                  figsize=(6.9, 5.8), constrained_layout=True,
+                                  height_ratios=[1.0, 0.86])
+    ax = axd["outcome"]
 
     for i, key in enumerate(rows):
         b = 100 * per[key]["baseline_promotion_rate"]
@@ -103,6 +113,40 @@ def fig_corpus():
     ax.text(0.5, -1.15, "open marks are exact zeros, drawn so that a zero reads "
             "as a result rather than as missing data", fontsize=6.9,
             color="#666666", va="center")
+    S.panel_tag(ax, "A", dx=-0.055)
+
+    # Panel B: the mechanism behind panel A, from the same run
+    ax = axd["why"]
+    bi = [per[k]["mean_baseline_intervals"] for k in rows]
+    ei = [per[k]["mean_em_intervals"] for k in rows]
+    y = list(range(len(rows)))
+    for i, key in enumerate(rows):
+        ax.plot([bi[i], ei[i]], [i, i], color=S.MARGIN, linewidth=3.0,
+                solid_capstyle="round", zorder=1)
+        ax.scatter([bi[i]], [i], s=32, marker=S.M_BASE, color=S.BASE, zorder=4)
+        ax.scatter([ei[i]], [i], s=32, marker=S.M_EM, facecolor="white",
+                   edgecolor=S.EM, linewidth=1.2, zorder=4)
+    ax.set_yticks(y)
+    ax.set_yticklabels([S.label_of(k) for k in rows], fontsize=7.4)
+    ax.set_xlabel("mean evidence intervals emitted per output")
+    ax.set_xlim(0, max(ei) + 1.1)
+    ax.set_ylim(-0.7, len(rows) - 0.3)
+    ax.grid(axis="x", linestyle=":", zorder=0)
+    ax.set_axisbelow(True)
+    S.panel_tag(ax, "B", dx=-0.055)
+    tr2 = ax.get_xaxis_transform()          # x in data, y in axes fraction
+    ax.annotate("one claim over\nthe whole output", xy=(min(bi), 1.005),
+                xytext=(min(bi), 1.16), xycoords=tr2, textcoords=tr2,
+                fontsize=6.9, color=S.BASE, ha="center", linespacing=1.3,
+                annotation_clip=False,
+                arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
+    ax.annotate("the intervals that carry\nthe contradicting evidence",
+                xy=(max(ei), 1.005), xytext=(max(ei), 1.16),
+                xycoords=tr2, textcoords=tr2, fontsize=6.9, color=S.EM,
+                ha="center", linespacing=1.3, annotation_clip=False,
+                arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
+    ax.set_title("Why it happens: the baseline discards the intervals that "
+                 "would have contradicted it", fontsize=8.4, loc="left", pad=34)
 
     save(fig, "fig4_corpus")
 

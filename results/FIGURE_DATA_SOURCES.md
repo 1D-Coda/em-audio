@@ -27,7 +27,8 @@ Every visual element in every figure, and the committed result file it is read f
 
 | element | source |
 |---|---|
-| promotion by transformation | `D_transform_matrix.json -> per_transformation` |
+| panel A, promotion by transformation | `D_transform_matrix.json -> per_transformation[*].baseline_promotions / em_promotions` |
+| panel B, intervals emitted per output | `D_transform_matrix.json -> per_transformation[*].mean_baseline_intervals / mean_em_intervals` |
 
 ## `fig5_containment`
 
