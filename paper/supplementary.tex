@@ -275,6 +275,32 @@ check fails. The preflight report is the single source of every number in the
 manuscript; a checker script verifies that no numeric result appears in the
 manuscript source outside the generated macro file.
 
+\section{Raw rows behind two summary figures}
+
+A coefficient of variation and a maximum measured reach are both summaries, and
+a summary that ships without the rows it summarises has to be taken on trust.
+These are those rows. Neither table is typed: both are emitted by
+\texttt{tools/make\_tables.py} from the same result files the main text reads.
+
+\begin{table}[htbp]
+\centering
+\caption{The benchmark of Section~7.10 as nine independent processes. The
+coefficient of variation is the sample standard deviation over the mean, in
+percent, with Bessel's correction. The absolute columns move with machine state;
+the ratio is the quantity that survives it.}
+\input{../results/tables/benchmark_rows}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Calibration probes per operator, with the context and source position
+that produced the widest measured influence. The full per-probe record, all
+280 rows, is in \texttt{results/machine\_readable/CALIBRATION.json};
+this table gives the worst case for each operator, which is the value the
+declaration has to cover.}
+\input{../results/tables/calibration_rows}
+\end{table}
+
 \section{Feasibility log}
 \label{s:feasibility}
 

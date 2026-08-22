@@ -266,6 +266,41 @@ def overhead_table():
           header="Quantity & Median & IQR")
 
 
+def raw_evidence_tables():
+    """The per-run and per-probe rows behind two summary figures.
+
+    A coefficient of variation and a maximum reach are both summaries. Shipping
+    the rows they summarise is what lets a reader recompute them instead of
+    trusting them, and it keeps the detail out of the main text.
+    """
+    M = load("M_overhead_stability")
+    rows = [f"{r['run']} & {r['em_ms_per_audio_minute']:.4f} & "
+            f"{r['baseline_ms_per_audio_minute']:.4f} & "
+            f"{r['em_over_baseline_ratio']:.4f} \\\\"
+            for r in M["runs"]]
+    rows.append("\\midrule")
+    rows.append(f"CV (\\%) & {M['em_ms_per_audio_minute']['cv_pct']:.3f} & "
+                f"{M['baseline_ms_per_audio_minute']['cv_pct']:.3f} & "
+                f"{M['em_over_baseline_ratio']['cv_pct']:.3f} \\\\")
+    write("benchmark_rows", "\n".join(rows), colspec="lrrr",
+          header=("Process & EM (ms/audio-min) & Baseline (ms/audio-min) & Ratio"))
+
+    C = load("CALIBRATION")
+    crows = []
+    for o in sorted(C["operators"], key=lambda x: -x["measured_reach_source_samples"]):
+        if not o["probes"]:
+            continue
+        worst = max(o["probes"], key=lambda r: r["reach_source_samples"])
+        crows.append(
+            f"{o['operator'].replace('_', ' ')} & {len(o['probes'])} & "
+            f"{o['measured_reach_source_samples']:,} & "
+            f"{worst['context'].replace('_', ' ')} & {worst['source_position']:,} & "
+            f"{o['declared_footprint_samples']:,} \\\\".replace(",", "\\,"))
+    write("calibration_rows", "\n".join(crows), colspec="lrrlrr",
+          header=("Operator & Probes & Max reach & Worst context & At sample & Declared"))
+
+
 if __name__ == "__main__":
     operator_table(); main_results(); transport_table(); ablation_table()
     containment_table(); dilution_table(); overhead_table()
+    raw_evidence_tables()

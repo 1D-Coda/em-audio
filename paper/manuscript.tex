@@ -1567,7 +1567,9 @@ interquartile ranges above do not capture it, and it is measured rather than
 asserted. Section~\ref{sec:res-overhead}'s figures come from one run;
 re-running the benchmark as \MstabRepeats{} independent processes gives the
 absolute cost a coefficient of variation of \MstabAbsPct{}\% against
-\MstabRatioPct{}\% for the ratio to the boundary-only baseline. We report the
+\MstabRatioPct{}\% for the ratio to the boundary-only baseline; the nine
+per-process rows are in Supplementary Note~S8, so the dispersion can be
+recomputed rather than taken on trust. We report the
 coefficient of variation rather than the observed range because a range over a
 handful of runs is set by whichever single run happened to be worst, and
 supporting a claim about stability with an unstable statistic would defeat the
@@ -1879,7 +1881,8 @@ each of \Kcontexts{} contexts, not an exhaustive sweep, so it cannot discover a
 mode transition occurring only at an untested position; the positions are the
 operators' own cut points and edges, where an under-declaration shows up first.
 It retains every per-probe record rather than the maximum alone, so a reader can
-see which position and context produced the reach. A self-test shrinks a known
+see which position and context produced the reach; the worst case per operator
+is tabulated in Supplementary Note~S8 and the full record ships in the results. A self-test shrinks a known
 declaration below its own measured reach and fails unless the run rejects it,
 which is what distinguishes a tool that certifies declarations from one that has
 been shown to detect a bad one; it runs in the pipeline. Run against the v1 operators it reproduces the reaches of
@@ -1978,9 +1981,12 @@ MIT licence, with pinned tool versions and one-command reproduction. The
 repository URL is supplied with the submission and printed here at proof stage;
 we state it that way rather than asserting public availability the reader cannot
 yet act on. The evaluated
-state is release tag \Rtag{}. Its exact commit hash is recorded in
-\texttt{results/PREFLIGHT.txt}, which is regenerated on every run and shipped
-with the release; that report also carries every tool version and every number
+state is release tag \Rtag{}, and the tag is the identifier to resolve: the
+commit hash recorded in \texttt{results/PREFLIGHT.txt} is the one that was
+current when the report was generated, which is necessarily the parent of the
+commit that then stores the report. A file cannot contain the hash of the object
+that contains it, and the report says so rather than appearing exact. The report
+is regenerated on every run and shipped with the release; that report also carries every tool version and every number
 quoted in this manuscript, so a reader can check any figure in the text against
 the file the code wrote. A Zenodo archive with version and concept DOIs is
 deposited on acceptance and the DOIs are added at proof stage.
