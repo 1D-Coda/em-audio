@@ -33,8 +33,8 @@
    "file_hash_changed_by_signing": 40,
    "median_em_assertion_bytes": 1270,
    "median_manifest_overhead_bytes": 14912,
-   "median_sign_ms": 11.8,
-   "median_validate_ms": 9.41,
+   "median_sign_ms": 11.76,
+   "median_validate_ms": 8.76,
    "n": 40,
    "parentOf_recorded": 40,
    "sign_ok": 40,
@@ -54,7 +54,7 @@
    "median_em_assertion_bytes": 2049,
    "median_manifest_overhead_bytes": 15492,
    "median_sign_ms": 11.79,
-   "median_validate_ms": 9.4,
+   "median_validate_ms": 8.73,
    "n": 40,
    "parentOf_recorded": 40,
    "sign_ok": 40,
@@ -73,8 +73,8 @@
    "file_hash_changed_by_signing": 40,
    "median_em_assertion_bytes": 1269,
    "median_manifest_overhead_bytes": 14858,
-   "median_sign_ms": 12.42,
-   "median_validate_ms": 10.15,
+   "median_sign_ms": 11.34,
+   "median_validate_ms": 8.99,
    "n": 40,
    "parentOf_recorded": 40,
    "sign_ok": 40,
@@ -82,7 +82,7 @@
    "validate_valid_or_better": 40
   }
  },
- "runtime_s": 24.357,
+ "runtime_s": 24.576,
  "signal_transparency_method": "SHA-256 of decoded PCM (s16le at the asset's own rate); whole-file hashes are not used because embedding a manifest changes the file",
  "trust_note": "signed with a locally generated test credential and a locally configured trust anchor; the credential is not on the C2PA Conformance Program trust list, so 'Trusted' here means trusted under the declared local anchor, not conformance-program trust"
 }

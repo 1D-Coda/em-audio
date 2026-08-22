@@ -1866,8 +1866,21 @@ identical timings would be the surprising result, not a reassuring one.
 Any difference in the first class should be classified rather than absorbed, as
 an environment difference, a tool-version difference, an ambiguity in the
 contract's specification, or a genuine discrepancy, and reported as such
-whichever it turns out to be. No such reproduction has been performed at the
-time of writing, and nothing in this paper should be read as reporting one.
+whichever it turns out to be.
+
+The split is applied mechanically rather than case by case.
+\texttt{tools/verify\_reproduction.py} compares a reproduction's
+machine-readable results against those shipped with a release tag, holds the
+deterministic outputs to exact equality and exits non-zero on any difference
+among them, and reports environment-dependent outputs without failing on them.
+Fixing the comparison in code is what stops the criteria from being adjusted
+after a result is in hand, which is the failure mode a protocol written in prose
+invites. A reproducer therefore does not have to decide which category a
+difference belongs to, and a reader can see that the decision was made in
+advance.
+
+No such reproduction has been performed at the time of writing, and nothing in
+this paper should be read as reporting one.
 
 \paragraph{Corpus} \Cclips{} clips from one read-speech corpus and one formant
 synthesiser, at \CcorpusFs{}~Hz, is a deliberate mechanism corpus, not a

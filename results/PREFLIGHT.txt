@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 82b833b73b71b8ca60aea8430cf8594363139bc7
+commit: 45684c261e2006429783dc77cf44b11fde208051
 tag: v1.0.0
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
@@ -18,19 +18,19 @@ c2pa_spec_version: 2.4 (April 2026)
 os: macOS-26.5.2-arm64-arm-64bit
 
 benchmark stability, one process per row
-  measured: 2026-08-22T15:29:09Z UTC, load average [3.0, 3.37, 3.52]
+  measured: 2026-08-22T23:17:23Z UTC, load average [5.65, 5.7, 5.36]
   cv definition: sample standard deviation over the mean, in percent, with Bessel's correction
-  run 1: em 0.9231 ms, baseline 0.2747 ms, ratio 3.3607
-  run 2: em 1.0689 ms, baseline 0.3164 ms, ratio 3.3782
-  run 3: em 1.0385 ms, baseline 0.2951 ms, ratio 3.5193
-  run 4: em 0.9882 ms, baseline 0.2915 ms, ratio 3.3902
-  run 5: em 0.9038 ms, baseline 0.2694 ms, ratio 3.355
-  run 6: em 0.9996 ms, baseline 0.2881 ms, ratio 3.4701
-  run 7: em 0.9999 ms, baseline 0.2933 ms, ratio 3.409
-  run 8: em 1.0176 ms, baseline 0.3042 ms, ratio 3.3451
-  run 9: em 0.9128 ms, baseline 0.2736 ms, ratio 3.3361
-  absolute cv: 5.91%
-  ratio cv: 1.813%
+  run 1: em 1.0326 ms, baseline 0.3054 ms, ratio 3.3812
+  run 2: em 1.3883 ms, baseline 0.4014 ms, ratio 3.4587
+  run 3: em 1.3881 ms, baseline 0.4029 ms, ratio 3.4452
+  run 4: em 1.3401 ms, baseline 0.397 ms, ratio 3.3757
+  run 5: em 1.3144 ms, baseline 0.396 ms, ratio 3.3194
+  run 6: em 1.3392 ms, baseline 0.4005 ms, ratio 3.3438
+  run 7: em 1.3798 ms, baseline 0.3995 ms, ratio 3.4533
+  run 8: em 1.413 ms, baseline 0.4016 ms, ratio 3.5184
+  run 9: em 1.4228 ms, baseline 0.4048 ms, ratio 3.5149
+  absolute cv: 8.915%
+  ratio cv: 2.097%
 
 cpu: Apple M3 Max
 cpu_arch: arm64
@@ -92,15 +92,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 0.984
-median_baseline_ms_per_audio_minute: 0.2909
-em_over_baseline_ratio: 3.3825
-em_fraction_of_ffmpeg_time: 0.001612
+median_em_ms_per_audio_minute: 1.0519
+median_baseline_ms_per_audio_minute: 0.3127
+em_over_baseline_ratio: 3.3644
+em_fraction_of_ffmpeg_time: 0.001688
 median_manifest_overhead_bytes_per_asset: 14854
 median_em_assertion_bytes_per_asset: 1268
 metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 12.4926
-median_validate_ms: 10.5439
+median_sign_ms: 9.9427
+median_validate_ms: 8.1469
 assertion_bytes_per_interval: 332.7
 
 --- K  kernel-support containment ---
