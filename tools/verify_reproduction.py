@@ -74,13 +74,36 @@ def _flatten(obj, prefix=""):
         yield prefix, obj
 
 
+REFERENCE_DIR = ROOT / "results" / "reference"
+
+
 def _reference(tag: str, name: str):
+    """The released values, from git where available and from a snapshot where not.
+
+    A reproducer working from a source archive has no .git, so reading the
+    reference with `git show` fails for every file and the tool reports the
+    entire release as missing. That is the situation this script exists to serve,
+    so the snapshot in results/reference/ is the path that matters and git is the
+    convenience.
+    """
+    snap = REFERENCE_DIR / f"{name}.json"
+    if snap.exists():
+        try:
+            return json.loads(snap.read_text())
+        except json.JSONDecodeError:
+            pass
     try:
         out = subprocess.run(["git", "show", f"{tag}:results/machine_readable/{name}.json"],
                              cwd=ROOT, capture_output=True, text=True, check=True)
         return json.loads(out.stdout)
-    except (subprocess.CalledProcessError, json.JSONDecodeError):
+    except (subprocess.CalledProcessError, json.JSONDecodeError, FileNotFoundError):
         return None
+
+
+def _reference_source(tag: str) -> str:
+    if REFERENCE_DIR.is_dir() and any(REFERENCE_DIR.glob("*.json")):
+        return f"results/reference/ (snapshot shipped with the release)"
+    return f"git tag {tag}"
 
 
 def main() -> int:
@@ -89,7 +112,7 @@ def main() -> int:
                     help="release tag to compare against (default v1.0.0)")
     args = ap.parse_args()
 
-    print(f"Comparing the working tree against {args.ref}.")
+    print(f"Comparing the working tree against {_reference_source(args.ref)}.")
     print("Deterministic outputs must match exactly. Environment-dependent "
           "outputs are reported\nand are expected to differ.\n")
 
