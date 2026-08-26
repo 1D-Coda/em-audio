@@ -47,20 +47,40 @@ DETERMINISTIC = {
                              "violations"],
 }
 
-# Outputs that should differ, and whose difference is not a defect. Listed
-# explicitly so that a reproducer can see the distinction was decided in
-# advance rather than invoked to explain away a mismatch.
-ENVIRONMENT_DEPENDENT = (
-    "ms", "cv_pct", "runtime_s", "range_pct", "mean", "min", "max",
-    "measured_utc", "load_average", "environment", "median_runtime",
-    "sign_ms", "validate_ms", "runs", "assertion_scaling",
-    "first_iteration_effect_pct",
-)
+# Outputs that should differ, and whose difference is not a defect. Matched on
+# the final path segment as a whole, never as a substring. An earlier version
+# listed bare tokens including "max", "min" and "ms", which matched
+# max_measured_reach_source_samples and model_vs_ffmpeg_max_abs_sample_dev: the
+# two measurements the containment claims rest on. It reported both as expected
+# and not a defect, in the one tool whose job is to decide what counts as a real
+# failure.
+ENV_FIELDS = frozenset({
+    "runtime_s", "median_runtime_ms", "median_ms",
+    "median_sign_ms", "median_validate_ms",
+    "em_ms_per_audio_minute", "baseline_ms_per_audio_minute",
+    "em_over_baseline_ratio", "em_over_ffmpeg_fraction",
+    "em_bookkeeping_ms_per_repetition", "baseline_bookkeeping_ms_per_repetition",
+    "ffmpeg_transcode_ms_per_repetition", "cv_pct", "range_pct",
+    "measured_utc", "load_average_1_5_15", "first_iteration_effect_pct",
+    "tightness_factor_cv", "median_manifest_overhead_bytes",
+    "manifest_overhead_bytes", "median_em_assertion_bytes",
+})
+
+# Path prefixes whose whole subtree is environment-dependent.
+ENV_SUBTREES = ("environment", "runs", "assertion_scaling")
 
 
 def _is_env(path: str) -> bool:
-    low = path.lower()
-    return any(tok in low for tok in ENVIRONMENT_DEPENDENT)
+    parts = path.split(".")
+    if any(p.split("[")[0] in ENV_SUBTREES for p in parts):
+        return True
+    leaf = parts[-1].split("[")[0]
+    if leaf in ENV_FIELDS:
+        return True
+    # the min/max/mean of a timing distribution, but only under a timing key
+    if leaf in {"min", "max", "mean"}:
+        return any(k in path for k in ("_ms_", "ratio", "cv"))
+    return False
 
 
 def _flatten(obj, prefix=""):
@@ -106,6 +126,74 @@ def _reference_source(tag: str) -> str:
     return f"git tag {tag}"
 
 
+def _unclassified_timings():
+    """Timing fields that are not marked environment-dependent.
+
+    The list of such fields was maintained by hand and drifted: median_sign_ms
+    and median_validate_ms were absent, so two wall-clock measurements were held
+    to exact equality and a reproduction was told its clock differed from the
+    reference's. Enumerating the actual result files makes the gap visible
+    instead of waiting for a reproducer to hit it.
+    """
+    suspicious = []
+    for name, keys in DETERMINISTIC.items():
+        f = MR / f"{name}.json"
+        if not f.exists():
+            continue
+        try:
+            doc = json.loads(f.read_text())
+        except (json.JSONDecodeError, OSError):
+            continue
+        for key in keys:
+            if key not in doc:
+                continue
+            for path, _ in _flatten(doc[key], key):
+                leaf = path.split(".")[-1].split("[")[0]
+                if leaf.endswith("_ms") and not _is_env(path):
+                    suspicious.append(f"{name}.{leaf}")
+    return sorted(set(suspicious))
+
+
+def _inherited_results(tag: str):
+    """Result files that still carry the reference machine's environment.
+
+    A reproduction that ships with the reference results in place will leave
+    them there whenever an experiment fails, and every comparison against such a
+    file reports a match. The failure then looks like a success, which is the
+    opposite of what this tool is for. The environment block is the tell: it
+    names the machine that produced the file.
+    """
+    # Every result file, not only those carrying a deterministic claim: an
+    # experiment whose output is not compared can still be inherited, and the
+    # robustness arm was exactly that case.
+    matching, differing = [], []
+    for cur in sorted(MR.glob("*.json")):
+        name = cur.stem
+        try:
+            doc = json.loads(cur.read_text())
+        except (json.JSONDecodeError, OSError):
+            continue
+        if not isinstance(doc, dict):      # some results are bare arrays
+            continue
+        cur_env = doc.get("environment") or {}
+        ref = _reference(tag, name) or {}
+        ref_env = ref.get("environment") or {}
+        if not cur_env or not ref_env:
+            continue
+        same = all(cur_env.get(k) == ref_env.get(k)
+                   for k in ("platform", "python", "ffmpeg")
+                   if k in ref_env)
+        (matching if same else differing).append(
+            (name, ref_env.get("platform", "?"), ref_env.get("python", "?")))
+
+    # If every file names the reference machine, this is the reference machine
+    # and nothing was inherited. Only a mixture is evidence that some experiments
+    # ran here and others left the shipped file untouched.
+    if not differing:
+        return []
+    return [f"{n}.json records {plat}, Python {py}" for n, plat, py in matching]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ref", default="v1.0.0",
@@ -115,6 +203,25 @@ def main() -> int:
     print(f"Comparing the working tree against {_reference_source(args.ref)}.")
     print("Deterministic outputs must match exactly. Environment-dependent "
           "outputs are reported\nand are expected to differ.\n")
+
+    unclassified = _unclassified_timings()
+    if unclassified:
+        print(f"UNCLASSIFIED TIMING FIELDS ({len(unclassified)}): these are "
+              f"wall-clock measurements\nheld to exact equality, which no "
+              f"reproduction can satisfy. Add them to ENV_FIELDS.")
+        for u in unclassified:
+            print(f"  {u}")
+        print()
+
+    stale = _inherited_results(args.ref)
+    if stale:
+        print(f"INHERITED RESULTS ({len(stale)}): these files record the "
+              f"reference machine, not this one.\nThe experiment did not run "
+              f"and the shipped file was left in place, so a comparison\n"
+              f"against it would report a match that never happened.")
+        for r in stale:
+            print(f"  {r}")
+        print()
 
     mismatches, env_diffs, missing = [], [], []
     for name, keys in sorted(DETERMINISTIC.items()):
@@ -157,7 +264,7 @@ def main() -> int:
             print(f"  ... and {len(env_diffs) - 8} more")
         print()
 
-    if mismatches or missing:
+    if mismatches or missing or stale:
         print("REPRODUCTION INCOMPLETE: a deterministic output differs.")
         print("Classify each difference before reporting it: an environment or "
               "tool-version\ndifference, an ambiguity in the contract's "

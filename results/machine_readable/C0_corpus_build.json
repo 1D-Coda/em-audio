@@ -10,7 +10,7 @@
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "machine": "arm64",
   "memory_bytes": "38654705664",
-  "node": "v26.0.0",
+  "node": "v26.7.0",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "processor": "arm",
   "python": "3.11.15"
@@ -18,7 +18,7 @@
  "experiment": "C0_corpus_build",
  "generated_source": "eSpeak NG 1.52.0 formant synthesis, generated locally",
  "n_clips": 600,
- "runtime_s": 96.96,
+ "runtime_s": 139.124,
  "sample_rate": 16000,
  "seed": 20260819,
  "total_samples": 27348448
