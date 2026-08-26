@@ -14,14 +14,14 @@
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "machine": "arm64",
   "memory_bytes": "38654705664",
-  "node": "v26.0.0",
+  "node": "v26.7.0",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "processor": "arm",
   "python": "3.11.15"
  },
  "experiment": "E_manifest_stripping",
  "n_clips": 60,
- "runtime_s": 9.473,
+ "runtime_s": 14.085,
  "scope_note": "an absent or invalid manifest is reported UNVERIFIED or INVALID; no claim is made that stripping indicates malicious intent",
  "state_tally": {
   "asset_modified_after_signing": {

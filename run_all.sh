@@ -1,6 +1,36 @@
 #!/usr/bin/env bash
 # One-command reproduction.  Exits non-zero on any conformance failure.
 set -uo pipefail
+
+# Dependency preflight. Daniel's reproduction ran for twenty minutes before
+# dying on a missing module, and the failure surfaced as a traceback in the
+# middle of the log rather than as an instruction. Check first, say what is
+# missing, and say how to fix it.
+missing_tools=""
+for t in ffmpeg ffprobe node c2patool espeak-ng; do
+  command -v "$t" >/dev/null 2>&1 || missing_tools="$missing_tools $t"
+done
+missing_py=$(python3 - <<'PYCHK'
+import importlib.util
+need = {"matplotlib": "matplotlib", "numpy": "numpy", "piper": "piper-tts"}
+out = [pkg for mod, pkg in need.items() if importlib.util.find_spec(mod) is None]
+print(" ".join(out))
+PYCHK
+)
+if [ -n "$missing_tools" ] || [ -n "$missing_py" ]; then
+  echo "MISSING DEPENDENCIES"
+  [ -n "$missing_tools" ] && echo "  command-line tools:$missing_tools"
+  if [ -n "$missing_py" ]; then
+    echo "  python packages:$missing_py"
+    echo "  install with: pip install -r requirements.txt"
+  fi
+  echo
+  echo "Install these before running. Continuing would produce a partial result"
+  echo "set in which the experiments that could not run leave the shipped files"
+  echo "in place, so a comparison against them reports a match that never"
+  echo "happened."
+  exit 2
+fi
 cd "$(dirname "$0")"
 export PYTHONHASHSEED=0
 fail=0

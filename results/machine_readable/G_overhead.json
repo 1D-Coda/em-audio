@@ -4,76 +4,76 @@
       "assertion_bytes": 549,
       "audio_seconds": 0.256,
       "emitted_intervals": 1,
-      "median_ms": 0.0137,
+      "median_ms": 0.0189,
       "source_intervals": 1
     },
     {
       "assertion_bytes": 875,
       "audio_seconds": 0.512,
       "emitted_intervals": 2,
-      "median_ms": 0.0259,
+      "median_ms": 0.0355,
       "source_intervals": 2
     },
     {
       "assertion_bytes": 1530,
       "audio_seconds": 1.024,
       "emitted_intervals": 4,
-      "median_ms": 0.0501,
+      "median_ms": 0.0691,
       "source_intervals": 4
     },
     {
       "assertion_bytes": 2840,
       "audio_seconds": 2.048,
       "emitted_intervals": 8,
-      "median_ms": 0.1078,
+      "median_ms": 0.1389,
       "source_intervals": 8
     },
     {
       "assertion_bytes": 5466,
       "audio_seconds": 4.096,
       "emitted_intervals": 16,
-      "median_ms": 0.2203,
+      "median_ms": 0.2738,
       "source_intervals": 16
     },
     {
       "assertion_bytes": 10738,
       "audio_seconds": 8.192,
       "emitted_intervals": 32,
-      "median_ms": 0.4397,
+      "median_ms": 0.5537,
       "source_intervals": 32
     },
     {
       "assertion_bytes": 21363,
       "audio_seconds": 16.384,
       "emitted_intervals": 64,
-      "median_ms": 0.9374,
+      "median_ms": 1.2031,
       "source_intervals": 64
     },
     {
       "assertion_bytes": 42671,
       "audio_seconds": 32.768,
       "emitted_intervals": 128,
-      "median_ms": 1.8811,
+      "median_ms": 2.4357,
       "source_intervals": 128
     },
     {
       "assertion_bytes": 85383,
       "audio_seconds": 65.536,
       "emitted_intervals": 256,
-      "median_ms": 3.9442,
+      "median_ms": 5.1457,
       "source_intervals": 256
     }
   ],
   "audio_minutes_per_repetition": 1.4081,
   "baseline_bookkeeping_ms_per_repetition": {
-    "max": 0.4659,
-    "median": 0.4403,
-    "min": 0.3843,
+    "max": 0.637,
+    "median": 0.5579,
+    "min": 0.5491,
     "n": 30,
-    "q1": 0.4133,
-    "q3": 0.4502
+    "q1": 0.5537,
+    "q3": 0.5698
   },
-  "baseline_ms_per_audio_minute": 0.3127,
+  "baseline_ms_per_audio_minute": 0.3962,
   "clips_per_repetition": 30,
   "em_assertion_bytes": {
     "max": 1270.0,
@@ -85,16 +85,16 @@
   },
   "em_assertion_bytes_per_audio_minute": 25510.3,
   "em_bookkeeping_ms_per_repetition": {
-    "max": 1.6247,
-    "median": 1.4812,
-    "min": 1.324,
+    "max": 2.1612,
+    "median": 1.8725,
+    "min": 1.8433,
     "n": 30,
-    "q1": 1.3899,
-    "q3": 1.5179
+    "q1": 1.861,
+    "q3": 1.9019
   },
-  "em_ms_per_audio_minute": 1.0519,
-  "em_over_baseline_ratio": 3.3644,
-  "em_over_ffmpeg_fraction": 0.001688,
+  "em_ms_per_audio_minute": 1.3298,
+  "em_over_baseline_ratio": 3.3561,
+  "em_over_ffmpeg_fraction": 0.001464,
   "environment": {
     "c2patool": "c2patool 0.27.2",
     "cpu_count_logical": "14",
@@ -103,21 +103,21 @@
     "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
     "machine": "arm64",
     "memory_bytes": "38654705664",
-    "node": "v26.0.0",
+    "node": "v26.7.0",
     "platform": "macOS-26.5.2-arm64-arm-64bit",
     "processor": "arm",
     "python": "3.11.15"
   },
   "experiment": "G_overhead",
   "ffmpeg_transcode_ms_per_repetition": {
-    "max": 905.2132,
-    "median": 877.3761,
-    "min": 856.6878,
+    "max": 1309.1346,
+    "median": 1278.9817,
+    "min": 1191.8114,
     "n": 30,
-    "q1": 870.8109,
-    "q3": 882.3741
+    "q1": 1272.0298,
+    "q3": 1296.1278
   },
-  "first_iteration_effect_pct": 0.094,
+  "first_iteration_effect_pct": 0.082,
   "launch": "python3 experiments/overhead_benchmark.py, single process, no affinity or power-management control",
   "machine_dependence_note": "single-machine medians for a Python reference implementation; a compiled implementation will differ, so these are not language-independent constants",
   "manifest_bytes_per_audio_minute": 298723.0,
@@ -133,22 +133,22 @@
   "median_manifest_overhead_bytes_per_asset": 14854,
   "per_minute_caveat": "the corpus clips have a median duration of 2.98 s, and the C2PA manifest overhead is dominated by a fixed per-asset cost (certificate chain, COSE structure, hard binding) rather than by audio duration, so the per-audio-minute figures are extrapolations of a mostly fixed cost and should be read together with the per-asset figures and the interval-scaling table",
   "repetitions": 30,
-  "runtime_s": 27.152,
+  "runtime_s": 39.637,
   "sign_ms": {
-    "max": 12.0654,
-    "median": 9.9427,
-    "min": 9.4614,
+    "max": 17.7349,
+    "median": 15.3672,
+    "min": 14.891,
     "n": 30,
-    "q1": 9.8028,
-    "q3": 10.0998
+    "q1": 15.116,
+    "q3": 15.8706
   },
   "validate_ms": {
-    "max": 8.874,
-    "median": 8.1469,
-    "min": 7.8775,
+    "max": 15.7507,
+    "median": 12.6465,
+    "min": 12.1745,
     "n": 30,
-    "q1": 8.0935,
-    "q3": 8.4362
+    "q1": 12.4045,
+    "q3": 13.1839
   },
   "warm_up_policy": "none; the first repetition is included and the reported statistic is a median over all of them, so a single cold iteration cannot move it. The claim is checked rather than assumed: see first_iteration_effect_pct"
 }

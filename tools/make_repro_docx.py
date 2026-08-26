@@ -56,13 +56,21 @@ def main() -> int:
     code(doc, [
         "unzip EM_Audio_reproduction_package.zip",
         "cd EM_Audio_reproduction_package/em-audio",
+        "pip install -r requirements.txt",
         "./run_all.sh",
         "python3 tools/verify_reproduction.py",
     ])
     doc.add_paragraph(
-        "Requisitos: Python 3.11 o superior, FFmpeg, Node, eSpeak NG y "
-        "c2patool en el PATH. La corrida completa tarda alrededor de veinte "
-        "minutos, más la descarga del corpus.")
+        "Requisitos de línea de comandos: FFmpeg, ffprobe, Node, eSpeak NG y "
+        "c2patool en el PATH. Los paquetes de Python están en "
+        "requirements.txt, que es el paso que faltaba en la versión anterior "
+        "de estas instrucciones: matplotlib y numpy para las figuras, y "
+        "piper-tts para el brazo de robustez con TTS neuronal.")
+    doc.add_paragraph(
+        "run_all.sh ahora revisa las dependencias antes de empezar y se "
+        "detiene con código 2 si falta alguna, en lugar de fallar a la mitad. "
+        "La corrida completa tarda alrededor de veinte minutos, más la "
+        "descarga del corpus.")
     doc.add_paragraph(
         "Las versiones exactas con las que se produjeron los resultados están "
         "en results/PREFLIGHT.txt. Las tuyas van a ser distintas y eso es "

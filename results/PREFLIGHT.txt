@@ -1,6 +1,6 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 45684c261e2006429783dc77cf44b11fde208051
+commit: 5ce8899146993a3b2bcdf44d52940a8071d49599
 tag: v1.0.0
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
@@ -12,25 +12,25 @@ zenodo_concept_doi: PENDING - assign at archive time
 python: 3.11.15
 ffmpeg: ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers
 c2patool: c2patool 0.27.2
-node: v26.0.0
+node: v26.7.0
 espeak_ng: eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data
 c2pa_spec_version: 2.4 (April 2026)
 os: macOS-26.5.2-arm64-arm-64bit
 
 benchmark stability, one process per row
-  measured: 2026-08-22T23:17:23Z UTC, load average [5.65, 5.7, 5.36]
+  measured: 2026-08-26T18:11:44Z UTC, load average [6.23, 5.59, 8.35]
   cv definition: sample standard deviation over the mean, in percent, with Bessel's correction
-  run 1: em 1.0326 ms, baseline 0.3054 ms, ratio 3.3812
-  run 2: em 1.3883 ms, baseline 0.4014 ms, ratio 3.4587
-  run 3: em 1.3881 ms, baseline 0.4029 ms, ratio 3.4452
-  run 4: em 1.3401 ms, baseline 0.397 ms, ratio 3.3757
-  run 5: em 1.3144 ms, baseline 0.396 ms, ratio 3.3194
-  run 6: em 1.3392 ms, baseline 0.4005 ms, ratio 3.3438
-  run 7: em 1.3798 ms, baseline 0.3995 ms, ratio 3.4533
-  run 8: em 1.413 ms, baseline 0.4016 ms, ratio 3.5184
-  run 9: em 1.4228 ms, baseline 0.4048 ms, ratio 3.5149
-  absolute cv: 8.915%
-  ratio cv: 2.097%
+  run 1: em 1.3381 ms, baseline 0.3968 ms, ratio 3.372
+  run 2: em 1.3289 ms, baseline 0.3956 ms, ratio 3.3595
+  run 3: em 1.2992 ms, baseline 0.388 ms, ratio 3.3489
+  run 4: em 1.2969 ms, baseline 0.3887 ms, ratio 3.3363
+  run 5: em 1.3082 ms, baseline 0.3895 ms, ratio 3.3588
+  run 6: em 1.3165 ms, baseline 0.3926 ms, ratio 3.3533
+  run 7: em 1.3081 ms, baseline 0.3881 ms, ratio 3.3707
+  run 8: em 1.3179 ms, baseline 0.3952 ms, ratio 3.3349
+  run 9: em 1.3252 ms, baseline 0.3946 ms, ratio 3.3587
+  absolute cv: 1.045%
+  ratio cv: 0.391%
 
 cpu: Apple M3 Max
 cpu_arch: arm64
@@ -92,15 +92,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 1.0519
-median_baseline_ms_per_audio_minute: 0.3127
-em_over_baseline_ratio: 3.3644
-em_fraction_of_ffmpeg_time: 0.001688
+median_em_ms_per_audio_minute: 1.3298
+median_baseline_ms_per_audio_minute: 0.3962
+em_over_baseline_ratio: 3.3561
+em_fraction_of_ffmpeg_time: 0.001464
 median_manifest_overhead_bytes_per_asset: 14854
 median_em_assertion_bytes_per_asset: 1268
 metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 9.9427
-median_validate_ms: 8.1469
+median_sign_ms: 15.3672
+median_validate_ms: 12.6465
 assertion_bytes_per_interval: 332.7
 
 --- K  kernel-support containment ---

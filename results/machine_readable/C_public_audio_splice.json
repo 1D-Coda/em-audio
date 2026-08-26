@@ -11,7 +11,7 @@
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "machine": "arm64",
   "memory_bytes": "38654705664",
-  "node": "v26.0.0",
+  "node": "v26.7.0",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "processor": "arm",
   "python": "3.11.15"
@@ -53,6 +53,6 @@
    "em_promotions": 0
   }
  },
- "runtime_s": 0.322,
+ "runtime_s": 0.434,
  "worst_boundary_error_samples": 0
 }

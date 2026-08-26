@@ -1,25 +1,25 @@
 {
  "baseline_ms_per_audio_minute": {
-  "cv_pct": 8.157,
-  "max": 0.4048,
-  "mean": 0.3899,
-  "min": 0.3054,
-  "range_pct": 32.55
+  "cv_pct": 0.909,
+  "max": 0.3968,
+  "mean": 0.3921,
+  "min": 0.388,
+  "range_pct": 2.27
  },
  "cv_definition": "sample standard deviation over the mean, in percent, with Bessel's correction",
  "em_ms_per_audio_minute": {
-  "cv_pct": 8.915,
-  "max": 1.4228,
-  "mean": 1.3354,
-  "min": 1.0326,
-  "range_pct": 37.79
+  "cv_pct": 1.045,
+  "max": 1.3381,
+  "mean": 1.3154,
+  "min": 1.2969,
+  "range_pct": 3.18
  },
  "em_over_baseline_ratio": {
-  "cv_pct": 2.097,
-  "max": 3.5184,
-  "mean": 3.4234,
-  "min": 3.3194,
-  "range_pct": 6.0
+  "cv_pct": 0.391,
+  "max": 3.372,
+  "mean": 3.3548,
+  "min": 3.3349,
+  "range_pct": 1.11
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -29,7 +29,7 @@
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "machine": "arm64",
   "memory_bytes": "38654705664",
-  "node": "v26.0.0",
+  "node": "v26.7.0",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "processor": "arm",
   "python": "3.11.15"
@@ -37,71 +37,71 @@
  "experiment": "M_overhead_stability",
  "interpretation": "the ratio cancels common-mode variation; it is much tighter when machine state moves both arms together and has no advantage on a quiet machine, so a sitting in which it is not tighter is consistent with the mechanism rather than a failure of it",
  "load_average_1_5_15": [
-  5.65,
-  5.7,
-  5.36
+  6.23,
+  5.59,
+  8.35
  ],
- "measured_utc": "2026-08-22T23:17:23Z",
+ "measured_utc": "2026-08-26T18:11:44Z",
  "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
  "ratio_is_tighter_than_absolute": true,
  "repeats": 9,
  "runs": [
   {
-   "baseline_ms_per_audio_minute": 0.3054,
-   "em_ms_per_audio_minute": 1.0326,
-   "em_over_baseline_ratio": 3.3812,
+   "baseline_ms_per_audio_minute": 0.3968,
+   "em_ms_per_audio_minute": 1.3381,
+   "em_over_baseline_ratio": 3.372,
    "run": 1
   },
   {
-   "baseline_ms_per_audio_minute": 0.4014,
-   "em_ms_per_audio_minute": 1.3883,
-   "em_over_baseline_ratio": 3.4587,
+   "baseline_ms_per_audio_minute": 0.3956,
+   "em_ms_per_audio_minute": 1.3289,
+   "em_over_baseline_ratio": 3.3595,
    "run": 2
   },
   {
-   "baseline_ms_per_audio_minute": 0.4029,
-   "em_ms_per_audio_minute": 1.3881,
-   "em_over_baseline_ratio": 3.4452,
+   "baseline_ms_per_audio_minute": 0.388,
+   "em_ms_per_audio_minute": 1.2992,
+   "em_over_baseline_ratio": 3.3489,
    "run": 3
   },
   {
-   "baseline_ms_per_audio_minute": 0.397,
-   "em_ms_per_audio_minute": 1.3401,
-   "em_over_baseline_ratio": 3.3757,
+   "baseline_ms_per_audio_minute": 0.3887,
+   "em_ms_per_audio_minute": 1.2969,
+   "em_over_baseline_ratio": 3.3363,
    "run": 4
   },
   {
-   "baseline_ms_per_audio_minute": 0.396,
-   "em_ms_per_audio_minute": 1.3144,
-   "em_over_baseline_ratio": 3.3194,
+   "baseline_ms_per_audio_minute": 0.3895,
+   "em_ms_per_audio_minute": 1.3082,
+   "em_over_baseline_ratio": 3.3588,
    "run": 5
   },
   {
-   "baseline_ms_per_audio_minute": 0.4005,
-   "em_ms_per_audio_minute": 1.3392,
-   "em_over_baseline_ratio": 3.3438,
+   "baseline_ms_per_audio_minute": 0.3926,
+   "em_ms_per_audio_minute": 1.3165,
+   "em_over_baseline_ratio": 3.3533,
    "run": 6
   },
   {
-   "baseline_ms_per_audio_minute": 0.3995,
-   "em_ms_per_audio_minute": 1.3798,
-   "em_over_baseline_ratio": 3.4533,
+   "baseline_ms_per_audio_minute": 0.3881,
+   "em_ms_per_audio_minute": 1.3081,
+   "em_over_baseline_ratio": 3.3707,
    "run": 7
   },
   {
-   "baseline_ms_per_audio_minute": 0.4016,
-   "em_ms_per_audio_minute": 1.413,
-   "em_over_baseline_ratio": 3.5184,
+   "baseline_ms_per_audio_minute": 0.3952,
+   "em_ms_per_audio_minute": 1.3179,
+   "em_over_baseline_ratio": 3.3349,
    "run": 8
   },
   {
-   "baseline_ms_per_audio_minute": 0.4048,
-   "em_ms_per_audio_minute": 1.4228,
-   "em_over_baseline_ratio": 3.5149,
+   "baseline_ms_per_audio_minute": 0.3946,
+   "em_ms_per_audio_minute": 1.3252,
+   "em_over_baseline_ratio": 3.3587,
    "run": 9
   }
  ],
- "runtime_s": 350.754,
+ "runtime_s": 342.805,
  "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
- "tightness_factor_cv": 4.25
+ "tightness_factor_cv": 2.67
 }

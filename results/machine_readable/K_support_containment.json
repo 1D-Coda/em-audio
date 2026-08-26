@@ -7,7 +7,7 @@
   "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
   "machine": "arm64",
   "memory_bytes": "38654705664",
-  "node": "v26.0.0",
+  "node": "v26.7.0",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "processor": "arm",
   "python": "3.11.15"
@@ -3901,7 +3901,7 @@
   14714,
   16256
  ],
- "runtime_s": 34.163,
+ "runtime_s": 45.388,
  "sample_rate": 16000,
  "signal_contexts": [
   "tone",
