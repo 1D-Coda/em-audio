@@ -22,3 +22,14 @@ Scored from official journal pages on 2026-08-19; re-check before submission.
 3. *EURASIP Journal on Information Security* (Springer, open access).
 
 No claim is made anywhere about review speed.
+
+**Re-check, 2026-08-27.** The third choice has changed and is now a weaker fit.
+EURASIP's title is now *Journal on Information Security* (Springer), and its
+stated scope centres "security and privacy challenges in which signal processing
+and data-centric methodologies play a central role", with an explicit
+out-of-scope for submissions that "lack a clear connection between signal or
+data-centric methods and security or privacy objectives". This work trains no
+model and uses no acoustic feature by design, so it is exposed to a desk reject
+on exactly that criterion. It stays on the list because the kernel-footprint
+treatment is a signal-level argument, but it moves behind JISA rather than
+alongside it. Choices 1 and 2 are unchanged.

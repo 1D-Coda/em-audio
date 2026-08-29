@@ -1,0 +1,23 @@
+{
+ "distinct_scopes": 5,
+ "enlargement_cases": 441,
+ "environment": {
+  "c2patool": "c2patool 0.27.15",
+  "cpu_count_logical": "12",
+  "cpu_model": "13th Gen Intel(R) Core(TM) i7-1355U",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers",
+  "machine": "x86_64",
+  "memory_bytes": "8167567360",
+  "node": "v22.22.1",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "processor": "x86_64",
+  "python": "3.14.4"
+ },
+ "experiment": "L_scope_battery",
+ "monotone": 441,
+ "purpose": "applicability cases the single-scope audio corpus cannot reach: disjoint and overlapping scopes, and the inapplicable-to-applicable transition that Proposition 4 turns on",
+ "unconstructible_skipped": 184,
+ "violations": 0,
+ "violations_under_superseded_rule": 80
+}

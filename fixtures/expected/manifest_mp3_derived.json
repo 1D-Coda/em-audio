@@ -1,7 +1,7 @@
 {
- "active_manifest": "urn:c2pa:c9441247-23f0-4958-a970-085857c4a296",
+ "active_manifest": "urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260",
  "manifests": {
-  "urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d": {
+  "urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb": {
    "assertions": [
     {
      "data": {
@@ -11,7 +11,7 @@
         "parameters": {
          "ingredients": [
           {
-           "hash": "Jhr7C5vgapKCZd1jDVNTwrXtgr8yGnc5mP0dQncvKrY=",
+           "hash": "0pZxdWzmLeHISyjh5CR6FwQXlaBInaycU0oHaDcrhms=",
            "url": "self#jumbf=c2pa.assertions/c2pa.ingredient.v3"
           }
          ]
@@ -187,9 +187,9 @@
        "footprint": 2304
       },
       "policy": "complete-source",
-      "schema": "https://aurtech.mx/ns/em-audio/1.0"
+      "schema": "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md"
      },
-     "label": "mx.aurtech.emaudio.evidence"
+     "label": "io.github.1d-coda.emaudio.evidence"
     }
    ],
    "claim_generator_info": [
@@ -203,13 +203,13 @@
    "ingredients": [
     {
      "format": "audio/mpeg",
-     "instance_id": "xmp:iid:80bff663-706c-40d3-8d3a-98f23669a4e6",
+     "instance_id": "xmp:iid:b9b264f8-b8f4-4cd1-a35b-27f5394faf4d",
      "label": "c2pa.ingredient.v3",
      "relationship": "parentOf"
     }
    ],
-   "instance_id": "xmp:iid:f3d5b029-fb36-4f3c-bde0-3824f086f9e7",
-   "label": "urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d",
+   "instance_id": "xmp:iid:dccca412-f281-4de9-a7a8-810e87e4f67e",
+   "label": "urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb",
    "signature_info": {
     "alg": "Es256",
     "cert_serial_number": "482979767099638256303983048383099196994797948726",
@@ -218,7 +218,7 @@
    },
    "title": "clip 0 mp3"
   },
-  "urn:c2pa:c9441247-23f0-4958-a970-085857c4a296": {
+  "urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260": {
    "assertions": [
     {
      "data": {
@@ -228,7 +228,7 @@
         "parameters": {
          "ingredients": [
           {
-           "hash": "Zuhx95evimIUHv8ewR4aQdM9xaJShKKNEd3qcJQkaBU=",
+           "hash": "Z3bf00ZMoUsI8fYamFTfptwQtdPYrajIXW2QS9I8jfQ=",
            "url": "self#jumbf=c2pa.assertions/c2pa.ingredient.v3"
           }
          ]
@@ -342,9 +342,9 @@
        "start": 4820
       },
       "policy": "complete-source",
-      "schema": "https://aurtech.mx/ns/em-audio/1.0"
+      "schema": "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md"
      },
-     "label": "mx.aurtech.emaudio.evidence"
+     "label": "io.github.1d-coda.emaudio.evidence"
     }
    ],
    "claim_generator_info": [
@@ -357,13 +357,13 @@
    "claim_version": 2,
    "ingredients": [
     {
-     "active_manifest": "urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d",
+     "active_manifest": "urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb",
      "format": "audio/mpeg",
-     "instance_id": "xmp:iid:26c26d55-4850-4dcc-9ea4-ff752834f80f",
+     "instance_id": "xmp:iid:2301da29-98fe-4168-8895-acdfd8ec6929",
      "label": "c2pa.ingredient.v3",
      "manifest_data": {
       "format": "application/c2pa",
-      "identifier": "urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d"
+      "identifier": "urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb"
      },
      "relationship": "parentOf",
      "validation_results": {
@@ -374,55 +374,55 @@
         {
          "code": "signingCredential.trusted",
          "explanation": "signing certificate trusted, found in System trust anchors",
-         "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.signature"
+         "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.signature"
         },
         {
          "code": "claimSignature.insideValidity",
          "explanation": "claim signature valid",
-         "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.signature"
+         "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.signature"
         },
         {
          "code": "claimSignature.validated",
          "explanation": "claim signature valid",
-         "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.signature"
+         "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.signature"
         },
         {
          "code": "assertion.hashedURI.match",
          "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
-         "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.assertions/c2pa.hash.data"
+         "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.assertions/c2pa.hash.data"
         },
         {
          "code": "assertion.hashedURI.match",
          "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient.v3",
-         "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.assertions/c2pa.ingredient.v3"
+         "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.assertions/c2pa.ingredient.v3"
         },
         {
          "code": "assertion.hashedURI.match",
          "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
-         "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.assertions/c2pa.actions.v2"
+         "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.assertions/c2pa.actions.v2"
         },
         {
          "code": "assertion.hashedURI.match",
-         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/mx.aurtech.emaudio.evidence",
-         "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.assertions/mx.aurtech.emaudio.evidence"
+         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/io.github.1d-coda.emaudio.evidence",
+         "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.assertions/io.github.1d-coda.emaudio.evidence"
         },
         {
          "code": "assertion.dataHash.match",
          "explanation": "data hash valid",
-         "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.assertions/c2pa.hash.data"
+         "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.assertions/c2pa.hash.data"
         }
        ]
       },
       "ingredientDeltas": [
        {
-        "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.assertions/c2pa.ingredient.v3",
+        "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.assertions/c2pa.ingredient.v3",
         "validationDeltas": {
          "failure": [],
          "informational": [
           {
            "code": "ingredient.unknownProvenance",
            "explanation": "no title: ingredient does not have provenance",
-           "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d/c2pa.assertions/c2pa.ingredient.v3"
+           "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb/c2pa.assertions/c2pa.ingredient.v3"
           }
          ],
          "success": []
@@ -432,8 +432,8 @@
      }
     }
    ],
-   "instance_id": "xmp:iid:1b47ee04-bef0-4e49-8f85-07f9311f5ac6",
-   "label": "urn:c2pa:c9441247-23f0-4958-a970-085857c4a296",
+   "instance_id": "xmp:iid:ed06f109-0cc6-4ee7-abe2-4d2c7a8f7fb2",
+   "label": "urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260",
    "signature_info": {
     "alg": "Es256",
     "cert_serial_number": "482979767099638256303983048383099196994797948726",
@@ -451,48 +451,48 @@
     {
      "code": "signingCredential.trusted",
      "explanation": "signing certificate trusted, found in System trust anchors",
-     "url": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.signature"
     },
     {
      "code": "claimSignature.insideValidity",
      "explanation": "claim signature valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.signature"
     },
     {
      "code": "claimSignature.validated",
      "explanation": "claim signature valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.signature"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
-     "url": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.assertions/c2pa.hash.data"
+     "url": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.assertions/c2pa.hash.data"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient.v3",
-     "url": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.assertions/c2pa.ingredient.v3"
+     "url": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.assertions/c2pa.ingredient.v3"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
-     "url": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.assertions/c2pa.actions.v2"
+     "url": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.assertions/c2pa.actions.v2"
     },
     {
      "code": "assertion.hashedURI.match",
-     "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/mx.aurtech.emaudio.evidence",
-     "url": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.assertions/mx.aurtech.emaudio.evidence"
+     "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/io.github.1d-coda.emaudio.evidence",
+     "url": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.assertions/io.github.1d-coda.emaudio.evidence"
     },
     {
      "code": "assertion.dataHash.match",
      "explanation": "data hash valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.assertions/c2pa.hash.data"
+     "url": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.assertions/c2pa.hash.data"
     }
    ]
   },
   "ingredientDeltas": [
    {
-    "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:c9441247-23f0-4958-a970-085857c4a296/c2pa.assertions/c2pa.ingredient.v3",
+    "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:dbb5f41b-b4cb-44fe-ad91-f7aaeff17260/c2pa.assertions/c2pa.ingredient.v3",
     "validationDeltas": {
      "failure": [],
      "informational": [],
@@ -500,7 +500,7 @@
       {
        "code": "ingredient.manifest.validated",
        "explanation": "ingredient hash matched",
-       "url": "self#jumbf=/c2pa/urn:c2pa:17cf4885-d614-4330-8c76-a1217ec2a39d"
+       "url": "self#jumbf=/c2pa/urn:c2pa:971f744d-67d6-4de2-94a8-c6c6449d60fb"
       }
      ]
     }

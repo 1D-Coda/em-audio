@@ -17,8 +17,20 @@ from typing import Dict, Iterable, List, Optional, Sequence
 from .evidence import BOT, Evidence, _Bot, claim_of, label_of
 from .interval_map import OutputInterval
 
-SCHEMA = "https://aurtech.mx/ns/em-audio/1.0"
-ASSERTION_LABEL = "mx.aurtech.emaudio.evidence"
+# The C2PA convention for a vendor assertion is a reverse-DNS label under a
+# namespace the author controls. It is chosen here under the repository host
+# rather than a private domain, because the label is published in the paper and
+# then cannot be changed, while a domain registration can lapse and leave the
+# namespace to whoever registers it next.
+NAMESPACE = "io.github.1d-coda"
+ASSERTION_LABEL = f"{NAMESPACE}.emaudio.evidence"
+
+# The schema identifier a reader may try to resolve. It is set to the archived
+# deposit rather than to a web page, so that it keeps resolving after any
+# repository is renamed or moved. Until the archive exists this is the
+# repository itself, and the deposit DOI replaces it before submission.
+SCHEMA = "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md"
+SCHEMA_VERSION = "1.0"
 
 
 def _npt(samples: int, fs: int) -> str:

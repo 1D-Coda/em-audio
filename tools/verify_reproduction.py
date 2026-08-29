@@ -7,7 +7,7 @@ mechanically, so a reproducer does not have to decide case by case which
 category a difference falls into, and so the criteria cannot be adjusted after
 seeing the result.
 
-    python3 tools/verify_reproduction.py               # against tag v1.0.0
+    python3 tools/verify_reproduction.py               # against the current release
     python3 tools/verify_reproduction.py --ref v1.1.0  # against another tag
 
 Exit status is 0 when every deterministic output matches, 1 otherwise. A
@@ -25,6 +25,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MR = ROOT / "results" / "machine_readable"
+
+# The tag whose results ship in results/reference/. It labels the left-hand side
+# of every comparison this tool prints, so a stale value mislabels a
+# reproducer's report: the first independent run was told it differed from
+# v1.0.0 when the snapshot it was given was v1.0.1.
+RELEASE = "v1.0.1"
 
 # Outputs a correct reimplementation must reproduce exactly. Each entry is a
 # result file and the dotted paths within it that carry a scientific claim.
@@ -45,6 +51,24 @@ DETERMINISTIC = {
     "F_c2pa_roundtrip": ["n_clips", "containers", "per_container"],
     "E_manifest_stripping": ["n_clips", "conditions", "state_tally",
                              "violations"],
+    # These three carry headline claims and were absent from this list, so the
+    # tool reported a comparison as complete while never opening them. They
+    # agree on the reproduction that exposed the gap, which is luck rather than
+    # coverage: the corpus recovery rate, the C2PA composition wiring and the
+    # robustness arm are all results the paper states.
+    "C_public_audio_splice": ["n_clips", "exact_interval_recovery",
+                              "generated_interval_recovered",
+                              "baseline_provenance_promotions",
+                              "em_provenance_promotions",
+                              "baseline_lineage_omissions",
+                              "em_lineage_omissions",
+                              "worst_boundary_error_samples", "per_operator"],
+    "J_c2pa_composition": ["n_fixtures", "composition_trusted", "derived_trusted",
+                           "sources_trusted", "aggregate_mixed", "derived_mixed",
+                           "derived_parentOf", "component_ingredients_recorded",
+                           "placed_actions_reference_both",
+                           "assertion_roundtrip_identical", "essence_mismatches"],
+    "C2_robustness": ["arms"],
 }
 
 # Outputs that should differ, and whose difference is not a defect. Matched on
@@ -196,8 +220,8 @@ def _inherited_results(tag: str):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--ref", default="v1.0.0",
-                    help="release tag to compare against (default v1.0.0)")
+    ap.add_argument("--ref", default=RELEASE,
+                    help=f"release tag to compare against (default {RELEASE})")
     args = ap.parse_args()
 
     print(f"Comparing the working tree against {_reference_source(args.ref)}.")

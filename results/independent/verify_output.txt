@@ -1,0 +1,47 @@
+Comparing the working tree against results/reference/ (snapshot shipped with the release).
+Deterministic outputs must match exactly. Environment-dependent outputs are reported
+and are expected to differ.
+
+DETERMINISTIC MISMATCH (189):
+  D_transform_matrix.per_transformation.silence_removal.guard_band_covers_deviation: v1.0.0=True here=False
+  D_transform_matrix.per_transformation.silence_removal.model_vs_ffmpeg_max_abs_sample_dev: v1.0.0=681 here=12505
+  D_transform_matrix.per_transformation.silence_removal.model_vs_ffmpeg_median_abs_sample_dev: v1.0.0=243.0 here=9105.5
+  D_transform_matrix.per_transformation.time_stretch_1.10.model_vs_ffmpeg_max_abs_sample_dev: v1.0.0=471 here=463
+  D_transform_matrix.per_transformation.time_stretch_1.10.model_vs_ffmpeg_median_abs_sample_dev: v1.0.0=146.5 here=144.0
+  K_support_containment.total_affected_output_samples: v1.0.0=52005 here=51345
+  K_support_containment.per_operator.silence_removal.output_samples_beyond_modelled_extent: v1.0.0=4 here=8
+  K_support_containment.per_operator.silence_removal.per_probe[0].decoded_length: v1.0.0=13312 here=16384
+  K_support_containment.per_operator.silence_removal.per_probe[1].decoded_length: v1.0.0=13312 here=16384
+  K_support_containment.per_operator.silence_removal.per_probe[2].decoded_length: v1.0.0=13312 here=16384
+  K_support_containment.per_operator.silence_removal.per_probe[3].decoded_length: v1.0.0=13312 here=16384
+  K_support_containment.per_operator.silence_removal.per_probe[4].decoded_length: v1.0.0=13312 here=16384
+  K_support_containment.per_operator.silence_removal.per_probe[5].affected_output_samples: v1.0.0=0 here=1
+  K_support_containment.per_operator.silence_removal.per_probe[5].decoded_length: v1.0.0=13312 here=16384
+  K_support_containment.per_operator.silence_removal.per_probe[5].max_measured_reach_source_samples: v1.0.0=0 here=3277
+  K_support_containment.per_operator.silence_removal.per_probe[5].min_margin_inside_declared_range: v1.0.0=None here=819
+  K_support_containment.per_operator.silence_removal.per_probe[6].affected_output_samples: v1.0.0=0 here=1
+  K_support_containment.per_operator.silence_removal.per_probe[6].decoded_length: v1.0.0=13312 here=16384
+  K_support_containment.per_operator.silence_removal.per_probe[6].max_measured_reach_source_samples: v1.0.0=0 here=3277
+  K_support_containment.per_operator.silence_removal.per_probe[6].min_margin_inside_declared_range: v1.0.0=None here=819
+  K_support_containment.per_operator.silence_removal.per_probe[7].affected_output_samples: v1.0.0=0 here=1
+  K_support_containment.per_operator.silence_removal.per_probe[7].decoded_length: v1.0.0=13312 here=16384
+  K_support_containment.per_operator.silence_removal.per_probe[7].max_measured_reach_source_samples: v1.0.0=0 here=3277
+  K_support_containment.per_operator.silence_removal.per_probe[7].min_margin_inside_declared_range: v1.0.0=None here=819
+  K_support_containment.per_operator.silence_removal.per_probe[8].decoded_length: v1.0.0=13312 here=16384
+  ... and 164 more
+
+Environment-dependent differences (16), expected and not a defect:
+  D_transform_matrix.per_transformation.normalize.median_runtime_ms: v1.0.0=77.71 here=177.071
+  D_transform_matrix.per_transformation.overlay_generated.median_runtime_ms: v1.0.0=40.098 here=115.258
+  D_transform_matrix.per_transformation.resample_16_8.median_runtime_ms: v1.0.0=38.803 here=96.926
+  D_transform_matrix.per_transformation.silence_removal.median_runtime_ms: v1.0.0=38.55 here=103.691
+  D_transform_matrix.per_transformation.time_stretch_1.10.median_runtime_ms: v1.0.0=39.511 here=102.178
+  D_transform_matrix.per_transformation.transcode_flac.median_runtime_ms: v1.0.0=40.003 here=88.921
+  D_transform_matrix.per_transformation.transcode_mp3.median_runtime_ms: v1.0.0=45.328 here=122.044
+  D_transform_matrix.per_transformation.trim_10_90.median_runtime_ms: v1.0.0=38.645 here=98.933
+  ... and 8 more
+
+REPRODUCTION INCOMPLETE: a deterministic output differs.
+Classify each difference before reporting it: an environment or tool-version
+difference, an ambiguity in the contract's specification, or a genuine discrepancy.
+Do not record it as environment variation without establishing that it is.

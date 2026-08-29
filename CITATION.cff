@@ -10,6 +10,6 @@ authors:
   - family-names: Urias
     given-names: A.
     orcid: "https://orcid.org/0009-0007-3147-323X"
-    affiliation: Aurtech
+    affiliation: Independent researcher
 license: MIT
-version: 1.0.0
+version: 1.0.1

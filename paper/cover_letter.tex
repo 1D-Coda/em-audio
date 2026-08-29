@@ -2,7 +2,7 @@
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{microtype}
 \signature{A. Urias}
-\address{Aurtech\\C.P. 83220, Hermosillo, Sonora, Mexico\\alex@aurtech.mx}
+\address{Independent researcher\\C.P. 83220, Hermosillo, Sonora, Mexico\\alex@aurtech.mx}
 \begin{document}
 \begin{letter}{The Editors\\Forensic Science International: Digital Investigation}
 \opening{Dear Editors,}
@@ -29,7 +29,7 @@ reference implementation that requires no model training, a signed transport
 built entirely inside C2PA's own extension points, and a frozen public
 reproducibility artifact with one-command reproduction.
 
-Three things are worth flagging to the editors directly, because we would rather
+Four things are worth flagging to the editors directly, because we would rather
 state them than have a reviewer find them.
 
 First, we do not claim the underlying algebra as new. The non-amplification
@@ -48,6 +48,16 @@ feature is used, and an unsigned or provenance-stripped asset is classified as
 unverified rather than synthetic. A cryptographically valid signature proves
 that an assertion was signed, not that it is true, and we state that limitation
 in the abstract, the threat model, the discussion and the conclusion.
+
+Fourth, the paper reports an independent reproduction that partly failed, and
+reports it as a result. A colleague at another institution, who is acknowledged
+but is not an author, ran the packaged release twice on unrelated hardware and a
+different FFmpeg major version. Every headline count returned unchanged and
+eight of the ten compared result files showed no deterministic difference at
+all. Two declared kernel footprints turned out not to be adequate on his build,
+one of them under-sized. We have not widened those declarations to make the
+comparison pass; Section~7.11 reports what he measured, and his unmodified
+outputs are released with the artifact.
 
 The work fits the journal's stated primary pillar of digital evidence and
 multimedia with the core qualities of provenance, integrity and authenticity,

@@ -1,0 +1,45 @@
+{
+ "conditions": [
+  "valid_manifest",
+  "manifest_removed",
+  "asset_modified_after_signing",
+  "reencoded_without_manifest",
+  "valid_derived_manifest"
+ ],
+ "environment": {
+  "c2patool": "c2patool 0.27.15",
+  "cpu_count_logical": "12",
+  "cpu_model": "13th Gen Intel(R) Core(TM) i7-1355U",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers",
+  "machine": "x86_64",
+  "memory_bytes": "8167567360",
+  "node": "v22.22.1",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "processor": "x86_64",
+  "python": "3.14.4"
+ },
+ "experiment": "E_manifest_stripping",
+ "n_clips": 60,
+ "runtime_s": 56.094,
+ "scope_note": "an absent or invalid manifest is reported UNVERIFIED or INVALID; no claim is made that stripping indicates malicious intent",
+ "state_tally": {
+  "asset_modified_after_signing": {
+   "INVALID": 60
+  },
+  "manifest_removed": {
+   "UNVERIFIED": 60
+  },
+  "reencoded_without_manifest": {
+   "UNVERIFIED": 60
+  },
+  "valid_derived_manifest": {
+   "MIXED": 60
+  },
+  "valid_manifest": {
+   "MIXED": 60
+  }
+ },
+ "violation_sample": [],
+ "violations": 0
+}

@@ -749,3 +749,44 @@ The same review observed the absolute cost moving 0.926 to 1.304 ms, +40.8%,
 while the ratio held at 3.36 to 3.38, and accepted it as "exactly the pattern
 expected if machine state affects both arms similarly". The stability experiment
 added in the previous round is what made that legible rather than suspicious.
+
+---
+
+# Round 12: the reproduction happened, and it failed twice on purpose
+
+The open item above is closed. The package was delivered directly rather than
+through a remote, and D. A. Balderrama-Alvarez ran it twice on his own machine
+(Linux on WSL2, x86_64, Python 3.14.4, FFmpeg 8.0.1, against macOS arm64,
+Python 3.11.15, FFmpeg 9.0.1).
+
+Eight of the ten compared result files came back with zero deterministic
+differences and every headline count in the paper returned unchanged. The 189
+differences that remain sit in two files and trace to one cause: his FFmpeg
+build behaves differently from the one the footprints were calibrated against.
+The MP3 encoder's measured reach is 4,317 source samples against a declared
+2,304, putting 110 output samples outside the declared support; silence
+removal's model-versus-FFmpeg deviation is 12,505 samples against a declared
+margin of 4,096, because his `silenceremove` leaves 16,384 samples where the
+reference leaves 13,312.
+
+Both runs produced identical numbers, which is what makes them findings rather
+than noise. They are reported in Section 7.11 as results, and the declarations
+were not widened to absorb them: a table adjusted until two builds pass, tested
+against neither, is the practice the paper argues against.
+
+Two things worth recording about the process rather than the outcome. The first
+package shipped `results/machine_readable/` populated with the author's own
+results, so his failed experiments left those files in place and the comparison
+reported a match that never happened; his first-run `C2_robustness.json` was the
+author's file. The directory now ships empty, with a separate
+`results/reference/` snapshot, and `verify_reproduction.py` detects the
+inherited-file case. The second is that the classifier's environment-field list
+originally matched on substrings, so `max` matched
+`max_measured_reach_source_samples` and both of the findings above were reported
+as expected environment variation by the one tool whose job is to decide what
+counts as a real failure.
+
+## What remains outside the code
+
+The repository is still not published, so the URL cannot be printed and the
+Zenodo DOIs cannot be assigned. That is now the only open item.

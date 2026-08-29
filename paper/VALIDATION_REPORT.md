@@ -104,5 +104,8 @@ identity each have a stated definition and a code path. Dilution's denominator
   interval-arithmetic error, not author independence.
 - The signing credential is trusted under a locally declared anchor, not under
   the C2PA Conformance Program.
-- No independent reproduction on second hardware has been performed, and the
-  Zenodo DOIs are not yet assigned.
+- Independent reproduction on second hardware has been performed by
+  D. A. Balderrama-Alvarez and is reported in Section 7.11; it returned every
+  headline count unchanged and found two declared footprints his FFmpeg 8.0.1
+  build does not satisfy. A third-party reimplementation of the contract itself
+  is still outstanding, and the Zenodo DOIs are not yet assigned.

@@ -304,7 +304,35 @@ def raw_evidence_tables():
           header=("Operator & Probes & Max reach & Worst context & At sample & Declared"))
 
 
+def independent_table():
+    """Per-operator containment, reference run against the independent run.
+
+    The manuscript reports the two operators that differ. This is the whole
+    column so a reader can see that the other five agree rather than take the
+    selection on trust.
+    """
+    ind = ROOT / "results" / "independent" / "machine_readable"
+    if not ind.is_dir():
+        return
+    import json as _json
+    H = _json.loads((ind / "K_support_containment.json").read_text())["per_operator"]
+    K = load("K_support_containment")["per_operator"]
+    rows = []
+    for op in sorted(K, key=lambda o: -K[o]["max_measured_reach_source_samples"]):
+        a, b = K[op], H[op]
+        mark = "" if a["max_measured_reach_source_samples"] == b["max_measured_reach_source_samples"] else "$^{\\dagger}$"
+        rows.append(
+            f"{op.replace('_', ' ')}{mark} & {a['declared_footprint_samples']:,} & "
+            f"{a['max_measured_reach_source_samples']:,} & "
+            f"{b['max_measured_reach_source_samples']:,} & "
+            f"{a['total_outside_declared_support']:,} & "
+            f"{b['total_outside_declared_support']:,} \\\\".replace(",", "\\,"))
+    write("independent_containment", "\n".join(rows), colspec="lrrrrr",
+          header=("Operator & Declared & Reach (ref.) & Reach (ind.) & "
+                  "Outside (ref.) & Outside (ind.)"))
+
+
 if __name__ == "__main__":
     operator_table(); main_results(); transport_table(); ablation_table()
     containment_table(); dilution_table(); overhead_table()
-    raw_evidence_tables()
+    raw_evidence_tables(); independent_table()

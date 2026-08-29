@@ -32,6 +32,18 @@ def check_supplement_pointers(manuscript: str, supplement: str) -> list[str]:
     longtables carry no caption."""
     import re
     problems = []
+    # Existence is not enough. Every pointer was reported as resolving while
+    # three of them named the wrong note, because inserting a supplement section
+    # ahead of the one they meant renumbered it and a pointer to "some note S8"
+    # is satisfied by whatever now sits at position 8. Pointers must therefore be
+    # written as generated macros, which are tied to a section title rather than
+    # to a position, and a literal SN in the source is itself the defect.
+    literal = re.findall(r"Supplementary (?:Note|Table)~?S(\d+)", manuscript)
+    if literal:
+        problems.append(
+            f"{len(literal)} supplement pointer(s) written as a literal number "
+            f"(S{', S'.join(sorted(set(literal)))}); use the generated \\Note* "
+            f"macros so the pointer follows the section it names")
     n_sections = len(re.findall(r"^\\section\{", supplement, re.M))
     n_captions = len(re.findall(r"\\caption\{", supplement))
     for kind, num in re.findall(r"Supplementary (Note|Table)~?S(\d+)", manuscript):
@@ -59,9 +71,13 @@ def check_bundle_docs():
     than not having it.
     """
     import json
-    sub = ROOT.parent / "EM_Audio_Submission_2026-08-19"
-    if not sub.is_dir():
+    # The newest bundle, not a hardcoded date: pinning the date meant that
+    # exporting a fresh bundle silently moved it outside this guard, which is
+    # exactly the bundle most likely to disagree with the current results.
+    subs = sorted(ROOT.parent.glob("EM_Audio_Submission_*"))
+    if not subs:
         return []
+    sub = subs[-1]
     mr = ROOT / "results" / "machine_readable"
     A = json.loads((mr / "A_synthetic_state_space.json").read_text())
     K = json.loads((mr / "K_support_containment.json").read_text())
@@ -111,6 +127,9 @@ def main() -> int:
     # author block: ORCID and postal address are identifiers, not results
     text = re.sub(r"\\cortext\[[^\]]*\]\{[^}]*\}", " ", text)
     text = re.sub(r"\\address\[[^\]]*\]\{[^}]*\}", " ", text)
+    # An ORCID is a person's identifier wherever it appears, including the
+    # acknowledgement of the independent reproducer, and is not a result.
+    text = re.sub(r"ORCID\s+[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9X]{4}", " ", text)
     text = text.replace("[0,1]", " ")
     text = re.sub(r"(?m)%.*$", "", text)
     text = re.sub(r"\\(includegraphics|input|label|ref|eqref|cite\w*|usepackage|graphicspath|section|subsection)\s*(\[[^\]]*\])?\{[^}]*\}", " ", text)

@@ -157,11 +157,11 @@ The semantic origin; see the replay limitation in the manuscript \\
 \section{EM assertion schema}
 \label{s:schema}
 
-The assertion label is \texttt{mx.aurtech.emaudio.evidence}. The payload is:
+The assertion label is \texttt{\Clabel{}}. The payload is:
 
 \begin{verbatim}
 {
-  "schema": "https://aurtech.mx/ns/em-audio/1.0",
+  "schema": "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md",
   "policy": "complete-source",
   "operator": "trim",
   "operatorParameters": { "start": 4800, "end": 43200 },
@@ -265,7 +265,7 @@ asserted per interval by the experiment.
 \label{s:repro}
 
 \begin{verbatim}
-git clone <repo> && cd em-audio && git checkout v1.0.0 && ./run_all.sh
+git clone <repo> && cd em-audio && git checkout v1.0.1 && ./run_all.sh
 \end{verbatim}
 
 \texttt{run\_all.sh} fetches the checksum-pinned corpus, generates the test
@@ -275,6 +275,46 @@ writes \texttt{results/PREFLIGHT.txt}, and exits non-zero if any conformance
 check fails. The preflight report is the single source of every number in the
 manuscript; a checker script verifies that no numeric result appears in the
 manuscript source outside the generated macro file.
+
+\section{Independent reproduction: environment and per-operator detail}
+\label{s:independent}
+
+The run reported in Section~7.11 of the manuscript was performed by
+D.~A.~Balderrama-Alvarez (Universidad de Sonora, ORCID 0009-0002-5180-0406),
+who is not an author. His environment, as his own preflight report records it:
+a \IRcpu{} with \IRcores{} logical processors and \IRmem{}~GiB, \IRos{} on
+\IRarch{}, Python~\IRpython{}, FFmpeg~\IRffmpeg{},
+\texttt{c2patool}~\IRcTwopatool{}, Node~\IRnode{} and
+eSpeak~NG~\IRespeak{}. The reference machine for every other
+number in the paper is \Vos{} on \Varch{} with Python~\Vpython{},
+FFmpeg~\Vffmpeg{}, \texttt{c2patool}~\VcTwopatool{} and Node~\Vnode{}. He ran the
+package twice on consecutive days. The first run was incomplete: two Python
+dependencies were missing from the instructions he was given, so the figure and
+robustness arms did not execute. The second run, on \IRdate{}, is the one
+released and tabulated here; both runs returned the same values for the two
+operators whose declarations his build does not satisfy. His unmodified outputs, his preflight report, his full pipeline log and
+the classified comparison his run produced are released in
+\texttt{results/independent/}.
+
+Table~\ref{tab:independent} gives the containment result per operator on both
+machines rather than only the operator that differs, so the selection made in
+the main text can be checked. \IRopsAgree{} of the \IRopsNonzero{} operators
+that declare a non-zero footprint reproduce their measured reach exactly across
+the two builds; the MP3 encoder does not, and its declared footprint does not
+contain the reach his build measures. The other \IRopsZero{} rows declare no
+footprint and measure no reach on either machine.
+
+\begin{table}[htbp]
+\centering
+\caption{Kernel-support containment on the reference machine and on the
+independent reproducer's machine. \emph{Declared} is the footprint of
+Table~1 of the manuscript, in source samples; \emph{Reach} is the widest
+measured influence of a single input sample; \emph{Outside} counts output
+samples whose dependency falls outside the declared support. The dagger marks
+the one operator whose reach did not reproduce.}
+\label{tab:independent}
+\input{../results/tables/independent_containment}
+\end{table}
 
 \section{Raw rows behind two summary figures}
 

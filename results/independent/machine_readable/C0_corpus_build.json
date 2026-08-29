@@ -1,0 +1,25 @@
+{
+ "boundary_mismatches": 0,
+ "captured_source": "LibriSpeech dev-clean (CC BY 4.0)",
+ "concat_tool": "stock ffmpeg CLI (no project code in the signal path)",
+ "environment": {
+  "c2patool": "c2patool 0.27.15",
+  "cpu_count_logical": "12",
+  "cpu_model": "13th Gen Intel(R) Core(TM) i7-1355U",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers",
+  "machine": "x86_64",
+  "memory_bytes": "8167567360",
+  "node": "v22.22.1",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "processor": "x86_64",
+  "python": "3.14.4"
+ },
+ "experiment": "C0_corpus_build",
+ "generated_source": "eSpeak NG 1.52.0 formant synthesis, generated locally",
+ "n_clips": 600,
+ "runtime_s": 368.072,
+ "sample_rate": 16000,
+ "seed": 20260819,
+ "total_samples": 27348448
+}
