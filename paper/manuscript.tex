@@ -1266,12 +1266,20 @@ conservative direction.
 with a proportionate single-sample impulse at ten prespecified positions in each
 of \Kcontexts{} deterministic signal contexts, \Kprobes{} probes in total.
 Filled circles are the furthest any one source sample was measured to influence
-the output beyond the nominal source range; open diamonds are the declared
-footprint. The axis is the measurement as a percentage of its own declaration,
+the output beyond the nominal source range on the reference build; open diamonds
+are the declared footprint; crosses are the same measurement on the independent
+reproduction's FFmpeg (Section~\ref{sec:res-independent}), shown wherever the
+two builds disagree. The axis is the measurement as a percentage of its own declaration,
 because the operators span two orders of magnitude in samples and a shared
 linear axis would hide the tightest row; absolute counts are given as direct
 labels. Containment requires the measurement to fall at or left of its
-declaration, and \KoutsideTotal{} influenced samples fell outside. Silence
+declaration. On the reference build \KoutsideTotal{} influenced samples fell
+outside. On the independent build the MP3 declaration does not contain its own
+measurement: the reach is \IRmpReach{} source samples against \IRmpDeclared{}
+declared, which is the mark in the shaded band, and \IRmpOutside{} output
+samples fall outside the declared support. That row is the paper's own
+counterexample to treating these numbers as portable, and it is drawn rather
+than relegated to the supplement for that reason. Silence
 removal is the reason this experiment exists: an earlier declaration was
 exceeded, the probe detected it, and the band was raised to \KsilenceFp{}
 samples. These are measurements of the frozen configurations tested, not
@@ -1743,7 +1751,7 @@ package before any third party ran it, so what follows is a protocol executed
 rather than a comparison arranged after the fact.
 
 D.~A.~Balderrama-Alvarez (Universidad de Sonora) ran the package for release
-tag~\Rtag{} twice on his own machine, a \IRcpu{} under \IRos{} on \IRarch{},
+tag~\IRtag{} twice on his own machine, a \IRcpu{} under \IRos{} on \IRarch{},
 with Python~\IRpython{}, FFmpeg~\IRffmpeg{}, \texttt{c2patool}~\IRcTwopatool{}
 and Node~\IRnode{}. He is not an author, took no part in designing the contract
 or the experiments, and received the code, the classifier and the package
@@ -1760,8 +1768,25 @@ tool before it starts any experiment, exiting and naming what is missing rather
 than failing twenty minutes in. The second run, made against the corrected
 package, is the one released and reported here. Both runs produced the same values for
 the two findings below, which is what rules out reading either as run-to-run
-variation on his hardware. His raw outputs are released unmodified in
+variation on his hardware. The package he was given was tag~\IRtag{}, which is
+earlier than the released \Rtag{}; no value the comparison examines changed
+between the two, which we checked rather than assumed, so his measurements stand
+for the released code. His raw outputs are released unmodified in
 \texttt{results/independent/}.
+
+Two statements about that run belong here rather than only in the released log.
+\texttt{tools/verify\_reproduction.py} returned a non-zero status and the
+verdict \texttt{REPRODUCTION INCOMPLETE}, because a deterministic output
+differs; the \IRdet{} differences it counted are the ones reported below, and
+we classify all of them as build-dependent under criteria fixed before he ran
+anything. His \texttt{run\_all.sh} also ended in \texttt{RUN FAILED}, for two
+packaging defects rather than for any result: a calibration file that the table
+step reads but no pipeline step wrote, and a figure check whose geometric
+thresholds are calibrated for a library version his Python could not install.
+Both are fixed in the released artefact, and neither touches a reported number.
+Section~\ref{sec:limits} makes that tool the arbiter precisely so its verdict
+cannot be adjusted after the fact, which is a reason to print the verdict, not a
+reason to omit it.
 
 \paragraph{What reproduced} Of the \IRfiles{} result files carrying a
 deterministic claim, \IRclean{} reproduced with no deterministic difference at
@@ -2284,9 +2309,12 @@ unmodified outputs of the independent reproduction of
 Section~\ref{sec:res-independent}, including its preflight report, its full
 pipeline log and its classified comparison against the release, are released
 alongside them in \texttt{results/independent/}. The
-repository URL is supplied with the submission and printed here at proof stage;
-we state it that way rather than asserting public availability the reader cannot
-yet act on. The only other Zenodo identifier appearing in this paper belongs to the
+repository is \url{https://github.com/1D-Coda/em-audio}, public at submission
+rather than on acceptance, because a reviewer who cannot run the artefact cannot
+credit it. It ships a frozen copy of the released results in
+\texttt{results/reference/}, which is what
+\texttt{tools/verify\_reproduction.py} compares a reproduction against when it
+is run from a downloaded archive rather than from a clone. The only other Zenodo identifier appearing in this paper belongs to the
 companion work on terrain \citep{urias2026emtrf} and archives that work rather
 than this one; the audio artifact is deposited separately and its DOIs are the
 ones given here. The evaluated

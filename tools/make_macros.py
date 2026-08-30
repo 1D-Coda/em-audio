@@ -176,6 +176,38 @@ def supplement_notes():
     return out
 
 
+
+# Numbers the supplement needs to cite from the manuscript. The supplement is a
+# separate document and cannot \ref across, so the two stale references it
+# carried were typed by hand and went wrong silently. These are read from the
+# manuscript's own .aux, which is what LaTeX resolved, so they cannot disagree
+# with what the manuscript prints.
+MANUSCRIPT_LABELS = {
+    "PropFootprint": "prop:footprint",
+    "PropUnion": "prop:union",
+    "ThmComposition": "thm:composition",
+    "TabOperators": "tab:operators",
+}
+
+
+def manuscript_labels():
+    import re
+    aux = ROOT / "paper" / "manuscript.aux"
+    if not aux.exists():
+        print("[macros] paper/manuscript.aux absent; the manuscript's own "
+              "numbering is not available, so cross-document labels are skipped")
+        return {}
+    text = aux.read_text(errors="ignore")
+    out = {}
+    for key, label in MANUSCRIPT_LABELS.items():
+        mm = re.search(r"\\newlabel\{" + re.escape(label) + r"\}\{\{([^}]*)\}", text)
+        if not mm:
+            raise SystemExit(f"[macros] manuscript.aux has no label {label!r}; "
+                             f"build the manuscript before generating macros")
+        out[key] = mm.group(1)
+    return out
+
+
 def main() -> int:
     A, B, C0, C, D = (load("A_synthetic_state_space"), load("B_adversarial_timelines"),
                       load("C0_corpus_build"), load("C_public_audio_splice"),
@@ -398,7 +430,18 @@ def main() -> int:
     # in results/independent/. Absent that directory the macros are simply not
     # emitted and the manuscript fails to build, which is the correct failure:
     # a claim about someone else's run must not survive the loss of their data.
-    m.update(independent_macros())
+    # A reproduction package deliberately ships without results/independent/,
+    # because those are someone else's measurements and shipping them lets a
+    # failed experiment leave a file in place that a comparison then reports as
+    # a match. So this block is optional: absent inputs mean the macros are not
+    # emitted, not that the run dies. Testing the package caught this; the
+    # working tree always has the directory, so it could not fail here.
+    ind_dir = ROOT / "results" / "independent" / "machine_readable"
+    if ind_dir.is_dir() and any(ind_dir.glob("*.json")):
+        m.update(independent_macros())
+    else:
+        print("[macros] results/independent/ absent: the independent-reproduction "
+              "macros are not emitted. Expected in a reproduction package.")
     # The C2PA assertion label and schema identifier, read from the module that
     # defines them. They were typed into the manuscript and the supplement by
     # hand, so changing the namespace in code left the paper describing an
@@ -414,6 +457,21 @@ def main() -> int:
     # three at the wrong note while the checker still reported them as
     # resolving, because it only asked whether a note with that number existed.
     m.update(supplement_notes())
+    m.update(manuscript_labels())
+
+    # The tag the independent reproducer actually ran, which is not the same
+    # fact as the repository's current release tag. The manuscript said \Rtag,
+    # which is generated from `git describe` and silently fills in whatever tag
+    # is current, so the sentence claimed he ran a release that did not exist
+    # when he ran it.
+    rec = ROOT / "results" / "independent" / "RUN_RECORD.txt"
+    if rec.exists():
+        for line in rec.read_text().splitlines():
+            if line.startswith("tag_run:"):
+                m["IRtag"] = line.split(":", 1)[1].strip()
+                break
+        else:
+            raise SystemExit("[macros] RUN_RECORD.txt exists but has no tag_run")
 
     # release identity
     def _git(*a):

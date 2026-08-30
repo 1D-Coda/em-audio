@@ -1,0 +1,11 @@
+tag_run: v1.0.0
+established_by: file comparison of the delivered package against the repository's
+  tags. The package matches v1.0.0 on em_audio/evidence.py, em_audio/conformance.py,
+  experiments/scope_battery.py, tools/verify_reproduction.py,
+  tools/calibrate_footprint.py and run_all.sh, and differs from v1.0.1 on the last
+  two. His own PREFLIGHT.txt records the commit and tag as UNCOMMITTED because the
+  package was delivered as a tree without git history.
+deterministic_delta_to_current: 0
+  No value that verify_reproduction.py compares changed between v1.0.0 and the
+  submitted release, so his measurements stand for the released code. This was
+  checked rather than assumed.

@@ -1,8 +1,13 @@
 \documentclass[11pt]{letter}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{microtype}
+\usepackage{xspace}   % the generated macros use it
 \signature{A. Urias}
 \address{Independent researcher\\C.P. 83220, Hermosillo, Sonora, Mexico\\alex@aurtech.mx}
+% The letter is the first document an editor reads and was the only one
+% outside the generated-number rule; it drifted to a count the paper no
+% longer makes. It now reads the same macro file as the manuscript.
+\input{../results/numbers}
 \begin{document}
 \begin{letter}{The Editors\\Forensic Science International: Digital Investigation}
 \opening{Dear Editors,}
@@ -53,9 +58,13 @@ Fourth, the paper reports an independent reproduction that partly failed, and
 reports it as a result. A colleague at another institution, who is acknowledged
 but is not an author, ran the packaged release twice on unrelated hardware and a
 different FFmpeg major version. Every headline count returned unchanged and
-eight of the ten compared result files showed no deterministic difference at
-all. Two declared kernel footprints turned out not to be adequate on his build,
-one of them under-sized. We have not widened those declarations to make the
+\IRclean{} of the \IRfiles{} compared result files showed no deterministic
+difference at all. Two declared numbers did not hold on his build, and they are
+two different kinds: the MP3 kernel footprint is under-sized against the
+dependency his build actually has, and the silence-removal implementation margin
+is exceeded by the deviation between our temporal model and what his FFmpeg
+does. The reproduction tool returned a non-zero status and a verdict of
+\texttt{REPRODUCTION INCOMPLETE}, which the paper states rather than omits. We have not widened those declarations to make the
 comparison pass; Section~7.11 reports what he measured, and his unmodified
 outputs are released with the artifact.
 

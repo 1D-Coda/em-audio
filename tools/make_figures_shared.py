@@ -168,8 +168,18 @@ def fig_containment():
     fraction of its own declaration, which is precisely the containment claim:
     every operator is comparable, and a violation is anything crossing 100%.
     Absolute sample counts are carried as direct labels so nothing is lost.
+
+    Both builds are drawn. The reference build satisfies every declaration; the
+    independent reproduction's FFmpeg does not, and its MP3 reach lands well
+    inside the violation band. Showing only the reference build would give the
+    figure a title that is true of one machine and false of the other, and would
+    leave the paper's most informative measurement to a supplement table.
     """
     K = load("K_support_containment")["per_operator"]
+    # The other build, when its results are present. A reproduction package
+    # ships without them, and the figure is then simply the reference build.
+    IND = ROOT / "results" / "independent" / "machine_readable" / "K_support_containment.json"
+    ind = json.loads(IND.read_text())["per_operator"] if IND.exists() else {}
     rows = [(k, v) for k, v in K.items() if v["declared_footprint_samples"] > 0]
     rows.sort(key=lambda kv: kv[1]["max_measured_reach_source_samples"] /
               kv[1]["declared_footprint_samples"])
@@ -177,7 +187,8 @@ def fig_containment():
 
     fig, ax = plt.subplots(figsize=(6.4, 2.5), constrained_layout=True)
 
-    ax.axvspan(100, 132, color="#f2dede", alpha=0.55, linewidth=0, zorder=0)
+    xmax = 205 if ind else 132
+    ax.axvspan(100, xmax, color="#f2dede", alpha=0.55, linewidth=0, zorder=0)
     ax.axvline(100, color=S.BASE, linewidth=1.0, zorder=2)
 
     for i, (key, v) in enumerate(rows):
@@ -192,15 +203,31 @@ def fig_containment():
                    edgecolor=S.DECLARED, linewidth=1.2, zorder=4)
         ax.text(pct - 2.2, i, f"{reach:,}", fontsize=7.2, va="center",
                 ha="right", color="#222222")
-        ax.text(103.5, i, f"of {decl:,}", fontsize=7.2, va="center",
-                color="#555555")
+        # the same operator measured on the independent build
+        iv = ind.get(key)
+        crossed = bool(iv and iv["max_measured_reach_source_samples"] != reach)
+        # The "of N" label sits just right of the declaration line, which is
+        # where the second build's connector now runs. Put it below the row for
+        # the crossing operator so the two do not overlap.
+        ax.text(103.5, i - (0.30 if crossed else 0.0), f"of {decl:,}",
+                fontsize=7.2, va="center", color="#555555")
+        if iv:
+            ireach = iv["max_measured_reach_source_samples"]
+            if crossed:
+                ipct = 100.0 * ireach / decl
+                ax.plot([100, ipct], [i, i], color=S.BASE, linewidth=1.6,
+                        linestyle=(0, (2, 1.6)), zorder=3)
+                ax.scatter([ipct], [i], s=40, marker="X", color=S.BASE,
+                           zorder=5)
+                ax.text(ipct + 3.0, i, f"{ireach:,}", fontsize=7.2,
+                        va="center", color=S.BASE)
 
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([S.label_of(k) for k, _ in rows])
     ax.set_xlabel("measured reach as a percentage of the declared footprint")
-    ax.set_xlim(0, 132)
+    ax.set_xlim(0, xmax)
     ax.set_ylim(-1.15, len(rows) - 0.42)
-    ax.set_xticks([0, 25, 50, 75, 100])
+    ax.set_xticks([0, 25, 50, 75, 100] + ([150, 200] if ind else []))
     ax.grid(axis="x", linestyle=":", zorder=0)
     ax.set_axisbelow(True)
 
@@ -212,18 +239,35 @@ def fig_containment():
                 xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
                 color="#222222", annotation_clip=False,
                 arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
+    if ind:
+        from matplotlib.lines import Line2D
+        ax.legend(handles=[
+            Line2D([], [], marker=S.M_MEASURED, color=S.MEASURED, linestyle="",
+                   markersize=5, label="reference build"),
+            Line2D([], [], marker="X", color=S.BASE, linestyle="",
+                   markersize=6, label="independent build"),
+        ], loc="upper right", fontsize=6.9, frameon=False,
+            handletextpad=0.4, borderpad=0.1)
     ax.annotate("declaration", xy=(100, 1.005), xytext=(100, 1.10),
                 xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
                 color="#222222", annotation_clip=False,
                 arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
-    ax.text(116, -0.78, "a violation would land in here", fontsize=6.9,
-            ha="center", va="center", color=S.BASE)
+    ax.text(100 + (xmax - 100) / 2, -0.78,
+            "violation: reach exceeds the declaration" if ind
+            else "a violation would land in here",
+            fontsize=6.9, ha="center", va="center", color=S.BASE)
 
     outside = sum(v["total_outside_declared_support"] for v in K.values())
-    probes = load("K_support_containment").get("total_probes", "")
-    ax.set_title(f"Every declaration contains its own measurement "
-                 f"({outside} influenced samples fell outside)",
-                 fontsize=8.6, loc="left", pad=22)
+    if ind:
+        iout = sum(v["total_outside_declared_support"] for v in ind.values())
+        # A title true of one build and false of the other is the defect here,
+        # not the failing measurement.
+        title = (f"Declarations hold on the reference build ({outside} samples "
+                 f"outside) and not on another ({iout:,})")
+    else:
+        title = (f"Every declaration contains its own measurement "
+                 f"({outside} influenced samples fell outside)")
+    ax.set_title(title, fontsize=8.6, loc="left", pad=22)
     if zeros:
         fig.text(0.0, -0.055,
                  "Zero-footprint operators ("

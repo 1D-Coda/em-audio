@@ -6,3 +6,5 @@ matplotlib==3.11.1
 numpy==2.4.6
 # neural-TTS robustness arm only
 piper-tts==1.7.0
+# optional: a second C2PA reader, for the transport interoperability check
+c2pa-python==0.37.8

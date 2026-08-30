@@ -30,7 +30,7 @@ MR = ROOT / "results" / "machine_readable"
 # of every comparison this tool prints, so a stale value mislabels a
 # reproducer's report: the first independent run was told it differed from
 # v1.0.0 when the snapshot it was given was v1.0.1.
-RELEASE = "v1.0.1"
+RELEASE = "v1.0.2"
 
 # Outputs a correct reimplementation must reproduce exactly. Each entry is a
 # result file and the dotted paths within it that carry a scientific claim.

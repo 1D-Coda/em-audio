@@ -131,7 +131,7 @@ a captured-only claim \\
 Relies on a filtered operator so that a generated sample bleeds into a
 neighbouring output region without appearing in the nominal range &
 The declared kernel footprint enlarges $D_y$; over-approximation is safe by
-Proposition~5 &
+Proposition~\PropFootprint{} (footprint monotonicity) &
 An under-declared footprint, which is a conformance failure of that
 implementation \\
 \addlinespace
@@ -265,7 +265,7 @@ asserted per interval by the experiment.
 \label{s:repro}
 
 \begin{verbatim}
-git clone <repo> && cd em-audio && git checkout v1.0.1 && ./run_all.sh
+git clone https://github.com/1D-Coda/em-audio && cd em-audio && git checkout v1.0.2 && ./run_all.sh
 \end{verbatim}
 
 \texttt{run\_all.sh} fetches the checksum-pinned corpus, generates the test
@@ -308,7 +308,7 @@ footprint and measure no reach on either machine.
 \centering
 \caption{Kernel-support containment on the reference machine and on the
 independent reproducer's machine. \emph{Declared} is the footprint of
-Table~1 of the manuscript, in source samples; \emph{Reach} is the widest
+Table~\TabOperators{} of the manuscript, in source samples; \emph{Reach} is the widest
 measured influence of a single input sample; \emph{Outside} counts output
 samples whose dependency falls outside the declared support. The dagger marks
 the one operator whose reach did not reproduce.}

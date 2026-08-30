@@ -11,5 +11,6 @@ authors:
     given-names: A.
     orcid: "https://orcid.org/0009-0007-3147-323X"
     affiliation: Independent researcher
+repository-code: "https://github.com/1D-Coda/em-audio"
 license: MIT
-version: 1.0.1
+version: 1.0.2

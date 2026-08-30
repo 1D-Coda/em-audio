@@ -2,4 +2,4 @@ Derived audio can keep its waveform while claiming stronger provenance.
 A complete-source contract makes the derived claim the meet over its sources.
 Declared kernel footprints make the rule work on real codecs; erring large is safe.
 Boundary-only inheritance promoted on 94.5% of timelines; complete-source on none.
-Interval evidence survived 120 signed C2PA round-trips at 0.142% of FFmpeg time.
+Interval evidence survived 120 signed C2PA round-trips at 0.168% of FFmpeg time.
