@@ -9,3 +9,11 @@ deterministic_delta_to_current: 0
   No value that verify_reproduction.py compares changed between v1.0.0 and the
   submitted release, so his measurements stand for the released code. This was
   checked rather than assumed.
+
+package_built_from: e8962a54ab622e47b4c03469e898529cf9430adb
+  The commit this repository was at when the reproduction package for the next
+  run was built. It is recorded before a tag exists so the run can be anchored
+  to a published commit either way. If that run comes back clean, this commit is
+  the one to tag, rather than tagging first and hoping the run matches: getting
+  that order wrong is what left the previous reproduction citing a tag it had
+  never seen.
