@@ -144,21 +144,19 @@ jobs:
       - name: I3a. Which self-test check is failing
         shell: powershell
         run: |
+          # ::error:: writes into the run's annotations, which are readable from
+          # the public API without a token. A bare throw only ever produces
+          # "Process completed with exit code 1", which names nothing.
           $out = python "$env:RUNNER_TEMP\emaudio\tools\repro_selftest.py" 2>&1
           $out | ForEach-Object { Write-Host $_ }
-          $problems = $out | Select-String -Pattern "^\s+- " -AllMatches
-          if ($problems) {
-            Write-Host "--- problems reported ---"
-            $problems | ForEach-Object { Write-Host $_.Line }
+          $text = ($out | ForEach-Object { $_.ToString() }) -join "`n"
+          foreach ($line in $text -split "`n") {
+            if ($line -match "MISSING" -or $line -match "^\s+- ") {
+              $clean = ($line -replace "[\r\n]", " ").Trim()
+              Write-Host "::error::selftest: $clean"
+            }
           }
-          # Surface each distinct cause as its own failure message.
-          $joined = ($out -join "`n")
-          if ($joined -match "MISSING\s+(\S+)") {
-            throw "self-test reports missing: $($Matches[1])"
-          }
-          if ($joined -match "results/reference/ is MISSING") { throw "reference snapshot missing" }
-          if ($joined -match "should ship empty")            { throw "machine_readable not empty" }
-          if ($joined -match "is absent from the package")   { throw "a required file is absent" }
+          Write-Host "::notice::selftest exit was $LASTEXITCODE"
           $global:LASTEXITCODE = 0
 
       - name: I3. The package self-test passes with every tool present
