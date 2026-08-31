@@ -138,9 +138,15 @@ def ingredient_report(asset: Path, outdir: Path, signer: Signer,
         # c2pa-rs resolves ResourceRef identifiers relative to the directory of
         # the manifest-definition file, so the reference must be relative to the
         # workdir in which sign() writes that file.
+        #
+        # as_posix, not str: a ResourceRef identifier is a URI-style path, and
+        # c2pa-rs does not treat a backslash as a separator. On Windows str()
+        # produced "ing_cap\manifest_data.c2pa" and signing failed with
+        # "resource not found" for a file that was there. This was the last
+        # thing standing between the pipeline and a native Windows run.
         ing["manifest_data"] = {"format": "application/c2pa",
-                                "identifier": str(man.resolve().relative_to(
-                                    workdir.resolve()))}
+                                "identifier": man.resolve().relative_to(
+                                    workdir.resolve()).as_posix()}
     return ing
 
 
