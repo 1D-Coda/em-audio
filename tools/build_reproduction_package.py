@@ -22,6 +22,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 
+# --returning writes the package for the reproducer whose run already failed.
+RETURNING = "--returning" in sys.argv
+
 INCLUDE = ["run_all.sh", "requirements.txt", "LICENSE", "DATA_LICENSES.md",
            "README.md", "CITATION.cff", "verify_release.sh", ".gitignore",
            "em_audio", "experiments", "tools", "tests", "oracle_js",
@@ -97,9 +100,19 @@ def main() -> int:
         f"built from {tag}\n", encoding="utf-8")
 
     # The two documents the reader opens first, at the top of the archive.
-    leeme = ROOT / "release_kits" / "reproduction_es" / "LEEME.txt"
-    if leeme.exists():
-        shutil.copy2(leeme, stage / "LEEME.txt")
+    # Two audiences. LEEME.txt apologises for a specific failed run and is for
+    # the reproducer who hit it; LEEME_NUEVO/README_FIRST are for someone
+    # starting fresh, to whom that apology would only be confusing.
+    kitdir = ROOT / "release_kits" / "reproduction_es"
+    if RETURNING:
+        for src, dst in ((kitdir / "LEEME.txt", "LEEME.txt"),):
+            if src.exists():
+                shutil.copy2(src, stage / dst)
+    else:
+        for src, dst in ((kitdir / "LEEME_NUEVO.txt", "LEEME.txt"),
+                         (kitdir / "README_FIRST.txt", "README_FIRST.txt")):
+            if src.exists():
+                shutil.copy2(src, stage / dst)
     guide = ROOT / "docs" / "REPRODUCTION_GUIDE.md"
     if guide.exists():
         shutil.copy2(guide, stage / "REPRODUCTION_GUIDE.md")
