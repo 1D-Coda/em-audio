@@ -54,14 +54,28 @@ def _cpu_model() -> str:
                     return line.split(":", 1)[1].strip()
     except Exception:
         pass
+    # platform.processor() is empty on many Linuxes and verbose on Windows;
+    # either is better than nothing, and os.cpu_count is always available.
     return platform.processor() or platform.machine() or "unavailable"
 
 
 def _memory_bytes() -> str:
+    """Physical memory in bytes, on the three platforms this runs on."""
     try:
         if sys.platform == "darwin":
             return subprocess.run(["sysctl", "-n", "hw.memsize"],
                                   capture_output=True, text=True).stdout.strip()
+        if sys.platform.startswith("win"):
+            # No /proc and no sysctl. wmic is deprecated but still present on
+            # Windows Server 2025; PowerShell is the fallback.
+            for cmd in (["wmic", "computersystem", "get", "TotalPhysicalMemory"],
+                        ["powershell", "-NoProfile", "-Command",
+                         "(Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory"]):
+                out = subprocess.run(cmd, capture_output=True, text=True).stdout
+                digits = [w for w in out.split() if w.isdigit()]
+                if digits:
+                    return digits[0]
+            return "unavailable"
         for line in Path("/proc/meminfo").read_text().splitlines():
             if line.startswith("MemTotal"):
                 return str(int(line.split()[1]) * 1024)

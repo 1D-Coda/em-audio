@@ -382,8 +382,16 @@ def main() -> int:
     M = load("M_overhead_stability")
     G = load("G_overhead")
     m["Vcpu"] = G["environment"]["cpu_model"]
-    m["Vcores"] = fmt(int(G["environment"]["cpu_count_logical"]))
-    m["Vram"] = f"{int(G['environment']['memory_bytes']) / 2**30:.0f}"
+    # Not every platform reports this. Windows returned "unavailable" and the
+    # int() then ended the whole run inside the tables step, which names neither
+    # the value nor the platform. A machine that cannot say how many cores it
+    # has is not a reason to fail a reproduction.
+    _cores = G["environment"].get("cpu_count_logical", "")
+    m["Vcores"] = fmt(int(_cores)) if str(_cores).isdigit() else "unavailable"
+    # memory_bytes is "unavailable" wherever the platform has no /proc and no
+    # sysctl, which is Windows. This is where the int() ended a whole run.
+    _mem = G["environment"].get("memory_bytes", "")
+    m["Vram"] = (f"{int(_mem) / 2**30:.0f}" if str(_mem).isdigit() else "unavailable")
     m["GfirstIterPct"] = f"{G['first_iteration_effect_pct']:.2f}"
     m["Gclips"] = fmt(G["clips_per_repetition"])
     m["MstabRepeats"] = fmt(M["repeats"])

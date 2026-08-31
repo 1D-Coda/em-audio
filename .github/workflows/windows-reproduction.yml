@@ -303,7 +303,14 @@ jobs:
           $d = "$env:RUNNER_TEMP\emaudio"
           $log = Join-Path $d "run_all_output.txt"
           if (Test-Path $log) {
-            python "$d\tools\explain_failure.py" $log --github --max 3
+            python "$d\tools\explain_failure.py" $log --github --max 4
+          # c2patool's own message is the only text that says why it refused.
+          Select-String -Path $log -Pattern "c2patool" -Context 0,6 |
+            Select-Object -First 2 | ForEach-Object {
+              $_.Context.PostContext | ForEach-Object {
+                if ($_.Trim()) { Write-Host "::error::c2pa: $($_.Trim().Substring(0, [Math]::Min(160, $_.Trim().Length)))" }
+              }
+            }
           } else {
             Write-Host "::error::no run log to explain"
           }
