@@ -294,6 +294,26 @@ jobs:
               }
             }
           }
+          # The RuntimeError carries ffmpeg's own stderr after the command
+          # line. That is the part that says why, and it is what the truncated
+          # annotation was cutting off.
+          if (Test-Path $log) {
+            $lines = Get-Content $log
+            for ($i = 0; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match "ffmpeg failed|c2patool sign failed") {
+                for ($k = 1; $k -le 6; $k++) {
+                  if ($i + $k -lt $lines.Count) {
+                    $t = $lines[$i + $k].Trim()
+                    if ($t -and $t.Length -gt 3) {
+                      Write-Host "::error::stderr: $($t.Substring(0, [Math]::Min(160, $t.Length)))"
+                    }
+                  }
+                }
+                break
+              }
+            }
+          }
+
           $v = Join-Path $d "verify_output.txt"
           if (Test-Path $v) {
             Get-Content $v | Select-String -Pattern "MISMATCH|MISSING|INHERITED|differ" |
