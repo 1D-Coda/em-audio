@@ -32,3 +32,6 @@ tools/test_certs/*.key
 tools/test_certs/*.srl
 tools/test_certs/*.csr
 .DS_Store
+
+# Generated release kits; rebuild with tools/build_validation_kit.py
+dist/
