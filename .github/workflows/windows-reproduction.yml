@@ -1,0 +1,82 @@
+name: Windows reproduction path
+
+# The Windows entry point was written on macOS and could not be executed there.
+# This runs it on a real Windows machine, which is the only way to know whether
+# it works. The environment check is the whole untested surface: PowerShell
+# version compatibility, TLS negotiation, the Store-stub detection, the clone,
+# the pip install, the line-ending handling and the self-test.
+on:
+  push:
+    paths:
+      - 'tools/reproduce.ps1'
+      - 'tools/bootstrap_reproduction.py'
+      - 'tools/repro_selftest.py'
+      - '.gitattributes'
+      - '.github/workflows/windows-reproduction.yml'
+  workflow_dispatch:
+
+jobs:
+  bootstrap-check:
+    name: Environment check on Windows PowerShell 5.1
+    runs-on: windows-latest
+    steps:
+      - name: Report the shell actually in use
+        shell: powershell
+        run: |
+          $PSVersionTable | Format-List
+          Write-Host "autocrlf: $(git config --global core.autocrlf)"
+
+      # Deliberately NOT actions/checkout: the point is to exercise the path a
+      # validator takes, which is downloading one file and letting it fetch the
+      # rest.
+      - name: Fetch reproduce.ps1 the way a validator would
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          irm https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/tools/reproduce.ps1 -OutFile reproduce.ps1
+          Get-Item reproduce.ps1 | Format-List Name, Length
+
+      - name: Run the environment check
+        shell: powershell
+        run: |
+          .\reproduce.ps1 -Check -Ref ${{ github.sha }} -Dir "$env:RUNNER_TEMP\em-audio"
+
+      # The check reports missing tools and exits non-zero, which is correct
+      # behaviour on a bare runner. Install them and confirm it then passes, so
+      # both branches are covered.
+      - name: Install the external tools
+        shell: powershell
+        run: |
+          choco install ffmpeg espeak -y --no-progress
+          Write-Host "node: $(node -v)"
+
+      - name: Verify the line endings a Windows checkout produced
+        shell: powershell
+        run: |
+          $p = "$env:RUNNER_TEMP\em-audio\run_all.sh"
+          $bytes = [IO.File]::ReadAllBytes($p)[0..200]
+          $crlf = $false
+          for ($i = 0; $i -lt $bytes.Length - 1; $i++) {
+            if ($bytes[$i] -eq 13 -and $bytes[$i+1] -eq 10) { $crlf = $true; break }
+          }
+          if ($crlf) {
+            Write-Host "run_all.sh has CRLF: .gitattributes did not hold" -ForegroundColor Red
+            exit 1
+          }
+          Write-Host "run_all.sh has LF, as .gitattributes requires" -ForegroundColor Green
+
+      - name: Confirm bash can read the script
+        shell: powershell
+        run: |
+          bash -c "head -3 '$($env:RUNNER_TEMP -replace '\\','/')/em-audio/run_all.sh'"
+
+      - name: Collect the logs whatever happened
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-check-logs
+          path: |
+            reproduce.ps1
+            ${{ runner.temp }}/em-audio/results/PREFLIGHT.txt
+          if-no-files-found: ignore
