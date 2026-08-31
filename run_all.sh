@@ -37,31 +37,24 @@ fi
 # and executable. A reproduction script is the wrong place for that class of
 # fragility: it fails on someone else's machine and looks like a missing file.
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-# Exported because the step runner starts each experiment in its own shell, and
-# an unexported ROOT would expand to nothing there.
-export ROOT
 cd "$ROOT"
 export PYTHONHASHSEED=0
 fail=0
 failed_steps=""
 current_step="startup"
 step () { current_step="$*"; echo; echo "=== $* ==="; }
-# `|| fail=1` records that something failed but not what. A Windows run
+# `|| note` records that something failed but not what. A Windows run
 # completed every experiment, printed a pass line for every check, and still
-# ended in RUN FAILED with nothing naming the step: finding it meant reading
-# 1,300 lines of CI log. Record the name at the point of failure instead.
-run () {
-  # Captured on the failure branch itself. An `if cmd; then return 0; fi`
-  # leaves $? at 0 when the command fails, because the `if` statement succeeded,
-  # and every failure was reported as exit 0.
-  local rc=0
-  "$@" || rc=$?
-  [ "$rc" -eq 0 ] && return 0
-  echo "  ** FAILED (exit $rc) in step '$current_step': $*"
+# ended in RUN FAILED with nothing in 1,300 lines of log naming the step.
+# `note` is called instead, and deliberately does not change how any command is
+# invoked: an earlier attempt re-wrapped each step in `bash -c` and broke every
+# one of them on quoting.
+note () {
+  local rc=$?
+  echo "  ** FAILED (exit $rc) in step: $current_step"
   failed_steps="$failed_steps
-  - $current_step: $* (exit $rc)"
+  - $current_step (exit $rc)"
   fail=1
-  return 0
 }
 
 step "environment"
@@ -72,7 +65,7 @@ step "test credential"
 # that fails leaves the pipeline running against no corpus, and the first thing
 # to notice is an experiment several steps later complaining that a clip does
 # not exist, which names neither the step that failed nor the reason.
-[ -f "$ROOT"/tools/test_certs/chain.pem ] || "$ROOT"/tools/make_test_certs.sh || fail=1  # a missing credential is caught by the next step
+[ -f "$ROOT"/tools/test_certs/chain.pem ] || "$ROOT"/tools/make_test_certs.sh || note
 
 step "corpus"
 [ -d "$ROOT"/corpus/LibriSpeech/dev-clean ] || "$ROOT"/tools/fetch_corpus.sh || {
@@ -82,61 +75,61 @@ step "corpus"
 }
 
 step "named regression tests"
-run python3 "$ROOT"/tests/test_contract.py
+python3 "$ROOT"/tests/test_contract.py || note
 
 step "A  exhaustive finite-state conformance"
-run bash -c \'cd "$ROOT"/experiments && python3 synthetic_state_space.py\'
+( cd "$ROOT"/experiments && python3 synthetic_state_space.py ) || note
 
 step "A2 applicability scope battery"
-run bash -c \'cd "$ROOT"/experiments && python3 scope_battery.py\'
+( cd "$ROOT"/experiments && python3 scope_battery.py ) || note
 
 step "A3 calibration tool self-test (must reject an under-declaration)"
-run python3 "$ROOT"/tools/calibrate_footprint.py --self-test
+python3 "$ROOT"/tools/calibrate_footprint.py --self-test || note
 
 step "B  deterministic adversarial timelines"
-run bash -c \'cd "$ROOT"/experiments && python3 adversarial_timelines.py\'
+( cd "$ROOT"/experiments && python3 adversarial_timelines.py ) || note
 
 step "B2 policy ablation"
-run bash -c \'cd "$ROOT"/experiments && python3 adversarial_timelines.py --ablation\'
+( cd "$ROOT"/experiments && python3 adversarial_timelines.py --ablation ) || note
 
 step "H  two-language differential oracle"
-run bash -c \'cd "$ROOT"/experiments && python3 oracle_differential.py\'
+( cd "$ROOT"/experiments && python3 oracle_differential.py ) || note
 
 step "C0 build mixed-origin corpus"
-run bash -c \'cd "$ROOT"/experiments && python3 build_corpus.py\'
+( cd "$ROOT"/experiments && python3 build_corpus.py ) || note
 
 step "C  ground-truth recovery"
-run bash -c \'cd "$ROOT"/experiments && python3 public_audio_splice.py\'
+( cd "$ROOT"/experiments && python3 public_audio_splice.py ) || note
 
 step "C2 voice model"
-run "$ROOT"/tools/fetch_voice.sh
+"$ROOT"/tools/fetch_voice.sh || note
 
 step "C2 robustness arm (neural TTS + noise overlay)"
-run bash -c \'cd "$ROOT"/experiments && python3 robustness_corpus.py\'
+( cd "$ROOT"/experiments && python3 robustness_corpus.py ) || note
 
 step "D  transformation matrix (stock ffmpeg)"
-run bash -c \'cd "$ROOT"/experiments && python3 transform_matrix.py\'
+( cd "$ROOT"/experiments && python3 transform_matrix.py ) || note
 
 step "K  kernel-support containment (impulse probe)"
-run bash -c \'cd "$ROOT"/experiments && python3 support_containment.py\'
+( cd "$ROOT"/experiments && python3 support_containment.py ) || note
 
 step "E  provenance-loss behaviour"
-run bash -c \'cd "$ROOT"/experiments && python3 manifest_stripping.py\'
+( cd "$ROOT"/experiments && python3 manifest_stripping.py ) || note
 
 step "F  signed round-trip and signal transparency"
-run bash -c \'cd "$ROOT"/experiments && python3 c2pa_roundtrip.py\'
+( cd "$ROOT"/experiments && python3 c2pa_roundtrip.py ) || note
 
 step "G  overhead"
-run bash -c \'cd "$ROOT"/experiments && python3 overhead_benchmark.py\'
+( cd "$ROOT"/experiments && python3 overhead_benchmark.py ) || note
 
 step "G2 overhead stability across repeated runs"
-run bash -c \'cd "$ROOT"/experiments && python3 overhead_stability.py\'
+( cd "$ROOT"/experiments && python3 overhead_stability.py ) || note
 
 step "J  C2PA-native componentOf composition"
-run bash -c \'cd "$ROOT"/experiments && python3 c2pa_composition.py\'
+( cd "$ROOT"/experiments && python3 c2pa_composition.py ) || note
 
 step "I  claim dilution (cost of conservatism)"
-run bash -c \'cd "$ROOT"/experiments && python3 claim_dilution.py\'
+( cd "$ROOT"/experiments && python3 claim_dilution.py ) || note
 
 # Table S5 and the calibration rows are built from CALIBRATION.json, which was a
 # tracked result file that no pipeline step regenerated. On a working tree the
@@ -158,23 +151,23 @@ step "N  second C2PA reader (optional, skipped if c2pa-python is absent)"
   || echo "  (advisory: the second reader reported a problem; see N_second_reader.json)"
 
 step "A3b footprint calibration (writes CALIBRATION.json)"
-run python3 "$ROOT"/tools/calibrate_footprint.py
+python3 "$ROOT"/tools/calibrate_footprint.py || note
 
 step "tables and figures"
-run python3 "$ROOT"/tools/make_tables.py
-run python3 "$ROOT"/tools/make_macros.py
-run python3 "$ROOT"/tools/make_highlights.py
-run python3 "$ROOT"/tools/make_figures.py
-run python3 "$ROOT"/tools/make_figures_shared.py
-run python3 "$ROOT"/tools/figure_qa.py
-run python3 "$ROOT"/tools/make_figure_docs.py
+python3 "$ROOT"/tools/make_tables.py || note
+python3 "$ROOT"/tools/make_macros.py || note
+python3 "$ROOT"/tools/make_highlights.py || note
+python3 "$ROOT"/tools/make_figures.py || note
+python3 "$ROOT"/tools/make_figures_shared.py || note
+python3 "$ROOT"/tools/figure_qa.py || note
+python3 "$ROOT"/tools/make_figure_docs.py || note
 
 step "preflight report"
-run python3 "$ROOT"/tools/make_checksums.py
-run python3 "$ROOT"/tools/preflight.py
-run python3 "$ROOT"/tools/check_numbers.py
-run python3 "$ROOT"/tools/prose_audit.py
-run python3 "$ROOT"/tools/check_journal_guide.py
+python3 "$ROOT"/tools/make_checksums.py || note
+python3 "$ROOT"/tools/preflight.py || note
+python3 "$ROOT"/tools/check_numbers.py || note
+python3 "$ROOT"/tools/prose_audit.py || note
+python3 "$ROOT"/tools/check_journal_guide.py || note
 
 echo
 if [ "$fail" -ne 0 ]; then
