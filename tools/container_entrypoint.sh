@@ -39,8 +39,36 @@ cp -r "$ROOT/results/machine_readable" "$OUT/" 2>/dev/null || true
 cp "$ROOT/results/PREFLIGHT.txt" "$OUT/" 2>/dev/null || true
 
 echo
-echo "run_all.sh exit $run_rc, comparison exit $ver_rc"
-echo "results are in $OUT"
-# The pipeline's outcome is the container's outcome. Returning 0 regardless is
-# how a run that never happened once reported success.
-[ "$run_rc" -eq 0 ] && [ "$ver_rc" -eq 0 ]
+echo "=== what this run concluded"
+# Two claims, two exit codes. The pipeline's exit status folds together
+# "conformance failed" and "a declared footprint does not hold on this build",
+# which are different findings with different consequences: the first is a
+# defect in the implementation, the second is the paper's own central result
+# about declarations being build-specific. One number cannot report both, and
+# collapsing them is what made the independent reproduction hard to read.
+#
+# Nothing is softened. An under-declared footprint remains a hard failure of
+# experiment K and of the calibration, exactly as it must: the guarantee does
+# not hold for the samples outside the declaration.
+under=0
+if grep -q "UNDER-DECLARED" "$OUT/run_all_output.txt" 2>/dev/null; then under=1; fi
+if grep -qE "outside declared support [1-9]" "$OUT/run_all_output.txt" 2>/dev/null; then under=1; fi
+
+if [ "$run_rc" -eq 0 ] && [ "$ver_rc" -eq 0 ]; then
+  echo "conformance: PASS    declarations on this build: hold"
+  exit 0
+fi
+if [ "$under" -eq 1 ]; then
+  echo "declarations on this build: AT LEAST ONE IS UNDER-DECLARED"
+  echo "  This is the finding of Section 7.11, measured again on this image's"
+  echo "  FFmpeg. The declared footprints of Table 3 are calibrated for the"
+  echo "  reference build and the manuscript says they must be re-declared and"
+  echo "  re-tested for another one. Reported, not absorbed."
+  grep -E "UNDER-DECLARED|outside declared support" "$OUT/run_all_output.txt" | sed "s/^/  /"
+  echo
+  echo "Exit 3 means: the pipeline ran, and a declaration does not hold here."
+  exit 3
+fi
+echo "run_all.sh exit $run_rc, comparison exit $ver_rc, and no under-declaration"
+echo "was reported, so something else failed. That is a defect, not a finding."
+exit 1

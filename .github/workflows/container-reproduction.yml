@@ -120,7 +120,36 @@ jobs:
           path: out/
           if-no-files-found: warn
 
-      - name: The pipeline reached RUN OK
+      - name: Conformance passed, and any failure is the documented one
         run: |
-          grep -q "RUN OK" out/run_all_output.txt || {
-            echo "::error::the container run did not reach RUN OK"; exit 1; }
+          # The container's job is not to be green. It is to say which of two
+          # things happened, and to fail loudly on anything that is neither.
+          log=out/run_all_output.txt
+          [ -f "$log" ] || { echo "::error::no run log"; exit 1; }
+
+          conformance_ok=1
+          grep -q "checks_failed: 0" "$log" || conformance_ok=0
+          grep -q "tests_failed: 0"  "$log" || conformance_ok=0
+          grep -q "oracle_disagreements: 0" "$log" || conformance_ok=0
+          grep -q "0 violations" "$log" || conformance_ok=0
+          if [ "$conformance_ok" -ne 1 ]; then
+            echo "::error::conformance did not pass; this is a defect, not a portability finding"
+            exit 1
+          fi
+          echo "::notice::conformance passed: 0 failed checks, 0 failed tests, 0 oracle disagreements, 0 scope violations"
+
+          if grep -q "RUN OK" "$log"; then
+            echo "::notice::declarations hold on this build too"
+            exit 0
+          fi
+
+          # Not RUN OK. The only acceptable reason is the paper's own finding.
+          if grep -qE "UNDER-DECLARED|outside declared support [1-9]" "$log"; then
+            grep -E "UNDER-DECLARED|outside declared support" "$log" | head -4 \
+              | while read -r l; do echo "::notice::finding: ${l:0:160}"; done
+            echo "::notice::a declared footprint does not hold on this image's FFmpeg, which is the result of Section 7.11 measured on a third build"
+            exit 0
+          fi
+          echo "::error::the run failed and no under-declaration was reported, so the cause is something else"
+          tail -6 "$log" | while read -r l; do echo "::error::${l:0:160}"; done
+          exit 1
