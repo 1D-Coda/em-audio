@@ -134,31 +134,50 @@ jobs:
         run: |
           if (-not (Test-Path "$env:RUNNER_TEMP\emaudio\.git")) { throw "not a checkout" }
 
-      - name: E3b. run_all.sh survives the Microsoft Store python3 alias
-        shell: powershell
+      - name: E3b. resolve_python.sh falls through the Microsoft Store alias
+        shell: bash
         run: |
           # The hosted runner installs a Python that provides python3, so every
           # green run of this job used a name an ordinary Windows machine does
           # not have. An independent validator's run produced nothing at all:
-          # each step invoked python3, hit the Store alias, and did no work,
-          # and this job could not have caught it. Put a stub in front of PATH
-          # and assert the pipeline still resolves an interpreter.
-          $stub = Join-Path $env:RUNNER_TEMP "stub"
-          New-Item -ItemType Directory -Force -Path $stub | Out-Null
-          @"
-          @echo off
-          echo no se encontro Python; ejecutar sin argumentos para instalar desde el Microsoft Store
-          exit /b 9009
-          "@ | Set-Content -Encoding ASCII (Join-Path $stub "python3.bat")
-          $env:PATH = "$stub;$env:PATH"
-          $d = "$env:RUNNER_TEMP\emaudio"
-          $out = & bash -c "cd '$($d -replace '\\','/')' && head -40 run_all.sh > /dev/null && bash -c 'set -uo pipefail; source /dev/stdin <<< \"\$(sed -n \"/^PY=\\\"\\\"/,/^export PY\$/p\" run_all.sh)\"; echo RESOLVED=\$PY'" 2>&1
-          Write-Host $out
-          if ($out -notmatch "RESOLVED=(python|py -3)") {
-            Write-Host "::error::run_all.sh did not fall through the python3 stub to a real interpreter"
+          # each step invoked python3, hit the Store alias, and did no work.
+          # Put a stub in front of PATH and assert the resolver steps past it.
+          #
+          # Written against the extracted resolver rather than against
+          # run_all.sh: the first version of this step tried to sed the loop out
+          # of run_all.sh through three layers of quoting, and the only thing it
+          # proved was that the step itself was broken.
+          set -uo pipefail
+          d="$RUNNER_TEMP/emaudio"
+          stub="$RUNNER_TEMP/pystub"
+          mkdir -p "$stub"
+          cat > "$stub/python3" <<'STUB'
+          #!/bin/sh
+          echo "no se encontro Python; ejecutar sin argumentos para instalar desde el Microsoft Store"
+          exit 9009
+          STUB
+          sed -i 's/^          //' "$stub/python3"
+          chmod +x "$stub/python3"
+
+          . "$d/tools/resolve_python.sh"
+
+          # Sanity: the stub really does shadow python3 and really does fail.
+          if PATH="$stub:$PATH" python3 -c "pass" 2>/dev/null; then
+            echo "::error::the stub did not shadow python3; this test proves nothing"
             exit 1
-          }
-          Write-Host "::notice::resolved past the stub: $out"
+          fi
+
+          if PATH="$stub:$PATH" resolve_python; then
+            echo "resolved past the stub: PY=$PY"
+          else
+            echo "::error::resolve_python found no interpreter with the stub in front"
+            PATH="$stub:$PATH" python_not_found_message
+            exit 1
+          fi
+          case "$PY" in
+            python|"py -3") echo "::notice::stepped past the Store alias to '$PY'" ;;
+            *) echo "::error::resolved to '$PY', which is the shadowed name"; exit 1 ;;
+          esac
 
       - name: E4. c2patool is on PATH for the check
         shell: powershell
