@@ -135,6 +135,18 @@ jobs:
           Write-Host "python at: $py"
           if ($py -like "*WindowsApps*") { throw "runner python is the Store stub" }
 
+      - name: I2. pip installs the pinned requirements on Windows
+        shell: powershell
+        run: |
+          python -m pip install -r "$env:RUNNER_TEMP\emaudio\requirements.txt"
+          if ($LASTEXITCODE -ne 0) { throw "pip install failed on Windows" }
+
+      - name: I3. The package self-test passes with every tool present
+        shell: powershell
+        run: |
+          python "$env:RUNNER_TEMP\emaudio\tools\repro_selftest.py"
+          if ($LASTEXITCODE -ne 0) { throw "self-test failed with all tools installed" }
+
       - name: J. Report whether the check step passed
         shell: powershell
         run: |
