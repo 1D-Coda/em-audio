@@ -31,22 +31,38 @@ jobs:
           Write-Host "core.autocrlf: $crlf"
           $global:LASTEXITCODE = 0
 
-      - name: B. Install the tools a validator is told to install
+      - name: B. Install FFmpeg
         shell: powershell
         run: |
-          choco install ffmpeg espeak -y --no-progress --limit-output
+          choco install ffmpeg -y --no-progress --limit-output
           $global:LASTEXITCODE = 0
-          # choco's espeak package installs the binary and does not put it on
-          # PATH, so a machine that has the tool reports it missing. Add the
-          # install directory for the rest of the job; the self-test also looks
-          # there now, so a validator who installs it the documented way is not
-          # told to install it again.
-          $cands = @("$env:ProgramFiles\eSpeak NG", "${env:ProgramFiles(x86)}\eSpeak NG",
-                     "$env:ProgramFiles\eSpeak", "${env:ProgramFiles(x86)}\eSpeak")
-          foreach ($c in $cands) {
-            if (Test-Path (Join-Path $c "espeak-ng.exe")) { Add-Content $env:GITHUB_PATH $c; Write-Host "espeak-ng at $c" }
-            elseif (Test-Path (Join-Path $c "espeak.exe")) { Add-Content $env:GITHUB_PATH $c; Write-Host "espeak at $c" }
+          Write-Host "ffmpeg: $((ffmpeg -version | Select-Object -First 1))"
+
+      - name: B1. Install eSpeak NG at the reference version
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          # Not choco's "espeak", which is classic eSpeak rather than eSpeak NG.
+          # The corpus is synthesised with NG, and the two are different
+          # synthesisers, so installing the wrong one would silently change what
+          # is being reproduced. 1.52.0 is the version the reference machine used.
+          $url = "https://github.com/espeak-ng/espeak-ng/releases/download/1.52.0/espeak-ng.msi"
+          Invoke-WebRequest $url -OutFile espeak-ng.msi -UseBasicParsing
+          Start-Process msiexec.exe -Wait -ArgumentList "/i `"$PWD\espeak-ng.msi`" /qn /norestart"
+          $found = $null
+          foreach ($c in @("$env:ProgramFiles\eSpeak NG", "${env:ProgramFiles(x86)}\eSpeak NG")) {
+            if (Test-Path (Join-Path $c "espeak-ng.exe")) { $found = $c; break }
           }
+          if (-not $found) {
+            Get-ChildItem "$env:ProgramFiles","${env:ProgramFiles(x86)}" -Filter "espeak*" -Directory -ErrorAction SilentlyContinue |
+              ForEach-Object { Write-Host "candidate: $($_.FullName)" }
+            Write-Host "::error::eSpeak NG installed but espeak-ng.exe was not found"
+            exit 1
+          }
+          Add-Content $env:GITHUB_PATH $found
+          Write-Host "eSpeak NG at $found"
 
       - name: B2. Install c2patool at a pinned version
         shell: powershell
