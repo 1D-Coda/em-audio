@@ -35,8 +35,10 @@ jobs:
         shell: powershell
         run: |
           choco install ffmpeg -y --no-progress --limit-output
+          # choco refreshes PATH for new shells only, so do not try to run the
+          # tool in this step; the later steps see it. Verifying here is what
+          # broke the previous attempt.
           $global:LASTEXITCODE = 0
-          Write-Host "ffmpeg: $((ffmpeg -version | Select-Object -First 1))"
 
       - name: B1. Install eSpeak NG at the reference version
         shell: powershell
