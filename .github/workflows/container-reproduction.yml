@@ -8,10 +8,17 @@ name: Container reproduction
 # path still has.
 on:
   push:
+    # Anything the pipeline runs. A narrower list meant a fix to figure_qa.py
+    # did not trigger the job that had just failed on figure_qa.py.
     paths:
       - 'Dockerfile'
-      - 'tools/container_entrypoint.sh'
-      - 'tools/verify_reproduction.py'
+      - 'requirements.txt'
+      - 'run_all.sh'
+      - 'tools/**'
+      - 'em_audio/**'
+      - 'experiments/**'
+      - 'oracle_js/**'
+      - 'tests/**'
       - '.github/workflows/container-reproduction.yml'
   workflow_dispatch:
 
