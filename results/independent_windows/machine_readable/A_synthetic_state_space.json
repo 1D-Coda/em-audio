@@ -1,0 +1,90 @@
+{
+ "alphabet": [
+  "C",
+  "G",
+  "B"
+ ],
+ "battery_breakdown": {
+  "arithmetic": "3*8 + 9*9 + 9828*10 = 98385",
+  "words_len1_battery8": 3,
+  "words_len2_battery9": 9,
+  "words_len3plus_battery10": 9828
+ },
+ "checks_failed": 0,
+ "checks_total": 885828,
+ "composition_cases": 363,
+ "element_width_samples": 64,
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "12",
+  "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "AMD64",
+  "memory_bytes": "unavailable",
+  "node": "v22.19.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+  "python": "3.13.4"
+ },
+ "expected_state_counts": {
+  "CAPTURED": 1211,
+  "GENERATED": 1211,
+  "MIXED": 7164,
+  "UNVERIFIED": 88799
+ },
+ "experiment": "A_synthetic_state_space",
+ "failures_sample": [],
+ "max_word_length": 8,
+ "operator_cases": 98385,
+ "per_check": {
+  "P1_exact_union": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P2_no_promotion": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P3_unverified_non_promotion": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P4_support_non_promotion": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P5_applicability_non_broadening": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P6_complete_lineage": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P7_composition": {
+   "fail": 0,
+   "pass": 363
+  },
+  "P9_channel_scope_agreement": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "P_footprint_monotone": {
+   "fail": 0,
+   "pass": 98385
+  },
+  "closed_form_state_exact": {
+   "fail": 0,
+   "pass": 49188
+  },
+  "closed_form_state_weaker": {
+   "fail": 0,
+   "pass": 49197
+  }
+ },
+ "runtime_s": 106.19,
+ "words_containing_unverified": 9330,
+ "words_enumerated": 9840,
+ "words_with_mixed_ancestry": 494
+}

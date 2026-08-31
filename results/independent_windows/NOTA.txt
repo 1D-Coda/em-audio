@@ -1,0 +1,65 @@
+Reproduccion independiente de EM-Audio en Windows 11
+Fecha: 31 de agosto de 2026
+Reproductor: Daniel
+
+Resumen
+-------
+
+La corrida principal produjo todos los resultados salvo C2. El fallo no fue
+experimental: tools/fetch_voice.sh invoco literalmente "python3", que en esta
+instalacion de Windows es el alias de Microsoft Store y no el interprete de
+Python instalado.
+
+Despues de descargar el modelo con el interprete funcional, C2 se ejecuto de
+forma independiente:
+
+  neural: n=50, exact=50, baseline promotions=50, EM promotions=0
+  noisy:  n=50, exact=50, baseline promotions=0,  EM promotions=0
+
+El preflight regenerado informa 30 pruebas aprobadas y 0 fallidas.
+
+La comparacion con la referencia v1.0.2 reporta 69 diferencias marcadas como
+deterministas. Todas se concentran en dos familias:
+
+  - 2 mediciones de desviacion de time_stretch_1.10.
+  - 66 mediciones internas de transcode_mp3 y 1 total derivado.
+
+La referencia fue producida en macOS/ARM y esta corrida en Windows/Intel. Los
+resultados decisivos no cambiaron:
+
+  - alcance MP3 maximo: referencia 1555, Windows 1541;
+  - margen minimo dentro del alcance declarado: referencia 749, Windows 763;
+  - muestras fuera del soporte declarado: 0 en ambas corridas;
+  - promociones EM incorrectas: 0;
+  - desacuerdos del oraculo en dos lenguajes: 0/10860;
+  - pruebas de conformidad del preflight: 30/30.
+
+Por ello, la corrida reproduce las conclusiones sustantivas, aunque no todos
+los valores dependientes de la implementacion del codec coinciden bit por bit.
+
+Contenido del paquete
+---------------------
+
+run_all_output.txt
+  Registro original de la corrida principal. Conserva el fallo de C2.
+
+manual_completion_log.txt
+  Registro de la descarga manual del modelo, C2 aprobado, preflight y
+  verificacion final.
+
+verify_output.txt
+  Comparacion contra results/reference de v1.0.2.
+
+PREFLIGHT.txt
+  Informe final regenerado despues de completar C2.
+
+machine_readable/
+  Los 22 archivos producidos por la reproduccion.
+
+Defecto de portabilidad observado
+---------------------------------
+
+tools/fetch_voice.sh deberia usar el interprete resuelto por run_all.sh (PY) en
+lugar de invocar directamente "python3". Esta llamada residual causa el fallo
+en instalaciones normales de Windows donde python3 es el alias de Microsoft
+Store.

@@ -184,6 +184,7 @@ $PY "$ROOT"/tools/preflight.py || note
 $PY "$ROOT"/tools/check_numbers.py || note
 $PY "$ROOT"/tools/prose_audit.py || note
 $PY "$ROOT"/tools/check_journal_guide.py || note
+$PY "$ROOT"/tools/check_interpreter_calls.py || note
 
 echo
 if [ "$fail" -ne 0 ]; then
