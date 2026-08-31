@@ -275,6 +275,33 @@ jobs:
           }
           Write-Host "::notice::pipeline completed on Windows with RUN OK"
 
+      - name: Say which experiment failed and how
+        if: always()
+        shell: powershell
+        run: |
+          $d = "$env:RUNNER_TEMP\emaudio"
+          $log = Join-Path $d "run_all_output.txt"
+          if (Test-Path $log) {
+            # The step banners are "=== name ===". Report the last one before
+            # any traceback, plus the traceback's own last line, so the cause is
+            # readable from the annotations API without a token.
+            $lines = Get-Content $log
+            $lastStep = ""
+            for ($i = 0; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match "^=== (.+) ===") { $lastStep = $Matches[1] }
+              if ($lines[$i] -match "Traceback|RuntimeError|Error:|FAIL\b") {
+                Write-Host "::error::during '$lastStep': $($lines[$i].Trim().Substring(0, [Math]::Min(150, $lines[$i].Trim().Length)))"
+              }
+            }
+          }
+          $v = Join-Path $d "verify_output.txt"
+          if (Test-Path $v) {
+            Get-Content $v | Select-String -Pattern "MISMATCH|MISSING|INHERITED|differ" |
+              Select-Object -First 12 | ForEach-Object {
+                Write-Host "::error::verify: $($_.Line.Trim())"
+              }
+          }
+
       - name: Report the outcome through annotations
         if: always()
         shell: powershell
