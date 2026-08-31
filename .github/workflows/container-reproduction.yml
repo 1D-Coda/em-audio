@@ -46,8 +46,19 @@ jobs:
           if [ -f out/run_all_output.txt ]; then
             tail -3 out/run_all_output.txt | while read -r l; do echo "::notice::run_all: $l"; done
             grep -E "RUN OK|RUN FAILED" out/run_all_output.txt | while read -r l; do echo "::notice::$l"; done
-            grep -nE "Traceback|RuntimeError|ffmpeg failed|c2patool sign failed" out/run_all_output.txt \
-              | head -6 | while read -r l; do echo "::error::$l"; done
+            # The stderr of the failing tool is what says why. Print a window
+            # around the first failure rather than only the traceback frames,
+            # which name the raising line and not the cause.
+            n=$(grep -nE "c2patool sign failed|ffmpeg failed" out/run_all_output.txt | head -1 | cut -d: -f1)
+            if [ -n "$n" ]; then
+              echo "::notice::first tool failure at line $n"
+              sed -n "$((n>8 ? n-8 : 1)),$((n+18))p" out/run_all_output.txt \
+                | while read -r l; do
+                    [ -n "$l" ] && echo "::error::ctx: ${l:0:170}"
+                  done
+            fi
+            grep -E "^=== " out/run_all_output.txt | tail -3 \
+              | while read -r l; do echo "::notice::last step: $l"; done
           else
             echo "::error::the container produced no run log"
           fi
