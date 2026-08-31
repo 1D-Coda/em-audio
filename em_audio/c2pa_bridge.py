@@ -65,8 +65,25 @@ def sign(asset: Path, out: Path, manifest: Dict[str, object], signer: Signer,
         argv += ["-p", str(parent)]
     p = _c2pa(argv, signer, workdir)
     if p.returncode != 0:
-        raise RuntimeError(f"c2patool sign failed:\n{p.stderr[-2000:]}")
-    return json.loads(p.stdout)
+        # On Windows this raised with an empty message: c2patool exited non-zero
+        # and wrote nothing to stderr, so the report named the step and nothing
+        # else. An error that carries no evidence costs a whole CI cycle to
+        # re-observe, so report the exit code, both streams and the command.
+        raise RuntimeError(
+            "c2patool sign failed (exit {}):\nstderr: {}\nstdout: {}\ncommand: {}".format(
+                p.returncode,
+                p.stderr[-2000:].strip() or "(empty)",
+                p.stdout[-1000:].strip() or "(empty)",
+                " ".join([C2PATOOL, *argv]),
+            )
+        )
+    try:
+        return json.loads(p.stdout)
+    except json.JSONDecodeError as exc:
+        # c2patool can exit 0 and still print something that is not the manifest.
+        raise RuntimeError(
+            f"c2patool signed but its output is not JSON ({exc}):\n{p.stdout[:1000]}"
+        ) from None
 
 
 def validate(asset: Path, signer: Signer, workdir: Path) -> Dict[str, object]:
