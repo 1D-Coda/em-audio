@@ -1,0 +1,32 @@
+# Git for Windows defaults to core.autocrlf=true, which rewrites checked-out
+# text files to CRLF. A shell script with CRLF line endings fails in bash with
+# "$'\r': command not found" on its first line, which is an obscure error for a
+# problem that has nothing to do with the script. Force LF for everything bash,
+# node or python has to execute.
+*.sh    text eol=lf
+*.py    text eol=lf
+*.js    text eol=lf
+*.mjs   text eol=lf
+
+# PowerShell is happier with CRLF on Windows and does not care on other systems.
+*.ps1   text eol=crlf
+
+# Data and results are compared byte for byte by verify_reproduction.py, so no
+# platform may rewrite them.
+*.json  text eol=lf
+*.jsonl text eol=lf
+*.tex   text eol=lf
+*.bib   text eol=lf
+*.md    text eol=lf
+*.cff   text eol=lf
+*.txt   text eol=lf
+
+# Never touch binaries or credentials.
+*.pdf   binary
+*.png   binary
+*.wav   binary
+*.flac  binary
+*.mp3   binary
+*.onnx  binary
+*.pem   -text
+*.key   -text

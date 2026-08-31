@@ -63,6 +63,24 @@ python tools\bootstrap_reproduction.py
 Either way, send us the error rather than working around it. A bootstrapper
 that fails on a real machine is a defect we want to know about.
 
+## If it breaks, these are the usual reasons
+
+**`$'\r': command not found`, or `set: pipefail: invalid option name`.** Your git
+rewrote the shell scripts to Windows line endings on checkout. The repository
+now carries a `.gitattributes` that prevents this, but an older clone will still
+have it. The bootstrapper detects it and prints the fix.
+
+**`python` opens the Microsoft Store.** That is the Store stub, not Python. Both
+the script and the bootstrapper detect it and tell you to install the real one.
+
+**The download fails with a connection error.** Older Windows PowerShell
+negotiates TLS 1.0, which GitHub refuses. The script raises it to 1.2 before
+downloading, so this should not happen; if it does, say so.
+
+**`bash was not found`.** `run_all.sh` is a bash script. Install Git for
+Windows, which provides Git Bash; the bootstrapper finds it in the usual
+locations even when it is not on your PATH.
+
 ## What to send back
 
 The script writes `EM_Audio_results_<date>.zip` and prints its path. It holds

@@ -74,6 +74,12 @@ def main() -> int:
                     help="check the environment and stop, running nothing")
     args = ap.parse_args()
 
+    if WINDOWS and "WindowsApps" in sys.executable:
+        bad("This is the Microsoft Store's Python stub, not a real install.")
+        bad("Install Python properly:  winget install Python.Python.3.12")
+        bad("Then close and reopen the terminal so PATH picks it up.")
+        return 2
+
     print("EM-Audio independent reproduction")
     print(f"platform: {platform.platform()}")
     print(f"python  : {sys.version.split()[0]}")
@@ -164,9 +170,24 @@ def main() -> int:
         say("Check only; stopping before the run as asked")
         return 0
 
+    # Detect a CRLF checkout before bash reports it as "$'\r': command not
+    # found", which names neither the file nor the cause.
+    first = (target / "run_all.sh").read_bytes()[:200]
+    if b"\r\n" in first:
+        bad("run_all.sh has Windows line endings and bash cannot run it.")
+        bad("Your git rewrote it on checkout. Fix with:")
+        bad(f"    git -C {target} config core.autocrlf false")
+        bad(f"    git -C {target} rm --cached -r . && git -C {target} reset --hard")
+        return 1
+
     say("Pipeline (about 25 minutes, plus the corpus download)")
     run_log = target / "run_all_output.txt"
-    run_rc = run([bash, "-lc", "./run_all.sh"], cwd=target, log=run_log)
+    # Not "-lc": a login shell sources profile scripts, and Git Bash profiles
+    # commonly cd to the home directory, which would run the pipeline from the
+    # wrong place. Git Bash also wants forward slashes, and run_all.sh resolves
+    # its own root, so an absolute path works from any working directory.
+    script = str(target / "run_all.sh").replace("\\", "/")
+    run_rc = run([bash, "-c", f'"{script}"'], cwd=target, log=run_log)
     (ok if run_rc == 0 else bad)(f"run_all.sh exited {run_rc}")
 
     say("Comparison against the released results")

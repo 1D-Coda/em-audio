@@ -26,11 +26,26 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Windows PowerShell 5.1 still negotiates TLS 1.0 by default on older builds,
+# and GitHub refuses anything below 1.2, so the download fails with a connection
+# error that says nothing about protocols.
+[Net.ServicePointManager]::SecurityProtocol =
+  [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+
 $python = Get-Command python -ErrorAction SilentlyContinue
 if (-not $python) { $python = Get-Command python3 -ErrorAction SilentlyContinue }
 if (-not $python) {
   Write-Host "Python was not found." -ForegroundColor Red
   Write-Host "Install it with:  winget install Python.Python.3.12"
+  exit 2
+}
+# `python` on a stock Windows is often the Microsoft Store stub: it is on PATH,
+# runs, prints nothing and opens the Store. Catch it here rather than let the
+# bootstrapper fail on something that looks unrelated.
+if ($python.Source -like "*WindowsApps*") {
+  Write-Host "That is the Microsoft Store's Python stub, not a real install." -ForegroundColor Red
+  Write-Host "Install Python:  winget install Python.Python.3.12"
+  Write-Host "Then close and reopen this terminal."
   exit 2
 }
 
