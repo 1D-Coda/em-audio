@@ -431,9 +431,27 @@ Provenance semirings and information-flow lattices
 \citep{green2007provenance,denning1976lattice} &
 The algebra of conservative combination &
 A temporal media instantiation with a signed transport \\
+\addlinespace
+Verifiable chain-of-custody ledgers \citep{burri2020custody} &
+That a record of handling is complete and unaltered &
+What a derived asset may claim about material it represents \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+Two adjacent lines of forensic work bound this one. Chain-of-custody
+mechanisms establish that a record of handling is complete and has not been
+altered \citep{burri2020custody}; they say nothing about whether the claim
+carried inside that record is warranted, which is the question here, and the two
+compose rather than compete. Source attribution from the signal, such as
+identifying a recording microphone \citep{qamhan2023microphone}, answers a
+different question again: it infers origin from the audio, where this work reads
+no audio at all and constrains only what a transformation may assert about
+material it already has. A contract of the kind proposed here is worth nothing
+unless its implementation can be checked, which is the concern of test-driven
+approaches to forensic tooling \citep{kuelper2026testdriven} and the reason the
+conformance suite of Section~\ref{sec:res-conformance} is written against the
+requirements rather than against our code.
 
 \section{Threat model}
 \label{sec:threat}
