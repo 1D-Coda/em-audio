@@ -24,7 +24,13 @@ jobs:
         shell: powershell
         run: |
           $PSVersionTable | Format-List
-          Write-Host "autocrlf: $(git config --global core.autocrlf)"
+          # git config exits 1 when the key is unset, and a non-zero exit fails
+          # a PowerShell step, so read it without letting that end the job.
+          $crlf = & git config --global core.autocrlf 2>$null
+          if ($LASTEXITCODE -ne 0 -or -not $crlf) { $crlf = "(unset)" }
+          Write-Host "core.autocrlf: $crlf"
+          Write-Host "git: $(git --version)"
+          $global:LASTEXITCODE = 0
 
       # Deliberately NOT actions/checkout: the point is to exercise the path a
       # validator takes, which is downloading one file and letting it fetch the
@@ -69,7 +75,9 @@ jobs:
       - name: Confirm bash can read the script
         shell: powershell
         run: |
-          bash -c "head -3 '$($env:RUNNER_TEMP -replace '\\','/')/em-audio/run_all.sh'"
+          $p = ($env:RUNNER_TEMP -replace '\\','/') + "/em-audio/run_all.sh"
+          bash -c "head -3 '$p'"
+          if ($LASTEXITCODE -ne 0) { throw "bash could not read run_all.sh" }
 
       - name: Collect the logs whatever happened
         if: always()
