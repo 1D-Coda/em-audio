@@ -34,6 +34,10 @@ def _pinned_matplotlib() -> str:
 
 PINNED_MPL = _pinned_matplotlib()
 
+# The freetype the thresholds were calibrated against. Recorded rather than
+# inferred, because the point is to know when the measurement is comparable.
+PINNED_FREETYPE = "2.14.3"
+
 # A journal single column is about 3.5 in; a figure drawn 7.1 in wide is printed
 # at roughly half size, so 6.5 pt drawn becomes about 3.3 pt on paper. Below this
 # drawn size a label is not readable after reduction.
@@ -214,11 +218,21 @@ def main() -> int:
         # renders clean. Report the findings either way; gate only where the
         # measurement is calibrated, so the check cannot fail a reproduction for
         # a difference that is not about the figures.
-        if matplotlib.__version__ != PINNED_MPL:
-            print(f"[qa] matplotlib {matplotlib.__version__} is not the pinned "
-                  f"{PINNED_MPL}; the geometric thresholds are calibrated for "
-                  f"the pinned version, so these are advisory here and do not "
-                  f"fail the run. Install requirements.txt to gate on them.")
+        # Text extents are measured by freetype, not by matplotlib, so pinning
+        # matplotlib alone does not pin the geometry. The same pinned version
+        # inside a Linux container reported four collisions on a figure the
+        # reference environment renders clean. Gate where the measurement is
+        # calibrated; report everywhere.
+        try:
+            ft = matplotlib.ft2font.__freetype_version__
+        except Exception:
+            ft = "unknown"
+        if matplotlib.__version__ != PINNED_MPL or ft != PINNED_FREETYPE:
+            print(f"[qa] matplotlib {matplotlib.__version__} / freetype {ft} "
+                  f"is not the calibrated {PINNED_MPL} / {PINNED_FREETYPE}; "
+                  f"text extents are measured by freetype, so the geometric "
+                  f"thresholds are not comparable here. Findings are reported "
+                  f"and do not fail the run.")
             return 0
         return 1
     print("[qa] every figure clean: no overlapping text, no unreadable type")
