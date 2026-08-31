@@ -92,11 +92,11 @@ jobs:
             # fail=1 without raising. The calibration exits non-zero when a
             # declared footprint does not contain its measured reach, which on a
             # different FFmpeg is a finding rather than a defect.
-            grep -nE "outside the declared|does not contain|\[qa\] [0-9]+ problem|problem\(s\)|advisory|below its measured" \
+            grep -nE "UNDER-DECLARED|outside the declared|does not contain|\[qa\] [0-9]+ problem|problem\(s\)|below its measured" \
               out/run_all_output.txt | head -8 | while read -r l; do
                 echo "::error::signal: ${l:0:170}"
               done
-            grep -A3 "A3b footprint calibration" out/run_all_output.txt | head -8 \
+            grep -A14 "A3b footprint calibration" out/run_all_output.txt | head -16 \
               | while read -r l; do [ -n "$l" ] && echo "::notice::calib: ${l:0:170}"; done
 
             tail -14 out/run_all_output.txt | tac | while read -r l; do
