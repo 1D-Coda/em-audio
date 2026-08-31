@@ -35,22 +35,19 @@ jobs:
       - name: Isolate whether signing works at all in this image
         run: |
           # E is the first experiment that signs, so "signing fails there" and
-          # "signing fails everywhere" look the same from the log. This asks the
-          # question directly: make a WAV with the image's own ffmpeg and try to
-          # embed a manifest in it. Guessing at the cause once already cost a
-          # cycle on a wrong hypothesis about the c2patool version.
-          docker run --rm --entrypoint bash em-audio:ci -c '
-            set -x
-            ffmpeg -v error -y -f lavfi -i "sine=f=440:d=1" -ar 16000 -ac 1 /tmp/t.wav
-            ls -l /tmp/t.wav
-            head -c 64 /tmp/t.wav | xxd | head -4
-            cat > /tmp/m.json <<JSON
-            {"claim_generator":"probe","assertions":[{"label":"c2pa.actions.v2","data":{"actions":[{"action":"c2pa.created"}]}}]}
-JSON
-            c2patool /tmp/t.wav -m /tmp/m.json -o /tmp/signed.wav -f \
-              --certs /work/tools/test_certs/chain.pem \
-              --key /work/tools/test_certs/ee.pk8.pem 2>&1 | tail -20
-          ' 2>&1 | tail -40 | while read -r l; do echo "::notice::probe: ${l:0:170}"; done
+          # "signing fails everywhere" look the same from the log. This asks
+          # directly. Guessing cost a cycle on a wrong hypothesis about the
+          # c2patool version, which 0.27.15 then disproved.
+          cat > probe.sh <<'SH'
+          set -x
+          ffmpeg -v error -y -f lavfi -i "sine=f=440:d=1" -ar 16000 -ac 1 /tmp/t.wav
+          ls -l /tmp/t.wav
+          printf '%s' '{"claim_generator":"probe","assertions":[{"label":"c2pa.actions.v2","data":{"actions":[{"action":"c2pa.created"}]}}]}' > /tmp/m.json
+          c2patool /tmp/t.wav -m /tmp/m.json -o /tmp/signed.wav -f --certs /work/tools/test_certs/chain.pem --key /work/tools/test_certs/ee.pk8.pem
+          echo "c2patool exit $?"
+          SH
+          docker run --rm -v "$PWD/probe.sh:/tmp/probe.sh" --entrypoint bash em-audio:ci /tmp/probe.sh 2>&1 \
+            | tail -30 | while read -r l; do echo "::notice::probe: ${l:0:170}"; done
 
       - name: Run the pipeline inside it
         id: run
