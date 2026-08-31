@@ -220,9 +220,18 @@ def _inherited_results(tag: str):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--reference-dir", default=None,
+                    help="compare against this snapshot instead of "
+                         "results/reference/. The container track uses its own, "
+                         "because a Linux container compared against a macOS "
+                         "reference rediscovers build-specific footprint "
+                         "differences and reports them as its own failures.")
     ap.add_argument("--ref", default=RELEASE,
                     help=f"release tag to compare against (default {RELEASE})")
     args = ap.parse_args()
+    if args.reference_dir:
+        global REFERENCE_DIR
+        REFERENCE_DIR = Path(args.reference_dir)
 
     print(f"Comparing the working tree against {_reference_source(args.ref)}.")
     print("Deterministic outputs must match exactly. Environment-dependent "

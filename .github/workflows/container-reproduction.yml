@@ -1,0 +1,72 @@
+name: Container reproduction
+
+# The container track answers whether the implementation reproduces when the
+# environment is held still. Every deterministic output must match, with no
+# environment left as an explanation. That is a stronger conformance claim than
+# a native run can make, and it is also the path a Windows validator can take
+# without meeting the Windows-specific FFmpeg and c2patool failures the native
+# path still has.
+on:
+  push:
+    paths:
+      - 'Dockerfile'
+      - 'tools/container_entrypoint.sh'
+      - 'tools/verify_reproduction.py'
+      - '.github/workflows/container-reproduction.yml'
+  workflow_dispatch:
+
+jobs:
+  container:
+    name: Build and run the pinned container
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: docker build -t em-audio:ci .
+
+      - name: Report the environment the image fixes
+        run: |
+          docker run --rm --entrypoint bash em-audio:ci -c '
+            python3 -V; ffmpeg -version | head -1; c2patool --version; node -v;
+            espeak-ng --version' | while read -r l; do echo "::notice::$l"; done
+
+      - name: Run the pipeline inside it
+        id: run
+        continue-on-error: true
+        run: |
+          mkdir -p out
+          docker run --rm -v "$PWD/out:/out" em-audio:ci
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Say what happened, readable without a token
+        if: always()
+        run: |
+          if [ -f out/run_all_output.txt ]; then
+            tail -3 out/run_all_output.txt | while read -r l; do echo "::notice::run_all: $l"; done
+            grep -E "RUN OK|RUN FAILED" out/run_all_output.txt | while read -r l; do echo "::notice::$l"; done
+            grep -nE "Traceback|RuntimeError|ffmpeg failed|c2patool sign failed" out/run_all_output.txt \
+              | head -6 | while read -r l; do echo "::error::$l"; done
+          else
+            echo "::error::the container produced no run log"
+          fi
+          if [ -f out/PREFLIGHT.txt ]; then
+            grep -E "^(python|ffmpeg|c2patool|node|espeak_ng|os):" out/PREFLIGHT.txt \
+              | while read -r l; do echo "::notice::$l"; done
+          fi
+          n=$(ls out/machine_readable/*.json 2>/dev/null | wc -l)
+          echo "::notice::result files produced: $n"
+
+      - name: Upload the results this run produced
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-run
+          path: out/
+          if-no-files-found: warn
+
+      - name: The pipeline reached RUN OK
+        run: |
+          grep -q "RUN OK" out/run_all_output.txt || {
+            echo "::error::the container run did not reach RUN OK"; exit 1; }
