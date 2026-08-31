@@ -79,6 +79,17 @@ def main() -> int:
             shutil.copy2(src, stage / "source_snapshot" / item)
             n += 1
 
+    # corpus/: only the committed index. The audio is fetched at run time and
+    # is not ours to redistribute, but the directory and its index must exist or
+    # the fetch has nowhere to land. Found by building the image from this
+    # snapshot rather than from the repository, which is the difference between
+    # testing what is shipped and testing what happens to be on disk.
+    corpus = stage / "source_snapshot" / "corpus"
+    corpus.mkdir(parents=True, exist_ok=True)
+    idx = ROOT / "corpus" / "corpus_index.json"
+    if idx.exists():
+        shutil.copy2(idx, corpus / idx.name); n += 1
+
     # results/: the reference snapshot the verifier compares against, and an
     # empty machine_readable so a failed experiment cannot leave a shipped file
     # in place and have the comparison report a match that never happened.

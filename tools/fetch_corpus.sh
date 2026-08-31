@@ -4,6 +4,9 @@
 # redistributed with attribution.
 set -euo pipefail
 here="$(cd "$(dirname "$0")/.." && pwd)"
+# mkdir first: a source archive need not ship an empty corpus directory, and
+# with set -e a missing one aborted the fetch before the first useful line.
+mkdir -p "$here/corpus"
 cd "$here/corpus"
 URL="https://www.openslr.org/resources/12/dev-clean.tar.gz"
 EXPECT="76f87d090650617fca0cac8f88b9416e0ebf80350acb97b343a85fa903728ab3"
