@@ -9,10 +9,17 @@ name: Windows reproduction path
 # only that one of them failed.
 on:
   push:
+    # The filter used to list only the entry points, so three consecutive fixes
+    # to run_all.sh, the experiments and the macro generator were pushed without
+    # this job running once. A check that proves the pipeline runs on Windows
+    # has to re-run when the pipeline changes, not only when its front door does.
     paths:
-      - 'tools/reproduce.ps1'
-      - 'tools/bootstrap_reproduction.py'
-      - 'tools/repro_selftest.py'
+      - 'run_all.sh'
+      - 'em_audio/**'
+      - 'experiments/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'requirements.txt'
       - '.gitattributes'
       - '.github/workflows/windows-reproduction.yml'
   workflow_dispatch:
