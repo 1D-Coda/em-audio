@@ -14,6 +14,7 @@ It is deliberately read-only and fast. It does not run any experiment.
 from __future__ import annotations
 
 import importlib.util
+import os
 import json
 import shutil
 import subprocess
@@ -51,8 +52,25 @@ def main() -> int:
 
     print(f"Platform: {sys.platform}, Python {sys.version.split()[0]}\n")
     print("External tools")
+    def locate(name):
+        """shutil.which, plus the places Windows installers use without
+        touching PATH. eSpeak NG in particular installs to Program Files and
+        leaves PATH alone, so a machine with the tool present reports it
+        missing, which sends the reader off to reinstall something they have."""
+        hit = shutil.which(name)
+        if hit or not WINDOWS:
+            return hit
+        for base in (os.environ.get("ProgramFiles", r"C:\Program Files"),
+                     os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
+                     r"C:\ProgramData\chocolatey\bin"):
+            for sub in ("", "eSpeak NG", "eSpeak", "espeak-ng"):
+                cand = Path(base) / sub / f"{name}.exe"
+                if cand.exists():
+                    return str(cand)
+        return None
+
     for names, why, how in TOOLS:
-        found = next((n for n in names if shutil.which(n)), None)
+        found = next((n for n in names if locate(n)), None)
         if found:
             print(f"  found     {found:12} ({why})")
         else:

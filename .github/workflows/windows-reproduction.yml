@@ -36,6 +36,17 @@ jobs:
         run: |
           choco install ffmpeg espeak -y --no-progress --limit-output
           $global:LASTEXITCODE = 0
+          # choco's espeak package installs the binary and does not put it on
+          # PATH, so a machine that has the tool reports it missing. Add the
+          # install directory for the rest of the job; the self-test also looks
+          # there now, so a validator who installs it the documented way is not
+          # told to install it again.
+          $cands = @("$env:ProgramFiles\eSpeak NG", "${env:ProgramFiles(x86)}\eSpeak NG",
+                     "$env:ProgramFiles\eSpeak", "${env:ProgramFiles(x86)}\eSpeak")
+          foreach ($c in $cands) {
+            if (Test-Path (Join-Path $c "espeak-ng.exe")) { Add-Content $env:GITHUB_PATH $c; Write-Host "espeak-ng at $c" }
+            elseif (Test-Path (Join-Path $c "espeak.exe")) { Add-Content $env:GITHUB_PATH $c; Write-Host "espeak at $c" }
+          }
 
       - name: B2. Install c2patool at a pinned version
         shell: powershell
