@@ -204,9 +204,19 @@ def main() -> int:
     # commonly cd to the home directory, which would run the pipeline from the
     # wrong place. Git Bash also wants forward slashes, and run_all.sh resolves
     # its own root, so an absolute path works from any working directory.
+    # Pass the script as an argument rather than building a -c string. The
+    # quoted form broke on Windows with "unexpected EOF while looking for
+    # matching quote", and because the failure was only printed the run
+    # continued and the comparison then matched the shipped results against
+    # themselves: a pass that never happened, which is the exact failure this
+    # project exists to prevent.
     script = str(target / "run_all.sh").replace("\\", "/")
-    run_rc = run([bash, "-c", f'"{script}"'], cwd=target, log=run_log)
+    run_rc = run([bash, script], cwd=target, log=run_log)
     (ok if run_rc == 0 else bad)(f"run_all.sh exited {run_rc}")
+    if run_rc != 0:
+        bad("The pipeline did not complete, so the comparison below would be")
+        bad("against results this run did not produce. Send run_all_output.txt;")
+        bad("a comparison run on top of a failed pipeline is worse than none.")
 
     say("Comparison against the released results")
     ver_log = target / "verify_output.txt"
@@ -245,7 +255,9 @@ def main() -> int:
     print(f"  run_all.sh exit {run_rc}, verify exit {ver_rc}")
     print("  Send the zip whatever the exit codes were. A failed run that is")
     print("  reported is worth more than a run that was made to pass.")
-    return 0
+    # Carry the pipeline's outcome. Returning 0 regardless let a Windows run
+    # whose pipeline never started report success.
+    return 0 if run_rc == 0 else 1
 
 
 if __name__ == "__main__":

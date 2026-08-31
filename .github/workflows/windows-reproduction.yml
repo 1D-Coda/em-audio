@@ -245,8 +245,35 @@ jobs:
             [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
           irm https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/tools/reproduce.ps1 -OutFile reproduce.ps1
           .\reproduce.ps1 -Ref ${{ github.sha }} -Dir "$env:RUNNER_TEMP\emaudio"
-          Write-Host "::notice::bootstrapper exit $LASTEXITCODE"
+          $rc = $LASTEXITCODE
+          Write-Host "::notice::bootstrapper exit $rc"
+          if ($rc -ne 0) { Write-Host "::error::bootstrapper exited $rc" }
           $global:LASTEXITCODE = 0
+
+      - name: The pipeline actually ran on THIS machine
+        shell: powershell
+        run: |
+          # A previous run reported success while the pipeline never started:
+          # bash died on a quoting error, the bootstrapper only printed it, and
+          # the comparison then matched the repository's committed results
+          # against themselves. These assertions exist so that cannot recur.
+          $d = "$env:RUNNER_TEMP\emaudio"
+          $pre = Join-Path $d "results\PREFLIGHT.txt"
+          if (-not (Test-Path $pre)) { Write-Host "::error::no PREFLIGHT.txt"; exit 1 }
+          $os = (Select-String -Path $pre -Pattern "^os:").Line
+          Write-Host "::notice::$os"
+          if ($os -notmatch "Windows") {
+            Write-Host "::error::PREFLIGHT records '$os', so these results were not produced here"
+            exit 1
+          }
+          $log = Join-Path $d "run_all_output.txt"
+          if (-not (Test-Path $log)) { Write-Host "::error::no run_all_output.txt"; exit 1 }
+          if (-not (Select-String -Path $log -Pattern "RUN OK" -Quiet)) {
+            $tail = (Get-Content $log -Tail 5) -join " | "
+            Write-Host "::error::run_all.sh did not reach RUN OK: $tail"
+            exit 1
+          }
+          Write-Host "::notice::pipeline completed on Windows with RUN OK"
 
       - name: Report the outcome through annotations
         if: always()
