@@ -146,9 +146,27 @@ def main() -> int:
                 return 1
             ok(f"{target} exists and looks complete; using it")
         else:
-            if run(["git", "clone", "--depth", "1", "--branch", args.ref,
-                    REPO, str(target)]) != 0:
-                bad("clone failed"); return 1
+            # --branch takes a branch or a tag and rejects a commit hash, which
+            # this accepts and documents. Try the cheap shallow path, and fall
+            # back to fetching the object by name when it is a commit. A
+            # validator handed a commit rather than a tag would otherwise get a
+            # clone failure that says nothing about why.
+            rc = run(["git", "clone", "--depth", "1", "--branch", args.ref,
+                      REPO, str(target)])
+            if rc != 0:
+                ok(f"{args.ref} is not a branch or tag; fetching it as a commit")
+                shutil.rmtree(target, ignore_errors=True)
+                target.mkdir(parents=True, exist_ok=True)
+                steps = [
+                    ["git", "init", "-q"],
+                    ["git", "remote", "add", "origin", REPO],
+                    ["git", "fetch", "-q", "--depth", "1", "origin", args.ref],
+                    ["git", "checkout", "-q", "FETCH_HEAD"],
+                ]
+                for step in steps:
+                    if run(step, cwd=target) != 0:
+                        bad(f"could not fetch {args.ref}: check that it exists")
+                        return 1
     else:
         ok(f"already inside a checkout at {target}")
 
