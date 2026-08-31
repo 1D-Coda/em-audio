@@ -187,7 +187,21 @@ def fig_containment():
 
     fig, ax = plt.subplots(figsize=(6.4, 2.5), constrained_layout=True)
 
-    xmax = 205 if ind else 132
+    # Wide enough for the largest thing drawn, from either build. A fixed
+    # ceiling let a mark run off the axis and its connector then crossed the
+    # whole width into the labels anchored at the right margin.
+    def _pct(v):
+        d = v["declared_footprint_samples"]
+        return 100.0 * v["max_measured_reach_source_samples"] / d if d else 0.0
+    if ind:
+        widest = max([_pct(v) for k, v in K.items() if v["declared_footprint_samples"]]
+                     + [_pct(ind[k]) for k in K if k in ind and K[k]["declared_footprint_samples"]])
+        # Proportional, not fixed: the anchored labels keep a constant pixel
+        # width, so as the axis grows they cover more data units and a fixed
+        # margin stops being enough.
+        xmax = max(205.0, widest + 18.0)
+    else:
+        xmax = 132
     ax.axvspan(100, xmax, color="#f2dede", alpha=0.55, linewidth=0, zorder=0)
     ax.axvline(100, color=S.BASE, linewidth=1.0, zorder=2)
 
@@ -201,15 +215,33 @@ def fig_containment():
                    zorder=4)
         ax.scatter([100], [i], s=34, marker=S.M_DECLARED, facecolor="white",
                    edgecolor=S.DECLARED, linewidth=1.2, zorder=4)
-        ax.text(pct - 2.2, i, f"{reach:,}", fontsize=7.2, va="center",
-                ha="right", color="#222222")
+        iv_pre = ind.get(key)
+        # Anchored, not attached. A label that follows its mark moves with the
+        # measurement, and every position that worked for one build collided on
+        # another. Both numbers sit at fixed x on their row, distinguished by
+        # colour and by the marks they annotate, so the layout is the same
+        # whatever the data says.
+        if ind:
+            ax.text(-1.5, i, f"{reach:,}", fontsize=7.2, va="center",
+                    ha="right", color=S.MEASURED)
+        else:
+            ax.text(pct - 2.2, i, f"{reach:,}", fontsize=7.2, va="center",
+                    ha="right", color="#222222")
         # the same operator measured on the independent build
-        iv = ind.get(key)
+        iv = iv_pre
         crossed = bool(iv and iv["max_measured_reach_source_samples"] != reach)
         # The "of N" label sits just right of the declaration line, which is
         # where the second build's connector now runs. Put it below the row for
         # the crossing operator so the two do not overlap.
-        ax.text(103.5, i - (0.30 if crossed else 0.0), f"of {decl:,}",
+        # Just right of the declaration line is where the second build's
+        # connector runs, so on a row that has one the declaration label drops
+        # below its own row. With both reach numbers now anchored at the
+        # margins, there is nothing down there to hit.
+        # Always below the row when a second build is drawn, never beside it.
+        # Beside it is where the connectors run, and which connector passes
+        # through that point depends on whether a measurement exceeded its
+        # declaration, so a conditional offset only moved the collision around.
+        ax.text(101.5, i - (0.34 if ind else 0.0), f"of {decl:,}",
                 fontsize=7.2, va="center", color="#555555")
         if iv:
             ireach = iv["max_measured_reach_source_samples"]
@@ -219,13 +251,18 @@ def fig_containment():
                         linestyle=(0, (2, 1.6)), zorder=3)
                 ax.scatter([ipct], [i], s=40, marker="X", color=S.BASE,
                            zorder=5)
-                ax.text(ipct + 3.0, i, f"{ireach:,}", fontsize=7.2,
-                        va="center", color=S.BASE)
+                # Below its own mark. Anchoring it at the right margin kept it
+                # clear of the marks but not of the connectors, which reach
+                # further the larger the measurement is. Nothing else is drawn
+                # below the row line, so this is clear by construction rather
+                # than by arithmetic about the current data.
+                ax.text(ipct, i - 0.30, f"{ireach:,}", fontsize=7.2,
+                        va="center", ha="center", color=S.BASE)
 
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([S.label_of(k) for k, _ in rows])
     ax.set_xlabel("measured reach as a percentage of the declared footprint")
-    ax.set_xlim(0, xmax)
+    ax.set_xlim(-14 if ind else 0, xmax)
     ax.set_ylim(-1.15, len(rows) - 0.42)
     ax.set_xticks([0, 25, 50, 75, 100] + ([150, 200] if ind else []))
     ax.grid(axis="x", linestyle=":", zorder=0)
@@ -235,10 +272,15 @@ def fig_containment():
     tp = (100.0 * rows[top][1]["max_measured_reach_source_samples"] /
           rows[top][1]["declared_footprint_samples"])
     tr = ax.get_xaxis_transform()          # x in data, y in axes fraction
-    ax.annotate("measured reach", xy=(tp, 1.005), xytext=(tp - 13, 1.10),
-                xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
-                color="#222222", annotation_clip=False,
-                arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
+    # Only without a legend. The callout is anchored to the top row's
+    # measurement, so it moves with the data and collided with the fixed
+    # "declaration" label whenever that measurement approached the declaration.
+    # Where there is a legend, it already says what the marks are.
+    if not ind:
+        ax.annotate("measured reach", xy=(tp, 1.005), xytext=(tp - 13, 1.10),
+                    xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
+                    color="#222222", annotation_clip=False,
+                    arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
     if ind:
         from matplotlib.lines import Line2D
         ax.legend(handles=[
@@ -246,8 +288,13 @@ def fig_containment():
                    markersize=5, label="reference build"),
             Line2D([], [], marker="X", color=S.BASE, linestyle="",
                    markersize=6, label="independent build"),
-        ], loc="upper right", fontsize=6.9, frameon=False,
-            handletextpad=0.4, borderpad=0.1)
+        # Below the axes rather than inside it. Placed inside, the legend
+        # collided with the independent build's label as soon as that label
+        # moved, and the label's position is a measurement: any other build
+        # puts it somewhere else. A legend whose correctness depends on the
+        # data it describes is not a legend.
+        ], loc="upper center", bbox_to_anchor=(0.5, -0.34), ncol=2,
+            fontsize=6.9, frameon=False, handletextpad=0.4, borderpad=0.1)
     ax.annotate("declaration", xy=(100, 1.005), xytext=(100, 1.10),
                 xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
                 color="#222222", annotation_clip=False,
