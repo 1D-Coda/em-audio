@@ -24,7 +24,7 @@
  "failures_sample": [],
  "n_fixtures": 30,
  "placed_actions_reference_both": 30,
- "runtime_s": 7.828,
+ "runtime_s": 7.202,
  "sources_trusted": 60,
  "spec_notes": "componentOf per C2PA 2.4 Table 10; c2pa.placed carries a hashed-URI reference to each componentOf ingredient assertion per section 18.16.3, inserted by the claim generator from ingredientIds"
 }
