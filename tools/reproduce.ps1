@@ -32,19 +32,29 @@ $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol =
   [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-$python = Get-Command python -ErrorAction SilentlyContinue
-if (-not $python) { $python = Get-Command python3 -ErrorAction SilentlyContinue }
-if (-not $python) {
-  Write-Host "Python was not found." -ForegroundColor Red
-  Write-Host "Install it with:  winget install Python.Python.3.12"
-  exit 2
+# Resolved by RUNNING each candidate, not by locating it. Windows ships App
+# Execution Aliases named python and python3: they are on PATH, Get-Command
+# finds them, and they are not interpreters. A validator's entire run produced
+# nothing because every step invoked one and got the Store advertisement. The
+# old check here matched "*WindowsApps*" in the path, which is a guess about
+# where the stub lives rather than a test of what it does.
+$python = $null
+foreach ($cand in @("python", "python3", "py")) {
+  $cmd = Get-Command $cand -ErrorAction SilentlyContinue
+  if (-not $cmd) { continue }
+  $v = & $cand -c "import sys; print('%d.%d' % sys.version_info[:2])" 2>$null
+  if ($LASTEXITCODE -eq 0 -and $v -match "^3\.(1[1-9]|[2-9][0-9])$") {
+    $python = $cmd
+    Write-Host "Python: $cand $v  ($($cmd.Source))"
+    break
+  }
 }
-# `python` on a stock Windows is often the Microsoft Store stub: it is on PATH,
-# runs, prints nothing and opens the Store. Catch it here rather than let the
-# bootstrapper fail on something that looks unrelated.
-if ($python.Source -like "*WindowsApps*") {
-  Write-Host "That is the Microsoft Store's Python stub, not a real install." -ForegroundColor Red
-  Write-Host "Install Python:  winget install Python.Python.3.12"
+if (-not $python) {
+  Write-Host "No working Python 3.11 or newer was found." -ForegroundColor Red
+  Write-Host "Tried python, python3 and py; each was absent, too old, or a stub."
+  Write-Host "On Windows those names are often Microsoft Store aliases: on PATH,"
+  Write-Host "and not interpreters."
+  Write-Host "Install:  winget install Python.Python.3.12"
   Write-Host "Then close and reopen this terminal."
   exit 2
 }

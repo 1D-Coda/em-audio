@@ -52,9 +52,35 @@ irm https://raw.githubusercontent.com/1D-Coda/em-audio/main/tools/reproduce.ps1 
 .\reproduce.ps1
 ```
 
-`-Check` verifies the tools and runs nothing. You need Git, Python 3.12,
-FFmpeg, c2patool, Node and eSpeak NG on PATH; the check names whichever is
-missing.
+`-Check` verifies the tools and runs nothing. You need Git, Python 3.11 or
+newer, FFmpeg, c2patool, Node and eSpeak NG on PATH; the check names whichever
+is missing.
+
+### If nothing seems to happen, read this first
+
+Windows ships App Execution Aliases named `python` and `python3`. They sit on
+PATH, they are not interpreters, and running one prints
+
+    no se encontro Python; ejecutar sin argumentos para instalar desde el
+    Microsoft Store
+
+An independent validator's whole run was lost to this: every step invoked
+`python3`, got the Store advertisement, did no work, and the run ended having
+produced none of the thirteen result files. Nothing said why, because the alias
+is on PATH and every check that looked for Python found it.
+
+Both entry points now resolve the interpreter by *running* each candidate
+rather than locating it, and fall through to `python` or `py -3`. If none of
+the three works, they stop immediately and say so. To remove the aliases
+yourself: Settings > Apps > Advanced app settings > App execution aliases, and
+turn off the two Python entries. Installing Python from python.org also fixes
+it.
+
+This was not caught by continuous integration and could not have been: the
+GitHub runner installs a Python that does provide `python3`, so the green
+Windows job never exercised the case an ordinary machine has. It was found by
+an independent run on someone else's machine, which is the argument for having
+one.
 
 This document previously said the native path did not work and that the cause
 had not been diagnosed. It has been, and the causes were two defects of this

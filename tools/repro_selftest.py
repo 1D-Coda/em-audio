@@ -51,6 +51,39 @@ def main() -> int:
     print("EM-Audio reproduction package self-test\n")
 
     print(f"Platform: {sys.platform}, Python {sys.version.split()[0]}\n")
+
+    # run_all.sh calls the interpreter by name, and on Windows the name
+    # `python3` is usually an App Execution Alias: on PATH, not an interpreter.
+    # A validator's whole run produced nothing because every step invoked it
+    # and got the Store advertisement instead. Report which name works here,
+    # since that is what the pipeline will get, not what this process is.
+    print("Interpreter run_all.sh will find")
+    working = None
+    for cand in (["python3"], ["python"], ["py", "-3"]):
+        try:
+            r = subprocess.run(cand + ["-c", "import sys; print(sys.version.split()[0])"],
+                               capture_output=True, text=True, timeout=30)
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+        if r.returncode == 0 and r.stdout.strip()[:1].isdigit():
+            v = tuple(int(x) for x in r.stdout.strip().split(".")[:2])
+            mark = "found    " if v >= (3, 11) else "too old  "
+            print(f"  {mark} {' '.join(cand):10} {r.stdout.strip()}")
+            if v >= (3, 11) and working is None:
+                working = " ".join(cand)
+        else:
+            why = "Microsoft Store alias, not an interpreter" if WINDOWS else "does not run"
+            print(f"  unusable  {' '.join(cand):10} ({why})")
+    if working is None:
+        problems.append(
+            "no working Python 3.11+ is callable as python3, python or 'py -3'. "
+            "On Windows 'python3' is often a Microsoft Store stub that is on PATH "
+            "and is not an interpreter. Install: python.org, or turn the alias off "
+            "under Settings > Apps > Advanced app settings > App execution aliases")
+    else:
+        print(f"  run_all.sh will use: {working}")
+    print()
+
     print("External tools")
     def locate(name):
         """shutil.which, plus the places Windows installers use without

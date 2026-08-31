@@ -2,6 +2,22 @@
 # One-command reproduction.  Exits non-zero on any conformance failure.
 set -uo pipefail
 
+# Resolve the interpreter once, and resolve it by RUNNING it.
+#
+# An independent validator's Windows run produced nothing at all: every step
+# printed "no se encontro Python; ejecutar sin argumentos para instalar desde
+# el Microsoft Store" and did no work. Windows ships an App Execution Alias at
+# that name which exists, sits on PATH, and is not an interpreter, so
+# `command -v python3` finds it and shutil.which reports it. Only executing it
+# tells you. On a normal Windows install the interpreter is `python` or `py -3`.
+#
+# CI did not catch this and structurally could not: the hosted runner installs
+# a Python that does provide python3, so the green Windows job never exercised
+# the case an ordinary validator has.
+. "$(cd "$(dirname "$0")" && pwd)"/tools/resolve_python.sh
+resolve_python || { python_not_found_message; exit 2; }
+export PY
+
 # Dependency preflight. Daniel's reproduction ran for twenty minutes before
 # dying on a missing module, and the failure surfaced as a traceback in the
 # middle of the log rather than as an instruction. Check first, say what is
@@ -10,7 +26,7 @@ missing_tools=""
 for t in ffmpeg ffprobe node c2patool espeak-ng; do
   command -v "$t" >/dev/null 2>&1 || missing_tools="$missing_tools $t"
 done
-missing_py=$(python3 - <<'PYCHK'
+missing_py=$($PY - <<'PYCHK'
 import importlib.util
 need = {"matplotlib": "matplotlib", "numpy": "numpy", "piper": "piper-tts"}
 out = [pkg for mod, pkg in need.items() if importlib.util.find_spec(mod) is None]
@@ -58,7 +74,7 @@ note () {
 }
 
 step "environment"
-python3 -V; ffmpeg -version | head -1; c2patool --version; node -v; espeak-ng --version
+$PY -V; ffmpeg -version | head -1; c2patool --version; node -v; espeak-ng --version
 
 step "test credential"
 # These two were the only steps whose failure was not recorded. A corpus fetch
@@ -75,61 +91,61 @@ step "corpus"
 }
 
 step "named regression tests"
-python3 "$ROOT"/tests/test_contract.py || note
+$PY "$ROOT"/tests/test_contract.py || note
 
 step "A  exhaustive finite-state conformance"
-( cd "$ROOT"/experiments && python3 synthetic_state_space.py ) || note
+( cd "$ROOT"/experiments && $PY synthetic_state_space.py ) || note
 
 step "A2 applicability scope battery"
-( cd "$ROOT"/experiments && python3 scope_battery.py ) || note
+( cd "$ROOT"/experiments && $PY scope_battery.py ) || note
 
 step "A3 calibration tool self-test (must reject an under-declaration)"
-python3 "$ROOT"/tools/calibrate_footprint.py --self-test || note
+$PY "$ROOT"/tools/calibrate_footprint.py --self-test || note
 
 step "B  deterministic adversarial timelines"
-( cd "$ROOT"/experiments && python3 adversarial_timelines.py ) || note
+( cd "$ROOT"/experiments && $PY adversarial_timelines.py ) || note
 
 step "B2 policy ablation"
-( cd "$ROOT"/experiments && python3 adversarial_timelines.py --ablation ) || note
+( cd "$ROOT"/experiments && $PY adversarial_timelines.py --ablation ) || note
 
 step "H  two-language differential oracle"
-( cd "$ROOT"/experiments && python3 oracle_differential.py ) || note
+( cd "$ROOT"/experiments && $PY oracle_differential.py ) || note
 
 step "C0 build mixed-origin corpus"
-( cd "$ROOT"/experiments && python3 build_corpus.py ) || note
+( cd "$ROOT"/experiments && $PY build_corpus.py ) || note
 
 step "C  ground-truth recovery"
-( cd "$ROOT"/experiments && python3 public_audio_splice.py ) || note
+( cd "$ROOT"/experiments && $PY public_audio_splice.py ) || note
 
 step "C2 voice model"
 "$ROOT"/tools/fetch_voice.sh || note
 
 step "C2 robustness arm (neural TTS + noise overlay)"
-( cd "$ROOT"/experiments && python3 robustness_corpus.py ) || note
+( cd "$ROOT"/experiments && $PY robustness_corpus.py ) || note
 
 step "D  transformation matrix (stock ffmpeg)"
-( cd "$ROOT"/experiments && python3 transform_matrix.py ) || note
+( cd "$ROOT"/experiments && $PY transform_matrix.py ) || note
 
 step "K  kernel-support containment (impulse probe)"
-( cd "$ROOT"/experiments && python3 support_containment.py ) || note
+( cd "$ROOT"/experiments && $PY support_containment.py ) || note
 
 step "E  provenance-loss behaviour"
-( cd "$ROOT"/experiments && python3 manifest_stripping.py ) || note
+( cd "$ROOT"/experiments && $PY manifest_stripping.py ) || note
 
 step "F  signed round-trip and signal transparency"
-( cd "$ROOT"/experiments && python3 c2pa_roundtrip.py ) || note
+( cd "$ROOT"/experiments && $PY c2pa_roundtrip.py ) || note
 
 step "G  overhead"
-( cd "$ROOT"/experiments && python3 overhead_benchmark.py ) || note
+( cd "$ROOT"/experiments && $PY overhead_benchmark.py ) || note
 
 step "G2 overhead stability across repeated runs"
-( cd "$ROOT"/experiments && python3 overhead_stability.py ) || note
+( cd "$ROOT"/experiments && $PY overhead_stability.py ) || note
 
 step "J  C2PA-native componentOf composition"
-( cd "$ROOT"/experiments && python3 c2pa_composition.py ) || note
+( cd "$ROOT"/experiments && $PY c2pa_composition.py ) || note
 
 step "I  claim dilution (cost of conservatism)"
-( cd "$ROOT"/experiments && python3 claim_dilution.py ) || note
+( cd "$ROOT"/experiments && $PY claim_dilution.py ) || note
 
 # Table S5 and the calibration rows are built from CALIBRATION.json, which was a
 # tracked result file that no pipeline step regenerated. On a working tree the
@@ -147,27 +163,27 @@ step "N  second C2PA reader (optional, skipped if c2pa-python is absent)"
 # check that can end a third party's run in RUN FAILED is the exact defect this
 # release is fixing. Its result file is what we read; a non-zero exit is printed
 # and recorded rather than propagated.
-( cd "$ROOT"/experiments && python3 second_reader.py ) \
+( cd "$ROOT"/experiments && $PY second_reader.py ) \
   || echo "  (advisory: the second reader reported a problem; see N_second_reader.json)"
 
 step "A3b footprint calibration (writes CALIBRATION.json)"
-python3 "$ROOT"/tools/calibrate_footprint.py || note
+$PY "$ROOT"/tools/calibrate_footprint.py || note
 
 step "tables and figures"
-python3 "$ROOT"/tools/make_tables.py || note
-python3 "$ROOT"/tools/make_macros.py || note
-python3 "$ROOT"/tools/make_highlights.py || note
-python3 "$ROOT"/tools/make_figures.py || note
-python3 "$ROOT"/tools/make_figures_shared.py || note
-python3 "$ROOT"/tools/figure_qa.py || note
-python3 "$ROOT"/tools/make_figure_docs.py || note
+$PY "$ROOT"/tools/make_tables.py || note
+$PY "$ROOT"/tools/make_macros.py || note
+$PY "$ROOT"/tools/make_highlights.py || note
+$PY "$ROOT"/tools/make_figures.py || note
+$PY "$ROOT"/tools/make_figures_shared.py || note
+$PY "$ROOT"/tools/figure_qa.py || note
+$PY "$ROOT"/tools/make_figure_docs.py || note
 
 step "preflight report"
-python3 "$ROOT"/tools/make_checksums.py || note
-python3 "$ROOT"/tools/preflight.py || note
-python3 "$ROOT"/tools/check_numbers.py || note
-python3 "$ROOT"/tools/prose_audit.py || note
-python3 "$ROOT"/tools/check_journal_guide.py || note
+$PY "$ROOT"/tools/make_checksums.py || note
+$PY "$ROOT"/tools/preflight.py || note
+$PY "$ROOT"/tools/check_numbers.py || note
+$PY "$ROOT"/tools/prose_audit.py || note
+$PY "$ROOT"/tools/check_journal_guide.py || note
 
 echo
 if [ "$fail" -ne 0 ]; then
