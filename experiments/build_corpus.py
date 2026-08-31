@@ -49,6 +49,20 @@ def espeak(text: str, dst: Path, speed: int, pitch: int) -> None:
     subprocess.run([ESPEAK, "-v", "en-us", "-s", str(speed), "-p", str(pitch),
                     "-a", "100", "-w", str(dst), text], check=True,
                    capture_output=True)
+    # espeak-ng exits 0 when it could not write the file, and its -w path goes
+    # through a fixed 200-byte buffer: past that it writes to a truncated name
+    # and reports success. Without this check the run continues and dies two
+    # steps later inside ffmpeg, complaining that an input does not exist, which
+    # names neither the step that failed nor the reason. Deep extraction paths
+    # are ordinary: a validator unpacked the archive into a folder of the same
+    # name, and Windows still defaults to MAX_PATH 260.
+    if not dst.exists():
+        raise RuntimeError(
+            f"espeak-ng reported success but wrote no file:\n  {dst}\n"
+            f"  that path is {len(str(dst))} characters; espeak-ng truncates -w "
+            f"beyond about 200.\n"
+            f"  Move the package to a shorter path, for example C:\\em-audio "
+            f"or ~/em-audio, and run again.")
 
 
 def n_samples(path: Path) -> int:
