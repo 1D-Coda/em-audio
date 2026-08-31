@@ -2175,7 +2175,12 @@ safe, not that our particular numbers transfer. This is no longer a stated risk:
 Section~\ref{sec:res-independent} reports an independent run on a different
 FFmpeg major version in which two of the declarations of
 Table~\ref{tab:operators} are not adequate, one of them under-sized rather than
-merely imprecise. The re-declaration need not be manual,
+merely imprecise. One counterexample settles the question, so we do not report
+the further builds the artefact's continuous verification has since measured:
+they are recorded in the repository and can be inspected there, and adding
+author-run environments beside an independent reproducer's would invite a rate
+to be read off a handful of builds that cannot support one. The re-declaration
+need not be manual,
 but it needs two passes rather than one, because the analytical and implementation-margin components of
 Table~\ref{tab:operators} bound different things. A \emph{mapping/alignment-margin}
 calibration pushes a deterministic reference signal through the unknown
@@ -2314,7 +2319,12 @@ rather than on acceptance, because a reviewer who cannot run the artefact cannot
 credit it. It ships a frozen copy of the released results in
 \texttt{results/reference/}, which is what
 \texttt{tools/verify\_reproduction.py} compares a reproduction against when it
-is run from a downloaded archive rather than from a clone. The only other Zenodo identifier appearing in this paper belongs to the
+is run from a downloaded archive rather than from a clone. It also carries a
+pinned container image and continuous verification, which re-measure the
+declarations on further tool builds. Those runs are author-run and are evidence
+about environments rather than about observers; they are recorded there and not
+reported here, because the independent reproduction of
+Section~\ref{sec:res-independent} is the one that carries the claim. The only other Zenodo identifier appearing in this paper belongs to the
 companion work on terrain \citep{urias2026emtrf} and archives that work rather
 than this one; the audio artifact is deposited separately and its DOIs are the
 ones given here. The evaluated
