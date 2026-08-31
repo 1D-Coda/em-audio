@@ -22,7 +22,12 @@
 # native path has failures of its own in FFmpeg and c2patool, and a validator on
 # Windows should not have to become an expert in them to help.
 
-FROM debian:bookworm-20250630-slim
+# trixie, not bookworm. The c2patool release binary is linked against glibc
+# 2.39 and bookworm ships 2.36, so it failed to start with "GLIBC_2.39 not
+# found" and the pipeline reported it as "c2patool sign failed", which named
+# the wrong thing entirely. Found by signing a one-second tone in the image
+# rather than by reading the pipeline's traceback.
+FROM debian:trixie-20250630-slim
 
 ARG FFMPEG_TAG=autobuild-2026-08-30-13-12
 ARG FFMPEG_FILE=ffmpeg-N-126335-gb32f8d1c23-linux64-gpl.tar.xz
