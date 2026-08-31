@@ -1,0 +1,58 @@
+{
+ "baseline_lineage_omissions": 600,
+ "baseline_provenance_promotions": 600,
+ "em_lineage_omissions": 0,
+ "em_provenance_promotions": 0,
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "14",
+  "cpu_model": "Apple M3 Max",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "memory_bytes": "38654705664",
+  "node": "v26.7.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.15"
+ },
+ "exact_interval_recovery": 600,
+ "experiment": "C_public_audio_splice",
+ "generated_interval_recovered": 600,
+ "n_clips": 600,
+ "note": "no classifier is trained and no acoustic feature is used; the generated interval is recovered from carried evidence, not detected from the signal",
+ "per_operator": {
+  "normalize": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  },
+  "resample_16_8": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  },
+  "time_stretch_1.10": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  },
+  "transcode_mp3": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  },
+  "trim_10pct": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  }
+ },
+ "runtime_s": 0.316,
+ "worst_boundary_error_samples": 0
+}

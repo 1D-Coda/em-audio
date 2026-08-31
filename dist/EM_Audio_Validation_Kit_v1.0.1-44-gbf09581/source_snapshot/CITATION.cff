@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "EM-Audio: evidence-monotone audio representation reference implementation"
+abstract: >-
+  Reference implementation and reproducibility package for an evidence-monotone
+  operator contract on derived audio representations, with a C2PA signed
+  transport bridge and a two-language differential oracle.
+type: software
+authors:
+  - family-names: Urias
+    given-names: A.
+    orcid: "https://orcid.org/0009-0007-3147-323X"
+    affiliation: Independent researcher
+repository-code: "https://github.com/1D-Coda/em-audio"
+license: MIT
+version: 1.0.2

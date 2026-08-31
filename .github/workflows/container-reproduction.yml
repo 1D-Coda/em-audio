@@ -30,8 +30,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Build the validation kit and use it as the source
+        run: |
+          python3 tools/build_validation_kit.py
+          kit=$(ls dist/EM_Audio_Validation_Kit_*.zip | head -1)
+          unzip -q "$kit" -d /tmp/kit
+          snap=$(ls -d /tmp/kit/*/source_snapshot)
+          echo "::notice::building from the shipped snapshot at $snap"
+          echo "SNAP=$snap" >> "$GITHUB_ENV"
+
       - name: Build
-        run: docker build -t em-audio:ci .
+        run: docker build -t em-audio:ci "$SNAP"
 
       - name: Report the environment the image fixes
         run: |

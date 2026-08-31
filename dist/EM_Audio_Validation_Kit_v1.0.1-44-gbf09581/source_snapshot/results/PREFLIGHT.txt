@@ -1,0 +1,135 @@
+EM-AUDIO PREFLIGHT REPORT
+========================================================================
+commit: ec4bc02520abc0405cf8099a37ec32a5acffcdae
+tag: v1.0.1-2-gec4bc02
+note: 'commit' is HEAD when this report was generated. Because the report is
+      itself committed, the copy stored in the repository necessarily lags the
+      commit that stores it by one. Re-run tools/preflight.py, or run_all.sh,
+      to regenerate it against the working tree you actually have.
+zenodo_version_doi: PENDING - assign at archive time
+zenodo_concept_doi: PENDING - assign at archive time
+
+python: 3.11.15
+ffmpeg: ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers
+c2patool: c2patool 0.27.2
+node: v26.7.0
+espeak_ng: eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data
+c2pa_spec_version: 2.4 (April 2026)
+os: macOS-26.5.2-arm64-arm-64bit
+
+benchmark stability, one process per row
+  measured: 2026-08-30T07:58:30Z UTC, load average [2.1, 2.73, 3.38]
+  cv definition: sample standard deviation over the mean, in percent, with Bessel's correction
+  run 1: em 0.9209 ms, baseline 0.2752 ms, ratio 3.3466
+  run 2: em 0.9053 ms, baseline 0.2709 ms, ratio 3.3421
+  run 3: em 0.9106 ms, baseline 0.2705 ms, ratio 3.3664
+  run 4: em 0.9018 ms, baseline 0.2687 ms, ratio 3.3569
+  run 5: em 0.902 ms, baseline 0.2693 ms, ratio 3.3491
+  run 6: em 0.8994 ms, baseline 0.2696 ms, ratio 3.3361
+  run 7: em 0.9133 ms, baseline 0.2725 ms, ratio 3.3514
+  run 8: em 0.8911 ms, baseline 0.2662 ms, ratio 3.3475
+  run 9: em 0.9012 ms, baseline 0.267 ms, ratio 3.3752
+  absolute cv: 0.966%
+  ratio cv: 0.362%
+
+cpu: Apple M3 Max
+cpu_arch: arm64
+cpu_count_logical: 14
+memory_gib: 36
+
+--- A  exhaustive finite-state conformance ---
+words_enumerated: 9840
+operator_cases: 98385
+checks_total: 885828
+checks_failed: 0
+composition_cases: 363
+
+--- B  adversarial timelines ---
+synthetic_cases: 10000
+baseline_promotions_depth1: 9455
+baseline_promotion_rate_depth1: 0.9455
+baseline_promotions_depth5: 9455
+em_promotions: 0
+em_unverified_to_verified: 0
+em_lineage_omissions: 0
+baseline_lineage_omissions_depth1: 10000
+control_max_abs_deviation_from_closed_form: 0.0070
+
+--- C  mixed-origin corpus ---
+audio_clips: 600
+exact_interval_recovery: 600
+generated_interval_recovered: 600
+corpus_boundary_mismatches: 0
+c_baseline_promotions: 600
+c_em_promotions: 0
+
+--- D  transformation matrix ---
+transformations: 8
+transformation_runs: 4800
+d_baseline_promotions: 3600
+d_em_promotions: 0
+lineage_failures: 0
+determinism_rerun_mismatches: 0
+max_model_vs_ffmpeg_sample_deviation: 681
+guard_bands_all_adequate: True
+
+--- E  provenance loss ---
+e_clips: 60
+e_violations: 0
+e_asset_modified_after_signing: {'INVALID': 60}
+e_manifest_removed: {'UNVERIFIED': 60}
+e_reencoded_without_manifest: {'UNVERIFIED': 60}
+e_valid_derived_manifest: {'MIXED': 60}
+e_valid_manifest: {'MIXED': 60}
+
+--- F  signed round-trip ---
+signed_roundtrips: 120
+validation_failures: 0
+derived_validate_trusted: 120
+parentOf_recorded: 120
+assertion_roundtrip_identical: 120
+signal_mismatches: 0
+file_hash_changed_by_signing: 120
+
+--- G  overhead ---
+median_em_ms_per_audio_minute: 0.908
+median_baseline_ms_per_audio_minute: 0.2715
+em_over_baseline_ratio: 3.3446
+em_fraction_of_ffmpeg_time: 0.001683
+median_manifest_overhead_bytes_per_asset: 14908
+median_em_assertion_bytes_per_asset: 1307
+metadata_bytes_per_audio_minute: 299808.9
+median_sign_ms: 8.9746
+median_validate_ms: 7.4367
+assertion_bytes_per_interval: 332.7
+
+--- K  kernel-support containment ---
+k_probes: 280
+k_affected_output_samples: 52005
+k_outside_declared_support: 0
+
+--- C2  robustness arm ---
+c2_neural_exact: 50/50
+c2_neural_em_promotions: 0
+c2_noise_exact: 50/50
+c2_noise_em_promotions: 0
+
+--- J  componentOf composition ---
+j_fixtures: 30
+j_composition_trusted: 30
+j_aggregate_mixed: 30
+j_essence_mismatches: 0
+
+--- I  claim dilution ---
+max_dilution_fraction_any_transformation: 0.583333
+chain_depth5_median_dilution: 0.857402
+
+--- H  two-language differential ---
+oracle_cases: 10860
+oracle_disagreements: 0
+oracle_max_support_difference: 0.0
+
+--- totals ---
+tests_total: 30
+tests_passed: 30
+tests_failed: 0
