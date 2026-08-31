@@ -25,10 +25,14 @@ DIST = ROOT / "dist"
 # --returning writes the package for the reproducer whose run already failed.
 RETURNING = "--returning" in sys.argv
 
+# No paper/. A validator runs the experiments; the manuscript, its drafts and
+# the reviews are not part of that, and shipping an unpublished manuscript to
+# third parties is a decision that should be deliberate rather than incidental.
+# The five tools that read paper/ skip and return 0 when it is absent.
 INCLUDE = ["run_all.sh", "requirements.txt", "LICENSE", "DATA_LICENSES.md",
            "README.md", "CITATION.cff", "verify_release.sh", ".gitignore",
            "em_audio", "experiments", "tools", "tests", "oracle_js",
-           "fixtures", "docs", "paper"]
+           "fixtures", "docs"]
 EXCLUDE_DIRS = {".git", "__pycache__", "node_modules", ".pytest_cache", "dist"}
 EXCLUDE_SUFFIX = {".pyc", ".aux", ".out", ".fls", ".fdb_latexmk", ".blg",
                   ".spl", ".synctex.gz"}
@@ -127,6 +131,19 @@ def main() -> int:
     if not list((inner / "results" / "reference").glob("*.json")):
         print("REFUSING: results/reference/ is empty, so there is nothing to "
               "compare against. Run tools/freeze_reference.py first.")
+        return 1
+
+    # The package must not carry the manuscript, and the pipeline must not need
+    # it. Asserted, because "I removed the directory" and "the run still
+    # succeeds without it" are different claims.
+    if (inner / "paper").exists():
+        print("REFUSING: the package contains paper/. The manuscript is not "
+              "part of what a validator reproduces.")
+        return 1
+    stray = [q.relative_to(inner).as_posix() for q in inner.rglob("*")
+             if q.is_file() and q.suffix in {".tex", ".bbl"}]
+    if stray:
+        print(f"REFUSING: manuscript sources reached the package: {stray[:5]}")
         return 1
 
     zpath = DIST / f"{name}.zip"

@@ -27,6 +27,12 @@ if over:
     raise SystemExit(f"{len(over)} highlight(s) exceed {LIMIT} characters")
 if not 3 <= len(lines) <= 5:
     raise SystemExit(f"{len(lines)} highlights; the journal requires 3 to 5")
-(ROOT / "paper" / "highlights.txt").write_text("\n".join(lines) + "\n")
+out = ROOT / "paper" / "highlights.txt"
+if not out.parent.is_dir():
+    # No paper/ in the reproduction package: the highlights belong to the
+    # manuscript, not to the experiments a validator is reproducing.
+    print("[highlights] paper/ absent; skipped")
+else:
+    out.write_text("\n".join(lines) + "\n")
 for l in lines:
     print(f"{len(l):3d}  {l}")

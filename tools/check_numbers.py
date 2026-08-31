@@ -173,6 +173,13 @@ def check_bundle_docs():
 
 
 def main() -> int:
+    # The reproduction package for validators ships without paper/: they run
+    # the experiments, not the manuscript. A missing manuscript is that case,
+    # not a defect, so say so and succeed rather than ending their run.
+    if not TEX.exists():
+        print(f"[check_numbers] paper/ absent, so there is no manuscript to check; "
+              "skipped. This is expected in the reproduction package.")
+        return 0
     if not NUMBERS.exists():
         print("results/numbers.tex missing; run tools/make_macros.py", file=sys.stderr)
         return 2

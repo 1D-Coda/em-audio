@@ -162,7 +162,11 @@ SUPPLEMENT_NOTES = {
 def supplement_notes():
     """Map each key to the number the supplement actually gives that section."""
     import re
-    supp = (ROOT / "paper" / "supplementary.tex").read_text()
+    sp = ROOT / "paper" / "supplementary.tex"
+    if not sp.exists():
+        # Reproduction package: no paper/, so no supplement notes to resolve.
+        return {}
+    supp = sp.read_text()
     titles = re.findall(r"^\\section\{([^}]+)\}", supp, re.M)
     out = {}
     for key, needle in SUPPLEMENT_NOTES.items():
