@@ -78,7 +78,10 @@ jobs:
             # No traceback appeared, so the failure is a checker returning
             # non-zero rather than an exception. Print the tail, which is where
             # those speak.
-            tail -25 out/run_all_output.txt | while read -r l; do
+            # Reversed: GitHub caps annotations at ten per step and the tail
+            # is where the failing checker speaks, so the last lines have to
+            # come first or they are the ones dropped.
+            tail -14 out/run_all_output.txt | tac | while read -r l; do
               [ -n "$l" ] && echo "::error::tail: ${l:0:170}"
             done
           else
