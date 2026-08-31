@@ -37,10 +37,32 @@ fi
 # and executable. A reproduction script is the wrong place for that class of
 # fragility: it fails on someone else's machine and looks like a missing file.
 ROOT="$(cd "$(dirname "$0")" && pwd)"
+# Exported because the step runner starts each experiment in its own shell, and
+# an unexported ROOT would expand to nothing there.
+export ROOT
 cd "$ROOT"
 export PYTHONHASHSEED=0
 fail=0
-step () { echo; echo "=== $* ==="; }
+failed_steps=""
+current_step="startup"
+step () { current_step="$*"; echo; echo "=== $* ==="; }
+# `|| fail=1` records that something failed but not what. A Windows run
+# completed every experiment, printed a pass line for every check, and still
+# ended in RUN FAILED with nothing naming the step: finding it meant reading
+# 1,300 lines of CI log. Record the name at the point of failure instead.
+run () {
+  # Captured on the failure branch itself. An `if cmd; then return 0; fi`
+  # leaves $? at 0 when the command fails, because the `if` statement succeeded,
+  # and every failure was reported as exit 0.
+  local rc=0
+  "$@" || rc=$?
+  [ "$rc" -eq 0 ] && return 0
+  echo "  ** FAILED (exit $rc) in step '$current_step': $*"
+  failed_steps="$failed_steps
+  - $current_step: $* (exit $rc)"
+  fail=1
+  return 0
+}
 
 step "environment"
 python3 -V; ffmpeg -version | head -1; c2patool --version; node -v; espeak-ng --version
@@ -50,7 +72,7 @@ step "test credential"
 # that fails leaves the pipeline running against no corpus, and the first thing
 # to notice is an experiment several steps later complaining that a clip does
 # not exist, which names neither the step that failed nor the reason.
-[ -f "$ROOT"/tools/test_certs/chain.pem ] || "$ROOT"/tools/make_test_certs.sh || fail=1
+[ -f "$ROOT"/tools/test_certs/chain.pem ] || "$ROOT"/tools/make_test_certs.sh || fail=1  # a missing credential is caught by the next step
 
 step "corpus"
 [ -d "$ROOT"/corpus/LibriSpeech/dev-clean ] || "$ROOT"/tools/fetch_corpus.sh || {
@@ -60,61 +82,61 @@ step "corpus"
 }
 
 step "named regression tests"
-python3 "$ROOT"/tests/test_contract.py || fail=1
+run python3 "$ROOT"/tests/test_contract.py
 
 step "A  exhaustive finite-state conformance"
-( cd "$ROOT"/experiments && python3 synthetic_state_space.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 synthetic_state_space.py\'
 
 step "A2 applicability scope battery"
-( cd "$ROOT"/experiments && python3 scope_battery.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 scope_battery.py\'
 
 step "A3 calibration tool self-test (must reject an under-declaration)"
-python3 "$ROOT"/tools/calibrate_footprint.py --self-test || fail=1
+run python3 "$ROOT"/tools/calibrate_footprint.py --self-test
 
 step "B  deterministic adversarial timelines"
-( cd "$ROOT"/experiments && python3 adversarial_timelines.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 adversarial_timelines.py\'
 
 step "B2 policy ablation"
-( cd "$ROOT"/experiments && python3 adversarial_timelines.py --ablation ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 adversarial_timelines.py --ablation\'
 
 step "H  two-language differential oracle"
-( cd "$ROOT"/experiments && python3 oracle_differential.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 oracle_differential.py\'
 
 step "C0 build mixed-origin corpus"
-( cd "$ROOT"/experiments && python3 build_corpus.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 build_corpus.py\'
 
 step "C  ground-truth recovery"
-( cd "$ROOT"/experiments && python3 public_audio_splice.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 public_audio_splice.py\'
 
 step "C2 voice model"
-"$ROOT"/tools/fetch_voice.sh || fail=1
+run "$ROOT"/tools/fetch_voice.sh
 
 step "C2 robustness arm (neural TTS + noise overlay)"
-( cd "$ROOT"/experiments && python3 robustness_corpus.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 robustness_corpus.py\'
 
 step "D  transformation matrix (stock ffmpeg)"
-( cd "$ROOT"/experiments && python3 transform_matrix.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 transform_matrix.py\'
 
 step "K  kernel-support containment (impulse probe)"
-( cd "$ROOT"/experiments && python3 support_containment.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 support_containment.py\'
 
 step "E  provenance-loss behaviour"
-( cd "$ROOT"/experiments && python3 manifest_stripping.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 manifest_stripping.py\'
 
 step "F  signed round-trip and signal transparency"
-( cd "$ROOT"/experiments && python3 c2pa_roundtrip.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 c2pa_roundtrip.py\'
 
 step "G  overhead"
-( cd "$ROOT"/experiments && python3 overhead_benchmark.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 overhead_benchmark.py\'
 
 step "G2 overhead stability across repeated runs"
-( cd "$ROOT"/experiments && python3 overhead_stability.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 overhead_stability.py\'
 
 step "J  C2PA-native componentOf composition"
-( cd "$ROOT"/experiments && python3 c2pa_composition.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 c2pa_composition.py\'
 
 step "I  claim dilution (cost of conservatism)"
-( cd "$ROOT"/experiments && python3 claim_dilution.py ) || fail=1
+run bash -c \'cd "$ROOT"/experiments && python3 claim_dilution.py\'
 
 # Table S5 and the calibration rows are built from CALIBRATION.json, which was a
 # tracked result file that no pipeline step regenerated. On a working tree the
@@ -136,24 +158,28 @@ step "N  second C2PA reader (optional, skipped if c2pa-python is absent)"
   || echo "  (advisory: the second reader reported a problem; see N_second_reader.json)"
 
 step "A3b footprint calibration (writes CALIBRATION.json)"
-python3 "$ROOT"/tools/calibrate_footprint.py || fail=1
+run python3 "$ROOT"/tools/calibrate_footprint.py
 
 step "tables and figures"
-python3 "$ROOT"/tools/make_tables.py || fail=1
-python3 "$ROOT"/tools/make_macros.py || fail=1
-python3 "$ROOT"/tools/make_highlights.py || fail=1
-python3 "$ROOT"/tools/make_figures.py || fail=1
-python3 "$ROOT"/tools/make_figures_shared.py || fail=1
-python3 "$ROOT"/tools/figure_qa.py || fail=1
-python3 "$ROOT"/tools/make_figure_docs.py || fail=1
+run python3 "$ROOT"/tools/make_tables.py
+run python3 "$ROOT"/tools/make_macros.py
+run python3 "$ROOT"/tools/make_highlights.py
+run python3 "$ROOT"/tools/make_figures.py
+run python3 "$ROOT"/tools/make_figures_shared.py
+run python3 "$ROOT"/tools/figure_qa.py
+run python3 "$ROOT"/tools/make_figure_docs.py
 
 step "preflight report"
-python3 "$ROOT"/tools/make_checksums.py || fail=1
-python3 "$ROOT"/tools/preflight.py || fail=1
-python3 "$ROOT"/tools/check_numbers.py || fail=1
-python3 "$ROOT"/tools/prose_audit.py || fail=1
-python3 "$ROOT"/tools/check_journal_guide.py || fail=1
+run python3 "$ROOT"/tools/make_checksums.py
+run python3 "$ROOT"/tools/preflight.py
+run python3 "$ROOT"/tools/check_numbers.py
+run python3 "$ROOT"/tools/prose_audit.py
+run python3 "$ROOT"/tools/check_journal_guide.py
 
 echo
-if [ "$fail" -ne 0 ]; then echo "RUN FAILED"; exit 1; fi
+if [ "$fail" -ne 0 ]; then
+  echo "RUN FAILED"
+  echo "the step(s) that failed:$failed_steps"
+  exit 1
+fi
 echo "RUN OK - all conformance checks passed"
