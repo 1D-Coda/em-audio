@@ -1,93 +1,81 @@
 # Reproducing on Windows
 
-One command. It fetches the repository, installs what it needs, checks your
-machine, runs the pipeline, compares against the released results, and packs
-everything into a zip to send back.
+Use Docker. The native Windows path does not currently work, and this document
+says so up front rather than letting you find out twenty minutes in.
+
+## What to run
+
+Install Docker Desktop from docker.com and start it. Then, from a PowerShell
+prompt:
 
 ```powershell
-irm https://raw.githubusercontent.com/1D-Coda/em-audio/main/tools/reproduce.ps1 -OutFile reproduce.ps1
-.\reproduce.ps1
+git clone https://github.com/1D-Coda/em-audio
+cd em-audio\tools
+.\run_on_windows.ps1 -Check
 ```
 
-If PowerShell refuses to run a downloaded script, allow it for that session
-only:
+The check looks at Docker and runs nothing. When it passes, drop the flag:
 
 ```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\run_on_windows.ps1
 ```
 
-## Check first, run later
+That builds the pinned image, runs the whole pipeline inside it, compares the
+results against the release, and leaves everything in `..\out`.
 
-The environment check takes seconds, runs nothing, and names anything missing
-along with the command to install it:
+About twenty-five minutes after the first build, plus a 322 MB corpus download.
 
-```powershell
-.\reproduce.ps1 -Check
-```
+## Reading the outcome
 
-Do this first. A previous reproduction lost twenty minutes to a problem this
-would have named in five seconds.
+Two of the three exit codes are successes.
 
-## What you need
-
-| | install |
+| Exit | Meaning |
 |---|---|
-| Python 3.10+ | `winget install Python.Python.3.12` |
-| Git, which also provides Git Bash | `winget install Git.Git` |
-| FFmpeg | `winget install Gyan.FFmpeg` |
-| Node | `winget install OpenJS.NodeJS` |
-| eSpeak NG | `winget install eSpeak-NG.eSpeak-NG` |
-| c2patool | from `github.com/contentauth/c2pa-rs/releases`, on your PATH |
+| **0** | Conformance passed and every declared footprint held on this build |
+| **3** | Conformance passed, and a declared kernel footprint does not hold on this image's FFmpeg |
+| 1 | Something else went wrong, which is a defect worth reporting |
 
-`run_all.sh` is a bash script, so Git Bash or WSL is required. Git for Windows
-provides Git Bash and the bootstrapper finds it in the usual install locations
-even when it is not on your PATH.
+**Exit 3 is a result, not a failure.** The paper's central claim is that the
+footprint declarations in Table 3 are calibrated for one FFmpeg build and must
+be re-measured for another. An independent reproduction on FFmpeg 8.0.1 already
+measured the MP3 encoder reaching 4,317 source samples against 2,304 declared,
+and that is published as a finding rather than absorbed by widening the
+declaration. The container reproduces the same class of result on its own build.
 
-Roughly twenty-five minutes, plus a 322 MB corpus download the first time.
+## Why not run it natively
 
-## Honesty about this path
+The pipeline was run on a Windows Server 2025 machine with FFmpeg, eSpeak NG and
+c2patool installed. Experiments C2, D and E failed there: two inside FFmpeg and
+one with `c2patool sign failed: Error: embedding manifest`. The cause has not
+been diagnosed, and until it is, a native Windows package would be a package
+that fails.
 
-The PowerShell file is forty lines and has **never been executed on Windows**.
-It finds Python and hands over; everything else is in
-`tools/bootstrap_reproduction.py`, which was written and exercised on the
-machine that produced it, including the clone, the dependency check, the
-install, the self-test and the incomplete-checkout case.
+The environment check, the download, the clone and the dependency install all
+work natively on Windows and are verified by continuous integration on a real
+Windows runner. It is the experiments themselves that do not.
 
-That split is deliberate: the untested surface is those forty lines. If they
-misbehave, skip them entirely, because the Python needs nothing from them:
-
-```powershell
-python tools\bootstrap_reproduction.py
-```
-
-Either way, send us the error rather than working around it. A bootstrapper
-that fails on a real machine is a defect we want to know about.
-
-## If it breaks, these are the usual reasons
-
-**`$'\r': command not found`, or `set: pipefail: invalid option name`.** Your git
-rewrote the shell scripts to Windows line endings on checkout. The repository
-now carries a `.gitattributes` that prevents this, but an older clone will still
-have it. The bootstrapper detects it and prints the fix.
-
-**`python` opens the Microsoft Store.** That is the Store stub, not Python. Both
-the script and the bootstrapper detect it and tell you to install the real one.
-
-**The download fails with a connection error.** Older Windows PowerShell
-negotiates TLS 1.0, which GitHub refuses. The script raises it to 1.2 before
-downloading, so this should not happen; if it does, say so.
-
-**`bash was not found`.** `run_all.sh` is a bash script. Install Git for
-Windows, which provides Git Bash; the bootstrapper finds it in the usual
-locations even when it is not on your PATH.
+If you would rather not use Docker, WSL runs real Linux and the Linux
+instructions in `REPRODUCTION_GUIDE.md` apply unchanged. That path is known to
+work: the independent reproduction of Section 7.11 was made on Linux.
 
 ## What to send back
 
-The script writes `EM_Audio_results_<date>.zip` and prints its path. It holds
-your machine-readable results, your preflight report, both logs, and a record of
-your platform and the exit codes.
+The whole `out` directory. It holds the machine-readable results, the preflight
+report that records your machine and tool versions, and both logs.
 
-Send it whatever the exit codes were. `verify_reproduction.py` exiting non-zero
-means a deterministic output differs, which is a result we want, not a failure
-on your part. The last reproduction exited non-zero and found two real defects
-in the paper's declared numbers, and both are now published as findings.
+Send it whatever the exit code was. A run that is reported is worth more than a
+run that was made to pass: the previous reproduction exited non-zero and found
+two real defects in the paper's declared numbers, both of which are now
+published as results.
+
+## Honesty about this path
+
+`run_on_windows.ps1` is forty lines and has never been executed on Windows. It
+finds Python and hands over to `tools/run_container.py`, which was written and
+exercised on the machine that produced it. If the wrapper misbehaves, skip it:
+
+```powershell
+python tools\run_container.py
+```
+
+Either way, send us the error rather than working around it.

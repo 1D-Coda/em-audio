@@ -112,8 +112,9 @@ def main() -> int:
     # reads as coverage it does not have.
     print("[guide] not checked here, verify by hand before submitting:")
     for item in ("page count against what the journal actually publishes",
-                 "reference style: the guide gives author-year in text but a "
-                 "numeric list, and contradicts itself",
+                 "reference style is settled: three recent FSI:DI articles have "
+                 "alphabetical reference lists, so author-year; the manuscript "
+                 "now uses elsarticle-harv with the authoryear class option",
                  "competing-interest declaration exported as .doc/.docx from "
                  "Elsevier's declarations tool",
                  "figures uploaded as separate files named Figure_1, Figure_2",
