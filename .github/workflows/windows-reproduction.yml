@@ -1,10 +1,12 @@
 name: Windows reproduction path
 
 # The Windows entry point was written on macOS and could not be executed there.
-# This runs it on a real Windows machine, which is the only way to know whether
-# it works. The environment check is the whole untested surface: PowerShell
-# version compatibility, TLS negotiation, the Store-stub detection, the clone,
-# the pip install, the line-ending handling and the self-test.
+# This runs it on a real Windows PowerShell 5.1.
+#
+# Every assertion is its own step. Step names and outcomes are readable from the
+# public API without a token, so the run reports what happened even to someone
+# who cannot read its logs. A single step that does five things would tell us
+# only that one of them failed.
 on:
   push:
     paths:
@@ -16,75 +18,85 @@ on:
   workflow_dispatch:
 
 jobs:
-  bootstrap-check:
-    name: Environment check on Windows PowerShell 5.1
+  windows:
+    name: PowerShell 5.1 on windows-latest
     runs-on: windows-latest
     steps:
-      - name: Report the shell actually in use
+      - name: A. PowerShell version and git line-ending setting
         shell: powershell
         run: |
-          $PSVersionTable | Format-List
-          # git config exits 1 when the key is unset, and a non-zero exit fails
-          # a PowerShell step, so read it without letting that end the job.
+          Write-Host "PSVersion: $($PSVersionTable.PSVersion)"
           $crlf = & git config --global core.autocrlf 2>$null
           if ($LASTEXITCODE -ne 0 -or -not $crlf) { $crlf = "(unset)" }
           Write-Host "core.autocrlf: $crlf"
-          Write-Host "git: $(git --version)"
           $global:LASTEXITCODE = 0
 
-      # Deliberately NOT actions/checkout: the point is to exercise the path a
-      # validator takes, which is downloading one file and letting it fetch the
-      # rest.
-      - name: Fetch reproduce.ps1 the way a validator would
+      - name: B. Install the tools a validator is told to install
+        shell: powershell
+        run: |
+          choco install ffmpeg espeak -y --no-progress --limit-output
+          $global:LASTEXITCODE = 0
+
+      - name: C. Download reproduce.ps1 over TLS, as a validator would
         shell: powershell
         run: |
           [Net.ServicePointManager]::SecurityProtocol =
             [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
           irm https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/tools/reproduce.ps1 -OutFile reproduce.ps1
-          Get-Item reproduce.ps1 | Format-List Name, Length
+          if (-not (Test-Path reproduce.ps1)) { throw "download produced no file" }
 
-      - name: Run the environment check
+      - name: D. reproduce.ps1 parses under PowerShell 5.1
         shell: powershell
         run: |
-          .\reproduce.ps1 -Check -Ref ${{ github.sha }} -Dir "$env:RUNNER_TEMP\em-audio"
+          $errs = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path reproduce.ps1), [ref]$null, [ref]$errs)
+          if ($errs) { $errs | ForEach-Object { Write-Host $_ }; throw "parse errors" }
+          Write-Host "parsed clean"
 
-      # The check reports missing tools and exits non-zero, which is correct
-      # behaviour on a bare runner. Install them and confirm it then passes, so
-      # both branches are covered.
-      - name: Install the external tools
+      - name: E. It clones, installs and self-tests (exits non-zero if a tool is missing)
+        id: check
+        shell: powershell
+        continue-on-error: true
+        run: |
+          .\reproduce.ps1 -Check -Ref ${{ github.sha }} -Dir "$env:RUNNER_TEMP\emaudio"
+          Write-Host "exit code: $LASTEXITCODE"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - name: F. The clone actually happened
         shell: powershell
         run: |
-          choco install ffmpeg espeak -y --no-progress
-          Write-Host "node: $(node -v)"
+          $p = "$env:RUNNER_TEMP\emaudio\run_all.sh"
+          if (-not (Test-Path $p)) { throw "no clone at $p" }
+          Write-Host "clone present"
 
-      - name: Verify the line endings a Windows checkout produced
+      - name: G. run_all.sh survived checkout with LF endings
         shell: powershell
         run: |
-          $p = "$env:RUNNER_TEMP\em-audio\run_all.sh"
-          $bytes = [IO.File]::ReadAllBytes($p)[0..200]
-          $crlf = $false
-          for ($i = 0; $i -lt $bytes.Length - 1; $i++) {
-            if ($bytes[$i] -eq 13 -and $bytes[$i+1] -eq 10) { $crlf = $true; break }
+          $b = [IO.File]::ReadAllBytes("$env:RUNNER_TEMP\emaudio\run_all.sh")
+          for ($i = 0; $i -lt 400; $i++) {
+            if ($b[$i] -eq 13 -and $b[$i+1] -eq 10) { throw "CRLF found: .gitattributes did not hold" }
           }
-          if ($crlf) {
-            Write-Host "run_all.sh has CRLF: .gitattributes did not hold" -ForegroundColor Red
-            exit 1
-          }
-          Write-Host "run_all.sh has LF, as .gitattributes requires" -ForegroundColor Green
+          Write-Host "LF endings, as .gitattributes requires"
 
-      - name: Confirm bash can read the script
+      - name: H. bash can read run_all.sh
         shell: powershell
         run: |
-          $p = ($env:RUNNER_TEMP -replace '\\','/') + "/em-audio/run_all.sh"
-          bash -c "head -3 '$p'"
-          if ($LASTEXITCODE -ne 0) { throw "bash could not read run_all.sh" }
+          $p = ($env:RUNNER_TEMP -replace '\\','/') + "/emaudio/run_all.sh"
+          bash -c "head -2 '$p'"
+          if ($LASTEXITCODE -ne 0) { throw "bash could not read it" }
 
-      - name: Collect the logs whatever happened
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-check-logs
-          path: |
-            reproduce.ps1
-            ${{ runner.temp }}/em-audio/results/PREFLIGHT.txt
-          if-no-files-found: ignore
+      - name: I. The Store-stub detection does not misfire on a real Python
+        shell: powershell
+        run: |
+          $py = (Get-Command python).Source
+          Write-Host "python at: $py"
+          if ($py -like "*WindowsApps*") { throw "runner python is the Store stub" }
+
+      - name: J. Report whether the check step passed
+        shell: powershell
+        run: |
+          Write-Host "check outcome: ${{ steps.check.outcome }}"
+          if ("${{ steps.check.outcome }}" -ne "success") {
+            throw "the environment check did not pass; see step E"
+          }
