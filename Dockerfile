@@ -26,7 +26,11 @@ FROM debian:bookworm-20250630-slim
 
 ARG FFMPEG_TAG=autobuild-2026-08-30-13-12
 ARG FFMPEG_FILE=ffmpeg-N-126335-gb32f8d1c23-linux64-gpl.tar.xz
-ARG C2PATOOL_VERSION=0.27.16
+# 0.27.15, not the newest. 0.27.16 fails to embed a manifest in experiment E on
+# both Linux and Windows, while 0.27.15 is what the independent reproduction
+# used successfully and 0.27.2 is what the reference machine used. Pinning the
+# newest release of a dependency is not the same as pinning a working one.
+ARG C2PATOOL_VERSION=0.27.15
 ARG NODE_MAJOR=22
 
 ENV DEBIAN_FRONTEND=noninteractive \
