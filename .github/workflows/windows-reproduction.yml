@@ -201,3 +201,82 @@ jobs:
           if ("${{ steps.check.outcome }}" -ne "success") {
             throw "the environment check did not pass; see step E"
           }
+
+  full-pipeline:
+    name: Full pipeline on Windows
+    needs: windows
+    runs-on: windows-latest
+    timeout-minutes: 180
+    steps:
+      - name: Install FFmpeg
+        shell: powershell
+        run: |
+          choco install ffmpeg -y --no-progress --limit-output
+          $global:LASTEXITCODE = 0
+
+      - name: Install eSpeak NG 1.52.0
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          Invoke-WebRequest "https://github.com/espeak-ng/espeak-ng/releases/download/1.52.0/espeak-ng.msi" -OutFile espeak-ng.msi -UseBasicParsing
+          Start-Process msiexec.exe -Wait -ArgumentList "/i `"$PWD\espeak-ng.msi`" /qn /norestart"
+          foreach ($c in @("$env:ProgramFiles\eSpeak NG", "${env:ProgramFiles(x86)}\eSpeak NG")) {
+            if (Test-Path (Join-Path $c "espeak-ng.exe")) { Add-Content $env:GITHUB_PATH $c }
+          }
+
+      - name: Install c2patool 0.27.16
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          $ver = "0.27.16"
+          Invoke-WebRequest ("https://github.com/contentauth/c2pa-rs/releases/download/c2patool-v$ver/c2patool-v$ver-x86_64-pc-windows-msvc.zip") -OutFile c2patool.zip -UseBasicParsing
+          Expand-Archive c2patool.zip -DestinationPath "$env:RUNNER_TEMP\c2pa" -Force
+          $exe = Get-ChildItem "$env:RUNNER_TEMP\c2pa" -Recurse -Filter c2patool.exe | Select-Object -First 1
+          Add-Content $env:GITHUB_PATH $exe.Directory.FullName
+
+      - name: Fetch and run the whole thing, exactly as a validator would
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          irm https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/tools/reproduce.ps1 -OutFile reproduce.ps1
+          .\reproduce.ps1 -Ref ${{ github.sha }} -Dir "$env:RUNNER_TEMP\emaudio"
+          Write-Host "::notice::bootstrapper exit $LASTEXITCODE"
+          $global:LASTEXITCODE = 0
+
+      - name: Report the outcome through annotations
+        if: always()
+        shell: powershell
+        run: |
+          $d = "$env:RUNNER_TEMP\emaudio"
+          foreach ($f in @("run_all_output.txt","verify_output.txt")) {
+            $p = Join-Path $d $f
+            if (Test-Path $p) {
+              $tail = (Get-Content $p -Tail 3) -join " | "
+              Write-Host "::notice::$f tail: $tail"
+            } else { Write-Host "::warning::$f not produced" }
+          }
+          $pre = Join-Path $d "results\PREFLIGHT.txt"
+          if (Test-Path $pre) {
+            foreach ($line in Get-Content $pre) {
+              if ($line -match "^(python|ffmpeg|c2patool|node|espeak_ng|os):") {
+                Write-Host "::notice::$line"
+              }
+            }
+          }
+
+      - name: Upload everything the run produced
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-full-run
+          path: |
+            ${{ runner.temp }}/emaudio/results/machine_readable/
+            ${{ runner.temp }}/emaudio/results/PREFLIGHT.txt
+            ${{ runner.temp }}/emaudio/run_all_output.txt
+            ${{ runner.temp }}/emaudio/verify_output.txt
+          if-no-files-found: warn
