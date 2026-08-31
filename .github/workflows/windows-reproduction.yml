@@ -275,6 +275,21 @@ jobs:
           }
           Write-Host "::notice::pipeline completed on Windows with RUN OK"
 
+      - name: Explain the failure with the tool's own stderr
+        if: always()
+        shell: powershell
+        run: |
+          # Shell greps kept cutting off the stderr that says why. This parses
+          # the traceback properly and emits annotations, which are readable
+          # from the public API without a token.
+          $d = "$env:RUNNER_TEMP\emaudio"
+          $log = Join-Path $d "run_all_output.txt"
+          if (Test-Path $log) {
+            python "$d\tools\explain_failure.py" $log --github --max 3
+          } else {
+            Write-Host "::error::no run log to explain"
+          }
+
       - name: Say which experiment failed and how
         if: always()
         shell: powershell
