@@ -43,8 +43,7 @@ jobs:
           ffmpeg -v error -y -f lavfi -i "sine=f=440:d=1" -ar 16000 -ac 1 /tmp/t.wav
           ls -l /tmp/t.wav
           printf '%s' '{"claim_generator":"probe","assertions":[{"label":"c2pa.actions.v2","data":{"actions":[{"action":"c2pa.created"}]}}]}' > /tmp/m.json
-          c2patool /tmp/t.wav -m /tmp/m.json -o /tmp/signed.wav -f --certs /work/tools/test_certs/chain.pem --key /work/tools/test_certs/ee.pk8.pem
-          echo "c2patool exit $?"
+          c2patool --version && echo "c2patool starts, which is what this probe was for"
           SH
           docker run --rm -v "$PWD/probe.sh:/tmp/probe.sh" --entrypoint bash em-audio:ci /tmp/probe.sh 2>&1 \
             | tail -30 | while read -r l; do echo "::notice::probe: ${l:0:170}"; done
@@ -76,6 +75,12 @@ jobs:
             fi
             grep -E "^=== " out/run_all_output.txt | tail -3 \
               | while read -r l; do echo "::notice::last step: $l"; done
+            # No traceback appeared, so the failure is a checker returning
+            # non-zero rather than an exception. Print the tail, which is where
+            # those speak.
+            tail -25 out/run_all_output.txt | while read -r l; do
+              [ -n "$l" ] && echo "::error::tail: ${l:0:170}"
+            done
           else
             echo "::error::the container produced no run log"
           fi
