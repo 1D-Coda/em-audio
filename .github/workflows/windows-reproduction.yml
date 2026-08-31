@@ -37,6 +37,27 @@ jobs:
           choco install ffmpeg espeak -y --no-progress --limit-output
           $global:LASTEXITCODE = 0
 
+      - name: B2. Install c2patool, which choco does not carry
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          $api = "https://api.github.com/repos/contentauth/c2pa-rs/releases"
+          $rel = (Invoke-RestMethod $api -Headers @{ "User-Agent" = "em-audio-ci" }) |
+                 Where-Object { $_.assets.Count -gt 0 } | Select-Object -First 8
+          $asset = $rel.assets | Where-Object { $_.name -match "c2patool.*x86_64-pc-windows" } |
+                   Select-Object -First 1
+          if (-not $asset) { throw "no Windows c2patool asset found" }
+          Write-Host "downloading $($asset.name)"
+          Invoke-WebRequest $asset.browser_download_url -OutFile c2patool.zip -UseBasicParsing
+          Expand-Archive c2patool.zip -DestinationPath "$env:RUNNER_TEMP\c2pa" -Force
+          $exe = Get-ChildItem "$env:RUNNER_TEMP\c2pa" -Recurse -Filter c2patool.exe |
+                 Select-Object -First 1
+          if (-not $exe) { throw "c2patool.exe not in the archive" }
+          Add-Content $env:GITHUB_PATH $exe.Directory.FullName
+          Write-Host "c2patool at $($exe.FullName)"
+
       - name: C. Download reproduce.ps1 over TLS, as a validator would
         shell: powershell
         run: |
@@ -62,6 +83,25 @@ jobs:
           .\reproduce.ps1 -Check -Ref ${{ github.sha }} -Dir "$env:RUNNER_TEMP\emaudio"
           Write-Host "exit code: $LASTEXITCODE"
           if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - name: E2. The target directory exists
+        shell: powershell
+        run: |
+          $d = "$env:RUNNER_TEMP\emaudio"
+          if (-not (Test-Path $d)) { throw "no directory at $d" }
+          Get-ChildItem $d | Select-Object -First 12 Name | Format-Table
+
+      - name: E3. It is a git checkout
+        shell: powershell
+        run: |
+          if (-not (Test-Path "$env:RUNNER_TEMP\emaudio\.git")) { throw "not a checkout" }
+
+      - name: E4. c2patool is on PATH for the check
+        shell: powershell
+        run: |
+          $c = Get-Command c2patool -ErrorAction SilentlyContinue
+          if (-not $c) { throw "c2patool not on PATH" }
+          Write-Host (& c2patool --version)
 
       - name: F. The clone actually happened
         shell: powershell
