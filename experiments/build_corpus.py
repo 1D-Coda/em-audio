@@ -69,6 +69,14 @@ def main() -> int:
         d.mkdir(parents=True)
 
     flacs = sorted(p for p in LIBRI.rglob("*.flac"))
+    if len(flacs) < 2:
+        # Without this the failure is rng.sample raising ValueError on an empty
+        # population, which says nothing about a corpus. The cause is always
+        # upstream: the fetch did not run, or ran and failed.
+        print(f"no captured source audio under {LIBRI}: found {len(flacs)} flac "
+              f"files.\nRun tools/fetch_corpus.sh and check that it succeeded; "
+              f"every experiment\nthat needs audio depends on it.", file=sys.stderr)
+        return 1
     rng = random.Random(SEED)
     index: List[Dict[str, object]] = []
 

@@ -275,6 +275,24 @@ jobs:
           }
           Write-Host "::notice::pipeline completed on Windows with RUN OK"
 
+      - name: What the corpus steps reported
+        if: always()
+        shell: powershell
+        run: |
+          # The clips are missing when C2 and D look for them, and the failure
+          # lands there rather than where the corpus was built. These lines say
+          # whether the corpus step ran, and with how many files.
+          $log = "$env:RUNNER_TEMP\emaudio\run_all_output.txt"
+          if (Test-Path $log) {
+            Select-String -Path $log -Pattern "corpus ready|clips=|missing corpus|no captured source|C0_corpus_build|=== corpus" |
+              Select-Object -First 8 | ForEach-Object { Write-Host "::notice::corpus: $($_.Line.Trim())" }
+            $n = (Get-ChildItem "$env:RUNNER_TEMP\emaudio\corpus" -Recurse -Filter *.wav -ErrorAction SilentlyContinue |
+                  Measure-Object).Count
+            $f = (Get-ChildItem "$env:RUNNER_TEMP\emaudio\corpus" -Recurse -Filter *.flac -ErrorAction SilentlyContinue |
+                  Measure-Object).Count
+            Write-Host "::notice::corpus on disk: $n wav, $f flac"
+          }
+
       - name: Explain the failure with the tool's own stderr
         if: always()
         shell: powershell

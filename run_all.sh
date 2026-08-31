@@ -46,10 +46,18 @@ step "environment"
 python3 -V; ffmpeg -version | head -1; c2patool --version; node -v; espeak-ng --version
 
 step "test credential"
-[ -f "$ROOT"/tools/test_certs/chain.pem ] || "$ROOT"/tools/make_test_certs.sh
+# These two were the only steps whose failure was not recorded. A corpus fetch
+# that fails leaves the pipeline running against no corpus, and the first thing
+# to notice is an experiment several steps later complaining that a clip does
+# not exist, which names neither the step that failed nor the reason.
+[ -f "$ROOT"/tools/test_certs/chain.pem ] || "$ROOT"/tools/make_test_certs.sh || fail=1
 
 step "corpus"
-[ -d "$ROOT"/corpus/LibriSpeech/dev-clean ] || "$ROOT"/tools/fetch_corpus.sh
+[ -d "$ROOT"/corpus/LibriSpeech/dev-clean ] || "$ROOT"/tools/fetch_corpus.sh || {
+  echo "the corpus could not be fetched; every experiment that needs audio will"
+  echo "fail after this, so stop here rather than reporting those as results."
+  exit 2
+}
 
 step "named regression tests"
 python3 "$ROOT"/tests/test_contract.py || fail=1
