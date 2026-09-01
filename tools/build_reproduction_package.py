@@ -30,13 +30,30 @@ RETURNING = "--returning" in sys.argv
 # third parties is a decision that should be deliberate rather than incidental.
 # The five tools that read paper/ skip and return 0 when it is absent.
 INCLUDE = ["run_all.sh", "requirements.txt", "LICENSE", "DATA_LICENSES.md",
-           "README.md", "CITATION.cff", "verify_release.sh", ".gitignore",
+           "README.md", "CITATION.cff",
            "em_audio", "experiments", "tools", "tests", "oracle_js",
            "fixtures", "docs"]
 EXCLUDE_DIRS = {".git", "__pycache__", "node_modules", ".pytest_cache", "dist"}
 EXCLUDE_SUFFIX = {".pyc", ".aux", ".out", ".fls", ".fdb_latexmk", ".blg",
                   ".spl", ".synctex.gz"}
 EXCLUDE_NAMES = {".DS_Store"}
+
+# Tooling for building releases and packages. A validator runs the experiments;
+# none of this is part of that, and shipping it only invites the question of
+# what it is for. explain_failure.py stays: it is what turns a traceback in
+# their log into a cause. run_container/run_on_windows stay: the Docker path is
+# documented and they are its entry points.
+EXCLUDE_TOOLS = {"build_reproduction_package.py", "build_validation_kit.py",
+                 "freeze_reference.py", "make_repro_docx.py"}
+
+# Written by the pipeline on their machine. Shipping our copies adds bulk and,
+# worse, leaves outputs lying in the tree that their run is supposed to produce.
+EXCLUDE_RESULTS = {"figures", "tables"}
+
+# Internal: how we cut a release, publish the repository and deposit the
+# archive. Nothing a reproducer does.
+EXCLUDE_DOCS = {"PUBLISH_REPO.md", "RELEASE_AND_DEPOSIT.md",
+                "RELEASE_CHECKLIST.md", "reference_figures"}
 
 
 def copy_into(src: Path, dst: Path) -> None:
@@ -48,6 +65,11 @@ def copy_into(src: Path, dst: Path) -> None:
         if any(part in EXCLUDE_DIRS for part in p.parts):
             continue
         if p.name in EXCLUDE_NAMES or p.suffix in EXCLUDE_SUFFIX:
+            continue
+        rel = p.relative_to(src)
+        if src.name == "tools" and rel.name in EXCLUDE_TOOLS:
+            continue
+        if src.name == "docs" and rel.parts[0] in EXCLUDE_DOCS:
             continue
         if p.is_file():
             t = dst / p.relative_to(src)
@@ -74,14 +96,8 @@ def main() -> int:
 
     # The frozen reference is what the reproducer compares against.
     copy_into(ROOT / "results" / "reference", inner / "results" / "reference")
-    for extra in ("PREFLIGHT.txt", "numbers.tex", "13_Figure_Data_Sources.md",
-                  "14_Figure_QA.md"):
-        f = ROOT / "results" / extra
-        if f.exists():
-            copy_into(f, inner / "results" / extra)
-    for d in ("figures", "tables"):
-        if (ROOT / "results" / d).is_dir():
-            copy_into(ROOT / "results" / d, inner / "results" / d)
+
+
 
     # Empty by design, and asserted below. A zip does not carry empty
     # directories, so the reproducer would unpack a tree with no
