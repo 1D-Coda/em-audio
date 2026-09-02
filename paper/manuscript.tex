@@ -2395,8 +2395,21 @@ publication.
 We thank Daniel A. Balderrama-Alvarez (Universidad de Sonora, ORCID
 0009-0002-5180-0406) for carrying out the independent reproduction reported in
 Section~\ref{sec:res-independent}, and for reporting its two failures without
-adjusting them. He had no part in the design of the contract, the experiments or
-the classification of outputs, and is not an author.
+adjusting them. He later repeated the reproduction on Windows~11 and identified
+a further portability defect in the reproduction software, in a code path the
+project's own continuous integration cannot exercise. He had no part in the
+design of the contract, the experiments or the classification of outputs, and is
+not an author.
+
+We thank Miguel Arroyo (Nagoya Industries Promotion Corporation, ORCID
+0009-0008-8423-8345) for testing the reproduction software on Windows~11 and
+reporting two further defects in it:
+an inconsistency between how the dependency check and the experiments located
+an installed tool, and a directory removal that fails under the file locking
+Windows applies. Both were invisible to continuous integration on a hosted
+runner, and both are fixed in the archived release. They had no part in the
+design of the contract, the experiments or the classification of outputs, and
+are not an author.
 
 \bibliographystyle{elsarticle-harv}
 \bibliography{refs}

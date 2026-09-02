@@ -42,6 +42,12 @@ def main() -> int:
     # The reproduction package for validators ships without paper/: they run
     # the experiments, not the manuscript. A missing manuscript is that case,
     # not a defect, so say so and succeed rather than ending their run.
+    # A placeholder that reaches a submitted manuscript is a worse failure than
+    # a missing check. This one stands in for a person's name.
+    if TEX.exists() and "NAME PENDING" in TEX.read_text():
+        print("[guide] the manuscript still contains a NAME PENDING placeholder; "
+              "fill it in or remove the acknowledgement before submitting.")
+        return 1
     if not TEX.exists():
         print(f"[guide] paper/ absent, so there is no manuscript to check; "
               "skipped. This is expected in the reproduction package.")
