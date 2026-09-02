@@ -19,6 +19,7 @@ from typing import Dict, List, Tuple
 
 from _common import ROOT, emit                                        # noqa: E402
 from em_audio import ffmpeg_ops as F
+from em_audio import toolpath as _toolpath
 
 SEED = 20260819
 N_CLIPS = 600

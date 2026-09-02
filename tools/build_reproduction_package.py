@@ -13,6 +13,7 @@ This build asserts that rather than trusting it.
 """
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -166,6 +167,38 @@ def main() -> int:
              if q.is_file() and q.name in MANUSCRIPT]
     if stray:
         print(f"REFUSING: manuscript documents reached the package: {stray[:5]}")
+        return 1
+
+    # Import every experiment and tool from the staged tree before shipping it.
+    # A missing import once reached both a commit and a built archive: the
+    # package looked complete, and C0 would have died with a NameError on every
+    # validator's machine. Syntax is not enough; the module has to load.
+    broken = []
+    for q in sorted(list((inner / "experiments").glob("*.py"))
+                    + list((inner / "em_audio").glob("*.py"))
+                    + list((inner / "tools").glob("*.py"))):
+        try:
+            compile(q.read_text(), str(q), "exec")
+        except SyntaxError as exc:
+            broken.append(f"{q.relative_to(inner)}: {exc}")
+    check = subprocess.run(
+        [sys.executable, "-c",
+         "import importlib.util, pathlib, sys\n"
+         "sys.path[:0] = ['experiments', '.']\n"
+         "for q in sorted(pathlib.Path('experiments').glob('*.py')):\n"
+         "    if q.stem.startswith('_'): continue\n"
+         "    spec = importlib.util.spec_from_file_location(q.stem, q)\n"
+         "    m = importlib.util.module_from_spec(spec)\n"
+         "    try: spec.loader.exec_module(m)\n"
+         "    except SystemExit: pass\n"
+         "    except Exception as e: print(f'{q}: {type(e).__name__}: {e}')\n"],
+        cwd=inner, capture_output=True, text=True)
+    if check.stdout.strip():
+        broken += check.stdout.strip().splitlines()
+    if broken:
+        print("REFUSING: the staged package does not import cleanly:")
+        for b in broken[:10]:
+            print(f"  {b}")
         return 1
 
     zpath = DIST / f"{name}.zip"
