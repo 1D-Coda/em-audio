@@ -193,6 +193,12 @@ def main() -> int:
     # An ORCID is a person's identifier wherever it appears, including the
     # acknowledgement of the independent reproducer, and is not a result.
     text = re.sub(r"ORCID\s+[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9X]{4}", " ", text)
+    # A version attached to a named product is not a result. "Windows~11" was
+    # reported as a hand-typed count. Kept narrow on purpose: the digits must
+    # follow one of these names, so a bare 11 anywhere else is still caught.
+    text = re.sub(r"\b(Windows|PowerShell|macOS|Ubuntu|Debian|Python|FFmpeg|"
+                  r"Node|c2patool|eSpeak(?:\s+NG)?)(?:~|\s|\s?v)?\d[\d.]*",
+                  r"\1", text, flags=re.I)
     text = text.replace("[0,1]", " ")
     text = re.sub(r"(?m)%.*$", "", text)
     text = re.sub(r"\\(includegraphics|input|label|ref|eqref|cite\w*|usepackage|graphicspath|section|subsection)\s*(\[[^\]]*\])?\{[^}]*\}", " ", text)
