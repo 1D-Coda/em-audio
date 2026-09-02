@@ -16,7 +16,8 @@ from typing import Dict, List, Optional, Sequence
 
 from .manifest_schema import ASSERTION_LABEL
 
-C2PATOOL = shutil.which("c2patool") or "c2patool"
+from em_audio import toolpath as _toolpath
+C2PATOOL = _toolpath.locate("c2patool") or "c2patool"
 
 
 def version() -> str:

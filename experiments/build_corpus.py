@@ -29,7 +29,9 @@ BUILD = CORPUS / "build"
 CLIPS = CORPUS / "clips"
 CAP_MIN_S, CAP_MAX_S = 0.60, 1.40      # captured segment duration bounds
 GEN_MIN_S, GEN_MAX_S = 0.50, 1.20      # generated segment duration bounds
-ESPEAK = shutil.which("espeak-ng") or "espeak-ng"
+# Same resolution the self-test uses. PATH alone told a validator the tool was
+# found and then failed the run: winget installs eSpeak NG outside PATH.
+ESPEAK = _toolpath.locate("espeak-ng") or _toolpath.locate("espeak") or "espeak-ng"
 
 PHRASES = [
     "the quarterly figures were revised on tuesday",

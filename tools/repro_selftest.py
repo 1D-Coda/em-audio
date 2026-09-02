@@ -85,22 +85,12 @@ def main() -> int:
     print()
 
     print("External tools")
-    def locate(name):
-        """shutil.which, plus the places Windows installers use without
-        touching PATH. eSpeak NG in particular installs to Program Files and
-        leaves PATH alone, so a machine with the tool present reports it
-        missing, which sends the reader off to reinstall something they have."""
-        hit = shutil.which(name)
-        if hit or not WINDOWS:
-            return hit
-        for base in (os.environ.get("ProgramFiles", r"C:\Program Files"),
-                     os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
-                     r"C:\ProgramData\chocolatey\bin"):
-            for sub in ("", "eSpeak NG", "eSpeak", "espeak-ng"):
-                cand = Path(base) / sub / f"{name}.exe"
-                if cand.exists():
-                    return str(cand)
-        return None
+    # Imported, not restated. These two used to be separate implementations
+    # and they disagreed: this one searched Program Files and the experiments
+    # did not, so a tool installed by winget was reported found and then failed
+    # the run 25 minutes later.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from em_audio.toolpath import locate
 
     for names, why, how in TOOLS:
         found = next((n for n in names if locate(n)), None)
