@@ -43,7 +43,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "experiments"))
 
-import em_audio.ffmpeg_ops as F                                  # noqa: E402
+import em_audio.ffmpeg_ops as F
+from em_audio import fsutil as _fsutil                                  # noqa: E402
 import em_audio.operators as O                                   # noqa: E402
 from support_containment import (CONTEXTS, FS, N, base_signal,    # noqa: E402
                                  decode, probe, write_wav)
@@ -124,7 +125,7 @@ def self_test() -> int:
     name, model, run = [c for c in cases() if c[0] == "transcode_mp3"][0]
     wd = WORK / "selftest"
     if wd.exists():
-        shutil.rmtree(wd)
+        _fsutil.rmtree(wd)
     wd.mkdir(parents=True)
     positions = probe_positions()
 
@@ -186,7 +187,7 @@ def main() -> int:
         else:
             print(f"clearing {WORK.relative_to(ROOT)} "
                   f"(pass --keep-work to leave it in place)")
-            shutil.rmtree(WORK)
+            _fsutil.rmtree(WORK)
     WORK.mkdir(parents=True, exist_ok=True)
 
     positions = probe_positions()

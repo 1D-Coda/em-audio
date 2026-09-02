@@ -19,6 +19,7 @@ from typing import Dict, List, Tuple
 
 from _common import ROOT, emit                                        # noqa: E402
 from em_audio import ffmpeg_ops as F
+from em_audio import fsutil as _fsutil
 from em_audio import toolpath as _toolpath
 
 SEED = 20260819
@@ -82,7 +83,7 @@ def main() -> int:
         return 2
     for d in (BUILD, CLIPS):
         if d.exists():
-            shutil.rmtree(d)
+            _fsutil.rmtree(d)
         d.mkdir(parents=True)
 
     flacs = sorted(p for p in LIBRI.rglob("*.flac"))

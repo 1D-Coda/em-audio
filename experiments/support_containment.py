@@ -32,6 +32,7 @@ from typing import Dict, List, Tuple
 
 from _common import ROOT, emit                                        # noqa: E402
 from em_audio import ffmpeg_ops as F
+from em_audio import fsutil as _fsutil
 import em_audio.operators as O
 
 WORK = ROOT / "corpus" / "support"
@@ -189,7 +190,7 @@ def probe(name: str, run, model, k: int, wd: Path, ctx: str = "tone") -> Dict[st
 def main() -> int:
     t0 = time.time()
     if WORK.exists():
-        shutil.rmtree(WORK)
+        _fsutil.rmtree(WORK)
     WORK.mkdir(parents=True)
 
     gain = 0.0                                # fixed gain keeps the probe well defined

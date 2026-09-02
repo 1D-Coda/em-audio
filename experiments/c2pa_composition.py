@@ -32,6 +32,7 @@ from em_audio.evidence import Evidence, aggregate, claim_of
 from em_audio.interval_map import SourceInterval, Timeline, em_intervals
 from em_audio.manifest_schema import em_assertion
 import em_audio.operators as O
+from em_audio import fsutil as _fsutil
 
 CORPUS = ROOT / "corpus"
 WORK = CORPUS / "composition"
@@ -57,7 +58,7 @@ def main() -> int:
     t0 = time.time()
     index = json.loads((CORPUS / "corpus_index.json").read_text())[:N_FIXTURES]
     if WORK.exists():
-        shutil.rmtree(WORK)
+        _fsutil.rmtree(WORK)
     WORK.mkdir(parents=True)
     sg = signer()
 
