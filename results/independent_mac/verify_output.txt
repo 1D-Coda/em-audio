@@ -1,0 +1,17 @@
+Comparing the working tree against results/reference/ (snapshot shipped with the release).
+Deterministic outputs must match exactly. Environment-dependent outputs are reported
+and are expected to differ.
+
+Environment-dependent differences (17), expected and not a defect:
+  D_transform_matrix.per_transformation.normalize.median_runtime_ms: v1.0.2=50.043 here=61.114
+  D_transform_matrix.per_transformation.overlay_generated.median_runtime_ms: v1.0.2=25.911 here=31.607
+  D_transform_matrix.per_transformation.resample_16_8.median_runtime_ms: v1.0.2=25.155 here=30.739
+  D_transform_matrix.per_transformation.silence_removal.median_runtime_ms: v1.0.2=24.94 here=30.465
+  D_transform_matrix.per_transformation.time_stretch_1.10.median_runtime_ms: v1.0.2=25.613 here=31.273
+  D_transform_matrix.per_transformation.transcode_flac.median_runtime_ms: v1.0.2=25.99 here=31.841
+  D_transform_matrix.per_transformation.transcode_mp3.median_runtime_ms: v1.0.2=29.577 here=36.417
+  D_transform_matrix.per_transformation.trim_10_90.median_runtime_ms: v1.0.2=24.941 here=30.401
+  ... and 9 more
+
+Every deterministic output matches the release.
+17 environment-dependent difference(s), which is the expected outcome.

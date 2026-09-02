@@ -54,4 +54,37 @@ because the run has not completed.
 ORCID 0009-0000-8932-683X. No affiliation on the ORCID record; ask before
 printing one.
 
-Has the package. Nothing run yet, so nothing to attribute.
+**MacBook Air, Apple Silicon, macOS 26.3.1, FFmpeg 9.0.1 Homebrew.** Reached
+`RUN OK`, and `verify_reproduction.py` exited 0: every deterministic output
+matches the release, with 17 environment-dependent differences, all of them
+timings. 30/30 tests, 0 oracle disagreements over 10,860 cases, 0 probes outside
+declared support.
+
+This is the first independent run to reproduce every deterministic output
+exactly, and it did so on a different machine from the reference and with
+c2patool 0.27.16 against the reference's 0.27.2, node 26.8.1 and Python 3.11.16.
+The deterministic results are therefore not sensitive to those versions.
+
+Measured MP3 kernel reach 1,555 source samples, the reference value exactly.
+
+A second run on another of her machines is expected.
+
+
+## What the MP3 reach measurements now show
+
+| run | platform | FFmpeg 9.0.1 build | measured reach |
+|---|---|---|---|
+| reference (author) | macOS arm64 | Homebrew | 1,555 |
+| Guerra Flores | macOS arm64 | Homebrew | 1,555 |
+| Balderrama-Alvarez | Windows x86-64 | gyan.dev full | 1,541 |
+| CI (author) | Windows x86-64 | gyan.dev essentials | 1,541 |
+
+Four runs, one FFmpeg version number, two builds, two values. Runs on the same
+build agree exactly, including across different machines and different people;
+runs on a different build differ, and agree with each other. The measurement is
+a property of the build rather than of the machine or of the version number,
+which is what the paper claims and what a reader who replies "pin the version"
+needs to see.
+
+The declaration held in all four: 2,304 declared, every measurement inside it,
+no probe outside declared support.

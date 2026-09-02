@@ -1,0 +1,420 @@
+{
+ "assertion_label": "io.github.1d-coda.emaudio.evidence",
+ "assertion_recovered": 30,
+ "assertion_recovery_complete": true,
+ "assets_examined": 30,
+ "assets_read": 30,
+ "degradation_complete": true,
+ "degrades_to_standard_manifest": 30,
+ "environment": {
+  "c2patool": "c2patool 0.27.16",
+  "cpu_count_logical": "8",
+  "cpu_model": "Apple M1",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "memory_bytes": "8589934592",
+  "node": "v26.8.1",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.16"
+ },
+ "experiment": "N_second_reader",
+ "independence_note": "c2pa-python binds the same Rust core c2patool wraps, at a different version and through a different API. Agreement rules out a CLI-specific or version-specific artefact. It is not an independent implementation and no interoperability claim follows from it.",
+ "per_asset": [
+  {
+   "asset": "0000_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0000_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0000_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0001_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0001_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0001_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0002_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0002_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0002_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0003_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0003_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0003_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0004_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0004_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0004_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0005_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0005_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0005_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0006_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0006_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0006_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0007_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0007_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0007_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0008_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0008_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0008_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0009_signed.flac",
+   "container": "flac",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0009_signed.mp3",
+   "container": "mp3",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 5,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  },
+  {
+   "asset": "0009_signed.wav",
+   "container": "wav",
+   "em_assertion_present": true,
+   "has_ingredients": true,
+   "intervals": 3,
+   "read_ok": true,
+   "schema_matches": true,
+   "standard_assertions": [
+    "c2pa.actions.v2"
+   ],
+   "validation_state": "Valid"
+  }
+ ],
+ "purpose": "whether a reader other than c2patool recovers the evidence assertion, and what a reader that ignores it is left with",
+ "reader": "c2pa-python 0.37.8",
+ "runtime_s": 0.754,
+ "status": "run"
+}

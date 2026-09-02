@@ -1,0 +1,40 @@
+{
+ "alphabet": [
+  "C",
+  "G",
+  "B"
+ ],
+ "batteries": [
+  {
+   "max_len": 6,
+   "width": 16
+  },
+  {
+   "max_len": 4,
+   "width": 1024
+  }
+ ],
+ "cases": 10860,
+ "compared": 10860,
+ "disagreement_sample": [],
+ "disagreements": 0,
+ "environment": {
+  "c2patool": "c2patool 0.27.16",
+  "cpu_count_logical": "8",
+  "cpu_model": "Apple M1",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "memory_bytes": "8589934592",
+  "node": "v26.8.1",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.16"
+ },
+ "experiment": "H_oracle_differential",
+ "independence_caveat": "both implementations are author-written; this is a differential test against transcription and interval-arithmetic error, not author independence",
+ "javascript_algorithm": "brute-force per-output-sample evaluation, run-length encoded",
+ "max_support_abs_difference": 0.0,
+ "python_algorithm": "interval algebra with pulled-back source boundaries",
+ "runtime_s": 5.597
+}
