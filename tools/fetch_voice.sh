@@ -17,12 +17,23 @@ if [ -z "${PY:-}" ]; then
   . "$(cd "$(dirname "$0")" && pwd)"/resolve_python.sh
   resolve_python || { python_not_found_message; exit 2; }
 fi
-$PY -m piper.download_voices en_US-ljspeech-medium --data-dir "$d"
+# The downloader's exit status does not decide this; the checksums below do.
+# piper writes both files, prints "Downloaded", and then aborts in onnxruntime's
+# teardown with "recursive_mutex lock failed" on macOS. Under set -e that killed
+# the script before the verification, and run_all.sh reported RUN FAILED for a
+# run whose every result was correct: the next step used the model and passed
+# 50/50. A cryptographic check of what is on disk is a better test of whether
+# the download worked than the exit code of the process that made it.
+$PY -m piper.download_voices en_US-ljspeech-medium --data-dir "$d" || \
+  echo "  (the downloader exited non-zero; the checksums below decide)" >&2
 
 # Verify both files against the checksums recorded in DATA_LICENSES.md.
 expect_model="6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22"
 expect_cfg="141d612cc0a95ed7efc1ca936b845c2364967f2e9217c5dbfcf69fc4d6c65860"
 . "$(cd "$(dirname "$0")" && pwd)"/sha256.sh
+for f in en_US-ljspeech-medium.onnx en_US-ljspeech-medium.onnx.json; do
+  [ -f "$d/$f" ] || { echo "the voice download produced no $f" >&2; exit 1; }
+done
 got_model=$(sha256_of "$d/en_US-ljspeech-medium.onnx")
 got_cfg=$(sha256_of "$d/en_US-ljspeech-medium.onnx.json")
 if [ "$got_model" != "$expect_model" ]; then
