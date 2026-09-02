@@ -25,6 +25,8 @@ DIST = ROOT / "dist"
 
 # --returning writes the package for the reproducer whose run already failed.
 RETURNING = "--returning" in sys.argv
+# --mac ships the macOS letter and the double-clickable entry point.
+MAC = "--mac" in sys.argv
 
 # No paper/. A validator runs the experiments; the manuscript, its drafts and
 # the reviews are not part of that, and shipping an unpublished manuscript to
@@ -129,6 +131,15 @@ def main() -> int:
         for src, dst in ((kitdir / "LEEME.txt", "LEEME.txt"),):
             if src.exists():
                 shutil.copy2(src, stage / dst)
+    elif MAC:
+        if (kitdir / "LEEME_MAC.txt").exists():
+            shutil.copy2(kitdir / "LEEME_MAC.txt", stage / "LEEME.txt")
+        # At the top of the archive, where a double click finds it.
+        cmd = ROOT / "tools" / "Reproducir_en_Mac.command"
+        if cmd.exists():
+            dst = stage / "Reproducir_en_Mac.command"
+            shutil.copy2(cmd, dst)
+            dst.chmod(0o755)
     else:
         for src, dst in ((kitdir / "LEEME_NUEVO.txt", "LEEME.txt"),
                          (kitdir / "README_FIRST.txt", "README_FIRST.txt")):
