@@ -27,6 +27,8 @@ DIST = ROOT / "dist"
 RETURNING = "--returning" in sys.argv
 # --mac ships the macOS letter and the double-clickable entry point.
 MAC = "--mac" in sys.argv
+# --win ships the double-clickable Windows entry point.
+WIN = "--win" in sys.argv
 
 # No paper/. A validator runs the experiments; the manuscript, its drafts and
 # the reviews are not part of that, and shipping an unpublished manuscript to
@@ -140,6 +142,16 @@ def main() -> int:
             dst = stage / "Reproducir_en_Mac.command"
             shutil.copy2(cmd, dst)
             dst.chmod(0o755)
+    elif WIN:
+        for src, dst in ((kitdir / "LEEME_NUEVO.txt", "LEEME.txt"),
+                         (kitdir / "README_FIRST.txt", "README_FIRST.txt")):
+            if src.exists():
+                shutil.copy2(src, stage / dst)
+        # At the top of the archive, where a double click finds them.
+        for name in ("Reproducir_en_Windows.cmd", "reproduce_windows_full.ps1"):
+            src = ROOT / "tools" / name
+            if src.exists():
+                shutil.copy2(src, stage / name)
     else:
         for src, dst in ((kitdir / "LEEME_NUEVO.txt", "LEEME.txt"),
                          (kitdir / "README_FIRST.txt", "README_FIRST.txt")):

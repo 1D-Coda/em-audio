@@ -179,6 +179,37 @@ jobs:
             *) echo "::error::resolved to '$PY', which is the shadowed name"; exit 1 ;;
           esac
 
+      - name: E3c. The one-click entry point parses under PowerShell 5.1
+        shell: powershell
+        run: |
+          # PSVersion here is 5.1, which is what a validator's Windows has.
+          # An earlier draft used the ?? operator, which is PowerShell 7 only,
+          # and would have failed on every machine it was written for.
+          Write-Host "PSVersion: $($PSVersionTable.PSVersion)"
+          $d = "$env:RUNNER_TEMP\emaudio"
+          $ps1 = "$d\tools\reproduce_windows_full.ps1"
+          if (-not (Test-Path $ps1)) {
+            Write-Host "::error::reproduce_windows_full.ps1 not in the checkout"
+            exit 1
+          }
+          $errs = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            $ps1, [ref]$null, [ref]$errs) | Out-Null
+          if ($errs) {
+            $errs | ForEach-Object { Write-Host "::error::$($_.Message)" }
+            exit 1
+          }
+          Write-Host "::notice::the one-click script parses under 5.1"
+
+          # The .cmd must carry CRLF: cmd.exe mis-parses LF-only batch files.
+          $cmd = "$d\tools\Reproducir_en_Windows.cmd"
+          $bytes = [IO.File]::ReadAllBytes($cmd)
+          if (-not ($bytes -contains 13)) {
+            Write-Host "::error::Reproducir_en_Windows.cmd has no CR; .gitattributes did not apply"
+            exit 1
+          }
+          Write-Host "::notice::the .cmd has CRLF endings"
+
       - name: E4. c2patool is on PATH for the check
         shell: powershell
         run: |

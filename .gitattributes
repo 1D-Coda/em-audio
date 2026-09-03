@@ -10,6 +10,9 @@
 
 # PowerShell is happier with CRLF on Windows and does not care on other systems.
 *.ps1   text eol=crlf
+# cmd.exe can mis-parse a .cmd with LF endings.
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
 
 # Data and results are compared byte for byte by verify_reproduction.py, so no
 # platform may rewrite them.
