@@ -148,10 +148,13 @@ def main() -> int:
             if src.exists():
                 shutil.copy2(src, stage / dst)
         # At the top of the archive, where a double click finds them.
-        for name in ("Reproducir_en_Windows.cmd", "reproduce_windows_full.ps1"):
-            src = ROOT / "tools" / name
+        # `entry`, not `name`: the outer `name` holds the archive's own name and
+        # this loop overwrote it, so the package came out called
+        # reproduce_windows_full.ps1.zip.
+        for entry in ("Reproducir_en_Windows.cmd", "reproduce_windows_full.ps1"):
+            src = ROOT / "tools" / entry
             if src.exists():
-                shutil.copy2(src, stage / name)
+                shutil.copy2(src, stage / entry)
     else:
         for src, dst in ((kitdir / "LEEME_NUEVO.txt", "LEEME.txt"),
                          (kitdir / "README_FIRST.txt", "README_FIRST.txt")):
