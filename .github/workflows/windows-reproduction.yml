@@ -25,6 +25,54 @@ on:
   workflow_dispatch:
 
 jobs:
+  install-path:
+    name: One-click install path on a stripped PATH
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: What this proves, and what it cannot
+        shell: powershell
+        run: |
+          # The other jobs run on a runner that already has Python, FFmpeg, Node
+          # and Git, so they never exercise the install path a validator on a
+          # clean machine takes. This job hides those tools by cutting PATH down
+          # to Windows itself plus winget, then runs the one-click script and
+          # asserts it installs what is missing and finds it afterwards.
+          #
+          # It still is not a clean machine: winget may report a package as
+          # already installed and only repair PATH. That is precisely the case
+          # that broke before, so it is worth asserting either way.
+          Write-Host "PSVersion: $($PSVersionTable.PSVersion)"
+
+      - name: Hide the preinstalled tools, then run the entry point
+        shell: powershell
+        timeout-minutes: 40
+        run: |
+          $keep = @(
+            "$env:SystemRoot\system32",
+            "$env:SystemRoot",
+            "$env:SystemRoot\System32\WindowsPowerShell\v1.0",
+            "$env:LOCALAPPDATA\Microsoft\WindowsApps"
+          )
+          $env:PATH = ($keep -join ";")
+          Write-Host "PATH reducido a:`n$env:PATH`n"
+
+          foreach ($t in @("python","py","ffmpeg","node","git","espeak-ng","c2patool")) {
+            $found = Get-Command $t -ErrorAction SilentlyContinue
+            Write-Host ("  {0,-10} {1}" -f $t, $(if ($found) { "visible: " + $found.Source } else { "oculto" }))
+          }
+
+          Write-Host "`n--- ejecutando el punto de entrada ---`n"
+          & .\tools\reproduce_windows_full.ps1 -Check -Yes
+          $rc = $LASTEXITCODE
+          Write-Host "`nsalida del script: $rc"
+          if ($rc -ne 0) {
+            Write-Host "::error::the one-click script failed on a stripped PATH (exit $rc)"
+            exit 1
+          }
+          Write-Host "::notice::installed and found every tool from a stripped PATH"
+
   windows:
     name: PowerShell 5.1 on windows-latest
     runs-on: windows-latest

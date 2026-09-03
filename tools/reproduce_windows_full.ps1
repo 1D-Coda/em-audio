@@ -5,6 +5,14 @@
 # changes someone's machine is not one a reviewer should trust, and the person
 # running it is entitled to see what it does; that is also why this is a script
 # and not a signed executable.
+param(
+  # -Check stops after the dependency check, running no experiments. Useful on
+  # its own, and it is how continuous integration exercises the install path.
+  [switch]$Check,
+  # -Yes answers the install prompt. Only for automation: a person running this
+  # should see what is about to be installed on their machine.
+  [switch]$Yes
+)
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol =
   [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
@@ -57,8 +65,12 @@ if ($wants.Count -eq 0 -and -not $needC2patool) {
     Bad "Falta winget, que es como Windows instala estos programas."
     Halt "Actualiza 'Instalador de aplicaciones' desde Microsoft Store, o instalalos a mano."
   }
-  $yn = Read-Host "Instalar lo que falta ahora? [s/N]"
-  if ($yn -notmatch '^[sSyY]$') { Halt "De acuerdo. Instalalo y vuelve a hacer doble clic." }
+  if ($Yes) {
+    Write-Host "Instalando sin preguntar (-Yes)."
+  } else {
+    $yn = Read-Host "Instalar lo que falta ahora? [s/N]"
+    if ($yn -notmatch '^[sSyY]$') { Halt "De acuerdo. Instalalo y vuelve a hacer doble clic." }
+  }
 
   foreach ($w in $wants) {
     Say "Instalando $($w.n)"
@@ -128,6 +140,12 @@ Ok "  listas"
 Say "5/7  Revision previa (no corre experimentos)"
 & $vpy (Join-Path $root "tools\repro_selftest.py")
 if ($LASTEXITCODE -ne 0) { Halt "La revision previa encontro problemas. Resuelvelos y vuelve a hacer doble clic." }
+
+if ($Check) {
+  Ok "`nRevision completa: todo presente y utilizable."
+  Write-Host "Vuelve a ejecutarlo sin -Check para la corrida completa."
+  exit 0
+}
 
 Say "6/7  Corrida completa (unos 25 minutos, mas 322 MB la primera vez)"
 Write-Host "No cierres esta ventana."
