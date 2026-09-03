@@ -44,6 +44,25 @@ measured the MP3 encoder reaching 4,317 source samples against 2,304 declared,
 and that is published as a finding rather than absorbed by widening the
 declaration. The container reproduces the same class of result on its own build.
 
+## One double click
+
+`Reproducir_en_Windows.cmd` at the top of the package. Finder's equivalent on
+Windows: double click it and a Terminal opens. It lists what is missing, asks
+before installing anything, installs it with winget, downloads c2patool, builds
+a virtual environment, runs the pipeline and leaves one zip to send back.
+
+`Reproducir_en_Windows.cmd -Check` stops after the dependency check and runs no
+experiments. Run that first.
+
+What continuous integration has established about it: on a runner whose PATH was
+cut down to Windows itself plus winget, so that FFmpeg, Node, Git, eSpeak NG and
+c2patool were all invisible, the script installed all five, refreshed PATH inside
+its own session, and the dependency check then found every tool and every Python
+package. Not established: installing Python itself, since the runner's `python`
+and `py` stayed visible. If Python is missing on your machine and the script
+cannot find it after installing, close the window, open a new one and run it
+again.
+
 ## Running it natively
 
 ```powershell
