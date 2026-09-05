@@ -1,13 +1,16 @@
 # Phase 0 — novelty falsification and closest-work matrix (Gate 0A)
 
-**Search dates.** 2026-08-19 (execution).  To be re-run and re-recorded
-immediately before submission.
+**Search dates.** First pass 2026-08-19 (execution); re-run 2026-09-05,
+immediately before submission.  The re-run is recorded below alongside the
+first pass, since what a novelty search establishes depends on when it was
+last attempted.
 
 **Databases and interfaces.** Web search over the open literature; arXiv;
 IACR Cryptology ePrint Archive; ACM Digital Library and DROPS/LIPIcs listings;
 the C2PA specification site (`spec.c2pa.org`); OpenSLR.
 
-**Query strings used.**
+**Query strings used (first pass).**  Left as executed; the re-run's targets
+are recorded separately below.
 
 1. `provenance semiring non-amplification derived media operator monotone provenance lattice`
 2. `C2PA content credentials audio provenance derived asset ingredient inheritance research paper 2026`
@@ -43,8 +46,9 @@ transport.
 
 ## Gate 0A statement
 
-> To our knowledge, searching through 2026-08-19 with the databases and query
-> strings recorded above, we found no prior work that combines (X) an
+> To our knowledge, searching through 2026-09-05 with the databases recorded
+> above, the first-pass query strings recorded above and the re-run targets
+> recorded below, we found no prior work that combines (X) an
 > operator-level complete-source evidence rule for derived media, (Y) a temporal
 > interval instantiation over audio with declared kernel footprints, and (Z) a
 > signed C2PA transport carrying the resulting interval evidence, together with
@@ -56,4 +60,48 @@ The theorem is therefore **not claimed as new**.  It is presented as an instance
 of a known meet-semilattice construction, and the contribution is relocated to
 the executable temporal operator contract, its measured demonstration, and the
 signed transport.  This is stated in the Introduction, the Formal model and the
-Discussion.
+Discussion.  The re-run of 2026-09-05 recorded below did not disturb this
+verdict.
+
+## Re-run 2026-09-05 — outcome
+
+Executed 2026-09-05, immediately before submission, over the databases and
+interfaces listed above.  The re-run was conducted to **falsify** the novelty
+claim rather than to support it, and it targeted the three statements this work
+depends on:
+
+1. that a derived segment must not carry provenance stronger than its weakest
+   required source;
+2. that per-operator kernel support is declared and calibrated rather than
+   assumed;
+3. that the resulting interval evidence is carried in a signed C2PA manifest
+   over temporal regions.
+
+These are search *targets*, not query strings.  The strings listed above are
+those of the first pass and are left as executed.
+
+**No prior work stating any of the three was found.**
+
+What the searches did return is the established algebraic material this paper
+takes as given, which is the outcome the claim predicts: the meet-semilattice
+construction, and the restriction of semiring provenance to monotone queries,
+are prior art and are cited as such.  The theorem therefore remains **not
+claimed as new**.
+
+The closest adjacent work remains two 2026 preprints, both already rows in
+Table N1 and both cited before the re-run:
+
+- Fu et al., *Trust the voice, hide the source* (ePrint 2026/1308) — anonymous
+  provenance for verifiably edited audio;
+- Golaszewski et al., *Security analysis of C2PA* (ePrint 2026/804) — a
+  security analysis of C2PA and its implementations.
+
+**Neither defines an inheritance rule over media time.**  C2PA itself records
+multiple sources as ingredients but specifies no rule constraining what a
+derived asset may claim relative to them, which is the gap this work addresses.
+
+**Effect on the paper: none.**  Nothing found in the re-run changed a claim or
+added a reference.  No row was added to Table N1 and no cell in it was changed,
+because the re-run surfaced no work not already represented there.  A search
+that surfaces only works already cited is the result recorded here, not
+evidence that none was sought.
