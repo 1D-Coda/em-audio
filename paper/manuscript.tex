@@ -1793,7 +1793,7 @@ for the released code. His raw outputs are released unmodified in
 \texttt{results/independent/}.
 
 Two statements about that run belong here rather than only in the released log.
-\texttt{tools/verify\_reproduction.py} returned a non-zero status and the
+\path{tools/verify_reproduction.py} returned a non-zero status and the
 verdict \texttt{REPRODUCTION INCOMPLETE}, because a deterministic output
 differs; the \IRdet{} differences it counted are the ones reported below, and
 we classify all of them as build-dependent under criteria fixed before he ran
@@ -1869,6 +1869,37 @@ operator nonetheless reported no sample outside the declared support: the
 mapping and the support are two different quantities validated by two different
 experiments, and only the first failed.
 
+\paragraph{Two builds, one version number} Two later runs on the released
+package let the version number be separated from the environment around it.
+B.~C.~Guerra Flores ran it on an \XBMacCpu{} under \XBMacOs{}, with
+FFmpeg~\XBMacFfmpeg{} from the same package manager as the reference machine but
+on different hardware and by a different person. Her
+\texttt{verify\_reproduction.py} exited zero and \XBMacVerdict{} matched the
+release, the \XBMacEnvDiffs{} differences it reported being timings; her
+measured MP3 reach is \XBMacReach{}, the reference value exactly. This is the
+first run by a third party to reproduce every deterministic output, and it did
+so with a \texttt{c2patool} and a Node newer than ours, so those results do not
+depend on those versions either. D.~A.~Balderrama-Alvarez then ran the same
+package on \XBWinOs{} with FFmpeg~\XBWinFfmpeg{}, a different build of the same
+FFmpeg version, and measured \XBWinReach{}.
+
+What that supports is narrower than it may look, and the limit is worth stating
+in the same breath as the result. The FFmpeg version number is \XBMacFfmpeg{}
+in all three runs and the measured reach takes two values, so the version number
+does not determine the footprint: pinning it is not a substitute for
+re-calibrating. Machine and operator do not move the measurement either, since
+the two runs that agree on \XBMacReach{} share neither hardware nor person.
+What these runs cannot separate is which of the operating system, the processor
+architecture and the FFmpeg build is responsible, because all three differ
+together between the two values; we therefore claim only that the number is not
+fixed by the version, not that it is a property of the build alone. Nor were
+these runs designed as a comparison. They were made to test the reproduction
+package and happen to hold the right variables constant, which makes them an
+observation rather than an experiment, and we report them as one. The
+declaration of \IRmpDeclared{} samples contained every measurement in this
+group, with \XBMacOutside{} and \XBWinOutside{} probes outside the declared
+support.
+
 We report both as findings rather than as reproduction failures, and we do not
 re-declare the two numbers to make them pass. Widening them until his build
 conforms would produce a table that is adequate for two builds and tested
@@ -1909,8 +1940,14 @@ on every fixture and every corpus clip tested, where a minimal boundary-only
 policy does not; that it can be carried in an existing signed provenance standard without
 altering the audio; and that its cost is a fraction of a percent of the
 processing it accompanies. An independent run on unrelated hardware returned
-every one of those counts unchanged, which is what makes them properties of the
-contract rather than of one machine.
+the headline contract and corpus counts unchanged; the \IRdet{} deterministic
+differences it did produce fall in two result files, and both trace to
+declarations calibrated against one FFmpeg build that the other does not
+satisfy (Section~\ref{sec:res-independent}). Independent execution of the same
+implementation shows that those counts are not artefacts of the reference
+machine. That they are properties of the contract is established by
+Propositions~\ref{prop:union}--\ref{prop:footprint} and
+Theorem~\ref{thm:composition}, which are proved from the requirements.
 
 \paragraph{What transfers, and what has to be measured again} The independent
 reproduction separates these two cleanly, and Table~\ref{tab:transfer} states
@@ -2092,11 +2129,18 @@ worth stating precisely: it establishes that the code and
 reproducibility workflow are self-contained conditional on the two
 checksum-pinned external artefacts, and that no result depends on a file left in
 a working directory; it was performed by the author on the same machine, so it
-is not on its own independent reproduction. A reproduction by someone else on
-different hardware has since been carried out and is reported in
-Section~\ref{sec:res-independent}; it is not authorship-independent of the
-design of the experiments, only of their execution, and it found two declared
-footprint numbers that his FFmpeg build does not satisfy. A third-party
+is not on its own independent reproduction. Three runs by two other people on
+their own machines have since been carried out and are reported in
+Section~\ref{sec:res-independent}; none is authorship-independent of the design
+of the experiments, only of their execution. What they establish differs, and
+the difference matters. One reproduced every deterministic output exactly on a
+build matching the reference, which is what shows the pipeline to be
+deterministic rather than differing in ways we find convenient to explain. The
+other two ran on different FFmpeg builds and found two declared footprint
+numbers those builds do not satisfy. A third person tested the package on
+Windows and reported two portability defects in it without completing a run;
+that is a contribution to the software and not a reproduction, and we count it
+as neither. A third-party
 reimplementation of the contract itself remains outstanding and would be the
 stronger check, since it is the specification rather than the code that is meant
 to outlive this work. What such an implementer needs is supplied rather than

@@ -1,7 +1,15 @@
 \documentclass[11pt]{article}
 \usepackage[margin=2.4cm]{geometry}
 \usepackage{amsmath,amssymb,booktabs,graphicx,xspace,microtype,longtable}
+\usepackage[hyphens]{url}
 \usepackage[colorlinks=true,allcolors=blue]{hyperref}
+% Long literals are single unbreakable words. \path lets a line break at the
+% punctuation a path already contains; a SHA-256 digest contains none, so
+% \digest also permits a break after a hexadecimal character. Neither command
+% adds or removes a character: only the line breaking changes.
+\DeclareUrlCommand\digest{\urlstyle{tt}%
+  \def\UrlBreaks{\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9%
+    \do\a\do\b\do\c\do\d\do\e\do\f}}
 \input{../results/numbers}
 \newcommand{\C}{\ensuremath{C}}
 \newcommand{\G}{\ensuremath{G}}
@@ -23,7 +31,9 @@ Across Derived Audio Transformations}}
 Written before any code was produced. Every row in the first column is prior
 work and is cited rather than claimed.
 
-\begin{longtable}{p{0.31\linewidth}p{0.31\linewidth}p{0.31\linewidth}}
+\begin{longtable}{p{\dimexpr0.333\linewidth-2\tabcolsep\relax}%
+                  p{\dimexpr0.333\linewidth-2\tabcolsep\relax}%
+                  p{\dimexpr0.333\linewidth-2\tabcolsep\relax}}
 \toprule
 Transfers unchanged (prior work) & Transfers with modification (new here) &
 Does not transfer \\
@@ -56,7 +66,8 @@ The spatial simplification operator itself \\
 \addlinespace
 Non-promotion in the spatial setting &
 Restated modality-independently and, following the Phase-0 search, presented as
-an \emph{instance} of known lattice algebra rather than as a new theorem &
+an \emph{instance} of a known meet-semilattice construction rather than as a
+new theorem &
 Any prior source-code audit and its counterexample \\
 \addlinespace
 Conformance-test philosophy: exhaustive enumeration, deterministic adversarial
@@ -79,12 +90,18 @@ operational outcome of a real validator &
 \section{Novelty search and closest-work matrix}
 \label{s:novelty}
 
-\paragraph{Search date} 2026-08-19, re-run before submission.
+\paragraph{Search date} First pass 2026-08-19; re-run 2026-09-05 before
+submission. The re-run is reported below with the first pass, since what a
+novelty search establishes depends on when it was last attempted.
 
 \paragraph{Databases and interfaces} Open-literature web search; arXiv; IACR
 Cryptology ePrint Archive; ACM Digital Library and LIPIcs listings; the C2PA
 specification site; OpenSLR.
 
+\begingroup
+% The query strings are set in typewriter, whose interword space has no
+% stretch, so justifying them opens gaps in the surrounding roman text.
+\raggedright
 \paragraph{Query strings}
 (1) \texttt{provenance semiring non-amplification derived media operator
 monotone provenance lattice};
@@ -100,6 +117,7 @@ applied to media provenance labels 2025 2026};
 generalization};
 (7) \texttt{audio watermarking soft binding C2PA durable content credentials
 AudioSeal 2026}.
+\par\endgroup
 
 \paragraph{Outcome} The columns \emph{complete-source operator rule} and
 \emph{C2PA-integrated interval-level enforcement} were empty across every prior
@@ -107,12 +125,33 @@ row. Because provenance-semiring and information-flow work already yields the
 non-amplification property abstractly, the theorem is not claimed as new; it is
 presented as an instance and the contribution is relocated to the executable
 temporal contract, the transport and the measurements. The full matrix is in
-\texttt{paper/PHASE0\_novelty.md} in the repository.
+\path{paper/PHASE0_novelty.md} in the repository.
+
+\paragraph{Outcome of the re-run} The re-run was conducted to falsify the
+novelty claim rather than to support it, and targeted the three statements this
+work depends on: that a derived segment must not carry provenance stronger than
+its weakest required source; that per-operator kernel support is declared and
+calibrated rather than assumed; and that the resulting interval evidence is
+carried in a signed C2PA manifest over temporal regions. No prior work stating
+any of the three was found. The searches did return the established algebraic
+material the paper takes as given, which is the outcome the claim predicts: the
+meet-semilattice construction and the restriction of semiring provenance to
+monotone queries are prior art and are cited as such. Two 2026 preprints are the
+closest adjacent work, one on anonymous provenance for verifiably edited audio
+and one a security analysis of C2PA and its implementations; both were already
+cited before the re-run, and neither defines an inheritance rule over media
+time. C2PA itself records multiple sources as ingredients but specifies no rule
+constraining what a derived asset may claim relative to them, which is the gap
+this work addresses. Nothing found in the re-run changed a claim in this paper
+or added a reference; a search that surfaces only works already cited is the
+result we report, not evidence that none was sought.
 
 \section{Threat-model matrix}
 \label{s:threat}
 
-\begin{longtable}{p{0.28\linewidth}p{0.34\linewidth}p{0.31\linewidth}}
+\begin{longtable}{p{\dimexpr0.30\linewidth-2\tabcolsep\relax}%
+                  p{\dimexpr0.36\linewidth-2\tabcolsep\relax}%
+                  p{\dimexpr0.33\linewidth-2\tabcolsep\relax}}
 \toprule
 Attacker capability & Contract behaviour & Not prevented \\
 \midrule
@@ -159,6 +198,7 @@ The semantic origin; see the replay limitation in the manuscript \\
 
 The assertion label is \texttt{\Clabel{}}. The payload is:
 
+\begingroup\small
 \begin{verbatim}
 {
   "schema": "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md",
@@ -194,6 +234,7 @@ The assertion label is \texttt{\Clabel{}}. The payload is:
   ]
 }
 \end{verbatim}
+\endgroup
 
 Normative fields are \texttt{provenance} (\texttt{null} means unverified and is
 never an atom), \texttt{support}, \texttt{applicability} and \texttt{lineage}.
@@ -210,7 +251,7 @@ Two implementation notes for the C2PA-native composition fixtures
 (manuscript Section on heterogeneous composition), recorded so a replicating
 reader does not lose time on them. First, the official tool resolves
 \texttt{ResourceRef} identifiers relative to the directory of the
-manifest-definition file, so an ingredient's stored \texttt{manifest\_data.c2pa}
+manifest-definition file, so an ingredient's stored \path{manifest_data.c2pa}
 must be referenced by a path relative to that directory; an absolute path is
 reported as \texttt{resource not found} even when the file exists. Second, a
 \texttt{c2pa.placed} action must carry a hashed-URI reference to its
@@ -221,13 +262,13 @@ give the action an \texttt{ingredientIds} parameter naming the ingredient's
 signing time. A frozen composition manifest with both \texttt{componentOf}
 ingredients, both resolved \texttt{c2pa.placed} references, both source
 \texttt{digitalSourceType} values and the EM aggregate is committed at
-\texttt{fixtures/expected/manifest\_composition\_componentOf.json}.
+\path{fixtures/expected/manifest_composition_componentOf.json}.
 
 \section{Robustness-arm materials}
 \label{s:robustness}
 
 The neural arm uses Piper \texttt{piper-tts} 1.7.0 (MIT, VITS architecture)
-with the voice \texttt{en\_US-ljspeech-medium}, whose training data is the LJ
+with the voice \path{en_US-ljspeech-medium}, whose training data is the LJ
 Speech Dataset. That dataset states ``This dataset is in the public domain in
 the US (and most likely other countries as well)'' and consists of LibriVox
 recordings by Linda Johnson of non-fiction texts published between 1884 and
@@ -235,14 +276,19 @@ recordings by Linda Johnson of non-fiction texts published between 1884 and
 rejected: their Blizzard 2013 training data carries a restrictive licence. No
 voice of any identified living person is cloned.
 
-The model is fetched rather than committed, by \texttt{tools/fetch\_voice.sh},
+\begingroup
+% Line breaking inside a digest is fine, a page break inside one is not, so
+% this paragraph is kept on a single page.
+\interlinepenalty=10000
+The model is fetched rather than committed, by \path{tools/fetch_voice.sh},
 which verifies both files against pinned digests. For
-\texttt{en\_US-ljspeech-medium.onnx} the SHA-256 is
-\texttt{6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22}, and
-for \texttt{en\_US-ljspeech-medium.onnx.json} it is
-\texttt{141d612cc0a95ed7efc1ca936b845c2364967f2e9217c5dbfcf69fc4d6c65860}.
+\path{en_US-ljspeech-medium.onnx} the SHA-256 is
+\digest{6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22}, and
+for \path{en_US-ljspeech-medium.onnx.json} it is
+\digest{141d612cc0a95ed7efc1ca936b845c2364967f2e9217c5dbfcf69fc4d6c65860}.
 Voice output is 22\,050~Hz and is resampled to 16~kHz by stock ffmpeg before
 use.
+\par\endgroup
 
 The noise arm generates pink noise locally, seeded by clip index so the arm is
 deterministic, and mixes it under the clip at $-18$~dB. The exact command, as
@@ -265,13 +311,16 @@ asserted per interval by the experiment.
 \label{s:repro}
 
 \begin{verbatim}
-git clone https://github.com/1D-Coda/em-audio && cd em-audio && git checkout v1.0.2 && ./run_all.sh
+git clone https://github.com/1D-Coda/em-audio \
+  && cd em-audio \
+  && git checkout v1.0.2 \
+  && ./run_all.sh
 \end{verbatim}
 
-\texttt{run\_all.sh} fetches the checksum-pinned corpus, generates the test
+\path{run_all.sh} fetches the checksum-pinned corpus, generates the test
 signing credential, runs the named regression tests and experiments A--I,
 regenerates every table, macro and figure from the machine-readable results,
-writes \texttt{results/PREFLIGHT.txt}, and exits non-zero if any conformance
+writes \path{results/PREFLIGHT.txt}, and exits non-zero if any conformance
 check fails. The preflight report is the single source of every number in the
 manuscript; a checker script verifies that no numeric result appears in the
 manuscript source outside the generated macro file.
@@ -294,7 +343,7 @@ robustness arms did not execute. The second run, on \IRdate{}, is the one
 released and tabulated here; both runs returned the same values for the two
 operators whose declarations his build does not satisfy. His unmodified outputs, his preflight report, his full pipeline log and
 the classified comparison his run produced are released in
-\texttt{results/independent/}.
+\path{results/independent/}.
 
 Table~\ref{tab:independent} gives the containment result per operator on both
 machines rather than only the operator that differs, so the selection made in
@@ -321,7 +370,7 @@ the one operator whose reach did not reproduce.}
 A coefficient of variation and a maximum measured reach are both summaries, and
 a summary that ships without the rows it summarises has to be taken on trust.
 These are those rows. Neither table is typed: both are emitted by
-\texttt{tools/make\_tables.py} from the same result files the main text reads.
+\path{tools/make_tables.py} from the same result files the main text reads.
 
 \begin{table}[htbp]
 \centering

@@ -6,7 +6,8 @@ LaTeX source outside this file.
 """
 from __future__ import annotations
 
-import json, subprocess, sys
+import json
+import re, subprocess, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -27,6 +28,54 @@ def fmt(x):
 
 
 IND = ROOT / "results" / "independent"
+
+
+def cross_build_macros():
+    """The MP3 reach measured on every environment we have a result file for.
+
+    Four runs, one FFmpeg version number, two builds. Computed from the files
+    rather than assembled by hand, because the point of the comparison is that
+    the numbers were not chosen.
+    """
+    m = {}
+    sources = {
+        "Ref":  ROOT / "results" / "reference" / "CALIBRATION.json",
+        "Mac":  ROOT / "results" / "independent_mac" / "machine_readable" / "CALIBRATION.json",
+        "Win":  ROOT / "results" / "independent_windows" / "machine_readable" / "CALIBRATION.json",
+    }
+    for tag, path in sources.items():
+        if not path.exists():
+            continue
+        d = json.loads(path.read_text())
+        op = [o for o in d["operators"] if o["operator"] == "transcode_mp3"][0]
+        m[f"XB{tag}Reach"] = fmt(op["measured_reach_source_samples"])
+        m[f"XB{tag}Outside"] = fmt(sum(p["outside_declared_support"] for p in op["probes"]))
+
+    # The environments those numbers came from, also read rather than typed.
+    envs = {
+        "Mac": ROOT / "results" / "independent_mac" / "machine_readable" / "D_transform_matrix.json",
+        "Win": ROOT / "results" / "independent_windows" / "machine_readable" / "D_transform_matrix.json",
+    }
+    for tag, path in envs.items():
+        if not path.exists():
+            continue
+        e = json.loads(path.read_text())["environment"]
+        # Build names carry underscores, which LaTeX reads as maths. The
+        # manuscript failed to compile on "9.0.1-full_build-www.gyan.dev".
+        m[f"XB{tag}Ffmpeg"] = e["ffmpeg"].split()[2].replace("_", r"\_")
+        m[f"XB{tag}Cpu"] = e.get("cpu_model", "unknown").replace("_", r"\_")
+        m[f"XB{tag}Os"] = e["platform"].split("-")[0] + " " + e["platform"].split("-")[1]
+
+    # How many deterministic outputs the macOS run reproduced, from its own log.
+    vlog = ROOT / "results" / "independent_mac" / "verify_output.txt"
+    if vlog.exists():
+        t = vlog.read_text(errors="replace")
+        if "Every deterministic output matches the release" in t:
+            m["XBMacVerdict"] = "every deterministic output"
+        env_n = re.search(r"(\d+) environment-dependent difference", t)
+        if env_n:
+            m["XBMacEnvDiffs"] = fmt(int(env_n.group(1)))
+    return m
 
 
 def independent_macros():
@@ -454,6 +503,8 @@ def main() -> int:
     else:
         print("[macros] results/independent/ absent: the independent-reproduction "
               "macros are not emitted. Expected in a reproduction package.")
+    # Guarded the same way: a reproduction package ships none of these.
+    m.update(cross_build_macros())
     # The C2PA assertion label and schema identifier, read from the module that
     # defines them. They were typed into the manuscript and the supplement by
     # hand, so changing the namespace in code left the paper describing an

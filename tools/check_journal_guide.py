@@ -44,6 +44,22 @@ def main() -> int:
     # not a defect, so say so and succeed rather than ending their run.
     # A placeholder that reaches a submitted manuscript is a worse failure than
     # a missing check. This one stands in for a person's name.
+    # "Provide the given name(s) and family name(s) of each author" - the
+    # journal's guide for authors. An initial is not a given name, and a byline
+    # carrying one complicates indexing and ORCID matching, which is the thing
+    # the byline exists to get right.
+    if TEX.exists():
+        for m in re.finditer(r"\\author(?:\[[^\]]*\])?\{([^}]*)\}", TEX.read_text()):
+            # \corref{cor} leaves a stray "{cor" if only the command name is
+            # stripped, and the message then quotes a byline nobody wrote.
+            who = re.sub(r"\\[a-zA-Z]+", "", m.group(1))
+            who = re.sub(r"[{}\[\]]|\bcor\b", "", who).strip()
+            if re.match(r"^[A-Z]\.?\s", who):
+                print(f"[guide] the author byline is '{who}'. The guide asks for "
+                      "the given name, not an initial; that is also what Scopus "
+                      "and ORCID match on.")
+                return 1
+
     if TEX.exists() and "NAME PENDING" in TEX.read_text():
         print("[guide] the manuscript still contains a NAME PENDING placeholder; "
               "fill it in or remove the acknowledgement before submitting.")
