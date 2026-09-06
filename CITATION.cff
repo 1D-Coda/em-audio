@@ -8,7 +8,7 @@ abstract: >-
 type: software
 authors:
   - family-names: Urias
-    given-names: A.
+    given-names: Alejandro
     orcid: "https://orcid.org/0009-0007-3147-323X"
     affiliation: Independent researcher
 repository-code: "https://github.com/1D-Coda/em-audio"
