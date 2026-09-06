@@ -93,7 +93,24 @@ def p4_support_non_promotion(out: DerivedOutput, timelines: Dict[str, Timeline],
                              intervals: Sequence[OutputInterval]) -> Check:
     for iv in intervals:
         srcs = _required(out, timelines, iv.piece_indices, iv.out_start, iv.out_end)
+        # Requirement (iv'): one unverified required source withholds every
+        # numeric channel. Checked before the per-channel loop, which never runs
+        # when S is empty and so could not catch an output that kept a value.
+        if any(isinstance(s.ev.P, _Bot) for s in srcs) and iv.ev.S:
+            return Check("P4_support_non_promotion", False,
+                         f"[{iv.out_start},{iv.out_end}) kept channels "
+                         f"{sorted(iv.ev.S)} although a required source is unverified")
         for mu, val in iv.ev.S.items():
+            # Requirement (iv): a channel not applicable to *every* required
+            # source is withheld, not computed from the ones that have it. The
+            # previous form selected the applicable sources and then reasoned
+            # only about those, which is the partial-subset computation (iv)
+            # exists to forbid.
+            lacking = [s for s in srcs if mu not in s.ev.A]
+            if lacking:
+                return Check("P4_support_non_promotion", False,
+                             f"[{iv.out_start},{iv.out_end}) channel {mu} emitted although "
+                             f"{len(lacking)} required source(s) do not declare it applicable")
             applicable = [s.ev for s in srcs if mu in s.ev.A]
             if not applicable:
                 return Check("P4_support_non_promotion", False,
@@ -156,6 +173,14 @@ def p6_complete_lineage(out: DerivedOutput, timelines: Dict[str, Timeline],
             missing = sorted(need - iv.ev.L)
             return Check("P6_complete_lineage", False,
                          f"[{iv.out_start},{iv.out_end}) missing lineage {missing[:4]}")
+        # Equality, not inclusion. The specification makes lineage the union
+        # over the required sources, so a member no required source carries was
+        # invented; checking only inclusion admitted it.
+        if iv.ev.L - need:
+            extra = sorted(iv.ev.L - need)
+            return Check("P6_complete_lineage", False,
+                         f"[{iv.out_start},{iv.out_end}) lineage carries {extra[:4]}, "
+                         "which no required source has")
     return Check("P6_complete_lineage", True, f"{len(intervals)} intervals")
 
 
@@ -199,12 +224,40 @@ def p7_composition(chain: Sequence[Tuple[DerivedOutput, Dict[str, Timeline]]],
                    final: Sequence[OutputInterval],
                    direct: Sequence[OutputInterval]) -> Check:
     """A composed chain refuses at least as much as the equivalent direct meet."""
-    if len(final) != len(direct):
-        return Check("P7_composition", True, "different partitions; compared pointwise below")
-    for a, b in zip(final, direct):
-        if not leq_claim(a.ev.P, b.ev.P):
-            return Check("P7_composition", False, "composed chain stronger than direct meet")
-    return Check("P7_composition", True, f"{len(final)} intervals")
+    # Compared on the common refinement of both partitions. The previous form
+    # returned PASS as soon as the two partitions had different lengths, with a
+    # message promising a pointwise comparison that the branch then skipped, so
+    # an all-captured final interval was accepted against a direct meet that is
+    # generated over half of it.
+    if not final or not direct:
+        return Check("P7_composition", not final and not direct,
+                     "one side empty" if (bool(final) != bool(direct)) else "both empty")
+
+    f_lo, f_hi = min(i.out_start for i in final), max(i.out_end for i in final)
+    d_lo, d_hi = min(i.out_start for i in direct), max(i.out_end for i in direct)
+    if (f_lo, f_hi) != (d_lo, d_hi):
+        return Check("P7_composition", False,
+                     f"extent [{f_lo},{f_hi}) differs from direct [{d_lo},{d_hi})")
+
+    cuts = sorted({i.out_start for i in final} | {i.out_end for i in final}
+                  | {i.out_start for i in direct} | {i.out_end for i in direct})
+
+    def at(seq, a, b):
+        hits = [i for i in seq if i.out_start <= a and i.out_end >= b]
+        return hits[0] if hits else None
+
+    for a, b in zip(cuts, cuts[1:]):
+        if b <= a:
+            continue
+        fa, da = at(final, a, b), at(direct, a, b)
+        if fa is None or da is None:
+            return Check("P7_composition", False,
+                         f"[{a},{b}) is not covered on both sides")
+        if not leq_claim(fa.ev.P, da.ev.P):
+            return Check("P7_composition", False,
+                         f"[{a},{b}) composed chain stronger than direct meet")
+    return Check("P7_composition", True,
+                 f"{len(cuts) - 1} common-refinement intervals")
 
 
 def run_property_suite(out: DerivedOutput, timelines: Dict[str, Timeline]) -> List[Check]:

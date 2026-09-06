@@ -1,25 +1,25 @@
 {
  "baseline_ms_per_audio_minute": {
-  "cv_pct": 1.015,
-  "max": 0.2752,
-  "mean": 0.27,
-  "min": 0.2662,
-  "range_pct": 3.38
+  "cv_pct": 1.288,
+  "max": 0.2885,
+  "mean": 0.2806,
+  "min": 0.2753,
+  "range_pct": 4.79
  },
  "cv_definition": "sample standard deviation over the mean, in percent, with Bessel's correction",
  "em_ms_per_audio_minute": {
-  "cv_pct": 0.966,
-  "max": 0.9209,
-  "mean": 0.9051,
-  "min": 0.8911,
-  "range_pct": 3.34
+  "cv_pct": 1.246,
+  "max": 0.9603,
+  "mean": 0.9331,
+  "min": 0.9166,
+  "range_pct": 4.77
  },
  "em_over_baseline_ratio": {
-  "cv_pct": 0.362,
-  "max": 3.3752,
-  "mean": 3.3524,
-  "min": 3.3361,
-  "range_pct": 1.17
+  "cv_pct": 0.289,
+  "max": 3.3381,
+  "mean": 3.326,
+  "min": 3.3037,
+  "range_pct": 1.04
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -37,71 +37,71 @@
  "experiment": "M_overhead_stability",
  "interpretation": "the ratio cancels common-mode variation; it is much tighter when machine state moves both arms together and has no advantage on a quiet machine, so a sitting in which it is not tighter is consistent with the mechanism rather than a failure of it",
  "load_average_1_5_15": [
-  2.1,
-  2.73,
-  3.38
+  6.2,
+  4.69,
+  5.06
  ],
- "measured_utc": "2026-08-30T07:58:30Z",
+ "measured_utc": "2026-09-06T14:41:57Z",
  "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
  "ratio_is_tighter_than_absolute": true,
  "repeats": 9,
  "runs": [
   {
-   "baseline_ms_per_audio_minute": 0.2752,
-   "em_ms_per_audio_minute": 0.9209,
-   "em_over_baseline_ratio": 3.3466,
+   "baseline_ms_per_audio_minute": 0.2796,
+   "em_ms_per_audio_minute": 0.9333,
+   "em_over_baseline_ratio": 3.3381,
    "run": 1
   },
   {
-   "baseline_ms_per_audio_minute": 0.2709,
-   "em_ms_per_audio_minute": 0.9053,
-   "em_over_baseline_ratio": 3.3421,
+   "baseline_ms_per_audio_minute": 0.2885,
+   "em_ms_per_audio_minute": 0.9603,
+   "em_over_baseline_ratio": 3.3282,
    "run": 2
   },
   {
-   "baseline_ms_per_audio_minute": 0.2705,
-   "em_ms_per_audio_minute": 0.9106,
-   "em_over_baseline_ratio": 3.3664,
+   "baseline_ms_per_audio_minute": 0.2793,
+   "em_ms_per_audio_minute": 0.9293,
+   "em_over_baseline_ratio": 3.3277,
    "run": 3
   },
   {
-   "baseline_ms_per_audio_minute": 0.2687,
-   "em_ms_per_audio_minute": 0.9018,
-   "em_over_baseline_ratio": 3.3569,
+   "baseline_ms_per_audio_minute": 0.2802,
+   "em_ms_per_audio_minute": 0.9322,
+   "em_over_baseline_ratio": 3.3273,
    "run": 4
   },
   {
-   "baseline_ms_per_audio_minute": 0.2693,
-   "em_ms_per_audio_minute": 0.902,
-   "em_over_baseline_ratio": 3.3491,
+   "baseline_ms_per_audio_minute": 0.2782,
+   "em_ms_per_audio_minute": 0.9273,
+   "em_over_baseline_ratio": 3.333,
    "run": 5
   },
   {
-   "baseline_ms_per_audio_minute": 0.2696,
-   "em_ms_per_audio_minute": 0.8994,
-   "em_over_baseline_ratio": 3.3361,
+   "baseline_ms_per_audio_minute": 0.2753,
+   "em_ms_per_audio_minute": 0.9166,
+   "em_over_baseline_ratio": 3.3296,
    "run": 6
   },
   {
-   "baseline_ms_per_audio_minute": 0.2725,
-   "em_ms_per_audio_minute": 0.9133,
-   "em_over_baseline_ratio": 3.3514,
+   "baseline_ms_per_audio_minute": 0.2819,
+   "em_ms_per_audio_minute": 0.9364,
+   "em_over_baseline_ratio": 3.3215,
    "run": 7
   },
   {
-   "baseline_ms_per_audio_minute": 0.2662,
-   "em_ms_per_audio_minute": 0.8911,
-   "em_over_baseline_ratio": 3.3475,
+   "baseline_ms_per_audio_minute": 0.2797,
+   "em_ms_per_audio_minute": 0.93,
+   "em_over_baseline_ratio": 3.3248,
    "run": 8
   },
   {
-   "baseline_ms_per_audio_minute": 0.267,
-   "em_ms_per_audio_minute": 0.9012,
-   "em_over_baseline_ratio": 3.3752,
+   "baseline_ms_per_audio_minute": 0.2823,
+   "em_ms_per_audio_minute": 0.9325,
+   "em_over_baseline_ratio": 3.3037,
    "run": 9
   }
  ],
- "runtime_s": 216.892,
+ "runtime_s": 226.37,
  "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
- "tightness_factor_cv": 2.67
+ "tightness_factor_cv": 4.31
 }

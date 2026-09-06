@@ -56,6 +56,19 @@ def interval_to_json(iv: OutputInterval, fs: int) -> Dict[str, object]:
     }
 
 
+def output_sample_rate(operator: str, params: Dict[str, object], fs_in: int) -> int:
+    """The sample rate of the *output*, which is what an assertion is in.
+
+    An assertion serialises output-sample indices as times, so it must divide by
+    the output rate. Passing the input rate made a one-second 16 kHz to 8 kHz
+    resample assert an end of 0.5 s: the sample count was right and the unit was
+    not. Only resampling changes the rate; every other v1 operator preserves it.
+    """
+    if operator == "resample":
+        return int(params.get("fs_out", fs_in))
+    return int(fs_in)
+
+
 def em_assertion(intervals: Sequence[OutputInterval], fs: int, n_samples: int,
                  policy: str, operator: str, params: Dict[str, object]) -> Dict[str, object]:
     return {
@@ -63,7 +76,8 @@ def em_assertion(intervals: Sequence[OutputInterval], fs: int, n_samples: int,
         "policy": policy,
         "operator": operator,
         "operatorParameters": params,
-        "asset": {"sampleRate": fs, "sampleCount": n_samples},
+        "asset": {"sampleRate": fs, "sampleCount": n_samples,
+                  "durationSeconds": round(n_samples / float(fs), 9)},
         "intervals": [interval_to_json(iv, fs) for iv in intervals],
     }
 

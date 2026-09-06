@@ -337,8 +337,12 @@ matters more than the checklist, and it is applied by
 
 The \emph{deterministic} outputs are those a correct reimplementation must match
 exactly: conformance counts and pass/fail totals, promotion classifications,
-lineage sets, interval structure, support-channel behaviour, and decoded essence
-digests. Any difference among them exits non-zero.
+lineage sets, interval structure, support-channel behaviour, and the
+before-and-after-signing identity of every decoded-essence digest. Any
+difference among them exits non-zero. The digests themselves are not compared
+across environments: a different decoder build decodes to different bytes, so
+equality of a digest is defined within one environment, and what must transfer
+is that signing leaves it unchanged.
 
 The \emph{environment-dependent} outputs are those that should be expected to
 differ, and whose difference is not a defect: wall-clock timings and their

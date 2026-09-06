@@ -415,6 +415,6 @@
  ],
  "purpose": "whether a reader other than c2patool recovers the evidence assertion, and what a reader that ignores it is left with",
  "reader": "c2pa-python 0.37.8",
- "runtime_s": 0.077,
+ "runtime_s": 0.144,
  "status": "run"
 }

@@ -183,7 +183,7 @@ Absorbing unverified state &
 Requirement (iv): a channel not applicable to \emph{every} required source is
 withheld, not computed from the rest \\
 \addlinespace
-Requirement (iv$'$): a $\bot$ source also withholds every numeric channel \\
+& Requirement (iv$'$): a $\bot$ source also withholds every numeric channel \\
 \addlinespace
 Non-promotion in the spatial setting &
 Kernel footprints with declared source-support bounds; temporal mapping
@@ -766,9 +766,10 @@ validation of what the score means. The corpus and transport experiments assign
 the two declaration-derived values \CaptSupport{} to captured-derived and
 \GenSupport{} to generated-derived source intervals, so a mixed interval
 aggregates to \GenSupport{} by the minimum in~(ii); the exhaustive
-enumeration of Section~\ref{sec:res-conformance} instead sweeps the domain
-positionally, so that every value in $\mathcal{S}$ is exercised rather than
-two. One channel is enough to exercise the value rules this
+enumeration of Section~\ref{sec:res-conformance} instead sweeps a finite grid
+of values positionally, so that the value rules are exercised across the grid
+rather than at two points; the universal statement over $[0,1]$ comes from the
+proof, not from the enumeration. One channel is enough to exercise the value rules this
 instantiation relies on, since (ii) governs the value, (iv) the partial-subset
 case and (iv$'$) absorption, and all three are checked over the full enumeration
 and carried through the signed transport. It is deliberately not a strong test
@@ -2164,11 +2165,15 @@ round-trip is produced and checked by the official \texttt{c2patool}, under a
 locally generated credential and a locally configured trust anchor rather than
 the C2PA Conformance Program, so a trusted validation state in these results
 means trusted under that anchor. That establishes that the assertion survives
-the specification's own tooling unchanged, and nothing more. No second
-implementation has read it, so we cannot claim that another conforming consumer
-interprets the custom assertion the same way, and semantic interoperability of a
-vendor extension is exactly the kind of claim a single implementation cannot
-support. The assertion is designed to degrade safely, since a consumer that does
+the specification's own tooling unchanged, and nothing more. A second API,
+\texttt{c2pa-python} at a different version, also recovered the assertion on
+every signed asset and was left with the standard ingredient graph when told to
+ignore it; because it binds the same Rust core that \texttt{c2patool} wraps,
+that rules out a CLI-specific or version-specific artefact and nothing further.
+No independently implemented consumer has read the assertion, so we cannot
+claim that another conforming consumer interprets it the same way, and semantic
+interoperability of a vendor extension is exactly the kind of claim a single
+implementation cannot support. The assertion is designed to degrade safely, since a consumer that does
 not recognise the label ignores it and is left with the standard ingredient
 graph, but that is a design intention and not a tested outcome.
 
@@ -2319,8 +2324,7 @@ about environments rather than about observers; they are recorded there and not
 reported here, because the independent reproduction of
 Section~\ref{sec:res-independent} is the one that carries the claim. The only other Zenodo identifier appearing in this paper belongs to the
 companion work on terrain \citep{urias2026emtrf} and archives that work rather
-than this one; the audio artifact is deposited separately and its DOIs are the
-ones given here. The evaluated
+than this one. The evaluated
 state is release tag \Rtag{}, and the tag is the identifier to resolve: the
 commit hash recorded in \texttt{results/PREFLIGHT.txt} is the one that was
 current when the report was generated, which is necessarily the parent of the
@@ -2328,8 +2332,10 @@ commit that then stores the report. A file cannot contain the hash of the object
 that contains it, and the report says so rather than appearing exact. The report
 is regenerated on every run and shipped with the release; that report also carries every tool version and every number
 quoted in this manuscript, so a reader can check any figure in the text against
-the file the code wrote. A Zenodo archive with version and concept DOIs is
-deposited on acceptance and the DOIs are added at proof stage.
+the file the code wrote. The audio artefact is deposited in Zenodo with version and concept DOIs
+before submission, and those DOIs are the ones cited in the Data availability
+statement; the repository tag and the Zenodo version resolve to the same
+evaluated state.
 
 \section*{CRediT authorship contribution statement}
 

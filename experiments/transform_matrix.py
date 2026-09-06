@@ -22,6 +22,7 @@ from em_audio.essence import decoded_pcm, essence_hash
 from em_audio.evidence import Evidence, aggregate, claim_of, promotes
 from em_audio.interval_map import SourceInterval, Timeline, em_intervals, span_evidence
 from em_audio.manifest_schema import em_assertion
+import em_audio.manifest_schema as M
 import em_audio.operators as O
 from em_audio.operators import GUARD_BAND
 
@@ -141,7 +142,8 @@ def main() -> int:
                 st["baseline_lineage_omissions"] += 1
 
             st["runtime_ms"].append(round(elapsed_ms, 4))
-            assertion = em_assertion(ivs, FS, model.n_out, "complete-source",
+            fs_out = M.output_sample_rate(model.operator, model.params, FS)
+            assertion = em_assertion(ivs, fs_out, model.n_out, "complete-source",
                                      model.operator, model.params)
             st["em_assertion_bytes"].append(len(json.dumps(assertion).encode()))
 
