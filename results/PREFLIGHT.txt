@@ -1,7 +1,7 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: faa157af53a8e02285cab93a577dde7997be64a5
-tag: v1.0.1-85-gfaa157a
+commit: 632dca141b0b29e2e947e15d7d5a37c617429f36
+tag: v1.0.3
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
       commit that stores it by one. Re-run tools/preflight.py, or run_all.sh,
