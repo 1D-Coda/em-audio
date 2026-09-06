@@ -325,6 +325,33 @@ check fails. The preflight report is the single source of every number in the
 manuscript; a checker script verifies that no numeric result appears in the
 manuscript source outside the generated macro file.
 
+\paragraph{What to record} The environment: the person or group, the machine,
+operating system, hardware, runtime and tool versions, and the release tag and
+commit reproduced. The execution: a clean clone, dependency installation, a full
+\path{run_all.sh}, and a comparison of the emitted machine-readable results
+against those shipped with that tag.
+
+\paragraph{Which outputs must match, and which must not} The classification
+matters more than the checklist, and it is applied by
+\path{tools/verify_reproduction.py} rather than by judgement after the fact.
+
+The \emph{deterministic} outputs are those a correct reimplementation must match
+exactly: conformance counts and pass/fail totals, promotion classifications,
+lineage sets, interval structure, support-channel behaviour, and decoded essence
+digests. Any difference among them exits non-zero.
+
+The \emph{environment-dependent} outputs are those that should be expected to
+differ, and whose difference is not a defect: wall-clock timings and their
+interquartile ranges, the absolute cost figures of Section~7.10 of the
+manuscript, and the bytes of a freshly signed file, which differ because signing
+incorporates a timestamp. A reproduction reporting identical timings would be
+the surprising result, not a reassuring one.
+
+A difference in the first class should be classified rather than absorbed, as an
+environment difference, a tool-version difference, an ambiguity in the
+specification of the contract, or a genuine discrepancy, and reported as such
+whichever it turns out to be.
+
 \section{Independent reproduction: environment and per-operator detail}
 \label{s:independent}
 
