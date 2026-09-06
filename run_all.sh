@@ -92,6 +92,9 @@ step "corpus"
 
 step "named regression tests"
 $PY "$ROOT"/tests/test_contract.py || note
+# Written after a review and then left outside the gate, so a regression in
+# the defects it covers could leave the main command green.
+$PY "$ROOT"/tests/test_review_regressions.py || note
 
 step "A  exhaustive finite-state conformance"
 ( cd "$ROOT"/experiments && $PY synthetic_state_space.py ) || note

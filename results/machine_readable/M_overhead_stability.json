@@ -1,25 +1,25 @@
 {
  "baseline_ms_per_audio_minute": {
-  "cv_pct": 1.288,
-  "max": 0.2885,
-  "mean": 0.2806,
-  "min": 0.2753,
-  "range_pct": 4.79
+  "cv_pct": 0.692,
+  "max": 0.2933,
+  "mean": 0.2893,
+  "min": 0.2865,
+  "range_pct": 2.37
  },
  "cv_definition": "sample standard deviation over the mean, in percent, with Bessel's correction",
  "em_ms_per_audio_minute": {
-  "cv_pct": 1.246,
-  "max": 0.9603,
-  "mean": 0.9331,
-  "min": 0.9166,
-  "range_pct": 4.77
+  "cv_pct": 1.11,
+  "max": 0.9872,
+  "mean": 0.9651,
+  "min": 0.9519,
+  "range_pct": 3.71
  },
  "em_over_baseline_ratio": {
-  "cv_pct": 0.289,
-  "max": 3.3381,
-  "mean": 3.326,
-  "min": 3.3037,
-  "range_pct": 1.04
+  "cv_pct": 1.139,
+  "max": 3.4114,
+  "mean": 3.3359,
+  "min": 3.2752,
+  "range_pct": 4.16
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -37,71 +37,71 @@
  "experiment": "M_overhead_stability",
  "interpretation": "the ratio cancels common-mode variation; it is much tighter when machine state moves both arms together and has no advantage on a quiet machine, so a sitting in which it is not tighter is consistent with the mechanism rather than a failure of it",
  "load_average_1_5_15": [
-  6.2,
-  4.69,
-  5.06
+  5.04,
+  5.02,
+  4.61
  ],
- "measured_utc": "2026-09-06T14:41:57Z",
+ "measured_utc": "2026-09-06T18:13:10Z",
  "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
- "ratio_is_tighter_than_absolute": true,
+ "ratio_is_tighter_than_absolute": false,
  "repeats": 9,
  "runs": [
   {
-   "baseline_ms_per_audio_minute": 0.2796,
-   "em_ms_per_audio_minute": 0.9333,
-   "em_over_baseline_ratio": 3.3381,
+   "baseline_ms_per_audio_minute": 0.2882,
+   "em_ms_per_audio_minute": 0.9603,
+   "em_over_baseline_ratio": 3.3321,
    "run": 1
   },
   {
-   "baseline_ms_per_audio_minute": 0.2885,
-   "em_ms_per_audio_minute": 0.9603,
-   "em_over_baseline_ratio": 3.3282,
+   "baseline_ms_per_audio_minute": 0.2894,
+   "em_ms_per_audio_minute": 0.9872,
+   "em_over_baseline_ratio": 3.4114,
    "run": 2
   },
   {
-   "baseline_ms_per_audio_minute": 0.2793,
-   "em_ms_per_audio_minute": 0.9293,
-   "em_over_baseline_ratio": 3.3277,
+   "baseline_ms_per_audio_minute": 0.2904,
+   "em_ms_per_audio_minute": 0.976,
+   "em_over_baseline_ratio": 3.3607,
    "run": 3
   },
   {
-   "baseline_ms_per_audio_minute": 0.2802,
-   "em_ms_per_audio_minute": 0.9322,
-   "em_over_baseline_ratio": 3.3273,
+   "baseline_ms_per_audio_minute": 0.2874,
+   "em_ms_per_audio_minute": 0.9603,
+   "em_over_baseline_ratio": 3.3407,
    "run": 4
   },
   {
-   "baseline_ms_per_audio_minute": 0.2782,
-   "em_ms_per_audio_minute": 0.9273,
-   "em_over_baseline_ratio": 3.333,
+   "baseline_ms_per_audio_minute": 0.2893,
+   "em_ms_per_audio_minute": 0.9641,
+   "em_over_baseline_ratio": 3.3329,
    "run": 5
   },
   {
-   "baseline_ms_per_audio_minute": 0.2753,
-   "em_ms_per_audio_minute": 0.9166,
-   "em_over_baseline_ratio": 3.3296,
+   "baseline_ms_per_audio_minute": 0.2933,
+   "em_ms_per_audio_minute": 0.9684,
+   "em_over_baseline_ratio": 3.3015,
    "run": 6
   },
   {
-   "baseline_ms_per_audio_minute": 0.2819,
-   "em_ms_per_audio_minute": 0.9364,
-   "em_over_baseline_ratio": 3.3215,
+   "baseline_ms_per_audio_minute": 0.2906,
+   "em_ms_per_audio_minute": 0.9519,
+   "em_over_baseline_ratio": 3.2752,
    "run": 7
   },
   {
-   "baseline_ms_per_audio_minute": 0.2797,
-   "em_ms_per_audio_minute": 0.93,
-   "em_over_baseline_ratio": 3.3248,
+   "baseline_ms_per_audio_minute": 0.2886,
+   "em_ms_per_audio_minute": 0.9587,
+   "em_over_baseline_ratio": 3.3218,
    "run": 8
   },
   {
-   "baseline_ms_per_audio_minute": 0.2823,
-   "em_ms_per_audio_minute": 0.9325,
-   "em_over_baseline_ratio": 3.3037,
+   "baseline_ms_per_audio_minute": 0.2865,
+   "em_ms_per_audio_minute": 0.959,
+   "em_over_baseline_ratio": 3.3472,
    "run": 9
   }
  ],
- "runtime_s": 226.37,
+ "runtime_s": 235.672,
  "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
- "tightness_factor_cv": 4.31
+ "tightness_factor_cv": 0.97
 }

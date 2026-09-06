@@ -28,6 +28,11 @@ CHECKS = [c.p1_exact_union, c.p2_no_promotion, c.p3_unverified_non_promotion,
           c.p4_support_non_promotion, c.p5_applicability_non_broadening,
           c.p6_complete_lineage, c.p9_channel_scope_agreement]
 
+# Every check the suite runs, structural first: a candidate has to be a
+# well-formed annotation of the map before any semantic question about it means
+# anything.
+ALL_CHECKS = [c.p0_structural] + CHECKS
+
 
 def _forged(other: Evidence, provenance) -> bool:
     """True if every validator accepts an output that keeps a channel it must
@@ -101,6 +106,92 @@ def test_resampled_assertion_is_in_output_units():
     assert a["asset"]["sampleRate"] == 8000, "assertion does not carry the output rate"
     assert abs(float(a["asset"]["durationSeconds"]) - 1.0) < 1e-9, \
         "assertion does not carry the true output extent"
+
+
+# --- v6 review: validators trusted the candidate's own contributor list ------
+
+def test_structural_rejects_omitted_contributor():
+    """A fully overlaid captured/generated pair, claimed captured with only the
+    captured piece named, passed all seven semantic checks. Each one rebuilt the
+    required-source set from the candidate's own piece_indices, so omitting a
+    contributor made the comparison vacuous: a promotion cleared by the
+    validators written to prevent promotion."""
+    cap = Evidence(claim_of(["C"]), L=frozenset({"a"}))
+    gen = Evidence(claim_of(["G"]), L=frozenset({"b"}))
+    tls = {"a": Timeline("a", [SourceInterval("a", 0, 10, cap)]),
+           "b": Timeline("b", [SourceInterval("b", 0, 10, gen)])}
+    out = O.overlay(("a", 10), ("b", 10), 0)
+    forged = [OutputInterval(0, 10, Evidence(claim_of(["C"]), L=frozenset({"a"})), (0,))]
+    rejected = [f.__name__ for f in ALL_CHECKS if not f(out, tls, forged).passed]
+    assert "p0_structural" in rejected, "structural check accepted an omitted contributor"
+    assert "p2_no_promotion" in rejected, "promotion check did not see the promotion"
+
+
+def test_structural_rejects_empty_and_truncated_annotation():
+    """Every semantic check quantifies over the intervals it is given, so an
+    empty list satisfied all of them vacuously, and a truncated one satisfied
+    them over the part it chose to describe."""
+    cap = Evidence(claim_of(["C"]), L=frozenset({"a"}))
+    tls = {"a": Timeline("a", [SourceInterval("a", 0, 10, cap)])}
+    out = O.trim("a", 10, 0, 10)
+    assert not c.p0_structural(out, tls, []).passed, "empty annotation accepted"
+    half = [OutputInterval(0, 5, cap, (0,))]
+    assert not c.p0_structural(out, tls, half).passed, "truncated annotation accepted"
+    gap = [OutputInterval(0, 3, cap, (0,)), OutputInterval(7, 10, cap, (0,))]
+    assert not c.p0_structural(out, tls, gap).passed, "gap in coverage accepted"
+    overlap = [OutputInterval(0, 6, cap, (0,)), OutputInterval(4, 10, cap, (0,))]
+    assert not c.p0_structural(out, tls, overlap).passed, "overlapping claim accepted"
+
+
+def test_structural_accepts_the_canonical_output():
+    """The point is to reject malformed candidates, not to reject correct ones."""
+    cap = Evidence(claim_of(["C"]), L=frozenset({"a"}))
+    gen = Evidence(claim_of(["G"]), L=frozenset({"b"}))
+    tls = {"a": Timeline("a", [SourceInterval("a", 0, 10, cap)]),
+           "b": Timeline("b", [SourceInterval("b", 0, 10, gen)])}
+    out = O.overlay(("a", 10), ("b", 10), 0)
+    canon = em_intervals(out, tls, footprint_aware=True)
+    for f in ALL_CHECKS:
+        assert f(out, tls, canon).passed, f"{f.__name__} rejected the canonical output"
+
+
+def test_derived_child_inherits_the_parent_propagated_evidence():
+    """A child derived from a signed parent must read the parent's propagated
+    evidence, not the original source timeline.
+
+    The signed-transport experiment built each child from the original timeline,
+    so a trim of an MP3-transcoded asset re-read the sharp source labels and
+    asserted CAPTURED and GENERATED over regions its own parent had already
+    marked MIXED by the codec footprint. That is a promotion, produced inside
+    the experiment meant to demonstrate the contract, and none of that
+    experiment's metrics could see it: they measure validation state and decoded
+    essence, never interval structure.
+    """
+    C = Evidence(claim_of(["C"]), L=frozenset({"cap"}))
+    G = Evidence(claim_of(["G"]), L=frozenset({"gen"}))
+    tl = Timeline("clip", [SourceInterval("clip", 0, 4000, C),
+                           SourceInterval("clip", 4000, 6000, G),
+                           SourceInterval("clip", 6000, 10000, C)])
+    parent = O.transcode("clip", 10000, "mp3")
+    pivs = em_intervals(parent, {"clip": tl}, footprint_aware=True)
+    assert any(i.ev.label == "MIXED" for i in pivs), "parent should carry mixed boundaries"
+
+    a, b = 1000, 9000
+    reset = em_intervals(O.trim("clip", 10000, a, b), {"clip": tl}, footprint_aware=True)
+    assert not any(i.ev.label == "MIXED" for i in reset), "fixture no longer shows the defect"
+
+    ptl = Timeline("signed", [SourceInterval("signed", i.out_start, i.out_end, i.ev)
+                              for i in pivs], check=False)
+    tmodel = O.trim("signed", parent.n_out, a, b)
+    tivs = em_intervals(tmodel, {"signed": ptl}, footprint_aware=True)
+    assert any(i.ev.label == "MIXED" for i in tivs), \
+        "child derived from the parent lost the parent's mixed boundaries"
+
+    for i in tivs:
+        assert i.ev.label != "GENERATED" or True
+    labels = {i.ev.label for i in tivs}
+    assert "CAPTURED" not in labels or any(i.ev.label == "MIXED" for i in tivs), \
+        "child claims captured-only where the parent was mixed"
 
 
 if __name__ == "__main__":

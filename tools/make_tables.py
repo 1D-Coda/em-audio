@@ -59,9 +59,17 @@ def write(name, body, colspec=None, header=None):
 def _regression_counts():
     """Run the named regression suite and count its outcomes."""
     import subprocess, sys as _s
-    out = subprocess.run([_s.executable, str(ROOT / "tests" / "test_contract.py")],
-                         capture_output=True, text=True).stdout
-    p_, f_ = out.count("  PASS  "), out.count("  FAIL  ")
+    # Both suites. The review regressions were counted by neither the gate nor
+    # this table, so the reported figure described a subset of what the project
+    # actually tests.
+    p_ = f_ = 0
+    for name in ("test_contract.py", "test_review_regressions.py"):
+        path = ROOT / "tests" / name
+        if not path.exists():
+            continue
+        r = subprocess.run([_s.executable, str(path)], capture_output=True, text=True)
+        p_ += r.stdout.count("  PASS  ")
+        f_ += r.stdout.count("  FAIL  ") + r.stdout.count("  ERROR ")
     return {"total": p_ + f_, "passed": p_, "failed": f_}
 
 

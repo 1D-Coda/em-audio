@@ -104,12 +104,31 @@ def main() -> int:
             derived = WORK / f"{rec['id']:04d}_derived.{ext}"
             dur = n / float(FS)
             F.trim(signed, derived, 0.1 * dur, 0.8 * dur, codec=ext)
-            a = int(0.1 * n); b = a + int(0.8 * n)
-            dmodel = O.trim("clip", n, a, b)
-            divs = em_intervals(dmodel, {"clip": tl}, footprint_aware=True)
+            # The child reads the parent's propagated evidence, not the
+            # original timeline. Deriving from `tl` here re-read the sharp
+            # source labels and discarded the mixed boundaries the parent's
+            # codec footprint had already produced, so a trim of a transcoded
+            # asset asserted a cleaner ancestry than its own parent carried.
+            # claim_dilution.py and c2pa_composition.py already chain this way;
+            # this experiment was the one that did not.
+            parent_tl = Timeline("signed", [
+                SourceInterval("signed", iv.out_start, iv.out_end, iv.ev)
+                for iv in ivs], check=False)
+            a = int(0.1 * model.n_out); b = a + int(0.8 * model.n_out)
+            tmodel = O.trim("signed", model.n_out, a, b)
+            tivs = em_intervals(tmodel, {"signed": parent_tl}, footprint_aware=True)
+
+            # F.trim(..., codec=ext) also re-encodes, which the model has to
+            # carry: the command is a trim followed by a transcode, and only
+            # modelling the trim left the second operator's footprint out.
+            trimmed_tl = Timeline("trimmed", [
+                SourceInterval("trimmed", iv.out_start, iv.out_end, iv.ev)
+                for iv in tivs], check=False)
+            dmodel = O.transcode("trimmed", tmodel.n_out, ext)
+            divs = em_intervals(dmodel, {"trimmed": trimmed_tl}, footprint_aware=True)
             dassert = em_assertion(divs, FS, dmodel.n_out, "complete-source",
                                    dmodel.operator, dmodel.params)
-            bspans = span_evidence(dmodel, {"clip": tl}, "boundary")
+            bspans = span_evidence(dmodel, {"trimmed": trimmed_tl}, "boundary")
             bassert = em_assertion(bspans, FS, dmodel.n_out, "boundary-only",
                                    dmodel.operator, dmodel.params)
 

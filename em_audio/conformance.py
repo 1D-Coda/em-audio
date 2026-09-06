@@ -23,15 +23,87 @@ class Check:
     detail: str = ""
 
 
+def _active_pieces(out: DerivedOutput, oa: int, ob: int) -> Tuple[int, ...]:
+    """Indices of every map piece that actually covers part of ``[oa, ob)``.
+
+    Derived from the map's own geometry, never from what a candidate claims.
+    """
+    return tuple(i for i, p in enumerate(out.pieces)
+                 if p.out_start < ob and p.out_end > oa)
+
+
 def _required(out: DerivedOutput, timelines: Dict[str, Timeline], pis, oa: int, ob: int,
               footprint_aware: bool = True) -> List[SourceInterval]:
+    """Sources required over ``[oa, ob)``, from the map rather than the claim.
+
+    ``pis`` used to be taken at face value, so an output that simply left a
+    contributor out of its piece list was checked against the shorter list it
+    supplied. A fully overlaid captured-plus-generated pair, claimed as captured
+    with only the captured piece named, passed all seven checks: the promotion
+    this contract exists to prevent, cleared by this contract's own validators.
+    The claimed indices are still honoured when they name MORE than the geometry
+    requires, since inventing a contributor can only widen the required set and
+    is caught by the checks that compare against it.
+    """
     if isinstance(pis, int):
         pis = (pis,)
+    claimed = tuple(pis or ())
+    active = _active_pieces(out, oa, ob)
+    for pi in set(claimed) | set(active):
+        if not (0 <= pi < len(out.pieces)):
+            raise ValueError(
+                f"output interval [{oa},{ob}) names piece {pi}, "
+                f"but the map has {len(out.pieces)} pieces")
     srcs: List[SourceInterval] = []
-    for pi in pis:
+    for pi in sorted(set(claimed) | set(active)):
         srcs.extend(_sources_for(out.pieces[pi], timelines, oa, ob,
                                  footprint_aware=footprint_aware))
     return srcs
+
+
+def p0_structural(out: DerivedOutput, timelines: Dict[str, Timeline],
+                  intervals: Sequence[OutputInterval]) -> Check:
+    """The candidate is a well-formed annotation of this map before any
+    semantic check is meaningful.
+
+    Every semantic check quantifies over the intervals it is handed, so an empty
+    or truncated list satisfied all of them vacuously. An empty candidate for a
+    non-empty map passed all seven.
+    """
+    if out.n_out <= 0:
+        return Check("P0_structural", True, "empty map")
+    if not intervals:
+        return Check("P0_structural", False,
+                     f"no output intervals for a map producing {out.n_out} samples")
+    ivs = sorted(intervals, key=lambda i: (i.out_start, i.out_end))
+    for iv in ivs:
+        if iv.out_end <= iv.out_start:
+            return Check("P0_structural", False,
+                         f"interval [{iv.out_start},{iv.out_end}) is empty or inverted")
+        if iv.out_start < 0 or iv.out_end > out.n_out:
+            return Check("P0_structural", False,
+                         f"interval [{iv.out_start},{iv.out_end}) leaves the output "
+                         f"[0,{out.n_out})")
+    if ivs[0].out_start != 0 or ivs[-1].out_end != out.n_out:
+        return Check("P0_structural", False,
+                     f"output [0,{out.n_out}) is not covered: annotation spans "
+                     f"[{ivs[0].out_start},{ivs[-1].out_end})")
+    for a, b in zip(ivs, ivs[1:]):
+        if b.out_start < a.out_end:
+            return Check("P0_structural", False,
+                         f"intervals [{a.out_start},{a.out_end}) and "
+                         f"[{b.out_start},{b.out_end}) overlap, so the claim at "
+                         "the overlap is ambiguous")
+        if b.out_start > a.out_end:
+            return Check("P0_structural", False,
+                         f"output [{a.out_end},{b.out_start}) carries no claim")
+    for iv in ivs:
+        missing = set(_active_pieces(out, iv.out_start, iv.out_end)) - set(iv.piece_indices or ())
+        if missing:
+            return Check("P0_structural", False,
+                         f"interval [{iv.out_start},{iv.out_end}) omits contributing "
+                         f"piece(s) {sorted(missing)} that the map says cover it")
+    return Check("P0_structural", True, f"{len(ivs)} intervals cover [0,{out.n_out})")
 
 
 # --- P1 ---------------------------------------------------------------------
@@ -263,6 +335,7 @@ def p7_composition(chain: Sequence[Tuple[DerivedOutput, Dict[str, Timeline]]],
 def run_property_suite(out: DerivedOutput, timelines: Dict[str, Timeline]) -> List[Check]:
     ivs = em_intervals(out, timelines, footprint_aware=True)
     return [
+        p0_structural(out, timelines, ivs),
         p1_exact_union(out, timelines, ivs),
         p2_no_promotion(out, timelines, ivs),
         p3_unverified_non_promotion(out, timelines, ivs),
