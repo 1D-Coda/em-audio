@@ -1,0 +1,23 @@
+{
+ "distinct_scopes": 5,
+ "enlargement_cases": 441,
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "14",
+  "cpu_model": "Apple M3 Max",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "memory_bytes": "38654705664",
+  "node": "v26.7.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.15"
+ },
+ "experiment": "L_scope_battery",
+ "monotone": 441,
+ "purpose": "applicability cases the single-scope audio corpus cannot reach: disjoint and overlapping scopes, and the inapplicable-to-applicable transition that Proposition 4 turns on",
+ "unconstructible_skipped": 184,
+ "violations": 0,
+ "violations_under_superseded_rule": 80
+}

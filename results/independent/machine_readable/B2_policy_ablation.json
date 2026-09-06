@@ -1,0 +1,87 @@
+{
+ "arms": {
+  "footprint": {
+   "cases": 10000,
+   "per_policy": {
+    "B0_boundary_blind": {
+     "lineage_omissions": 10000,
+     "promotion_rate": 1.0,
+     "promotions": 10000
+    },
+    "B1_boundary_footprint": {
+     "lineage_omissions": 10000,
+     "promotion_rate": 0.0,
+     "promotions": 0
+    },
+    "B2_complete_blind": {
+     "lineage_omissions": 10000,
+     "promotion_rate": 1.0,
+     "promotions": 10000
+    },
+    "B3_complete_footprint": {
+     "lineage_omissions": 0,
+     "promotion_rate": 0.0,
+     "promotions": 0
+    }
+   }
+  },
+  "interior": {
+   "cases": 10000,
+   "per_policy": {
+    "B0_boundary_blind": {
+     "lineage_omissions": 10000,
+     "promotion_rate": 1.0,
+     "promotions": 10000
+    },
+    "B1_boundary_footprint": {
+     "lineage_omissions": 10000,
+     "promotion_rate": 1.0,
+     "promotions": 10000
+    },
+    "B2_complete_blind": {
+     "lineage_omissions": 0,
+     "promotion_rate": 0.0,
+     "promotions": 0
+    },
+    "B3_complete_footprint": {
+     "lineage_omissions": 0,
+     "promotion_rate": 0.0,
+     "promotions": 0
+    }
+   }
+  }
+ },
+ "environment": {
+  "c2patool": "c2patool 0.27.15",
+  "cpu_count_logical": "12",
+  "cpu_model": "13th Gen Intel(R) Core(TM) i7-1355U",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers",
+  "machine": "x86_64",
+  "memory_bytes": "8167567360",
+  "node": "v22.22.1",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "processor": "x86_64",
+  "python": "3.14.4"
+ },
+ "experiment": "B2_policy_ablation",
+ "note": "the interior arm isolates the boundary-only shortcut; the footprint arm isolates footprint blindness by placing the anomaly outside the nominal represented range but inside the declared kernel footprint",
+ "policies": {
+  "B0_boundary_blind": {
+   "inheritance": "boundary-only",
+   "kernel_footprint": false
+  },
+  "B1_boundary_footprint": {
+   "inheritance": "boundary-only",
+   "kernel_footprint": true
+  },
+  "B2_complete_blind": {
+   "inheritance": "complete-source",
+   "kernel_footprint": false
+  },
+  "B3_complete_footprint": {
+   "inheritance": "complete-source",
+   "kernel_footprint": true
+  }
+ }
+}

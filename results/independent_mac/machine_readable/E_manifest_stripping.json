@@ -1,0 +1,45 @@
+{
+ "conditions": [
+  "valid_manifest",
+  "manifest_removed",
+  "asset_modified_after_signing",
+  "reencoded_without_manifest",
+  "valid_derived_manifest"
+ ],
+ "environment": {
+  "c2patool": "c2patool 0.27.16",
+  "cpu_count_logical": "8",
+  "cpu_model": "Apple M1",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "memory_bytes": "8589934592",
+  "node": "v26.8.1",
+  "platform": "macOS-26.3.1-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.16"
+ },
+ "experiment": "E_manifest_stripping",
+ "n_clips": 60,
+ "runtime_s": 9.959,
+ "scope_note": "an absent or invalid manifest is reported UNVERIFIED or INVALID; no claim is made that stripping indicates malicious intent",
+ "state_tally": {
+  "asset_modified_after_signing": {
+   "INVALID": 60
+  },
+  "manifest_removed": {
+   "UNVERIFIED": 60
+  },
+  "reencoded_without_manifest": {
+   "UNVERIFIED": 60
+  },
+  "valid_derived_manifest": {
+   "MIXED": 60
+  },
+  "valid_manifest": {
+   "MIXED": 60
+  }
+ },
+ "violation_sample": [],
+ "violations": 0
+}

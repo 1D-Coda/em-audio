@@ -1,0 +1,40 @@
+{
+ "alphabet": [
+  "C",
+  "G",
+  "B"
+ ],
+ "batteries": [
+  {
+   "max_len": 6,
+   "width": 16
+  },
+  {
+   "max_len": 4,
+   "width": 1024
+  }
+ ],
+ "cases": 10860,
+ "compared": 10860,
+ "disagreement_sample": [],
+ "disagreements": 0,
+ "environment": {
+  "c2patool": "c2patool 0.27.15",
+  "cpu_count_logical": "12",
+  "cpu_model": "13th Gen Intel(R) Core(TM) i7-1355U",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers",
+  "machine": "x86_64",
+  "memory_bytes": "8167567360",
+  "node": "v22.22.1",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "processor": "x86_64",
+  "python": "3.14.4"
+ },
+ "experiment": "H_oracle_differential",
+ "independence_caveat": "both implementations are author-written; this is a differential test against transcription and interval-arithmetic error, not author independence",
+ "javascript_algorithm": "brute-force per-output-sample evaluation, run-length encoded",
+ "max_support_abs_difference": 0.0,
+ "python_algorithm": "interval algebra with pulled-back source boundaries",
+ "runtime_s": 12.111
+}

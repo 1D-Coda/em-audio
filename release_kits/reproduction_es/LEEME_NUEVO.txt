@@ -1,0 +1,69 @@
+EM-Audio - paquete de reproduccion independiente
+================================================
+
+Gracias por correr esto. Lo que nos sirve no es que pase: es saber que pasa en
+tu maquina. Las dos reproducciones anteriores encontraron defectos reales, y
+los dos estan publicados en el paper como resultados en vez de arreglados en
+silencio.
+
+Una corrida que falla y se reporta vale mas que una que se acomodo para pasar.
+
+ANTES DE EMPEZAR
+----------------
+
+Descomprime esto en una ruta CORTA. C:\em-audio es lo ideal.
+
+Windows sigue teniendo MAX_PATH en 260, y una de nuestras herramientas trunca
+las rutas de salida pasados unos 200 caracteres sin reportar error. Descomprimir
+dentro de Downloads, en una carpeta que repite el nombre del archivo, ya le
+costo una corrida a un reproductor.
+
+QUE HACER
+---------
+
+1) Chequeo de herramientas. No corre ningun experimento:
+
+       cd em-audio
+       python tools\repro_selftest.py
+
+   Si "python" no funciona, prueba "py -3". El chequeo te dice cual de los tres
+   nombres de interprete va a usar el pipeline de verdad, y nombra lo que falte
+   junto con como instalarlo.
+
+2) Instalar y correr:
+
+       pip install -r requirements.txt
+       bash run_all.sh 2>&1 | tee run_all_output.txt
+       python tools\verify_reproduction.py 2>&1 | tee verify_output.txt
+
+   Git Bash trae bash en Windows. WSL tambien sirve.
+
+Necesitas en el PATH: ffmpeg, ffprobe, node, espeak-ng y c2patool. Tarda unos
+25 minutos, mas la descarga del corpus de 322 MB la primera vez.
+
+QUE ESPERAR AL FINAL
+--------------------
+
+verify_reproduction.py puede salir distinto de cero. Eso es un resultado, no un
+fallo tuyo, y es el caso interesante.
+
+Nuestras propias corridas en Windows no reproducen el alcance medido del kernel
+MP3: 1541 muestras contra las 1555 que midio el build de referencia, con el
+mismo numero de version de FFmpeg. Las dos caben dentro de las 2304 declaradas,
+asi que la declaracion se sostuvo. Esa diferencia es lo que el paper afirma,
+medida en otra maquina.
+
+Si un paso falla, el log ahora nombra el paso y su codigo de salida, y repite la
+lista al final.
+
+QUE MANDAR DE VUELTA
+--------------------
+
+  run_all_output.txt
+  verify_output.txt
+  results/PREFLIGHT.txt
+  todo lo que haya en results/machine_readable/
+
+Mandalo con el codigo de salida que haya dado, incluso una corrida que no
+produjo nada. Un paquete anterior no traia ningun resultado, y ese log fue
+justamente lo que localizo el defecto.

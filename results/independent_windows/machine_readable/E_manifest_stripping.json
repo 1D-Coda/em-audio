@@ -1,0 +1,45 @@
+{
+ "conditions": [
+  "valid_manifest",
+  "manifest_removed",
+  "asset_modified_after_signing",
+  "reencoded_without_manifest",
+  "valid_derived_manifest"
+ ],
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "12",
+  "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "AMD64",
+  "memory_bytes": "unavailable",
+  "node": "v22.19.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+  "python": "3.13.4"
+ },
+ "experiment": "E_manifest_stripping",
+ "n_clips": 60,
+ "runtime_s": 48.013,
+ "scope_note": "an absent or invalid manifest is reported UNVERIFIED or INVALID; no claim is made that stripping indicates malicious intent",
+ "state_tally": {
+  "asset_modified_after_signing": {
+   "INVALID": 60
+  },
+  "manifest_removed": {
+   "UNVERIFIED": 60
+  },
+  "reencoded_without_manifest": {
+   "UNVERIFIED": 60
+  },
+  "valid_derived_manifest": {
+   "MIXED": 60
+  },
+  "valid_manifest": {
+   "MIXED": 60
+  }
+ },
+ "violation_sample": [],
+ "violations": 0
+}

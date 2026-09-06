@@ -1,0 +1,87 @@
+EM-Audio - paquete de reproduccion independiente (macOS)
+========================================================
+
+Gracias por correr esto. Lo que nos sirve no es que pase, sino saber que pasa en
+tu maquina. Las reproducciones anteriores encontraron cinco defectos reales, y
+todos estan publicados o corregidos gracias a ellas.
+
+Una corrida que falla y se reporta vale mas que una que se acomodo para pasar.
+
+SI VAS A USAR DOS COMPUTADORAS
+------------------------------
+
+Perfecto, y es justo lo mas util. Corre el procedimiento completo en cada una
+por separado y mandanos los dos paquetes de resultados. Ponle a cada zip el
+nombre de la maquina, por ejemplo resultados_macbook_m1.zip y
+resultados_imac_intel.zip, y dinos de cada una si es Apple Silicon (M1/M2/M3/M4)
+o Intel. Esa diferencia es exactamente lo que estamos midiendo.
+
+ANTES DE EMPEZAR
+----------------
+
+Descomprime en una ruta CORTA. ~/em-audio es lo ideal.
+
+Una de las herramientas trunca las rutas de salida pasados unos 200 caracteres
+sin reportar error. Esto le paso a este mismo proyecto en macOS, no es teorico.
+
+INSTALAR LAS HERRAMIENTAS
+-------------------------
+
+Con Homebrew:
+
+    brew install ffmpeg espeak-ng node c2patool
+
+Si no tienes Homebrew, instalalo desde brew.sh primero.
+
+Los paquetes de Python, en un entorno virtual para no pelearte con las
+protecciones de Homebrew:
+
+    cd ~/em-audio
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+
+CORRER
+------
+
+    python3 tools/repro_selftest.py
+
+Eso no corre ningun experimento: revisa que este todo y nombra lo que falte.
+Cuando salga limpio:
+
+    ./run_all.sh 2>&1 | tee run_all_output.txt
+    python3 tools/verify_reproduction.py 2>&1 | tee verify_output.txt
+
+Tarda unos 25 minutos por maquina, mas la descarga del corpus de 322 MB la
+primera vez. Si usas la misma carpeta en las dos, el corpus se descarga una vez.
+
+QUE ESPERAR AL FINAL
+--------------------
+
+verify_reproduction.py puede salir 0 o distinto de cero, y las dos cosas son
+resultados.
+
+Nuestra referencia se produjo en un Mac con Apple Silicon y FFmpeg 9.0.1 de
+Homebrew. Si tu maquina es parecida, es posible que reproduzcas todo exactamente
+y salga 0. Si es un Mac Intel, esperamos diferencias en el alcance medido del
+codec MP3, y eso es precisamente lo que el articulo afirma: ese numero es una
+propiedad del build y no una constante del codec.
+
+Homebrew instala hoy c2patool 0.27.16 y la referencia se hizo con 0.27.2. Si
+aparecen diferencias por eso, tambien queremos saberlo; no lo cambies.
+
+Si un paso falla, el registro nombra el paso y su codigo de salida, y repite la
+lista al final. Tambien puedes correr:
+
+    python3 tools/explain_failure.py run_all_output.txt
+
+QUE MANDAR DE VUELTA, DE CADA MAQUINA
+-------------------------------------
+
+  run_all_output.txt
+  verify_output.txt
+  results/PREFLIGHT.txt
+  todo lo que haya en results/machine_readable/
+
+Mandalo con el codigo de salida que haya dado, incluso si no produjo nada. Un
+registro sin resultados fue justamente lo que localizo uno de los defectos.

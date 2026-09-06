@@ -1,0 +1,107 @@
+{
+ "baseline_ms_per_audio_minute": {
+  "cv_pct": 13.942,
+  "max": 0.537,
+  "mean": 0.478,
+  "min": 0.3138,
+  "range_pct": 71.13
+ },
+ "cv_definition": "sample standard deviation over the mean, in percent, with Bessel's correction",
+ "em_ms_per_audio_minute": {
+  "cv_pct": 13.171,
+  "max": 1.8478,
+  "mean": 1.6494,
+  "min": 1.1111,
+  "range_pct": 66.3
+ },
+ "em_over_baseline_ratio": {
+  "cv_pct": 1.642,
+  "max": 3.5413,
+  "mean": 3.455,
+  "min": 3.3809,
+  "range_pct": 4.74
+ },
+ "environment": {
+  "c2patool": "c2patool 0.27.15",
+  "cpu_count_logical": "12",
+  "cpu_model": "13th Gen Intel(R) Core(TM) i7-1355U",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers",
+  "machine": "x86_64",
+  "memory_bytes": "8167567360",
+  "node": "v22.22.1",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "processor": "x86_64",
+  "python": "3.14.4"
+ },
+ "experiment": "M_overhead_stability",
+ "interpretation": "the ratio cancels common-mode variation; it is much tighter when machine state moves both arms together and has no advantage on a quiet machine, so a sitting in which it is not tighter is consistent with the mechanism rather than a failure of it",
+ "load_average_1_5_15": [
+  0.95,
+  1.0,
+  1.04
+ ],
+ "measured_utc": "2026-08-27T02:46:33Z",
+ "purpose": "whether the absolute cost or the ratio survives being measured again on the same machine",
+ "ratio_is_tighter_than_absolute": true,
+ "repeats": 9,
+ "runs": [
+  {
+   "baseline_ms_per_audio_minute": 0.537,
+   "em_ms_per_audio_minute": 1.8306,
+   "em_over_baseline_ratio": 3.4088,
+   "run": 1
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.3138,
+   "em_ms_per_audio_minute": 1.1111,
+   "em_over_baseline_ratio": 3.5413,
+   "run": 2
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.5317,
+   "em_ms_per_audio_minute": 1.8478,
+   "em_over_baseline_ratio": 3.4751,
+   "run": 3
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.4906,
+   "em_ms_per_audio_minute": 1.6587,
+   "em_over_baseline_ratio": 3.3809,
+   "run": 4
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.4787,
+   "em_ms_per_audio_minute": 1.6829,
+   "em_over_baseline_ratio": 3.5154,
+   "run": 5
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.4904,
+   "em_ms_per_audio_minute": 1.6794,
+   "em_over_baseline_ratio": 3.4243,
+   "run": 6
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.4772,
+   "em_ms_per_audio_minute": 1.6492,
+   "em_over_baseline_ratio": 3.4562,
+   "run": 7
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.4638,
+   "em_ms_per_audio_minute": 1.6228,
+   "em_over_baseline_ratio": 3.4993,
+   "run": 8
+  },
+  {
+   "baseline_ms_per_audio_minute": 0.5192,
+   "em_ms_per_audio_minute": 1.7624,
+   "em_over_baseline_ratio": 3.3941,
+   "run": 9
+  }
+ ],
+ "runtime_s": 783.557,
+ "scope_note": "one sitting is one machine state, so this is a lower bound on the variation a later reproduction sees, not an estimate of it",
+ "tightness_factor_cv": 8.02
+}

@@ -6,9 +6,11 @@ LaTeX source outside this file.
 """
 from __future__ import annotations
 
-import json, subprocess, sys
+import json
+import re, subprocess, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 ROOT = Path(__file__).resolve().parents[1]
 MR = ROOT / "results" / "machine_readable"
@@ -23,6 +25,240 @@ def fmt(x):
     if isinstance(x, int):
         return f"{x:,}".replace(",", r"\,")
     return str(x)
+
+
+IND = ROOT / "results" / "independent"
+
+
+def cross_build_macros():
+    """The MP3 reach measured on every environment we have a result file for.
+
+    Four runs, one FFmpeg version number, two builds. Computed from the files
+    rather than assembled by hand, because the point of the comparison is that
+    the numbers were not chosen.
+    """
+    m = {}
+    sources = {
+        "Ref":  ROOT / "results" / "reference" / "CALIBRATION.json",
+        "Mac":  ROOT / "results" / "independent_mac" / "machine_readable" / "CALIBRATION.json",
+        "Win":  ROOT / "results" / "independent_windows" / "machine_readable" / "CALIBRATION.json",
+    }
+    for tag, path in sources.items():
+        if not path.exists():
+            continue
+        d = json.loads(path.read_text())
+        op = [o for o in d["operators"] if o["operator"] == "transcode_mp3"][0]
+        m[f"XB{tag}Reach"] = fmt(op["measured_reach_source_samples"])
+        m[f"XB{tag}Outside"] = fmt(sum(p["outside_declared_support"] for p in op["probes"]))
+
+    # The environments those numbers came from, also read rather than typed.
+    envs = {
+        "Mac": ROOT / "results" / "independent_mac" / "machine_readable" / "D_transform_matrix.json",
+        "Win": ROOT / "results" / "independent_windows" / "machine_readable" / "D_transform_matrix.json",
+    }
+    for tag, path in envs.items():
+        if not path.exists():
+            continue
+        e = json.loads(path.read_text())["environment"]
+        # Build names carry underscores, which LaTeX reads as maths. The
+        # manuscript failed to compile on "9.0.1-full_build-www.gyan.dev".
+        m[f"XB{tag}Ffmpeg"] = e["ffmpeg"].split()[2].replace("_", r"\_")
+        m[f"XB{tag}Cpu"] = e.get("cpu_model", "unknown").replace("_", r"\_")
+        m[f"XB{tag}Os"] = e["platform"].split("-")[0] + " " + e["platform"].split("-")[1]
+
+    # How many deterministic outputs the macOS run reproduced, from its own log.
+    vlog = ROOT / "results" / "independent_mac" / "verify_output.txt"
+    if vlog.exists():
+        t = vlog.read_text(errors="replace")
+        if "Every deterministic output matches the release" in t:
+            m["XBMacVerdict"] = "every deterministic output"
+        env_n = re.search(r"(\d+) environment-dependent difference", t)
+        if env_n:
+            m["XBMacEnvDiffs"] = fmt(int(env_n.group(1)))
+    return m
+
+
+def independent_macros():
+    """Numbers from the third-party reproduction, taken from its own files.
+
+    Both this run and the reference run write the same schema, so the
+    comparisons the manuscript makes are computed here from the two files
+    rather than typed into the text from a terminal transcript.
+    """
+    import verify_reproduction as V
+
+    ind = IND / "machine_readable"
+    L = lambda d, n: json.loads((d / f"{n}.json").read_text())
+    m = {}
+
+    env = L(ind, "D_transform_matrix")["environment"]
+    m["IRpython"] = env["python"]
+    m["IRffmpeg"] = env["ffmpeg"].split()[2]
+    m["IRcTwopatool"] = env["c2patool"].split()[-1]
+    m["IRnode"] = env["node"]
+    m["IRos"] = "Linux " + env["platform"].split("-")[1].split("-micro")[0]
+    # The architecture string carries an underscore, which is not text-mode
+    # LaTeX; escape it here rather than leaving the one macro in the file that
+    # the manuscript may not use verbatim like all the others.
+    m["IRarch"] = env.get("machine", "").replace("_", r"\_")
+    # The CPU model is recorded in the preflight report rather than in each
+    # result file's environment block.
+    pre = {}
+    for line in (IND / "PREFLIGHT.txt").read_text().splitlines():
+        if ":" in line and not line.startswith(" "):
+            k, v = line.split(":", 1)
+            pre.setdefault(k.strip(), v.strip())
+    m["IRcpu"] = pre.get("cpu", "").replace("(R)", "").replace("(TM)", "").strip()
+    m["IRcores"] = pre.get("cpu_count_logical", "")
+    m["IRmem"] = pre.get("memory_gib", "")
+    esp = pre.get("espeak_ng", "").split()
+    m["IRespeak"] = esp[3] if len(esp) > 3 else ""
+    # The dates of the two runs, from the timestamp each one stamped into its
+    # own stability record rather than from a covering email.
+    m["IRdate"] = json.loads(
+        (ind / "M_overhead_stability.json").read_text())["measured_utc"][:10]
+
+    # How many of the compared files differ, computed with the same classifier
+    # the reproducer ran, so the count in the text is the count the tool printed.
+    clean = det = envd = 0
+    for name, keys in V.DETERMINISTIC.items():
+        cur, ref = L(ind, name), V._reference("v1.0.1", name)
+        n = 0
+        for key in keys:
+            flat_cur = dict(V._flatten(cur[key], key))
+            for path, rv in V._flatten(ref[key], key):
+                cv = flat_cur.get(path, "<absent>")
+                if cv == rv:
+                    continue
+                if V._is_env(path):
+                    envd += 1
+                else:
+                    n += 1
+        det += n
+        clean += (n == 0)
+    m["IRfiles"] = fmt(len(V.DETERMINISTIC))
+    m["IRclean"] = fmt(clean)
+    m["IRdet"] = fmt(det)
+    m["IRenv"] = fmt(envd)
+
+    # the two operators whose declared numbers his build did not satisfy
+    k = L(ind, "K_support_containment")["per_operator"]["transcode_mp3"]
+    km = L(MR, "K_support_containment")["per_operator"]["transcode_mp3"]
+    m["IRmpDeclared"] = fmt(k["declared_footprint_samples"])
+    m["IRmpReach"] = fmt(k["max_measured_reach_source_samples"])
+    m["IRmpReachRef"] = fmt(km["max_measured_reach_source_samples"])
+    m["IRmpExcess"] = fmt(k["max_samples_outside"])
+    m["IRmpOutside"] = fmt(k["total_outside_declared_support"])
+    m["IRmpContext"] = ", ".join(sorted(c for c, v in k["per_context_outside"].items() if v))
+
+    d = L(ind, "D_transform_matrix")["per_transformation"]["silence_removal"]
+    dm = L(MR, "D_transform_matrix")["per_transformation"]["silence_removal"]
+    m["IRsilGuard"] = fmt(d["declared_guard_band_samples"])
+    m["IRsilDev"] = fmt(d["model_vs_ffmpeg_max_abs_sample_dev"])
+    m["IRsilDevRef"] = fmt(dm["model_vs_ffmpeg_max_abs_sample_dev"])
+    # Not int(): the median of an even number of runs is a half-integer, and
+    # truncating it prints a number the result file does not contain.
+    med = d["model_vs_ffmpeg_median_abs_sample_dev"]
+    m["IRsilMedian"] = fmt(int(med)) if med == int(med) else f"{med:,.1f}".replace(",", r"\,")
+
+    # How many operators reproduced their measured reach, counted among those
+    # that declare a non-zero footprint. Counting all seven would credit three
+    # operators whose reach is zero on both machines, which reproduces trivially
+    # and would overstate the agreement.
+    ki, km = L(ind, "K_support_containment")["per_operator"], L(MR, "K_support_containment")["per_operator"]
+    nz = [o for o in km if km[o]["declared_footprint_samples"] > 0]
+    agree = [o for o in nz if km[o]["max_measured_reach_source_samples"]
+             == ki[o]["max_measured_reach_source_samples"]]
+    m["IRopsNonzero"] = fmt(len(nz))
+    m["IRopsAgree"] = fmt(len(agree))
+    m["IRopsZero"] = fmt(len(km) - len(nz))
+    # the mechanism: his silencremove leaves a longer output than the reference's
+    probes = L(ind, "K_support_containment")["per_operator"]["silence_removal"]["per_probe"]
+    probes_ref = L(MR, "K_support_containment")["per_operator"]["silence_removal"]["per_probe"]
+    m["IRsilLen"] = fmt(max(p["decoded_length"] for p in probes))
+    m["IRsilLenRef"] = fmt(max(p["decoded_length"] for p in probes_ref))
+
+    # cost: the absolute figure travels badly, the ratio travels well
+    g, gm = L(ind, "G_overhead"), L(MR, "G_overhead")
+    s, sm = L(ind, "M_overhead_stability"), L(MR, "M_overhead_stability")
+    m["IRratio"] = f"{g['em_over_baseline_ratio']:.2f}"
+    m["IRratioRef"] = f"{gm['em_over_baseline_ratio']:.2f}"
+    m["IRabs"] = f"{g['em_ms_per_audio_minute']:.2f}"
+    m["IRabsRef"] = f"{gm['em_ms_per_audio_minute']:.2f}"
+    m["IRabsGap"] = f"{100*abs(g['em_ms_per_audio_minute']/gm['em_ms_per_audio_minute'] - 1):.0f}"
+    m["IRratioGap"] = f"{100*abs(g['em_over_baseline_ratio']/gm['em_over_baseline_ratio'] - 1):.1f}"
+    m["IRabsCv"] = f"{s['em_ms_per_audio_minute']['cv_pct']:.1f}"
+    m["IRratioCv"] = f"{s['em_over_baseline_ratio']['cv_pct']:.1f}"
+    return m
+
+
+
+# A stable key for each supplement section the manuscript points at, matched on
+# a distinctive substring of its title rather than on its position.
+SUPPLEMENT_NOTES = {
+    "NoteNovelty": "Novelty search",
+    "NoteThreat": "Threat-model matrix",
+    "NoteSchema": "EM assertion schema",
+    "NoteComposition": "Composition manifest wiring",
+    "NoteRobustness": "Robustness-arm materials",
+    "NoteRepro": "Reproduction",
+    "NoteIndependent": "Independent reproduction",
+    "NoteRawRows": "Raw rows behind two summary figures",
+    "NoteFeasibility": "Feasibility log",
+}
+
+
+def supplement_notes():
+    """Map each key to the number the supplement actually gives that section."""
+    import re
+    sp = ROOT / "paper" / "supplementary.tex"
+    if not sp.exists():
+        # Reproduction package: no paper/, so no supplement notes to resolve.
+        return {}
+    supp = sp.read_text()
+    titles = re.findall(r"^\\section\{([^}]+)\}", supp, re.M)
+    out = {}
+    for key, needle in SUPPLEMENT_NOTES.items():
+        hits = [i for i, t in enumerate(titles, 1) if needle in t]
+        if len(hits) != 1:
+            raise SystemExit(
+                f"[macros] supplement section for {key} ({needle!r}) matched "
+                f"{len(hits)} of {len(titles)} sections; the manuscript cannot "
+                f"point at it unambiguously")
+        out[key] = f"S{hits[0]}"
+    return out
+
+
+
+# Numbers the supplement needs to cite from the manuscript. The supplement is a
+# separate document and cannot \ref across, so the two stale references it
+# carried were typed by hand and went wrong silently. These are read from the
+# manuscript's own .aux, which is what LaTeX resolved, so they cannot disagree
+# with what the manuscript prints.
+MANUSCRIPT_LABELS = {
+    "PropFootprint": "prop:footprint",
+    "PropUnion": "prop:union",
+    "ThmComposition": "thm:composition",
+    "TabOperators": "tab:operators",
+}
+
+
+def manuscript_labels():
+    import re
+    aux = ROOT / "paper" / "manuscript.aux"
+    if not aux.exists():
+        print("[macros] paper/manuscript.aux absent; the manuscript's own "
+              "numbering is not available, so cross-document labels are skipped")
+        return {}
+    text = aux.read_text(errors="ignore")
+    out = {}
+    for key, label in MANUSCRIPT_LABELS.items():
+        mm = re.search(r"\\newlabel\{" + re.escape(label) + r"\}\{\{([^}]*)\}", text)
+        if not mm:
+            raise SystemExit(f"[macros] manuscript.aux has no label {label!r}; "
+                             f"build the manuscript before generating macros")
+        out[key] = mm.group(1)
+    return out
 
 
 def main() -> int:
@@ -199,8 +435,16 @@ def main() -> int:
     M = load("M_overhead_stability")
     G = load("G_overhead")
     m["Vcpu"] = G["environment"]["cpu_model"]
-    m["Vcores"] = fmt(int(G["environment"]["cpu_count_logical"]))
-    m["Vram"] = f"{int(G['environment']['memory_bytes']) / 2**30:.0f}"
+    # Not every platform reports this. Windows returned "unavailable" and the
+    # int() then ended the whole run inside the tables step, which names neither
+    # the value nor the platform. A machine that cannot say how many cores it
+    # has is not a reason to fail a reproduction.
+    _cores = G["environment"].get("cpu_count_logical", "")
+    m["Vcores"] = fmt(int(_cores)) if str(_cores).isdigit() else "unavailable"
+    # memory_bytes is "unavailable" wherever the platform has no /proc and no
+    # sysctl, which is Windows. This is where the int() ended a whole run.
+    _mem = G["environment"].get("memory_bytes", "")
+    m["Vram"] = (f"{int(_mem) / 2**30:.0f}" if str(_mem).isdigit() else "unavailable")
     m["GfirstIterPct"] = f"{G['first_iteration_effect_pct']:.2f}"
     m["Gclips"] = fmt(G["clips_per_repetition"])
     m["MstabRepeats"] = fmt(M["repeats"])
@@ -240,6 +484,58 @@ def main() -> int:
                        capture_output=True, text=True)
     m["Tpass"] = fmt(t.stdout.count("  PASS  ")); m["Tfail"] = fmt(t.stdout.count("  FAIL  "))
     m["Ttotal"] = fmt(t.stdout.count("  PASS  ") + t.stdout.count("  FAIL  "))
+    # independent reproduction
+    #
+    # Read from the reproducer's own result files rather than transcribed, so
+    # that a number quoted in Section 7.11 cannot drift from the files shipped
+    # in results/independent/. Absent that directory the macros are simply not
+    # emitted and the manuscript fails to build, which is the correct failure:
+    # a claim about someone else's run must not survive the loss of their data.
+    # A reproduction package deliberately ships without results/independent/,
+    # because those are someone else's measurements and shipping them lets a
+    # failed experiment leave a file in place that a comparison then reports as
+    # a match. So this block is optional: absent inputs mean the macros are not
+    # emitted, not that the run dies. Testing the package caught this; the
+    # working tree always has the directory, so it could not fail here.
+    ind_dir = ROOT / "results" / "independent" / "machine_readable"
+    if ind_dir.is_dir() and any(ind_dir.glob("*.json")):
+        m.update(independent_macros())
+    else:
+        print("[macros] results/independent/ absent: the independent-reproduction "
+              "macros are not emitted. Expected in a reproduction package.")
+    # Guarded the same way: a reproduction package ships none of these.
+    m.update(cross_build_macros())
+    # The C2PA assertion label and schema identifier, read from the module that
+    # defines them. They were typed into the manuscript and the supplement by
+    # hand, so changing the namespace in code left the paper describing an
+    # assertion the implementation no longer emits.
+    from em_audio import manifest_schema as _ms
+    m["Clabel"] = _ms.ASSERTION_LABEL.replace("_", r"\_")
+    m["Cschema"] = _ms.SCHEMA.replace("_", r"\_").replace("#", r"\#")
+    m["Cnamespace"] = _ms.NAMESPACE.replace("_", r"\_")
+
+    # Supplementary note numbers, derived from the supplement's own section
+    # order. They were typed into the manuscript as "Supplementary Note~S8",
+    # and inserting a section ahead of the one they meant silently repointed all
+    # three at the wrong note while the checker still reported them as
+    # resolving, because it only asked whether a note with that number existed.
+    m.update(supplement_notes())
+    m.update(manuscript_labels())
+
+    # The tag the independent reproducer actually ran, which is not the same
+    # fact as the repository's current release tag. The manuscript said \Rtag,
+    # which is generated from `git describe` and silently fills in whatever tag
+    # is current, so the sentence claimed he ran a release that did not exist
+    # when he ran it.
+    rec = ROOT / "results" / "independent" / "RUN_RECORD.txt"
+    if rec.exists():
+        for line in rec.read_text().splitlines():
+            if line.startswith("tag_run:"):
+                m["IRtag"] = line.split(":", 1)[1].strip()
+                break
+        else:
+            raise SystemExit("[macros] RUN_RECORD.txt exists but has no tag_run")
+
     # release identity
     def _git(*a):
         try:

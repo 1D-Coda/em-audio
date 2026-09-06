@@ -1,7 +1,7 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 5ce8899146993a3b2bcdf44d52940a8071d49599
-tag: v1.0.0
+commit: 632dca141b0b29e2e947e15d7d5a37c617429f36
+tag: v1.0.3
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
       commit that stores it by one. Re-run tools/preflight.py, or run_all.sh,
@@ -18,19 +18,19 @@ c2pa_spec_version: 2.4 (April 2026)
 os: macOS-26.5.2-arm64-arm-64bit
 
 benchmark stability, one process per row
-  measured: 2026-08-26T18:11:44Z UTC, load average [6.23, 5.59, 8.35]
+  measured: 2026-09-06T18:13:10Z UTC, load average [5.04, 5.02, 4.61]
   cv definition: sample standard deviation over the mean, in percent, with Bessel's correction
-  run 1: em 1.3381 ms, baseline 0.3968 ms, ratio 3.372
-  run 2: em 1.3289 ms, baseline 0.3956 ms, ratio 3.3595
-  run 3: em 1.2992 ms, baseline 0.388 ms, ratio 3.3489
-  run 4: em 1.2969 ms, baseline 0.3887 ms, ratio 3.3363
-  run 5: em 1.3082 ms, baseline 0.3895 ms, ratio 3.3588
-  run 6: em 1.3165 ms, baseline 0.3926 ms, ratio 3.3533
-  run 7: em 1.3081 ms, baseline 0.3881 ms, ratio 3.3707
-  run 8: em 1.3179 ms, baseline 0.3952 ms, ratio 3.3349
-  run 9: em 1.3252 ms, baseline 0.3946 ms, ratio 3.3587
-  absolute cv: 1.045%
-  ratio cv: 0.391%
+  run 1: em 0.9603 ms, baseline 0.2882 ms, ratio 3.3321
+  run 2: em 0.9872 ms, baseline 0.2894 ms, ratio 3.4114
+  run 3: em 0.976 ms, baseline 0.2904 ms, ratio 3.3607
+  run 4: em 0.9603 ms, baseline 0.2874 ms, ratio 3.3407
+  run 5: em 0.9641 ms, baseline 0.2893 ms, ratio 3.3329
+  run 6: em 0.9684 ms, baseline 0.2933 ms, ratio 3.3015
+  run 7: em 0.9519 ms, baseline 0.2906 ms, ratio 3.2752
+  run 8: em 0.9587 ms, baseline 0.2886 ms, ratio 3.3218
+  run 9: em 0.959 ms, baseline 0.2865 ms, ratio 3.3472
+  absolute cv: 1.11%
+  ratio cv: 1.139%
 
 cpu: Apple M3 Max
 cpu_arch: arm64
@@ -40,7 +40,7 @@ memory_gib: 36
 --- A  exhaustive finite-state conformance ---
 words_enumerated: 9840
 operator_cases: 98385
-checks_total: 885828
+checks_total: 984213
 checks_failed: 0
 composition_cases: 363
 
@@ -92,15 +92,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 1.3298
-median_baseline_ms_per_audio_minute: 0.3962
-em_over_baseline_ratio: 3.3561
-em_fraction_of_ffmpeg_time: 0.001464
-median_manifest_overhead_bytes_per_asset: 14854
-median_em_assertion_bytes_per_asset: 1268
-metadata_bytes_per_audio_minute: 298723.0
-median_sign_ms: 15.3672
-median_validate_ms: 12.6465
+median_em_ms_per_audio_minute: 0.9533
+median_baseline_ms_per_audio_minute: 0.2832
+em_over_baseline_ratio: 3.3659
+em_fraction_of_ffmpeg_time: 0.001628
+median_manifest_overhead_bytes_per_asset: 14932
+median_em_assertion_bytes_per_asset: 1333
+metadata_bytes_per_audio_minute: 300291.6
+median_sign_ms: 9.6365
+median_validate_ms: 8.035
 assertion_bytes_per_interval: 332.7
 
 --- K  kernel-support containment ---

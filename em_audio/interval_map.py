@@ -170,6 +170,34 @@ def _sources_for(piece: MapPiece, timelines: Dict[str, Timeline], oa: int, ob: i
                  *, footprint_aware: bool) -> List[SourceInterval]:
     lo, hi = piece.source_range(oa, ob, with_footprint=footprint_aware)
     tl = timelines[piece.src]
+
+    # Two different things reach past the ends of a timeline and only one of
+    # them is legitimate, so they are separated here rather than both being
+    # absorbed by clamping.
+    #
+    # A footprint kernel may extend beyond the asset: there are no samples
+    # there to depend on, so clipping it to the asset is correct.
+    #
+    # The nominal range a piece represents may not. If the piece claims source
+    # samples the timeline carries no evidence for, that is missing evidence
+    # inside the asset the caller declared, and clamping silently extended the
+    # evidence that does exist over output the caller said came from elsewhere.
+    # A timeline covering [0,10) passed to a model representing [0,20) produced
+    # CAPTURED over the whole output.
+    # Checked against the extent the piece itself declares, not against the
+    # rounded range of each output sample. A rate-changing map rounds, so the
+    # last output sample's nominal range can end a sample or two past the asset;
+    # that is arithmetic at the boundary, not absent evidence, and an earlier
+    # form of this check rejected three experiments over a one-sample overshoot.
+    if piece.src_end > piece.src_start and (
+            piece.src_start < tl.start or piece.src_end > tl.end):
+        raise ValueError(
+            f"timeline for {piece.src!r} covers [{tl.start},{tl.end}) but the "
+            f"map draws from source [{piece.src_start},{piece.src_end}); "
+            "evidence is missing inside the declared asset. Supply evidence for "
+            "the whole asset, marking unknown spans as unverified, rather than "
+            "leaving them absent."
+        )
     return tl.covering(lo, hi)
 
 

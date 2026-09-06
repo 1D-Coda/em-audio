@@ -17,8 +17,20 @@ from typing import Dict, Iterable, List, Optional, Sequence
 from .evidence import BOT, Evidence, _Bot, claim_of, label_of
 from .interval_map import OutputInterval
 
-SCHEMA = "https://aurtech.mx/ns/em-audio/1.0"
-ASSERTION_LABEL = "mx.aurtech.emaudio.evidence"
+# The C2PA convention for a vendor assertion is a reverse-DNS label under a
+# namespace the author controls. It is chosen here under the repository host
+# rather than a private domain, because the label is published in the paper and
+# then cannot be changed, while a domain registration can lapse and leave the
+# namespace to whoever registers it next.
+NAMESPACE = "io.github.1d-coda"
+ASSERTION_LABEL = f"{NAMESPACE}.emaudio.evidence"
+
+# The schema identifier a reader may try to resolve. It is set to the archived
+# deposit rather than to a web page, so that it keeps resolving after any
+# repository is renamed or moved. Until the archive exists this is the
+# repository itself, and the deposit DOI replaces it before submission.
+SCHEMA = "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md"
+SCHEMA_VERSION = "1.0"
 
 
 def _npt(samples: int, fs: int) -> str:
@@ -44,6 +56,19 @@ def interval_to_json(iv: OutputInterval, fs: int) -> Dict[str, object]:
     }
 
 
+def output_sample_rate(operator: str, params: Dict[str, object], fs_in: int) -> int:
+    """The sample rate of the *output*, which is what an assertion is in.
+
+    An assertion serialises output-sample indices as times, so it must divide by
+    the output rate. Passing the input rate made a one-second 16 kHz to 8 kHz
+    resample assert an end of 0.5 s: the sample count was right and the unit was
+    not. Only resampling changes the rate; every other v1 operator preserves it.
+    """
+    if operator == "resample":
+        return int(params.get("fs_out", fs_in))
+    return int(fs_in)
+
+
 def em_assertion(intervals: Sequence[OutputInterval], fs: int, n_samples: int,
                  policy: str, operator: str, params: Dict[str, object]) -> Dict[str, object]:
     return {
@@ -51,7 +76,8 @@ def em_assertion(intervals: Sequence[OutputInterval], fs: int, n_samples: int,
         "policy": policy,
         "operator": operator,
         "operatorParameters": params,
-        "asset": {"sampleRate": fs, "sampleCount": n_samples},
+        "asset": {"sampleRate": fs, "sampleCount": n_samples,
+                  "durationSeconds": round(n_samples / float(fs), 9)},
         "intervals": [interval_to_json(iv, fs) for iv in intervals],
     }
 

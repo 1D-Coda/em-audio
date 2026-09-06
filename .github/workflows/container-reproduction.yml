@@ -1,0 +1,164 @@
+name: Container reproduction
+
+# The container track answers whether the implementation reproduces when the
+# environment is held still. Every deterministic output must match, with no
+# environment left as an explanation. That is a stronger conformance claim than
+# a native run can make, and it is also the path a Windows validator can take
+# without meeting the Windows-specific FFmpeg and c2patool failures the native
+# path still has.
+on:
+  push:
+    # Anything the pipeline runs. A narrower list meant a fix to figure_qa.py
+    # did not trigger the job that had just failed on figure_qa.py.
+    paths:
+      - 'Dockerfile'
+      - 'requirements.txt'
+      - 'run_all.sh'
+      - 'tools/**'
+      - 'em_audio/**'
+      - 'experiments/**'
+      - 'oracle_js/**'
+      - 'tests/**'
+      - '.github/workflows/container-reproduction.yml'
+  workflow_dispatch:
+
+jobs:
+  container:
+    name: Build and run the pinned container
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the validation kit and use it as the source
+        run: |
+          python3 tools/build_validation_kit.py
+          kit=$(ls dist/EM_Audio_Validation_Kit_*.zip | head -1)
+          unzip -q "$kit" -d /tmp/kit
+          snap=$(ls -d /tmp/kit/*/source_snapshot)
+          echo "::notice::building from the shipped snapshot at $snap"
+          echo "SNAP=$snap" >> "$GITHUB_ENV"
+
+      - name: Build
+        run: docker build -t em-audio:ci "$SNAP"
+
+      - name: Report the environment the image fixes
+        run: |
+          docker run --rm --entrypoint bash em-audio:ci -c '
+            python3 -V; ffmpeg -version | head -1; c2patool --version; node -v;
+            espeak-ng --version' | while read -r l; do echo "::notice::$l"; done
+
+      - name: Isolate whether signing works at all in this image
+        run: |
+          # E is the first experiment that signs, so "signing fails there" and
+          # "signing fails everywhere" look the same from the log. This asks
+          # directly. Guessing cost a cycle on a wrong hypothesis about the
+          # c2patool version, which 0.27.15 then disproved.
+          cat > probe.sh <<'SH'
+          set -x
+          ffmpeg -v error -y -f lavfi -i "sine=f=440:d=1" -ar 16000 -ac 1 /tmp/t.wav
+          ls -l /tmp/t.wav
+          printf '%s' '{"claim_generator":"probe","assertions":[{"label":"c2pa.actions.v2","data":{"actions":[{"action":"c2pa.created"}]}}]}' > /tmp/m.json
+          c2patool --version && echo "c2patool starts, which is what this probe was for"
+          SH
+          docker run --rm -v "$PWD/probe.sh:/tmp/probe.sh" --entrypoint bash em-audio:ci /tmp/probe.sh 2>&1 \
+            | tail -30 | while read -r l; do echo "::notice::probe: ${l:0:170}"; done
+
+      - name: Run the pipeline inside it
+        id: run
+        continue-on-error: true
+        run: |
+          mkdir -p out
+          docker run --rm -v "$PWD/out:/out" em-audio:ci
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Say what happened, readable without a token
+        if: always()
+        run: |
+          if [ -f out/run_all_output.txt ]; then
+            tail -3 out/run_all_output.txt | while read -r l; do echo "::notice::run_all: $l"; done
+            grep -E "RUN OK|RUN FAILED" out/run_all_output.txt | while read -r l; do echo "::notice::$l"; done
+            # The stderr of the failing tool is what says why. Print a window
+            # around the first failure rather than only the traceback frames,
+            # which name the raising line and not the cause.
+            n=$(grep -nE "c2patool sign failed|ffmpeg failed" out/run_all_output.txt | head -1 | cut -d: -f1)
+            if [ -n "$n" ]; then
+              echo "::notice::first tool failure at line $n"
+              sed -n "$((n>8 ? n-8 : 1)),$((n+18))p" out/run_all_output.txt \
+                | while read -r l; do
+                    [ -n "$l" ] && echo "::error::ctx: ${l:0:170}"
+                  done
+            fi
+            grep -E "^=== " out/run_all_output.txt | tail -3 \
+              | while read -r l; do echo "::notice::last step: $l"; done
+            # No traceback appeared, so the failure is a checker returning
+            # non-zero rather than an exception. Print the tail, which is where
+            # those speak.
+            # Reversed: GitHub caps annotations at ten per step and the tail
+            # is where the failing checker speaks, so the last lines have to
+            # come first or they are the ones dropped.
+            # Every checker passed and the run still failed, so a step set
+            # fail=1 without raising. The calibration exits non-zero when a
+            # declared footprint does not contain its measured reach, which on a
+            # different FFmpeg is a finding rather than a defect.
+            grep -nE "UNDER-DECLARED|outside the declared|does not contain|\[qa\] [0-9]+ problem|problem\(s\)|below its measured" \
+              out/run_all_output.txt | head -8 | while read -r l; do
+                echo "::error::signal: ${l:0:170}"
+              done
+            grep -A14 "A3b footprint calibration" out/run_all_output.txt | head -16 \
+              | while read -r l; do [ -n "$l" ] && echo "::notice::calib: ${l:0:170}"; done
+
+            tail -14 out/run_all_output.txt | tac | while read -r l; do
+              [ -n "$l" ] && echo "::error::tail: ${l:0:170}"
+            done
+          else
+            echo "::error::the container produced no run log"
+          fi
+          if [ -f out/PREFLIGHT.txt ]; then
+            grep -E "^(python|ffmpeg|c2patool|node|espeak_ng|os):" out/PREFLIGHT.txt \
+              | while read -r l; do echo "::notice::$l"; done
+          fi
+          n=$(ls out/machine_readable/*.json 2>/dev/null | wc -l)
+          echo "::notice::result files produced: $n"
+
+      - name: Upload the results this run produced
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-run
+          path: out/
+          if-no-files-found: warn
+
+      - name: Conformance passed, and any failure is the documented one
+        run: |
+          # The container's job is not to be green. It is to say which of two
+          # things happened, and to fail loudly on anything that is neither.
+          log=out/run_all_output.txt
+          [ -f "$log" ] || { echo "::error::no run log"; exit 1; }
+
+          conformance_ok=1
+          grep -q "checks_failed: 0" "$log" || conformance_ok=0
+          grep -q "tests_failed: 0"  "$log" || conformance_ok=0
+          grep -q "oracle_disagreements: 0" "$log" || conformance_ok=0
+          grep -q "0 violations" "$log" || conformance_ok=0
+          if [ "$conformance_ok" -ne 1 ]; then
+            echo "::error::conformance did not pass; this is a defect, not a portability finding"
+            exit 1
+          fi
+          echo "::notice::conformance passed: 0 failed checks, 0 failed tests, 0 oracle disagreements, 0 scope violations"
+
+          if grep -q "RUN OK" "$log"; then
+            echo "::notice::declarations hold on this build too"
+            exit 0
+          fi
+
+          # Not RUN OK. The only acceptable reason is the paper's own finding.
+          if grep -qE "UNDER-DECLARED|outside declared support [1-9]" "$log"; then
+            grep -E "UNDER-DECLARED|outside declared support" "$log" | head -4 \
+              | while read -r l; do echo "::notice::finding: ${l:0:160}"; done
+            echo "::notice::a declared footprint does not hold on this image's FFmpeg, which is the result of Section 7.11 measured on a third build"
+            exit 0
+          fi
+          echo "::error::the run failed and no under-declaration was reported, so the cause is something else"
+          tail -6 "$log" | while read -r l; do echo "::error::${l:0:160}"; done
+          exit 1

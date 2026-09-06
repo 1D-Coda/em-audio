@@ -1,0 +1,527 @@
+name: Windows reproduction path
+
+# The Windows entry point was written on macOS and could not be executed there.
+# This runs it on a real Windows PowerShell 5.1.
+#
+# Every assertion is its own step. Step names and outcomes are readable from the
+# public API without a token, so the run reports what happened even to someone
+# who cannot read its logs. A single step that does five things would tell us
+# only that one of them failed.
+on:
+  push:
+    # The filter used to list only the entry points, so three consecutive fixes
+    # to run_all.sh, the experiments and the macro generator were pushed without
+    # this job running once. A check that proves the pipeline runs on Windows
+    # has to re-run when the pipeline changes, not only when its front door does.
+    paths:
+      - 'run_all.sh'
+      - 'em_audio/**'
+      - 'experiments/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'requirements.txt'
+      - '.gitattributes'
+      - '.github/workflows/windows-reproduction.yml'
+  workflow_dispatch:
+
+jobs:
+  install-path:
+    name: One-click install path on a stripped PATH
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: What this proves, and what it cannot
+        shell: powershell
+        run: |
+          # The other jobs run on a runner that already has Python, FFmpeg, Node
+          # and Git, so they never exercise the install path a validator on a
+          # clean machine takes. This job hides those tools by cutting PATH down
+          # to Windows itself plus winget, then runs the one-click script and
+          # asserts it installs what is missing and finds it afterwards.
+          #
+          # It still is not a clean machine: winget may report a package as
+          # already installed and only repair PATH. That is precisely the case
+          # that broke before, so it is worth asserting either way.
+          Write-Host "PSVersion: $($PSVersionTable.PSVersion)"
+
+      - name: Hide the preinstalled tools, then run the entry point
+        shell: powershell
+        timeout-minutes: 40
+        run: |
+          $keep = @(
+            "$env:SystemRoot\system32",
+            "$env:SystemRoot",
+            "$env:SystemRoot\System32\WindowsPowerShell\v1.0",
+            "$env:LOCALAPPDATA\Microsoft\WindowsApps"
+          )
+          $env:PATH = ($keep -join ";")
+          Write-Host "PATH reducido a:`n$env:PATH`n"
+
+          foreach ($t in @("python","py","ffmpeg","node","git","espeak-ng","c2patool")) {
+            $found = Get-Command $t -ErrorAction SilentlyContinue
+            Write-Host ("  {0,-10} {1}" -f $t, $(if ($found) { "visible: " + $found.Source } else { "oculto" }))
+          }
+
+          Write-Host "`n--- ejecutando el punto de entrada ---`n"
+          & .\tools\reproduce_windows_full.ps1 -Check -Yes
+          $rc = $LASTEXITCODE
+          Write-Host "`nsalida del script: $rc"
+          if ($rc -ne 0) {
+            Write-Host "::error::the one-click script failed on a stripped PATH (exit $rc)"
+            exit 1
+          }
+          Write-Host "::notice::installed and found every tool from a stripped PATH"
+
+  windows:
+    name: PowerShell 5.1 on windows-latest
+    runs-on: windows-latest
+    steps:
+      - name: A. PowerShell version and git line-ending setting
+        shell: powershell
+        run: |
+          Write-Host "PSVersion: $($PSVersionTable.PSVersion)"
+          $crlf = & git config --global core.autocrlf 2>$null
+          if ($LASTEXITCODE -ne 0 -or -not $crlf) { $crlf = "(unset)" }
+          Write-Host "core.autocrlf: $crlf"
+          $global:LASTEXITCODE = 0
+
+      - name: B. Install FFmpeg
+        shell: powershell
+        run: |
+          choco install ffmpeg -y --no-progress --limit-output
+          # choco refreshes PATH for new shells only, so do not try to run the
+          # tool in this step; the later steps see it. Verifying here is what
+          # broke the previous attempt.
+          $global:LASTEXITCODE = 0
+
+      - name: B1. Install eSpeak NG at the reference version
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          # Not choco's "espeak", which is classic eSpeak rather than eSpeak NG.
+          # The corpus is synthesised with NG, and the two are different
+          # synthesisers, so installing the wrong one would silently change what
+          # is being reproduced. 1.52.0 is the version the reference machine used.
+          $url = "https://github.com/espeak-ng/espeak-ng/releases/download/1.52.0/espeak-ng.msi"
+          Invoke-WebRequest $url -OutFile espeak-ng.msi -UseBasicParsing
+          Start-Process msiexec.exe -Wait -ArgumentList "/i `"$PWD\espeak-ng.msi`" /qn /norestart"
+          $found = $null
+          foreach ($c in @("$env:ProgramFiles\eSpeak NG", "${env:ProgramFiles(x86)}\eSpeak NG")) {
+            if (Test-Path (Join-Path $c "espeak-ng.exe")) { $found = $c; break }
+          }
+          if (-not $found) {
+            Get-ChildItem "$env:ProgramFiles","${env:ProgramFiles(x86)}" -Filter "espeak*" -Directory -ErrorAction SilentlyContinue |
+              ForEach-Object { Write-Host "candidate: $($_.FullName)" }
+            Write-Host "::error::eSpeak NG installed but espeak-ng.exe was not found"
+            exit 1
+          }
+          Add-Content $env:GITHUB_PATH $found
+          Write-Host "eSpeak NG at $found"
+
+      - name: B2. Install c2patool at a pinned version
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          # Pinned rather than resolved from the releases API. Discovering the
+          # latest release at run time would make this CI non-deterministic,
+          # which is the wrong property for a reproducibility check, and the
+          # first attempt failed inside that discovery rather than on anything
+          # about the tool.
+          $ver = "0.27.15"
+          $url = "https://github.com/contentauth/c2pa-rs/releases/download/" +
+                 "c2patool-v$ver/c2patool-v$ver-x86_64-pc-windows-msvc.zip"
+          Write-Host "downloading $url"
+          Invoke-WebRequest $url -OutFile c2patool.zip -UseBasicParsing
+          Expand-Archive c2patool.zip -DestinationPath "$env:RUNNER_TEMP\c2pa" -Force
+          $exe = Get-ChildItem "$env:RUNNER_TEMP\c2pa" -Recurse -Filter c2patool.exe |
+                 Select-Object -First 1
+          if (-not $exe) { throw "c2patool.exe not in the archive" }
+          Add-Content $env:GITHUB_PATH $exe.Directory.FullName
+          Write-Host "installed at $($exe.FullName)"
+
+      - name: C. Download reproduce.ps1 over TLS, as a validator would
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          irm https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/tools/reproduce.ps1 -OutFile reproduce.ps1
+          if (-not (Test-Path reproduce.ps1)) { throw "download produced no file" }
+
+      - name: D. reproduce.ps1 parses under PowerShell 5.1
+        shell: powershell
+        run: |
+          $errs = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path reproduce.ps1), [ref]$null, [ref]$errs)
+          if ($errs) { $errs | ForEach-Object { Write-Host $_ }; throw "parse errors" }
+          Write-Host "parsed clean"
+
+      - name: E. It clones, installs and self-tests (exits non-zero if a tool is missing)
+        id: check
+        shell: powershell
+        continue-on-error: true
+        run: |
+          .\reproduce.ps1 -Check -Ref ${{ github.sha }} -Dir "$env:RUNNER_TEMP\emaudio"
+          Write-Host "exit code: $LASTEXITCODE"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - name: E2. The target directory exists
+        shell: powershell
+        run: |
+          $d = "$env:RUNNER_TEMP\emaudio"
+          if (-not (Test-Path $d)) { throw "no directory at $d" }
+          Get-ChildItem $d | Select-Object -First 12 Name | Format-Table
+
+      - name: E3. It is a git checkout
+        shell: powershell
+        run: |
+          if (-not (Test-Path "$env:RUNNER_TEMP\emaudio\.git")) { throw "not a checkout" }
+
+      - name: E3b. resolve_python.sh falls through the Microsoft Store alias
+        shell: bash
+        run: |
+          # The hosted runner installs a Python that provides python3, so every
+          # green run of this job used a name an ordinary Windows machine does
+          # not have. An independent validator's run produced nothing at all:
+          # each step invoked python3, hit the Store alias, and did no work.
+          # Put a stub in front of PATH and assert the resolver steps past it.
+          #
+          # Written against the extracted resolver rather than against
+          # run_all.sh: the first version of this step tried to sed the loop out
+          # of run_all.sh through three layers of quoting, and the only thing it
+          # proved was that the step itself was broken.
+          set -uo pipefail
+          d="$RUNNER_TEMP/emaudio"
+          stub="$RUNNER_TEMP/pystub"
+          mkdir -p "$stub"
+          cat > "$stub/python3" <<'STUB'
+          #!/bin/sh
+          echo "no se encontro Python; ejecutar sin argumentos para instalar desde el Microsoft Store"
+          exit 9009
+          STUB
+          sed -i 's/^          //' "$stub/python3"
+          chmod +x "$stub/python3"
+
+          . "$d/tools/resolve_python.sh"
+
+          # Sanity: the stub really does shadow python3 and really does fail.
+          if PATH="$stub:$PATH" python3 -c "pass" 2>/dev/null; then
+            echo "::error::the stub did not shadow python3; this test proves nothing"
+            exit 1
+          fi
+
+          if PATH="$stub:$PATH" resolve_python; then
+            echo "resolved past the stub: PY=$PY"
+          else
+            echo "::error::resolve_python found no interpreter with the stub in front"
+            PATH="$stub:$PATH" python_not_found_message
+            exit 1
+          fi
+          case "$PY" in
+            python|"py -3") echo "::notice::stepped past the Store alias to '$PY'" ;;
+            *) echo "::error::resolved to '$PY', which is the shadowed name"; exit 1 ;;
+          esac
+
+      - name: E3c. The one-click entry point parses under PowerShell 5.1
+        shell: powershell
+        run: |
+          # PSVersion here is 5.1, which is what a validator's Windows has.
+          # An earlier draft used the ?? operator, which is PowerShell 7 only,
+          # and would have failed on every machine it was written for.
+          Write-Host "PSVersion: $($PSVersionTable.PSVersion)"
+          $d = "$env:RUNNER_TEMP\emaudio"
+          $ps1 = "$d\tools\reproduce_windows_full.ps1"
+          if (-not (Test-Path $ps1)) {
+            Write-Host "::error::reproduce_windows_full.ps1 not in the checkout"
+            exit 1
+          }
+          $errs = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            $ps1, [ref]$null, [ref]$errs) | Out-Null
+          if ($errs) {
+            $errs | ForEach-Object { Write-Host "::error::$($_.Message)" }
+            exit 1
+          }
+          Write-Host "::notice::the one-click script parses under 5.1"
+
+          # The .cmd must carry CRLF: cmd.exe mis-parses LF-only batch files.
+          $cmd = "$d\tools\Reproducir_en_Windows.cmd"
+          $bytes = [IO.File]::ReadAllBytes($cmd)
+          if (-not ($bytes -contains 13)) {
+            Write-Host "::error::Reproducir_en_Windows.cmd has no CR; .gitattributes did not apply"
+            exit 1
+          }
+          Write-Host "::notice::the .cmd has CRLF endings"
+
+      - name: E4. c2patool is on PATH for the check
+        shell: powershell
+        run: |
+          $c = Get-Command c2patool -ErrorAction SilentlyContinue
+          if (-not $c) { throw "c2patool not on PATH" }
+          Write-Host (& c2patool --version)
+
+      - name: F. The clone actually happened
+        shell: powershell
+        run: |
+          $p = "$env:RUNNER_TEMP\emaudio\run_all.sh"
+          if (-not (Test-Path $p)) { throw "no clone at $p" }
+          Write-Host "clone present"
+
+      - name: G. run_all.sh survived checkout with LF endings
+        shell: powershell
+        run: |
+          $b = [IO.File]::ReadAllBytes("$env:RUNNER_TEMP\emaudio\run_all.sh")
+          for ($i = 0; $i -lt 400; $i++) {
+            if ($b[$i] -eq 13 -and $b[$i+1] -eq 10) { throw "CRLF found: .gitattributes did not hold" }
+          }
+          Write-Host "LF endings, as .gitattributes requires"
+
+      - name: H. bash can read run_all.sh
+        shell: powershell
+        run: |
+          $p = ($env:RUNNER_TEMP -replace '\\','/') + "/emaudio/run_all.sh"
+          bash -c "head -2 '$p'"
+          if ($LASTEXITCODE -ne 0) { throw "bash could not read it" }
+
+      - name: I. The Store-stub detection does not misfire on a real Python
+        shell: powershell
+        run: |
+          $py = (Get-Command python).Source
+          Write-Host "python at: $py"
+          if ($py -like "*WindowsApps*") { throw "runner python is the Store stub" }
+
+      - name: I2. pip installs the pinned requirements on Windows
+        shell: powershell
+        run: |
+          python -m pip install -r "$env:RUNNER_TEMP\emaudio\requirements.txt"
+          if ($LASTEXITCODE -ne 0) { throw "pip install failed on Windows" }
+
+      - name: I3a. Which self-test check is failing
+        shell: powershell
+        run: |
+          # ::error:: writes into the run's annotations, which are readable from
+          # the public API without a token. A bare throw only ever produces
+          # "Process completed with exit code 1", which names nothing.
+          $out = python "$env:RUNNER_TEMP\emaudio\tools\repro_selftest.py" 2>&1
+          $out | ForEach-Object { Write-Host $_ }
+          $text = ($out | ForEach-Object { $_.ToString() }) -join "`n"
+          foreach ($line in $text -split "`n") {
+            if ($line -match "MISSING" -or $line -match "^\s+- ") {
+              $clean = ($line -replace "[\r\n]", " ").Trim()
+              Write-Host "::error::selftest: $clean"
+            }
+          }
+          Write-Host "::notice::selftest exit was $LASTEXITCODE"
+          $global:LASTEXITCODE = 0
+
+      - name: I3. The package self-test passes with every tool present
+        shell: powershell
+        run: |
+          python "$env:RUNNER_TEMP\emaudio\tools\repro_selftest.py"
+          if ($LASTEXITCODE -ne 0) { throw "self-test failed with all tools installed" }
+
+      - name: J. Report whether the check step passed
+        shell: powershell
+        run: |
+          Write-Host "check outcome: ${{ steps.check.outcome }}"
+          if ("${{ steps.check.outcome }}" -ne "success") {
+            throw "the environment check did not pass; see step E"
+          }
+
+  full-pipeline:
+    name: Full pipeline on Windows
+    needs: windows
+    runs-on: windows-latest
+    timeout-minutes: 180
+    steps:
+      - name: Install FFmpeg
+        shell: powershell
+        run: |
+          choco install ffmpeg -y --no-progress --limit-output
+          $global:LASTEXITCODE = 0
+
+      - name: Install eSpeak NG 1.52.0
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          Invoke-WebRequest "https://github.com/espeak-ng/espeak-ng/releases/download/1.52.0/espeak-ng.msi" -OutFile espeak-ng.msi -UseBasicParsing
+          Start-Process msiexec.exe -Wait -ArgumentList "/i `"$PWD\espeak-ng.msi`" /qn /norestart"
+          foreach ($c in @("$env:ProgramFiles\eSpeak NG", "${env:ProgramFiles(x86)}\eSpeak NG")) {
+            if (Test-Path (Join-Path $c "espeak-ng.exe")) { Add-Content $env:GITHUB_PATH $c }
+          }
+
+      - name: Install c2patool 0.27.15
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          $ver = "0.27.15"
+          Invoke-WebRequest ("https://github.com/contentauth/c2pa-rs/releases/download/c2patool-v$ver/c2patool-v$ver-x86_64-pc-windows-msvc.zip") -OutFile c2patool.zip -UseBasicParsing
+          Expand-Archive c2patool.zip -DestinationPath "$env:RUNNER_TEMP\c2pa" -Force
+          $exe = Get-ChildItem "$env:RUNNER_TEMP\c2pa" -Recurse -Filter c2patool.exe | Select-Object -First 1
+          Add-Content $env:GITHUB_PATH $exe.Directory.FullName
+
+      - name: Fetch and run the whole thing, exactly as a validator would
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+          irm https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/tools/reproduce.ps1 -OutFile reproduce.ps1
+          .\reproduce.ps1 -Ref ${{ github.sha }} -Dir "$env:RUNNER_TEMP\emaudio"
+          $rc = $LASTEXITCODE
+          Write-Host "::notice::bootstrapper exit $rc"
+          if ($rc -ne 0) { Write-Host "::error::bootstrapper exited $rc" }
+          $global:LASTEXITCODE = 0
+
+      - name: The pipeline actually ran on THIS machine
+        shell: powershell
+        run: |
+          # A previous run reported success while the pipeline never started:
+          # bash died on a quoting error, the bootstrapper only printed it, and
+          # the comparison then matched the repository's committed results
+          # against themselves. These assertions exist so that cannot recur.
+          $d = "$env:RUNNER_TEMP\emaudio"
+          $pre = Join-Path $d "results\PREFLIGHT.txt"
+          if (-not (Test-Path $pre)) { Write-Host "::error::no PREFLIGHT.txt"; exit 1 }
+          $os = (Select-String -Path $pre -Pattern "^os:").Line
+          Write-Host "::notice::$os"
+          if ($os -notmatch "Windows") {
+            Write-Host "::error::PREFLIGHT records '$os', so these results were not produced here"
+            exit 1
+          }
+          $log = Join-Path $d "run_all_output.txt"
+          if (-not (Test-Path $log)) { Write-Host "::error::no run_all_output.txt"; exit 1 }
+          if (-not (Select-String -Path $log -Pattern "RUN OK" -Quiet)) {
+            $tail = (Get-Content $log -Tail 5) -join " | "
+            Write-Host "::error::run_all.sh did not reach RUN OK: $tail"
+            exit 1
+          }
+          Write-Host "::notice::pipeline completed on Windows with RUN OK"
+
+      - name: What the corpus steps reported
+        if: always()
+        shell: powershell
+        run: |
+          # The clips are missing when C2 and D look for them, and the failure
+          # lands there rather than where the corpus was built. These lines say
+          # whether the corpus step ran, and with how many files.
+          $log = "$env:RUNNER_TEMP\emaudio\run_all_output.txt"
+          if (Test-Path $log) {
+            Select-String -Path $log -Pattern "corpus ready|clips=|missing corpus|no captured source|C0_corpus_build|=== corpus" |
+              Select-Object -First 8 | ForEach-Object { Write-Host "::notice::corpus: $($_.Line.Trim())" }
+            $n = (Get-ChildItem "$env:RUNNER_TEMP\emaudio\corpus" -Recurse -Filter *.wav -ErrorAction SilentlyContinue |
+                  Measure-Object).Count
+            $f = (Get-ChildItem "$env:RUNNER_TEMP\emaudio\corpus" -Recurse -Filter *.flac -ErrorAction SilentlyContinue |
+                  Measure-Object).Count
+            Write-Host "::notice::corpus on disk: $n wav, $f flac"
+          }
+
+      - name: Explain the failure with the tool's own stderr
+        if: always()
+        shell: powershell
+        run: |
+          # Shell greps kept cutting off the stderr that says why. This parses
+          # the traceback properly and emits annotations, which are readable
+          # from the public API without a token.
+          $d = "$env:RUNNER_TEMP\emaudio"
+          $log = Join-Path $d "run_all_output.txt"
+          if (Test-Path $log) {
+            python "$d\tools\explain_failure.py" $log --github --max 4
+          # c2patool's own message is the only text that says why it refused.
+          Select-String -Path $log -Pattern "c2patool" -Context 0,6 |
+            Select-Object -First 2 | ForEach-Object {
+              $_.Context.PostContext | ForEach-Object {
+                if ($_.Trim()) { Write-Host "::error::c2pa: $($_.Trim().Substring(0, [Math]::Min(160, $_.Trim().Length)))" }
+              }
+            }
+          } else {
+            Write-Host "::error::no run log to explain"
+          }
+
+      - name: Say which experiment failed and how
+        if: always()
+        shell: powershell
+        run: |
+          $d = "$env:RUNNER_TEMP\emaudio"
+          $log = Join-Path $d "run_all_output.txt"
+          if (Test-Path $log) {
+            # The step banners are "=== name ===". Report the last one before
+            # any traceback, plus the traceback's own last line, so the cause is
+            # readable from the annotations API without a token.
+            $lines = Get-Content $log
+            $lastStep = ""
+            for ($i = 0; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match "^=== (.+) ===") { $lastStep = $Matches[1] }
+              if ($lines[$i] -match "Traceback|RuntimeError|Error:|FAIL\b") {
+                Write-Host "::error::during '$lastStep': $($lines[$i].Trim().Substring(0, [Math]::Min(150, $lines[$i].Trim().Length)))"
+              }
+            }
+          }
+          # The RuntimeError carries ffmpeg's own stderr after the command
+          # line. That is the part that says why, and it is what the truncated
+          # annotation was cutting off.
+          if (Test-Path $log) {
+            $lines = Get-Content $log
+            for ($i = 0; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match "ffmpeg failed|c2patool sign failed") {
+                for ($k = 1; $k -le 6; $k++) {
+                  if ($i + $k -lt $lines.Count) {
+                    $t = $lines[$i + $k].Trim()
+                    if ($t -and $t.Length -gt 3) {
+                      Write-Host "::error::stderr: $($t.Substring(0, [Math]::Min(160, $t.Length)))"
+                    }
+                  }
+                }
+                break
+              }
+            }
+          }
+
+          $v = Join-Path $d "verify_output.txt"
+          if (Test-Path $v) {
+            Get-Content $v | Select-String -Pattern "MISMATCH|MISSING|INHERITED|differ" |
+              Select-Object -First 12 | ForEach-Object {
+                Write-Host "::error::verify: $($_.Line.Trim())"
+              }
+          }
+
+      - name: Report the outcome through annotations
+        if: always()
+        shell: powershell
+        run: |
+          $d = "$env:RUNNER_TEMP\emaudio"
+          foreach ($f in @("run_all_output.txt","verify_output.txt")) {
+            $p = Join-Path $d $f
+            if (Test-Path $p) {
+              $tail = (Get-Content $p -Tail 3) -join " | "
+              Write-Host "::notice::$f tail: $tail"
+            } else { Write-Host "::warning::$f not produced" }
+          }
+          $pre = Join-Path $d "results\PREFLIGHT.txt"
+          if (Test-Path $pre) {
+            foreach ($line in Get-Content $pre) {
+              if ($line -match "^(python|ffmpeg|c2patool|node|espeak_ng|os):") {
+                Write-Host "::notice::$line"
+              }
+            }
+          }
+
+      - name: Upload everything the run produced
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-full-run
+          path: |
+            ${{ runner.temp }}/emaudio/results/machine_readable/
+            ${{ runner.temp }}/emaudio/results/PREFLIGHT.txt
+            ${{ runner.temp }}/emaudio/run_all_output.txt
+            ${{ runner.temp }}/emaudio/verify_output.txt
+          if-no-files-found: warn

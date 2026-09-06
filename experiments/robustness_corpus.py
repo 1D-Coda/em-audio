@@ -23,6 +23,7 @@ from typing import Dict, List
 
 from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from em_audio import ffmpeg_ops as F
+from em_audio import fsutil as _fsutil
 from em_audio.evidence import Evidence, aggregate, claim_of, promotes
 from em_audio.interval_map import SourceInterval, Timeline, em_intervals, span_evidence
 import em_audio.operators as O
@@ -78,7 +79,7 @@ def main() -> int:
 
     index = json.loads((CORPUS / "corpus_index.json").read_text())
     if WORK.exists():
-        shutil.rmtree(WORK)
+        _fsutil.rmtree(WORK)
     WORK.mkdir(parents=True)
 
     arms: Dict[str, Dict[str, int]] = {}

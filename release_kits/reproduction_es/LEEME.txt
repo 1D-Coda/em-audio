@@ -1,0 +1,84 @@
+EM-Audio - paquete de reproduccion independiente
+================================================
+
+Gracias, y perdon: tu corrida anterior no fallo por tu maquina, fallo por dos
+defectos nuestros. Los dos estan arreglados aqui, y los dos aparecieron solo
+porque la corriste. Ninguno de nuestros propios chequeos podia encontrarlos.
+
+QUE PASO LA VEZ PASADA
+----------------------
+
+Tu log dice, en cada paso:
+
+    no se encontro Python; ejecutar sin argumentos para instalar desde el
+    Microsoft Store
+
+Windows tiene un alias de ejecucion llamado "python3" que esta en el PATH y no
+es un interprete. Cada paso lo invocaba, recibia el anuncio de la tienda y no
+hacia nada. La corrida termino sin producir ninguno de los trece archivos de
+resultados, y nada dijo por que: el alias esta en el PATH, asi que todo chequeo
+que buscaba Python encontraba uno.
+
+Ademas, fetch_corpus.sh usaba "shasum", que macOS trae y Git Bash no.
+
+Y el script te dijo "run_all.sh finished: RUN OK" sobre una corrida que habia
+terminado en RUN FAILED. Leia el codigo de salida de "tee" en vez del de
+run_all.sh. Ese era el peor de los tres: te informaba exito sobre una corrida
+que no produjo nada.
+
+QUE CAMBIO
+----------
+
+- El interprete ahora se resuelve EJECUTANDO cada candidato, no buscandolo, y
+  cae a "python" o "py -3". Si ninguno sirve, se detiene de inmediato y lo dice.
+- El calculo de SHA-256 prueba shasum, sha256sum y certutil, en ese orden.
+- El recolector lee el codigo de salida real del proceso.
+- Cuando algo falla, ahora se imprime el nombre del paso y su codigo de salida,
+  y la lista completa al final. Antes solo decia "RUN FAILED".
+
+QUE HACER
+---------
+
+1) Chequeo rapido, no corre ningun experimento:
+
+       cd em-audio
+       python tools\repro_selftest.py
+
+   Si "python" no funciona prueba "py -3". El chequeo ahora te dice cual de los
+   tres nombres va a usar el pipeline de verdad.
+
+2) Instalar y correr:
+
+       pip install -r requirements.txt
+       bash run_all.sh 2>&1 | tee run_all_output.txt
+       python tools\verify_reproduction.py 2>&1 | tee verify_output.txt
+
+Necesitas en el PATH: ffmpeg, ffprobe, node, espeak-ng y c2patool. Tarda unos
+25 minutos, mas la descarga del corpus de 322 MB la primera vez.
+
+Git Bash sirve. WSL tambien. La via nativa de Windows ahora corre completa: la
+probamos en Windows Server 2025 y llega a RUN OK con todos los experimentos.
+La version anterior de este archivo decia que nunca se habia ejecutado en
+Windows, y eso ya no es cierto.
+
+QUE ESPERAR AL FINAL
+--------------------
+
+verify_reproduction.py puede salir distinto de cero. Eso es un resultado, no un
+fallo tuyo. Nuestra propia corrida en Windows tampoco reproduce el alcance
+medido del encoder MP3: da 1541 muestras contra las 1555 de la referencia, con
+el mismo numero de version de FFmpeg. Las dos caben dentro de las 2304
+declaradas. Esa diferencia es justamente lo que el paper afirma, medida en otra
+maquina.
+
+Lo que mas nos sirve no es que pase, sino saber que pasa en tu maquina.
+
+QUE MANDAR DE VUELTA
+--------------------
+
+run_all_output.txt, verify_output.txt, results/PREFLIGHT.txt y el contenido de
+results/machine_readable/. Mandalo con el codigo de salida que haya dado.
+
+Si vuelve a tronar, el error ahora deberia nombrar el paso. Mandanos el log tal
+cual, aunque parezca que no llego a ningun lado: la vez pasada ese log sin
+resultados fue justamente lo util.

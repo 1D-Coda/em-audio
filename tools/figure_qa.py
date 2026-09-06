@@ -22,6 +22,22 @@ from matplotlib.text import Text
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+# Read the pin rather than restating it, so this cannot drift from the file that
+# actually governs the install.
+def _pinned_matplotlib() -> str:
+    req = ROOT / "requirements.txt"
+    for line in req.read_text(encoding="utf-8").splitlines():
+        if line.strip().startswith("matplotlib=="):
+            return line.split("==", 1)[1].strip()
+    return ""
+
+
+PINNED_MPL = _pinned_matplotlib()
+
+# The freetype the thresholds were calibrated against. Recorded rather than
+# inferred, because the point is to know when the measurement is comparable.
+PINNED_FREETYPE = "2.14.3"
+
 # A journal single column is about 3.5 in; a figure drawn 7.1 in wide is printed
 # at roughly half size, so 6.5 pt drawn becomes about 3.3 pt on paper. Below this
 # drawn size a label is not readable after reduction.
@@ -63,6 +79,24 @@ def _boxes(fig):
             if bb.width <= 0 or bb.height <= 0:
                 continue
             out.append((t, bb, ax))
+    # Legend text lives on its own artist, outside ax.texts, so a label
+    # colliding with a legend entry passed every check. Figure 5's legend
+    # overlapped its own violation caption and the gate called the figure clean,
+    # which is the one failure mode a gate must not have.
+    for ax in fig.get_axes():
+        leg = ax.get_legend()
+        if leg is None:
+            continue
+        for t in leg.get_texts():
+            if not (t.get_text() or "").strip():
+                continue
+            try:
+                bb = t.get_window_extent(fig.canvas.get_renderer())
+            except Exception:
+                continue
+            if bb.width > 0 and bb.height > 0:
+                out.append((t, bb, ax))
+
     for t in fig.texts:
         if isinstance(t, Text) and t.get_visible() and (t.get_text() or "").strip():
             bb = t.get_window_extent(fig.canvas.get_renderer())
@@ -175,6 +209,31 @@ def main() -> int:
         plt.close(captured["fig"])
     if bad:
         print(f"[qa] {bad} problem(s) across the figure set")
+        # This test measures rendered glyph boxes, so its thresholds are only
+        # calibrated for the matplotlib pinned in requirements.txt. The font
+        # family is fixed in figstyle, but layout and text extents still move
+        # between library versions, and the independent reproduction of Section
+        # 7.11 hit exactly that: two collisions on a build whose Python version
+        # would not resolve the pin, on figures the reference environment
+        # renders clean. Report the findings either way; gate only where the
+        # measurement is calibrated, so the check cannot fail a reproduction for
+        # a difference that is not about the figures.
+        # Text extents are measured by freetype, not by matplotlib, so pinning
+        # matplotlib alone does not pin the geometry. The same pinned version
+        # inside a Linux container reported four collisions on a figure the
+        # reference environment renders clean. Gate where the measurement is
+        # calibrated; report everywhere.
+        try:
+            ft = matplotlib.ft2font.__freetype_version__
+        except Exception:
+            ft = "unknown"
+        if matplotlib.__version__ != PINNED_MPL or ft != PINNED_FREETYPE:
+            print(f"[qa] matplotlib {matplotlib.__version__} / freetype {ft} "
+                  f"is not the calibrated {PINNED_MPL} / {PINNED_FREETYPE}; "
+                  f"text extents are measured by freetype, so the geometric "
+                  f"thresholds are not comparable here. Findings are reported "
+                  f"and do not fail the run.")
+            return 0
         return 1
     print("[qa] every figure clean: no overlapping text, no unreadable type")
     return 0

@@ -19,6 +19,8 @@ from typing import Dict, List, Tuple
 
 from _common import ROOT, emit                                        # noqa: E402
 from em_audio import ffmpeg_ops as F
+from em_audio import fsutil as _fsutil
+from em_audio import toolpath as _toolpath
 
 SEED = 20260819
 N_CLIPS = 600
@@ -29,7 +31,9 @@ BUILD = CORPUS / "build"
 CLIPS = CORPUS / "clips"
 CAP_MIN_S, CAP_MAX_S = 0.60, 1.40      # captured segment duration bounds
 GEN_MIN_S, GEN_MAX_S = 0.50, 1.20      # generated segment duration bounds
-ESPEAK = shutil.which("espeak-ng") or "espeak-ng"
+# Same resolution the self-test uses. PATH alone told a validator the tool was
+# found and then failed the run: winget installs eSpeak NG outside PATH.
+ESPEAK = _toolpath.locate("espeak-ng") or _toolpath.locate("espeak") or "espeak-ng"
 
 PHRASES = [
     "the quarterly figures were revised on tuesday",
@@ -49,6 +53,20 @@ def espeak(text: str, dst: Path, speed: int, pitch: int) -> None:
     subprocess.run([ESPEAK, "-v", "en-us", "-s", str(speed), "-p", str(pitch),
                     "-a", "100", "-w", str(dst), text], check=True,
                    capture_output=True)
+    # espeak-ng exits 0 when it could not write the file, and its -w path goes
+    # through a fixed 200-byte buffer: past that it writes to a truncated name
+    # and reports success. Without this check the run continues and dies two
+    # steps later inside ffmpeg, complaining that an input does not exist, which
+    # names neither the step that failed nor the reason. Deep extraction paths
+    # are ordinary: a validator unpacked the archive into a folder of the same
+    # name, and Windows still defaults to MAX_PATH 260.
+    if not dst.exists():
+        raise RuntimeError(
+            f"espeak-ng reported success but wrote no file:\n  {dst}\n"
+            f"  that path is {len(str(dst))} characters; espeak-ng truncates -w "
+            f"beyond about 200.\n"
+            f"  Move the package to a shorter path, for example C:\\em-audio "
+            f"or ~/em-audio, and run again.")
 
 
 def n_samples(path: Path) -> int:
@@ -65,10 +83,18 @@ def main() -> int:
         return 2
     for d in (BUILD, CLIPS):
         if d.exists():
-            shutil.rmtree(d)
+            _fsutil.rmtree(d)
         d.mkdir(parents=True)
 
     flacs = sorted(p for p in LIBRI.rglob("*.flac"))
+    if len(flacs) < 2:
+        # Without this the failure is rng.sample raising ValueError on an empty
+        # population, which says nothing about a corpus. The cause is always
+        # upstream: the fetch did not run, or ran and failed.
+        print(f"no captured source audio under {LIBRI}: found {len(flacs)} flac "
+              f"files.\nRun tools/fetch_corpus.sh and check that it succeeded; "
+              f"every experiment\nthat needs audio depends on it.", file=sys.stderr)
+        return 1
     rng = random.Random(SEED)
     index: List[Dict[str, object]] = []
 

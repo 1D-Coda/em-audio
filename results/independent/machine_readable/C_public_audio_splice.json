@@ -1,0 +1,58 @@
+{
+ "baseline_lineage_omissions": 600,
+ "baseline_provenance_promotions": 600,
+ "em_lineage_omissions": 0,
+ "em_provenance_promotions": 0,
+ "environment": {
+  "c2patool": "c2patool 0.27.15",
+  "cpu_count_logical": "12",
+  "cpu_model": "13th Gen Intel(R) Core(TM) i7-1355U",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /usr/lib/x86_64-linux-gnu/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers",
+  "machine": "x86_64",
+  "memory_bytes": "8167567360",
+  "node": "v22.22.1",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "processor": "x86_64",
+  "python": "3.14.4"
+ },
+ "exact_interval_recovery": 600,
+ "experiment": "C_public_audio_splice",
+ "generated_interval_recovered": 600,
+ "n_clips": 600,
+ "note": "no classifier is trained and no acoustic feature is used; the generated interval is recovered from carried evidence, not detected from the signal",
+ "per_operator": {
+  "normalize": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  },
+  "resample_16_8": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  },
+  "time_stretch_1.10": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  },
+  "transcode_mp3": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  },
+  "trim_10pct": {
+   "baseline_lineage_omissions": 600,
+   "baseline_promotions": 600,
+   "em_lineage_omissions": 0,
+   "em_promotions": 0
+  }
+ },
+ "runtime_s": 0.558,
+ "worst_boundary_error_samples": 0
+}
