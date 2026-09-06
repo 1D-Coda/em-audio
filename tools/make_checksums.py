@@ -26,7 +26,30 @@ OUT = ROOT / "SHA256SUMS"
 SKIP = {"SHA256SUMS", ".DS_Store"}
 
 
+def _warn_if_worktree_differs_from_index() -> None:
+    """A manifest is only useful if it verifies for the person who downloaded.
+
+    These hashes are taken from the working tree. For any path governed by an
+    eol attribute the working tree can differ from what a clone checks out, and
+    29 entries once did: they were written from bytes that existed only on the
+    machine that generated them, so the manifest failed on every fresh clone.
+    Refuse to write one rather than ship a checksum file that cannot verify.
+    """
+    import subprocess
+    r = subprocess.run(["git", "status", "--porcelain"],
+                       cwd=ROOT, capture_output=True, text=True)
+    if r.returncode != 0:
+        return  # no git: an archive, where the working tree is all there is
+    dirty = [l[3:] for l in r.stdout.splitlines() if l[:2] not in ("??",)]
+    if dirty:
+        print("[checksums] warning: the working tree differs from the index for "
+              f"{len(dirty)} tracked file(s). The manifest records what is on "
+              "disk here, which is what a downloader must see too. Commit or "
+              "check out first if these differ only by line endings.")
+
+
 def main() -> int:
+    _warn_if_worktree_differs_from_index()
     # git lists exactly what the release distributes, but a reproduction package
     # has no history, and a tool that needs git to run is the same defect this
     # project already fixed once in verify_reproduction.py. Fall back to walking
