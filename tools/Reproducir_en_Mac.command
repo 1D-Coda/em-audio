@@ -42,7 +42,7 @@ for t in ffmpeg ffprobe node espeak-ng c2patool; do
   fi
 done
 if [ -n "$missing" ]; then
-  # espeak-ng and ffprobe are not separate formulae.
+  # ffprobe ships inside the ffmpeg formula; the rest are formulae by name.
   formulae=$(echo "$missing" | sed 's/ffprobe//' | xargs || true)
   [ -z "$formulae" ] && formulae="ffmpeg"
   if ! command -v brew >/dev/null 2>&1; then

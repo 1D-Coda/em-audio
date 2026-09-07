@@ -23,12 +23,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 
-# --returning writes the package for the reproducer whose run already failed.
-RETURNING = "--returning" in sys.argv
-# --mac ships the macOS letter and the double-clickable entry point.
-MAC = "--mac" in sys.argv
-# --win ships the double-clickable Windows entry point.
-WIN = "--win" in sys.argv
 
 # No paper/. A validator runs the experiments; the manuscript is not part of
 # that, and shipping an unpublished manuscript to third parties is a decision
@@ -124,42 +118,33 @@ def main() -> int:
     (inner / ".reproduction_package").write_text(
         f"built from {tag}\n", encoding="utf-8")
 
+    # The package carries no git history, so preflight.py cannot resolve a tag
+    # and reports UNCOMMITTED. Results returned by a third party would then be
+    # indistinguishable from a run of any other package version, which matters
+    # because validators do hold older packages. Stamp it instead.
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                            capture_output=True, text=True).stdout.strip()
+    (inner / "PACKAGE_VERSION").write_text(
+        f"tag: {tag}\ncommit: {commit or 'unknown'}\n", encoding="utf-8")
+
     # The two documents the reader opens first, at the top of the archive.
-    # Two audiences. LEEME.txt apologises for a specific failed run and is for
-    # the reproducer who hit it; LEEME_NUEVO/README_FIRST are for someone
-    # starting fresh, to whom that apology would only be confusing.
+    # One package for every platform. Splitting it by operating system meant a
+    # validator could receive the wrong one, and the two entry points are a few
+    # kilobytes: shipping both costs nothing and removes a way to get it wrong.
     kitdir = ROOT / "release_kits" / "reproduction_es"
-    if RETURNING:
-        for src, dst in ((kitdir / "LEEME.txt", "LEEME.txt"),):
-            if src.exists():
-                shutil.copy2(src, stage / dst)
-    elif MAC:
-        if (kitdir / "LEEME_MAC.txt").exists():
-            shutil.copy2(kitdir / "LEEME_MAC.txt", stage / "LEEME.txt")
-        # At the top of the archive, where a double click finds it.
-        cmd = ROOT / "tools" / "Reproducir_en_Mac.command"
-        if cmd.exists():
-            dst = stage / "Reproducir_en_Mac.command"
-            shutil.copy2(cmd, dst)
-            dst.chmod(0o755)
-    elif WIN:
-        for src, dst in ((kitdir / "LEEME_NUEVO.txt", "LEEME.txt"),
-                         (kitdir / "README_FIRST.txt", "README_FIRST.txt")):
-            if src.exists():
-                shutil.copy2(src, stage / dst)
-        # At the top of the archive, where a double click finds them.
-        # `entry`, not `name`: the outer `name` holds the archive's own name and
-        # this loop overwrote it, so the package came out called
-        # reproduce_windows_full.ps1.zip.
-        for entry in ("Reproducir_en_Windows.cmd", "reproduce_windows_full.ps1"):
-            src = ROOT / "tools" / entry
-            if src.exists():
-                shutil.copy2(src, stage / entry)
-    else:
-        for src, dst in ((kitdir / "LEEME_NUEVO.txt", "LEEME.txt"),
-                         (kitdir / "README_FIRST.txt", "README_FIRST.txt")):
-            if src.exists():
-                shutil.copy2(src, stage / dst)
+    if (kitdir / "LEEME.txt").exists():
+        shutil.copy2(kitdir / "LEEME.txt", stage / "LEEME.txt")
+    if (kitdir / "README_FIRST.txt").exists():
+        shutil.copy2(kitdir / "README_FIRST.txt", stage / "README_FIRST.txt")
+    for entry in ("Reproducir_en_Windows.cmd", "reproduce_windows_full.ps1",
+                  "Reproducir_en_Mac.command"):
+        src = ROOT / "tools" / entry
+        if src.exists():
+            dst = stage / entry
+            shutil.copy2(src, dst)
+            if not entry.endswith(".ps1"):
+                dst.chmod(0o755)
+
     guide = ROOT / "docs" / "REPRODUCTION_GUIDE.md"
     if guide.exists():
         shutil.copy2(guide, stage / "REPRODUCTION_GUIDE.md")

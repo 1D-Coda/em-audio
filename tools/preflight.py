@@ -32,6 +32,29 @@ def git(*args):
         return "UNCOMMITTED"
 
 
+def _stamped(kind):
+    """Version of a tree with no git history: the reproduction package.
+
+    The builder stamps PACKAGE_VERSION into the staged tree. Without it a
+    third-party run reports UNCOMMITTED, and the returned results cannot be
+    told apart from a run of any other package version. Suffixed so a stamped
+    value is never mistaken for a resolved git one.
+    """
+    try:
+        for line in (ROOT / "PACKAGE_VERSION").read_text().splitlines():
+            k, _, v = line.partition(":")
+            if k.strip() == kind and v.strip():
+                return v.strip() + " (from PACKAGE_VERSION; no git history here)"
+    except OSError:
+        pass
+    return None
+
+
+def version(kind, *args):
+    got = git(*args)
+    return got if got != "UNCOMMITTED" else (_stamped(kind) or got)
+
+
 def main() -> int:
     A, B, C0, C, D = load("A_synthetic_state_space"), load("B_adversarial_timelines"), \
         load("C0_corpus_build"), load("C_public_audio_splice"), load("D_transform_matrix")
@@ -51,8 +74,8 @@ def main() -> int:
     add = lines.append
     add("EM-AUDIO PREFLIGHT REPORT")
     add("=" * 72)
-    add(f"commit: {git('rev-parse', 'HEAD')}")
-    add(f"tag: {git('describe', '--tags', '--always')}")
+    add(f"commit: {version('commit', 'rev-parse', 'HEAD')}")
+    add(f"tag: {version('tag', 'describe', '--tags', '--always')}")
     add("note: 'commit' is HEAD when this report was generated. Because the report is")
     add("      itself committed, the copy stored in the repository necessarily lags the")
     add("      commit that stores it by one. Re-run tools/preflight.py, or run_all.sh,")

@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -30,7 +31,21 @@ MR = ROOT / "results" / "machine_readable"
 # of every comparison this tool prints, so a stale value mislabels a
 # reproducer's report: the first independent run was told it differed from
 # v1.0.0 when the snapshot it was given was v1.0.1.
-RELEASE = "v1.0.2"
+#
+# Typed by hand it went stale anyway, and sat two releases behind. The snapshot
+# records its own tag when it is frozen, so read it from there: the label and
+# the data it labels then cannot disagree.
+def _release() -> str:
+    try:
+        first = (ROOT / "results" / "reference" / "SNAPSHOT.txt"
+                 ).read_text().splitlines()[0]
+    except (OSError, IndexError):
+        return "unknown release"
+    m = re.search(r"Reference results for release (\S+)", first)
+    return m.group(1) if m else "unknown release"
+
+
+RELEASE = _release()
 
 # Outputs a correct reimplementation must reproduce exactly. Each entry is a
 # result file and the dotted paths within it that carry a scientific claim.

@@ -122,7 +122,7 @@ def independent_macros():
     # the reproducer ran, so the count in the text is the count the tool printed.
     clean = det = envd = 0
     for name, keys in V.DETERMINISTIC.items():
-        cur, ref = L(ind, name), V._reference("v1.0.1", name)
+        cur, ref = L(ind, name), V._reference(V.RELEASE, name)
         n = 0
         for key in keys:
             flat_cur = dict(V._flatten(cur[key], key))

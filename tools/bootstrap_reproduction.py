@@ -9,7 +9,7 @@ user hits is code that has been exercised.
 
     python3 tools/bootstrap_reproduction.py            # fetch, check, run, collect
     python3 tools/bootstrap_reproduction.py --check    # environment only, no run
-    python3 tools/bootstrap_reproduction.py --dir D:\\repro --ref v1.0.2
+    python3 tools/bootstrap_reproduction.py --dir D:\\repro --ref vX.Y.Z
 
 Run it from anywhere; it clones into --dir. If you already have the repository,
 run it from inside and it will use what is there.

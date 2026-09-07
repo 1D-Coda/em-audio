@@ -12,7 +12,7 @@
   Usage, from any PowerShell prompt:
       .\reproduce.ps1                 fetch, check, run, collect
       .\reproduce.ps1 -Check          check the environment and stop
-      .\reproduce.ps1 -Dir D:\repro -Ref v1.0.2
+      .\reproduce.ps1 -Dir D:\repro -Ref vX.Y.Z
 
   If this file misbehaves, run the Python directly; it needs nothing from here:
       python tools\bootstrap_reproduction.py

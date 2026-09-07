@@ -12,7 +12,7 @@ for. Someone who downloads a source archive from GitHub or a deposit from Zenodo
 has no `.git`, so every reference lookup fails and the tool reports the entire
 release as missing. That is exactly the audience an artifact archive is for.
 
-    python3 tools/freeze_reference.py --tag v1.0.2
+    python3 tools/freeze_reference.py --tag vX.Y.Z
 """
 from __future__ import annotations
 
