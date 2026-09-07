@@ -14,7 +14,7 @@ real, and makes no claim about the truthfulness of speech.
 ## One-command reproduction
 
 ```bash
-git clone https://github.com/1D-Coda/em-audio && cd em-audio && git checkout v1.0.3 && ./run_all.sh
+git clone https://github.com/1D-Coda/em-audio && cd em-audio && git checkout v1.0.4 && ./run_all.sh
 ```
 
 `run_all.sh` exits non-zero if any conformance check fails.  It fetches the
