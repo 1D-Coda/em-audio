@@ -47,15 +47,17 @@ def _required(out: DerivedOutput, timelines: Dict[str, Timeline], pis, oa: int, 
     """
     if isinstance(pis, int):
         pis = (pis,)
-    claimed = tuple(pis or ())
-    active = _active_pieces(out, oa, ob)
-    for pi in set(claimed) | set(active):
-        if not (0 <= pi < len(out.pieces)):
-            raise ValueError(
-                f"output interval [{oa},{ob}) names piece {pi}, "
-                f"but the map has {len(out.pieces)} pieces")
+    # The map decides, and only the map. An earlier form took the union of the
+    # claimed indices with the active ones, on the reasoning that inventing a
+    # contributor only widens the required set and so cannot promote. That is
+    # true of promotion and wrong as a validation stance: P1 is named exact
+    # union and its own docstring says nothing dropped, nothing invented, and
+    # the union made invention undetectable. A concatenation of a captured and a
+    # generated source, annotated as mixed over the captured half, passed every
+    # check. Claiming generated material where there is none is a false
+    # provenance statement in the direction that discredits real evidence.
     srcs: List[SourceInterval] = []
-    for pi in sorted(set(claimed) | set(active)):
+    for pi in _active_pieces(out, oa, ob):
         srcs.extend(_sources_for(out.pieces[pi], timelines, oa, ob,
                                  footprint_aware=footprint_aware))
     return srcs
@@ -98,11 +100,30 @@ def p0_structural(out: DerivedOutput, timelines: Dict[str, Timeline],
             return Check("P0_structural", False,
                          f"output [{a.out_end},{b.out_start}) carries no claim")
     for iv in ivs:
-        missing = set(_active_pieces(out, iv.out_start, iv.out_end)) - set(iv.piece_indices or ())
+        pis = iv.piece_indices
+        if isinstance(pis, int):
+            pis = (pis,)
+        if pis is None or not all(isinstance(x, int) for x in pis):
+            return Check("P0_structural", False,
+                         f"interval [{iv.out_start},{iv.out_end}) declares "
+                         f"{pis!r}, which is not a tuple of piece indices")
+        out_of_range = [x for x in pis if not (0 <= x < len(out.pieces))]
+        if out_of_range:
+            return Check("P0_structural", False,
+                         f"interval [{iv.out_start},{iv.out_end}) names piece(s) "
+                         f"{out_of_range}, but the map has {len(out.pieces)}")
+        active = set(_active_pieces(out, iv.out_start, iv.out_end))
+        claimed = set(pis)
+        missing = active - claimed
         if missing:
             return Check("P0_structural", False,
                          f"interval [{iv.out_start},{iv.out_end}) omits contributing "
                          f"piece(s) {sorted(missing)} that the map says cover it")
+        invented = claimed - active
+        if invented:
+            return Check("P0_structural", False,
+                         f"interval [{iv.out_start},{iv.out_end}) names piece(s) "
+                         f"{sorted(invented)} that contribute nothing to it")
     return Check("P0_structural", True, f"{len(ivs)} intervals cover [0,{out.n_out})")
 
 

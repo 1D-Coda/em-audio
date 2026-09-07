@@ -62,14 +62,29 @@ def _regression_counts():
     # Both suites. The review regressions were counted by neither the gate nor
     # this table, so the reported figure described a subset of what the project
     # actually tests.
+    # A suite that is missing, crashes, or exits before printing anything used
+    # to contribute zero passes and zero failures, so a broken suite read as a
+    # clean one and the reported total silently shrank. Absence of FAIL is not
+    # success.
     p_ = f_ = 0
     for name in ("test_contract.py", "test_review_regressions.py"):
         path = ROOT / "tests" / name
         if not path.exists():
-            continue
+            raise SystemExit(f"[tables] {name} is missing; the reported test "
+                             "count would describe a suite that did not run")
         r = subprocess.run([_s.executable, str(path)], capture_output=True, text=True)
-        p_ += r.stdout.count("  PASS  ")
-        f_ += r.stdout.count("  FAIL  ") + r.stdout.count("  ERROR ")
+        passed = r.stdout.count("  PASS  ")
+        failed = r.stdout.count("  FAIL  ") + r.stdout.count("  ERROR ")
+        if passed + failed == 0:
+            raise SystemExit(f"[tables] {name} reported no test outcomes "
+                             f"(exit {r.returncode}); refusing to report a count "
+                             f"for a suite that did not run.\n{r.stderr[-500:]}")
+        if r.returncode != 0 and failed == 0:
+            raise SystemExit(f"[tables] {name} exited {r.returncode} while "
+                             "reporting no failures; the two disagree, so the "
+                             "count cannot be trusted")
+        p_ += passed
+        f_ += failed
     return {"total": p_ + f_, "passed": p_, "failed": f_}
 
 

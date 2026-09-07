@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from em_audio.evidence import Evidence, BOT, claim_of                     # noqa: E402
+from em_audio.evidence import Evidence, BOT, claim_of, aggregate                     # noqa: E402
 from em_audio.interval_map import (Timeline, SourceInterval, OutputInterval,  # noqa: E402
                                    em_intervals)
 from em_audio.manifest_schema import em_assertion                          # noqa: E402
@@ -187,11 +187,84 @@ def test_derived_child_inherits_the_parent_propagated_evidence():
     assert any(i.ev.label == "MIXED" for i in tivs), \
         "child derived from the parent lost the parent's mixed boundaries"
 
-    for i in tivs:
-        assert i.ev.label != "GENERATED" or True
-    labels = {i.ev.label for i in tivs}
-    assert "CAPTURED" not in labels or any(i.ev.label == "MIXED" for i in tivs), \
-        "child claims captured-only where the parent was mixed"
+    # Compared interval by interval on the common refinement of the parent's
+    # boundaries mapped into child coordinates, not by counting labels. An
+    # earlier version of this test ended in `assert x or True`, which is
+    # satisfied by anything: a test that cannot fail is worse than no test,
+    # because it reports as evidence.
+    for child in tivs:
+        src_lo, src_hi = tmodel.pieces[0].source_range(child.out_start, child.out_end)
+        overlapping = [q for q in pivs if q.out_start < src_hi and q.out_end > src_lo]
+        assert overlapping, f"child [{child.out_start},{child.out_end}) maps to no parent evidence"
+        expected = aggregate([q.ev for q in overlapping])
+        assert child.ev.P == expected.P, (
+            f"child [{child.out_start},{child.out_end}) claims {child.ev.label}; "
+            f"its parent sources over [{src_lo},{src_hi}) give {expected.label}")
+        assert expected.L <= child.ev.L, (
+            f"child [{child.out_start},{child.out_end}) drops lineage "
+            f"{sorted(expected.L - child.ev.L)}")
+
+    # And the production path must reject a source reset. Rebuilding the child
+    # from the original timeline is what the signing experiment used to do.
+    reset_ivs = em_intervals(O.trim("clip", 10000, a, b), {"clip": tl},
+                             footprint_aware=True)
+    reset_labels = [i.ev.label for i in reset_ivs]
+    inherited_labels = [i.ev.label for i in tivs]
+    assert reset_labels != inherited_labels, (
+        "the source-reset path and the inherited path agree, so this test no "
+        "longer distinguishes them")
+    assert "GENERATED" in reset_labels and "GENERATED" not in inherited_labels, (
+        "the reset path should assert sharp GENERATED where the inherited path "
+        "carries MIXED")
+
+
+def test_validators_reject_an_invented_contributor():
+    """Naming a contributor that contributes nothing must fail too.
+
+    _required once took the union of the claimed indices with the geometrically
+    active ones, reasoning that inventing a contributor only widens the required
+    set and so cannot promote. True of promotion, wrong as validation: P1 is
+    named exact union and says nothing dropped, nothing invented, and the union
+    made invention undetectable. Claiming generated material where there is none
+    is a false provenance statement in the direction that discredits real
+    captured evidence.
+    """
+    A = Evidence(claim_of(["C"]), L=frozenset({"a"}))
+    B = Evidence(claim_of(["G"]), L=frozenset({"b"}))
+    tls = {"a": Timeline("a", [SourceInterval("a", 0, 10, A)]),
+           "b": Timeline("b", [SourceInterval("b", 0, 10, B)])}
+    out = O.concat([("a", 0, 10), ("b", 0, 10)])
+
+    forged = [OutputInterval(0, 10, Evidence(claim_of(["C", "G"]),
+                                             L=frozenset({"a", "b"})), (0, 1)),
+              OutputInterval(10, 20, Evidence(claim_of(["G"]), L=frozenset({"b"})), (1,))]
+    rejected = [f.__name__ for f in ALL_CHECKS if not f(out, tls, forged).passed]
+    assert "p0_structural" in rejected, "invented contributor accepted"
+
+    out_of_range = [OutputInterval(0, 10, A, (0, 7)),
+                    OutputInterval(10, 20, B, (1,))]
+    assert not c.p0_structural(out, tls, out_of_range).passed, "out-of-range index accepted"
+
+    malformed = [OutputInterval(0, 10, A, None), OutputInterval(10, 20, B, (1,))]
+    assert not c.p0_structural(out, tls, malformed).passed, "malformed indices accepted"
+
+    canon = em_intervals(out, tls, footprint_aware=True)
+    for f in ALL_CHECKS:
+        assert f(out, tls, canon).passed, f"{f.__name__} rejected the canonical concat"
+
+
+def test_overlay_source_map_overlap_stays_legitimate():
+    """Two sources genuinely covering the same output range is what overlay is.
+    Rejecting invented participation must not reject that."""
+    A = Evidence(claim_of(["C"]), L=frozenset({"a"}))
+    B = Evidence(claim_of(["G"]), L=frozenset({"b"}))
+    tls = {"a": Timeline("a", [SourceInterval("a", 0, 10, A)]),
+           "b": Timeline("b", [SourceInterval("b", 0, 10, B)])}
+    out = O.overlay(("a", 10), ("b", 10), 0)
+    canon = em_intervals(out, tls, footprint_aware=True)
+    assert canon and canon[0].ev.label == "MIXED"
+    for f in ALL_CHECKS:
+        assert f(out, tls, canon).passed, f"{f.__name__} rejected a legitimate overlay"
 
 
 if __name__ == "__main__":
