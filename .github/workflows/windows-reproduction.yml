@@ -258,6 +258,48 @@ jobs:
           }
           Write-Host "::notice::the .cmd has CRLF endings"
 
+      - name: E3d. Native stderr does not end the one-click run under 5.1
+        shell: powershell
+        run: |
+          # Windows PowerShell 5.1 turns each stderr line of a native command
+          # into a NativeCommandError once stderr is redirected, and under
+          # $ErrorActionPreference = "Stop" the first one is terminating. That
+          # ended a validator's run at the bash call: curl's TLS complaint was
+          # the line, but curl's progress meter or a Python SyntaxWarning would
+          # have done the same. The script now runs its native commands under
+          # "Continue" and stringifies the stream. Prove both halves here, on
+          # the PowerShell a validator actually has: the old form must fail
+          # (or this test proves nothing) and the new form must not.
+          Write-Host "PSVersion: $($PSVersionTable.PSVersion)"
+          $old = $false
+          try {
+            $ErrorActionPreference = "Stop"
+            & cmd /c "echo to-stderr 1>&2 & exit 0" 2>&1 | Tee-Object -FilePath "$env:RUNNER_TEMP\old.txt" | Out-Null
+          } catch { $old = $true }
+          $ErrorActionPreference = "Continue"
+          if (-not $old) {
+            Write-Host "::warning::the old form did not throw on this PowerShell; the regression this guards against is not reproducible here"
+          } else {
+            Write-Host "::notice::the old form (Stop + 2>&1 | Tee-Object) throws on stderr, as it did for the validator"
+          }
+          $ok = $false
+          try {
+            $ErrorActionPreference = "Continue"
+            & cmd /c "echo line-out & echo line-err 1>&2 & exit 7" 2>&1 |
+              ForEach-Object { "$_" } |
+              Tee-Object -FilePath "$env:RUNNER_TEMP\new.txt" | Out-Null
+            $rc = $LASTEXITCODE
+            $ok = $true
+          } catch { Write-Host "::error::the new form threw: $($_.Exception.Message)" }
+          $ErrorActionPreference = "Stop"
+          if (-not $ok) { exit 1 }
+          if ($rc -ne 7) { Write-Host "::error::LASTEXITCODE was $rc, expected 7: the exit code did not survive the pipeline"; exit 1 }
+          $log = Get-Content "$env:RUNNER_TEMP\new.txt" -Raw
+          if ($log -notmatch "line-out" -or $log -notmatch "line-err") {
+            Write-Host "::error::the log lost a stream: $log"; exit 1
+          }
+          Write-Host "::notice::native stderr is text, the run continues, and the exit code is kept"
+
       - name: E4. c2patool is on PATH for the check
         shell: powershell
         run: |

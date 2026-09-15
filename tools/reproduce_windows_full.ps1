@@ -165,15 +165,24 @@ if ($Check) {
 
 Say "6/7  Corrida completa (unos 25 minutos, mas 322 MB la primera vez)"
 Write-Host "No cierres esta ventana."
+# Windows PowerShell 5.1 turns every stderr line of a native command into a
+# NativeCommandError once stderr is redirected, and under "Stop" the first one
+# is terminating: curl's progress meter, a Python SyntaxWarning, or one curl
+# TLS complaint ended the whole run at this line for an independent
+# reproducer. Native output is text here, whichever stream it came on.
+$ErrorActionPreference = "Continue"
 & $bashExe -lc "cd '$($root -replace '\\','/')' && ./run_all.sh" 2>&1 |
+  ForEach-Object { "$_" } |
   Tee-Object -FilePath (Join-Path $root "run_all_output.txt")
 $runRc = $LASTEXITCODE
 if ($runRc -eq 0) { Ok "  run_all.sh termino en RUN OK" }
 else { Bad "  run_all.sh salio $runRc. Eso es un resultado: mandanoslo igual." }
 
 & $vpy (Join-Path $root "tools\verify_reproduction.py") 2>&1 |
+  ForEach-Object { "$_" } |
   Tee-Object -FilePath (Join-Path $root "verify_output.txt")
 $verRc = $LASTEXITCODE
+$ErrorActionPreference = "Stop"
 Write-Host "`n  verify_reproduction.py salio $verRc"
 Write-Host "  Un valor distinto de cero NO es un fallo tuyo: significa que una salida"
 Write-Host "  difiere, que es justo lo que queremos saber."

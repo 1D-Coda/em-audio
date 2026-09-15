@@ -1,5 +1,5 @@
-Reference results for release v1.0.6
-commit at freeze time: ad22fb8e572e4e89f9eaa7b6d5d6779847a219cd
+Reference results for release v1.0.7
+commit at freeze time: 4b46eeb2a5a54e78108c0923a62c5ef177970c21
 
 These are the values tools/verify_reproduction.py holds a reproduction
 to. They are a frozen copy of results/machine_readable/ as of the
