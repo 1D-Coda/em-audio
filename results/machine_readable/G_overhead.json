@@ -4,76 +4,76 @@
       "assertion_bytes": 614,
       "audio_seconds": 0.256,
       "emitted_intervals": 1,
-      "median_ms": 0.0198,
+      "median_ms": 0.0196,
       "source_intervals": 1
     },
     {
       "assertion_bytes": 940,
       "audio_seconds": 0.512,
       "emitted_intervals": 2,
-      "median_ms": 0.0367,
+      "median_ms": 0.0365,
       "source_intervals": 2
     },
     {
       "assertion_bytes": 1595,
       "audio_seconds": 1.024,
       "emitted_intervals": 4,
-      "median_ms": 0.0704,
+      "median_ms": 0.071,
       "source_intervals": 4
     },
     {
       "assertion_bytes": 2905,
       "audio_seconds": 2.048,
       "emitted_intervals": 8,
-      "median_ms": 0.1545,
+      "median_ms": 0.1388,
       "source_intervals": 8
     },
     {
       "assertion_bytes": 5531,
       "audio_seconds": 4.096,
       "emitted_intervals": 16,
-      "median_ms": 0.3,
+      "median_ms": 0.2797,
       "source_intervals": 16
     },
     {
       "assertion_bytes": 10803,
       "audio_seconds": 8.192,
       "emitted_intervals": 32,
-      "median_ms": 0.5868,
+      "median_ms": 0.5583,
       "source_intervals": 32
     },
     {
       "assertion_bytes": 21429,
       "audio_seconds": 16.384,
       "emitted_intervals": 64,
-      "median_ms": 1.2023,
+      "median_ms": 1.2115,
       "source_intervals": 64
     },
     {
       "assertion_bytes": 42737,
       "audio_seconds": 32.768,
       "emitted_intervals": 128,
-      "median_ms": 2.5139,
+      "median_ms": 2.4361,
       "source_intervals": 128
     },
     {
       "assertion_bytes": 85449,
       "audio_seconds": 65.536,
       "emitted_intervals": 256,
-      "median_ms": 5.166,
+      "median_ms": 5.4078,
       "source_intervals": 256
     }
   ],
   "audio_minutes_per_repetition": 1.4081,
   "baseline_bookkeeping_ms_per_repetition": {
-    "max": 0.7625,
-    "median": 0.5719,
-    "min": 0.5625,
+    "max": 0.6947,
+    "median": 0.5745,
+    "min": 0.559,
     "n": 30,
-    "q1": 0.5672,
-    "q3": 0.58
+    "q1": 0.5696,
+    "q3": 0.5793
   },
-  "baseline_ms_per_audio_minute": 0.4062,
+  "baseline_ms_per_audio_minute": 0.408,
   "clips_per_repetition": 30,
   "em_assertion_bytes": {
     "max": 1335.0,
@@ -85,16 +85,16 @@
   },
   "em_assertion_bytes_per_audio_minute": 26807.4,
   "em_bookkeeping_ms_per_repetition": {
-    "max": 2.4518,
-    "median": 1.8944,
-    "min": 1.864,
+    "max": 2.2626,
+    "median": 1.9089,
+    "min": 1.861,
     "n": 30,
-    "q1": 1.8819,
-    "q3": 1.9578
+    "q1": 1.884,
+    "q3": 2.018
   },
-  "em_ms_per_audio_minute": 1.3453,
-  "em_over_baseline_ratio": 3.3122,
-  "em_over_ffmpeg_fraction": 0.001478,
+  "em_ms_per_audio_minute": 1.3557,
+  "em_over_baseline_ratio": 3.323,
+  "em_over_ffmpeg_fraction": 0.001441,
   "environment": {
     "c2patool": "c2patool 0.27.2",
     "cpu_count_logical": "14",
@@ -110,14 +110,14 @@
   },
   "experiment": "G_overhead",
   "ffmpeg_transcode_ms_per_repetition": {
-    "max": 1337.2282,
-    "median": 1281.9525,
-    "min": 1230.0669,
+    "max": 1351.6903,
+    "median": 1324.841,
+    "min": 1200.77,
     "n": 30,
-    "q1": 1273.4698,
-    "q3": 1302.8145
+    "q1": 1309.2075,
+    "q3": 1341.6815
   },
-  "first_iteration_effect_pct": 0.279,
+  "first_iteration_effect_pct": 0.107,
   "launch": "python3 experiments/overhead_benchmark.py, single process, no affinity or power-management control",
   "machine_dependence_note": "single-machine medians for a Python reference implementation; a compiled implementation will differ, so these are not language-independent constants",
   "manifest_bytes_per_audio_minute": 300291.6,
@@ -133,22 +133,22 @@
   "median_manifest_overhead_bytes_per_asset": 14932,
   "per_minute_caveat": "the corpus clips have a median duration of 2.98 s, and the C2PA manifest overhead is dominated by a fixed per-asset cost (certificate chain, COSE structure, hard binding) rather than by audio duration, so the per-audio-minute figures are extrapolations of a mostly fixed cost and should be read together with the per-asset figures and the interval-scaling table",
   "repetitions": 30,
-  "runtime_s": 40.043,
+  "runtime_s": 41.102,
   "sign_ms": {
-    "max": 66.2233,
-    "median": 17.2114,
-    "min": 16.0325,
+    "max": 50.109,
+    "median": 18.6539,
+    "min": 16.4982,
     "n": 30,
-    "q1": 16.7632,
-    "q3": 17.9448
+    "q1": 18.1929,
+    "q3": 19.7403
   },
   "validate_ms": {
-    "max": 18.888,
-    "median": 14.0963,
-    "min": 13.2156,
+    "max": 21.0886,
+    "median": 16.0744,
+    "min": 13.8859,
     "n": 30,
-    "q1": 13.9629,
-    "q3": 14.6268
+    "q1": 15.1098,
+    "q3": 16.7808
   },
   "warm_up_policy": "none; the first repetition is included and the reported statistic is a median over all of them, so a single cold iteration cannot move it. The claim is checked rather than assumed: see first_iteration_effect_pct"
 }

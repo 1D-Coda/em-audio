@@ -101,16 +101,32 @@ if ($wants.Count -eq 0 -and -not $needC2patool) {
 }
 
 Say "2/7  bash"
-$bash = Get-Command bash -ErrorAction SilentlyContinue
-if (-not $bash) {
-  foreach ($p in @("$env:ProgramFiles\Git\bin\bash.exe",
-                   "${env:ProgramFiles(x86)}\Git\bin\bash.exe")) {
-    if (Test-Path $p) { $bash = Get-Item $p; break }
-  }
+# Git for Windows first, and never C:\Windows\system32\bash.exe. With the WSL
+# feature enabled that file is on PATH and Get-Command bash returns it, but it
+# is the WSL launcher, not a shell: with no distribution installed it fails
+# with "WSL (9 - Relay) ERROR: CreateProcessCommon: execvpe(/bin/bash)", which
+# is what an independent reproducer hit on the v1.0.5 package.
+$bashExe = $null
+$cands = @("$env:ProgramFiles\Git\bin\bash.exe",
+           "${env:ProgramFiles(x86)}\Git\bin\bash.exe",
+           "$env:LOCALAPPDATA\Programs\Git\bin\bash.exe")
+$git = Get-Command git -ErrorAction SilentlyContinue
+if ($git -and $git.Source) {
+  # git.exe lives in <Git>\cmd or <Git>\bin; bash.exe is in <Git>\bin. Strip the
+  # last two path components with a regex rather than Split-Path so the same
+  # line can be exercised on the non-Windows machine that maintains this file.
+  $gitRoot = $git.Source -replace "\\[^\\]+\\[^\\]+$", ""
+  # String concatenation, not Join-Path: Join-Path validates the drive, and
+  # under $ErrorActionPreference = "Stop" a git on a detached drive would end
+  # the whole script here instead of falling through to the next candidate.
+  $cands += "$gitRoot\bin\bash.exe"
 }
-if (-not $bash) { Halt "No encuentro bash. Cierra esta ventana, abrela de nuevo y reintenta; si sigue, instala Git for Windows." }
-# Not ??, which is PowerShell 7 syntax; Windows ships 5.1.
-$bashExe = if ($bash.PSObject.Properties.Name -contains "Source" -and $bash.Source) { $bash.Source } else { $bash.FullName }
+foreach ($p in $cands) { if ($p -and (Test-Path $p)) { $bashExe = $p; break } }
+if (-not $bashExe) {
+  $b = Get-Command bash -ErrorAction SilentlyContinue
+  if ($b -and $b.Source -and ($b.Source -notlike "*\system32\*")) { $bashExe = $b.Source }
+}
+if (-not $bashExe) { Halt "No encuentro bash de Git for Windows (el bash de system32 es el lanzador de WSL y no sirve). Instala Git for Windows, cierra esta ventana y vuelve a hacer doble clic." }
 Ok "  $bashExe"
 
 Say "3/7  Interprete de Python"

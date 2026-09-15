@@ -1,7 +1,7 @@
 {
- "active_manifest": "urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec",
+ "active_manifest": "urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103",
  "manifests": {
-  "urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386": {
+  "urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103": {
    "assertions": [
     {
      "data": {
@@ -11,7 +11,232 @@
         "parameters": {
          "ingredients": [
           {
-           "hash": "YpibriXqqFShGX5BsLIL8zQ5f1+8f18KHWDaDWLl1oA=",
+           "hash": "OySoIWP9NEo222VKoeKj7n2E0nAXnivh2sBT1OHIJKA=",
+           "url": "self#jumbf=c2pa.assertions/c2pa.ingredient.v3"
+          }
+         ]
+        }
+       },
+       {
+        "action": "c2pa.cropped"
+       }
+      ]
+     },
+     "label": "c2pa.actions.v2"
+    },
+    {
+     "data": {
+      "asset": {
+       "durationSeconds": 2.410375,
+       "sampleCount": 38566,
+       "sampleRate": 16000
+      },
+      "intervals": [
+       {
+        "applicability": {
+         "capture-support": [
+          "digital-asset"
+         ]
+        },
+        "lineage": [
+         "urn:emaudio:librispeech:6313-66125-0027"
+        ],
+        "provenance": [
+         "C"
+        ],
+        "regionOfInterest": {
+         "time": {
+          "end": "0.794750000",
+          "start": "0.000000000",
+          "type": "npt"
+         },
+         "type": "temporal"
+        },
+        "samples": {
+         "end": 12716,
+         "start": 0
+        },
+        "state": "CAPTURED",
+        "support": {
+         "capture-support": 0.9
+        }
+       },
+       {
+        "applicability": {
+         "capture-support": [
+          "digital-asset"
+         ]
+        },
+        "lineage": [
+         "urn:emaudio:espeak-ng:1.52.0:0000"
+        ],
+        "provenance": [
+         "G"
+        ],
+        "regionOfInterest": {
+         "time": {
+          "end": "1.783750000",
+          "start": "0.794750000",
+          "type": "npt"
+         },
+         "type": "temporal"
+        },
+        "samples": {
+         "end": 28540,
+         "start": 12716
+        },
+        "state": "GENERATED",
+        "support": {
+         "capture-support": 0.1
+        }
+       },
+       {
+        "applicability": {
+         "capture-support": [
+          "digital-asset"
+         ]
+        },
+        "lineage": [
+         "urn:emaudio:librispeech:5895-34622-0019"
+        ],
+        "provenance": [
+         "C"
+        ],
+        "regionOfInterest": {
+         "time": {
+          "end": "2.410375000",
+          "start": "1.783750000",
+          "type": "npt"
+         },
+         "type": "temporal"
+        },
+        "samples": {
+         "end": 38566,
+         "start": 28540
+        },
+        "state": "CAPTURED",
+        "support": {
+         "capture-support": 0.9
+        }
+       }
+      ],
+      "operator": "transcode",
+      "operatorParameters": {
+       "codec": "flac",
+       "footprint": 0
+      },
+      "policy": "complete-source",
+      "schema": "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md"
+     },
+     "label": "io.github.1d-coda.emaudio.evidence"
+    }
+   ],
+   "claim_generator_info": [
+    {
+     "name": "em-audio",
+     "org.contentauth.c2pa_rs": "0.90.2",
+     "version": "1.0.0"
+    }
+   ],
+   "claim_version": 2,
+   "ingredients": [
+    {
+     "active_manifest": "urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52",
+     "format": "audio/flac",
+     "instance_id": "xmp:iid:2d6aa04b-5775-4341-9aab-fa3efc8f2ca0",
+     "label": "c2pa.ingredient.v3",
+     "manifest_data": {
+      "format": "application/c2pa",
+      "identifier": "urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52"
+     },
+     "relationship": "parentOf",
+     "validation_results": {
+      "activeManifest": {
+       "failure": [],
+       "informational": [],
+       "success": [
+        {
+         "code": "signingCredential.trusted",
+         "explanation": "signing certificate trusted, found in System trust anchors",
+         "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.signature"
+        },
+        {
+         "code": "claimSignature.insideValidity",
+         "explanation": "claim signature valid",
+         "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.signature"
+        },
+        {
+         "code": "claimSignature.validated",
+         "explanation": "claim signature valid",
+         "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.signature"
+        },
+        {
+         "code": "assertion.hashedURI.match",
+         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+         "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.assertions/c2pa.hash.data"
+        },
+        {
+         "code": "assertion.hashedURI.match",
+         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient.v3",
+         "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.assertions/c2pa.ingredient.v3"
+        },
+        {
+         "code": "assertion.hashedURI.match",
+         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+         "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.assertions/c2pa.actions.v2"
+        },
+        {
+         "code": "assertion.hashedURI.match",
+         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/io.github.1d-coda.emaudio.evidence",
+         "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.assertions/io.github.1d-coda.emaudio.evidence"
+        },
+        {
+         "code": "assertion.dataHash.match",
+         "explanation": "data hash valid",
+         "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.assertions/c2pa.hash.data"
+        }
+       ]
+      },
+      "ingredientDeltas": [
+       {
+        "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.assertions/c2pa.ingredient.v3",
+        "validationDeltas": {
+         "failure": [],
+         "informational": [
+          {
+           "code": "ingredient.unknownProvenance",
+           "explanation": "no title: ingredient does not have provenance",
+           "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52/c2pa.assertions/c2pa.ingredient.v3"
+          }
+         ],
+         "success": []
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "instance_id": "xmp:iid:4c737214-d9d7-4e5e-938d-e1c5ed4d386e",
+   "label": "urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103",
+   "signature_info": {
+    "alg": "Es256",
+    "cert_serial_number": "482979767099638256303983048383099196994797948726",
+    "common_name": "em-audio-test-signer",
+    "issuer": "EM-Audio Test Signer"
+   },
+   "title": "clip 0 derived flac"
+  },
+  "urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52": {
+   "assertions": [
+    {
+     "data": {
+      "actions": [
+       {
+        "action": "c2pa.opened",
+        "parameters": {
+         "ingredients": [
+          {
+           "hash": "wC04/UXRTYrk7d9ELJKNEuJbvPGS2vHodRgGtUnRW+o=",
            "url": "self#jumbf=c2pa.assertions/c2pa.ingredient.v3"
           }
          ]
@@ -142,13 +367,13 @@
    "ingredients": [
     {
      "format": "audio/flac",
-     "instance_id": "xmp:iid:c138f9d8-a744-48db-903d-a69915e57da7",
+     "instance_id": "xmp:iid:3da54766-b547-4ad3-92a0-0a49d43569d5",
      "label": "c2pa.ingredient.v3",
      "relationship": "parentOf"
     }
    ],
-   "instance_id": "xmp:iid:69bc5ca8-572e-4c8b-86bd-d82b2f056f5f",
-   "label": "urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386",
+   "instance_id": "xmp:iid:9cdcb18e-3c85-411f-92bd-edfb95c084a1",
+   "label": "urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52",
    "signature_info": {
     "alg": "Es256",
     "cert_serial_number": "482979767099638256303983048383099196994797948726",
@@ -156,231 +381,6 @@
     "issuer": "EM-Audio Test Signer"
    },
    "title": "clip 0 flac"
-  },
-  "urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec": {
-   "assertions": [
-    {
-     "data": {
-      "actions": [
-       {
-        "action": "c2pa.opened",
-        "parameters": {
-         "ingredients": [
-          {
-           "hash": "RrWCOpEgibtwEdiu74bG9qnSko+ftRpNpK1V+tcYB7Y=",
-           "url": "self#jumbf=c2pa.assertions/c2pa.ingredient.v3"
-          }
-         ]
-        }
-       },
-       {
-        "action": "c2pa.cropped"
-       }
-      ]
-     },
-     "label": "c2pa.actions.v2"
-    },
-    {
-     "data": {
-      "asset": {
-       "durationSeconds": 2.410375,
-       "sampleCount": 38566,
-       "sampleRate": 16000
-      },
-      "intervals": [
-       {
-        "applicability": {
-         "capture-support": [
-          "digital-asset"
-         ]
-        },
-        "lineage": [
-         "urn:emaudio:librispeech:6313-66125-0027"
-        ],
-        "provenance": [
-         "C"
-        ],
-        "regionOfInterest": {
-         "time": {
-          "end": "0.794750000",
-          "start": "0.000000000",
-          "type": "npt"
-         },
-         "type": "temporal"
-        },
-        "samples": {
-         "end": 12716,
-         "start": 0
-        },
-        "state": "CAPTURED",
-        "support": {
-         "capture-support": 0.9
-        }
-       },
-       {
-        "applicability": {
-         "capture-support": [
-          "digital-asset"
-         ]
-        },
-        "lineage": [
-         "urn:emaudio:espeak-ng:1.52.0:0000"
-        ],
-        "provenance": [
-         "G"
-        ],
-        "regionOfInterest": {
-         "time": {
-          "end": "1.783750000",
-          "start": "0.794750000",
-          "type": "npt"
-         },
-         "type": "temporal"
-        },
-        "samples": {
-         "end": 28540,
-         "start": 12716
-        },
-        "state": "GENERATED",
-        "support": {
-         "capture-support": 0.1
-        }
-       },
-       {
-        "applicability": {
-         "capture-support": [
-          "digital-asset"
-         ]
-        },
-        "lineage": [
-         "urn:emaudio:librispeech:5895-34622-0019"
-        ],
-        "provenance": [
-         "C"
-        ],
-        "regionOfInterest": {
-         "time": {
-          "end": "2.410375000",
-          "start": "1.783750000",
-          "type": "npt"
-         },
-         "type": "temporal"
-        },
-        "samples": {
-         "end": 38566,
-         "start": 28540
-        },
-        "state": "CAPTURED",
-        "support": {
-         "capture-support": 0.9
-        }
-       }
-      ],
-      "operator": "transcode",
-      "operatorParameters": {
-       "codec": "flac",
-       "footprint": 0
-      },
-      "policy": "complete-source",
-      "schema": "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md"
-     },
-     "label": "io.github.1d-coda.emaudio.evidence"
-    }
-   ],
-   "claim_generator_info": [
-    {
-     "name": "em-audio",
-     "org.contentauth.c2pa_rs": "0.90.2",
-     "version": "1.0.0"
-    }
-   ],
-   "claim_version": 2,
-   "ingredients": [
-    {
-     "active_manifest": "urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386",
-     "format": "audio/flac",
-     "instance_id": "xmp:iid:2f1a515b-b9e0-42a9-b8ce-162316b0f04e",
-     "label": "c2pa.ingredient.v3",
-     "manifest_data": {
-      "format": "application/c2pa",
-      "identifier": "urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386"
-     },
-     "relationship": "parentOf",
-     "validation_results": {
-      "activeManifest": {
-       "failure": [],
-       "informational": [],
-       "success": [
-        {
-         "code": "signingCredential.trusted",
-         "explanation": "signing certificate trusted, found in System trust anchors",
-         "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.signature"
-        },
-        {
-         "code": "claimSignature.insideValidity",
-         "explanation": "claim signature valid",
-         "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.signature"
-        },
-        {
-         "code": "claimSignature.validated",
-         "explanation": "claim signature valid",
-         "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.signature"
-        },
-        {
-         "code": "assertion.hashedURI.match",
-         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
-         "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.assertions/c2pa.hash.data"
-        },
-        {
-         "code": "assertion.hashedURI.match",
-         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient.v3",
-         "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.assertions/c2pa.ingredient.v3"
-        },
-        {
-         "code": "assertion.hashedURI.match",
-         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
-         "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.assertions/c2pa.actions.v2"
-        },
-        {
-         "code": "assertion.hashedURI.match",
-         "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/io.github.1d-coda.emaudio.evidence",
-         "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.assertions/io.github.1d-coda.emaudio.evidence"
-        },
-        {
-         "code": "assertion.dataHash.match",
-         "explanation": "data hash valid",
-         "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.assertions/c2pa.hash.data"
-        }
-       ]
-      },
-      "ingredientDeltas": [
-       {
-        "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.assertions/c2pa.ingredient.v3",
-        "validationDeltas": {
-         "failure": [],
-         "informational": [
-          {
-           "code": "ingredient.unknownProvenance",
-           "explanation": "no title: ingredient does not have provenance",
-           "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386/c2pa.assertions/c2pa.ingredient.v3"
-          }
-         ],
-         "success": []
-        }
-       }
-      ]
-     }
-    }
-   ],
-   "instance_id": "xmp:iid:d784e4e5-e889-4039-be7f-d8a0bcd737a5",
-   "label": "urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec",
-   "signature_info": {
-    "alg": "Es256",
-    "cert_serial_number": "482979767099638256303983048383099196994797948726",
-    "common_name": "em-audio-test-signer",
-    "issuer": "EM-Audio Test Signer"
-   },
-   "title": "clip 0 derived flac"
   }
  },
  "validation_results": {
@@ -391,48 +391,48 @@
     {
      "code": "signingCredential.trusted",
      "explanation": "signing certificate trusted, found in System trust anchors",
-     "url": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.signature"
     },
     {
      "code": "claimSignature.insideValidity",
      "explanation": "claim signature valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.signature"
     },
     {
      "code": "claimSignature.validated",
      "explanation": "claim signature valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.signature"
+     "url": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.signature"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
-     "url": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.assertions/c2pa.hash.data"
+     "url": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.assertions/c2pa.hash.data"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.ingredient.v3",
-     "url": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.assertions/c2pa.ingredient.v3"
+     "url": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.assertions/c2pa.ingredient.v3"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
-     "url": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.assertions/c2pa.actions.v2"
+     "url": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.assertions/c2pa.actions.v2"
     },
     {
      "code": "assertion.hashedURI.match",
      "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/io.github.1d-coda.emaudio.evidence",
-     "url": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.assertions/io.github.1d-coda.emaudio.evidence"
+     "url": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.assertions/io.github.1d-coda.emaudio.evidence"
     },
     {
      "code": "assertion.dataHash.match",
      "explanation": "data hash valid",
-     "url": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.assertions/c2pa.hash.data"
+     "url": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.assertions/c2pa.hash.data"
     }
    ]
   },
   "ingredientDeltas": [
    {
-    "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:e7a4c519-d600-4095-bd77-1495297365ec/c2pa.assertions/c2pa.ingredient.v3",
+    "ingredientAssertionURI": "self#jumbf=/c2pa/urn:c2pa:63271d3a-ac54-4927-80cd-2202df448103/c2pa.assertions/c2pa.ingredient.v3",
     "validationDeltas": {
      "failure": [],
      "informational": [],
@@ -440,7 +440,7 @@
       {
        "code": "ingredient.manifest.validated",
        "explanation": "ingredient hash matched",
-       "url": "self#jumbf=/c2pa/urn:c2pa:3a285e4a-9a05-4a4d-812a-6c1951d39386"
+       "url": "self#jumbf=/c2pa/urn:c2pa:664a9ccc-c563-445d-9ebe-0823c918cc52"
       }
      ]
     }

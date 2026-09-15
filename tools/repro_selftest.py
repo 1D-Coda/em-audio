@@ -46,6 +46,31 @@ PY_REQUIRED = [("matplotlib", "matplotlib", "figures"),
 PY_OPTIONAL = [("c2pa", "c2pa-python", "the optional second-reader check")]
 
 
+def _bash():
+    """(path, reason). Git for Windows first; system32\\bash.exe is the WSL launcher.
+
+    With the WSL feature enabled it sits on PATH and shutil.which("bash")
+    returns it, and with no distribution installed it fails with "WSL (9 -
+    Relay) ERROR: execvpe(/bin/bash)". A reproducer hit that on v1.0.5 after
+    this check had told him bash was found.
+    """
+    if sys.platform == "win32":
+        cands = [os.path.join(os.environ.get("ProgramFiles", r"C:\Program Files"), "Git", "bin", "bash.exe"),
+                 os.path.join(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"), "Git", "bin", "bash.exe"),
+                 os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Git", "bin", "bash.exe")]
+        git = shutil.which("git")
+        if git:
+            cands.append(os.path.join(os.path.dirname(os.path.dirname(git)), "bin", "bash.exe"))
+        for c in cands:
+            if c and os.path.isfile(c):
+                return c, ""
+        b = shutil.which("bash")
+        if b and "system32" in b.lower():
+            return None, f"{b} (WSL launcher, not a shell)"
+        return b, ""
+    return shutil.which("bash"), ""
+
+
 def main() -> int:
     problems, notes = [], []
     print("EM-Audio reproduction package self-test\n")
@@ -116,8 +141,15 @@ def main() -> int:
 
     if WINDOWS:
         print("\nShell")
-        if shutil.which("bash"):
-            print("  found     bash (Git Bash or WSL); ./run_all.sh will run")
+        bash, why = _bash()
+        if bash:
+            print(f"  found     bash  {bash}")
+        elif why:
+            print(f"  unusable  bash  {why}")
+            problems.append("the only bash on PATH is C:\\Windows\\system32\\bash.exe, "
+                            "the WSL launcher; with no Linux distribution installed it "
+                            "cannot run anything. Install Git for Windows, which "
+                            "provides Git Bash, and run again.")
         else:
             print("  MISSING   bash")
             problems.append("run_all.sh is a bash script and no bash was found. "
@@ -136,7 +168,10 @@ def main() -> int:
         problems.append(
             "results/machine_readable/ should ship empty so that an experiment "
             "which fails cannot leave a shipped file in place and have the "
-            "comparison report a match that never happened")
+            "comparison report a match that never happened. This usually means "
+            "the archive was unpacked over an earlier run: extract it again "
+            "into an empty folder, or delete every file in "
+            "results/machine_readable/ and run again")
     elif in_package:
         print("  results/machine_readable/ is empty, as intended")
     else:
