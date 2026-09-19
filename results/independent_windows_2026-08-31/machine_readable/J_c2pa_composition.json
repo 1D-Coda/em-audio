@@ -1,0 +1,30 @@
+{
+ "aggregate_mixed": 30,
+ "assertion_roundtrip_identical": 30,
+ "component_ingredients_recorded": 30,
+ "composition_trusted": 30,
+ "derived_mixed": 30,
+ "derived_parentOf": 30,
+ "derived_trusted": 30,
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "12",
+  "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "AMD64",
+  "memory_bytes": "unavailable",
+  "node": "v22.19.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
+  "python": "3.13.4"
+ },
+ "essence_mismatches": 0,
+ "experiment": "J_c2pa_composition",
+ "failures_sample": [],
+ "n_fixtures": 30,
+ "placed_actions_reference_both": 30,
+ "runtime_s": 44.006,
+ "sources_trusted": 60,
+ "spec_notes": "componentOf per C2PA 2.4 Table 10; c2pa.placed carries a hashed-URI reference to each componentOf ingredient assertion per section 18.16.3, inserted by the claim generator from ingredientIds"
+}

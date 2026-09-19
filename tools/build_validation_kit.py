@@ -110,7 +110,7 @@ def main() -> int:
     for entry in stage.glob("*"):
         if entry.suffix.lower() not in (".cmd", ".ps1", ".sh"):
             continue
-        text = entry.read_text(errors="replace")
+        text = entry.read_text(encoding="utf-8", errors="replace")
         for tool in FORBIDDEN_HOST_TOOLS:
             if tool in text:
                 problems.append(f"{entry.name} reaches for a host tool: {tool!r}")
@@ -127,7 +127,7 @@ def main() -> int:
         if p.is_file():
             lines.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  "
                          f"{p.relative_to(stage)}")
-    (stage / "FILES.sha256").write_text("\n".join(lines) + "\n")
+    (stage / "FILES.sha256").write_text("\n".join(lines) + "\n", newline="\n")
 
     DIST.mkdir(exist_ok=True)
     zp = DIST / f"{stage.name}.zip"
@@ -138,7 +138,7 @@ def main() -> int:
             if p.is_file():
                 z.write(p, str(Path(stage.name) / p.relative_to(stage)))
     digest = hashlib.sha256(zp.read_bytes()).hexdigest()
-    (DIST / f"{zp.name}.sha256").write_text(f"{digest}  {zp.name}\n")
+    (DIST / f"{zp.name}.sha256").write_text(f"{digest}  {zp.name}\n", newline="\n")
 
     print(f"[kit] {zp}  ({zp.stat().st_size/1e6:.1f} MB, {n} source files)")
     print(f"[kit] sha256 {digest}")

@@ -23,7 +23,8 @@ SOURCES = {
     "fig2_architecture": [("diagram, no measured values", "none")],
     "fig3_promotion": [
         ("panel A, promotion by depth", "B_adversarial_timelines.json -> per_depth"),
-        ("panel B, policy ablation", "B2_policy_ablation.json -> arms"),
+        ("panel B, single operator applied alone",
+         "B_adversarial_timelines.json -> per_operator_single_step"),
         ("panel C, closed-form control", "B_adversarial_timelines.json -> control_uniform_positions"),
     ],
     "fig4_corpus": [
@@ -69,7 +70,7 @@ def main() -> int:
             lines.append(f"| {el} | `{src}` |")
         lines.append("")
     (ROOT / "results" / "13_Figure_Data_Sources.md").write_text(
-        "\n".join(lines), encoding="utf-8")
+        "\n".join(lines), encoding="utf-8", newline="\n")
     print("[docs] results/13_Figure_Data_Sources.md")
 
     qa = subprocess.run([sys.executable, str(ROOT / "tools" / "figure_qa.py")],
@@ -121,7 +122,7 @@ def main() -> int:
     doc += ["", "Vector PDF is what the manuscript includes; PNG previews are "
             "300 dpi; SVG is provided for editing."]
     (ROOT / "results" / "14_Figure_QA.md").write_text("\n".join(doc) + "\n",
-                                                   encoding="utf-8")
+                                                   encoding="utf-8", newline="\n")
     print("[docs] results/14_Figure_QA.md")
     return 0 if qa.returncode == 0 else 1
 

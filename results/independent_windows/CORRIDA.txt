@@ -1,0 +1,6 @@
+maquina     : DESKTOP-KLUMBVI
+arquitectura: AMD64
+windows     : Microsoft Windows NT 10.0.26200.0
+run_all     : 0
+verify      : 1
+fecha       : 2026-09-15T21:33:46Z

@@ -18,7 +18,18 @@ OUT = ROOT / "results" / "numbers.tex"
 
 
 def load(n):
-    return json.loads((MR / f"{n}.json").read_text())
+    # An upstream experiment that failed leaves its result file absent, and
+    # reading it then raised FileNotFoundError from inside pathlib. That is
+    # what an independent reproducer saw: seven frames of the standard library
+    # and no mention of the step that actually failed, several screens above.
+    p = MR / f"{n}.json"
+    if not p.exists():
+        raise SystemExit(
+            f"[macros] {p.name} is missing, so the experiment that writes it "
+            f"did not finish. This is a consequence, not the cause: look "
+            f"further up the log, or run "
+            f"`python3 tools/explain_failure.py run_all_output.txt`.")
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def fmt(x):
@@ -65,6 +76,46 @@ def cross_build_macros():
         m[f"XB{tag}Ffmpeg"] = e["ffmpeg"].split()[2].replace("_", r"\_")
         m[f"XB{tag}Cpu"] = e.get("cpu_model", "unknown").replace("_", r"\_")
         m[f"XB{tag}Os"] = e["platform"].split("-")[0] + " " + e["platform"].split("-")[1]
+
+    # The Windows run is a single unattended pass of a released package, and
+    # the package names its own tag; read it rather than assert it.
+    wpre = ROOT / "results" / "independent_windows" / "PREFLIGHT.txt"
+    if wpre.exists():
+        for line in wpre.read_text(errors="replace").splitlines():
+            if line.startswith("tag:"):
+                m["XBWinTag"] = line.split(":", 1)[1].split("(")[0].strip().replace("_", r"\_")
+    wlog = ROOT / "results" / "independent_windows" / "verify_output.txt"
+    if wlog.exists():
+        n = re.search(r"DETERMINISTIC MISMATCH \((\d+)\)", wlog.read_text(errors="replace"))
+        if n:
+            m["XBWinDetDiffs"] = fmt(int(n.group(1)))
+
+    # The second build-dependent quantity the Windows run exposes: the
+    # time-stretch model deviation moves with the build too, and the guard band
+    # that has to contain it is a declaration like the MP3 footprint.
+    stretch = {
+        "Ref": ROOT / "results" / "reference" / "D_transform_matrix.json",
+        "Win": ROOT / "results" / "independent_windows" / "machine_readable" / "D_transform_matrix.json",
+    }
+    for tag, path in stretch.items():
+        if not path.exists():
+            continue
+        t = json.loads(path.read_text())["per_transformation"]["time_stretch_1.10"]
+        m[f"XB{tag}StretchDev"] = fmt(t["model_vs_ffmpeg_max_abs_sample_dev"])
+        if tag == "Ref":
+            m["XBStretchGuard"] = fmt(t["declared_guard_band_samples"])
+
+    # The size of the suite the macOS run was given: it predates v1.0.4, so its
+    # Experiment A is smaller than the current reference and the prose must
+    # say which suite "every deterministic output" refers to.
+    mac_a = ROOT / "results" / "independent_mac" / "machine_readable" / "A_synthetic_state_space.json"
+    if mac_a.exists():
+        a = json.loads(mac_a.read_text())
+        m["XBMacChecks"] = fmt(a["checks_total"]); m["XBMacFailed"] = fmt(a["checks_failed"])
+    win_a = ROOT / "results" / "independent_windows" / "machine_readable" / "A_synthetic_state_space.json"
+    if win_a.exists():
+        a = json.loads(win_a.read_text())
+        m["XBWinChecks"] = fmt(a["checks_total"]); m["XBWinFailed"] = fmt(a["checks_failed"])
 
     # How many deterministic outputs the macOS run reproduced, from its own log.
     vlog = ROOT / "results" / "independent_mac" / "verify_output.txt"
@@ -121,6 +172,7 @@ def independent_macros():
     # How many of the compared files differ, computed with the same classifier
     # the reproducer ran, so the count in the text is the count the tool printed.
     clean = det = envd = 0
+    per_file = {}
     for name, keys in V.DETERMINISTIC.items():
         cur, ref = L(ind, name), V._reference(V.RELEASE, name)
         n = 0
@@ -136,10 +188,21 @@ def independent_macros():
                     n += 1
         det += n
         clean += (n == 0)
+        per_file[name] = n
     m["IRfiles"] = fmt(len(V.DETERMINISTIC))
     m["IRclean"] = fmt(clean)
     m["IRdet"] = fmt(det)
     m["IRenv"] = fmt(envd)
+    # Split the count by what it is. The suite grew after his run (v1.0.4 added
+    # the structural checks), so Experiment A's size fields differ from the
+    # current reference without any check having failed; the rest are the
+    # build. The prose once said "two files" from memory and went stale when A
+    # started to differ, so the split is generated here rather than typed.
+    m["IRdetSuite"] = fmt(per_file.get("A_synthetic_state_space", 0))
+    m["IRdetBuild"] = fmt(det - per_file.get("A_synthetic_state_space", 0))
+    m["IRdiffFiles"] = fmt(sum(1 for n in per_file.values() if n))
+    m["IRachecks"] = fmt(L(ind, "A_synthetic_state_space")["checks_total"])
+    m["IRafailed"] = fmt(L(ind, "A_synthetic_state_space")["checks_failed"])
 
     # the two operators whose declared numbers his build did not satisfy
     k = L(ind, "K_support_containment")["per_operator"]["transcode_mp3"]
@@ -196,6 +259,7 @@ def independent_macros():
 # A stable key for each supplement section the manuscript points at, matched on
 # a distinctive substring of its title rather than on its position.
 SUPPLEMENT_NOTES = {
+    "NoteTransfer": "Transfer memo",
     "NoteNovelty": "Novelty search",
     "NoteThreat": "Threat-model matrix",
     "NoteSchema": "EM assertion schema",
@@ -336,6 +400,15 @@ def main() -> int:
     # F
     pc = F["per_container"]
     m["Fclips"] = fmt(F["n_clips"]); m["Fcontainers"] = fmt(len(pc))
+    # Naming them matters to a reader holding evidence in one of these
+    # containers, and the count alone never said which three.
+    _cn = sorted(pc, key=lambda c: F["containers"].index(c))
+    m["Fcontainerlist"] = ", ".join("\\texttt{%s}" % c for c in _cn[:-1]) \
+                          + " and \\texttt{%s}" % _cn[-1]
+    # The assertion is not the same size in every container: a lossy codec
+    # fragments the emitted partition, and every extra interval costs bytes.
+    for _c in _cn:
+        m["Fassertion" + _c.capitalize()] = fmt(pc[_c]["median_em_assertion_bytes"])
     m["Ftotal"] = fmt(sum(v["n"] for v in pc.values()))
     m["Ftrusted"] = fmt(sum(v["validate_trusted"] for v in pc.values()))
     m["Fderived"] = fmt(sum(v["derived_validate_trusted"] for v in pc.values()))
@@ -480,10 +553,19 @@ def main() -> int:
     m["Hcases"] = fmt(H["cases"]); m["Hdis"] = fmt(H["disagreements"])
     m["Hdelta"] = f"{H['max_support_abs_difference']:.0f}"
     # tests
-    t = subprocess.run([sys.executable, str(ROOT / "tests" / "test_contract.py")],
-                       capture_output=True, text=True)
-    m["Tpass"] = fmt(t.stdout.count("  PASS  ")); m["Tfail"] = fmt(t.stdout.count("  FAIL  "))
-    m["Ttotal"] = fmt(t.stdout.count("  PASS  ") + t.stdout.count("  FAIL  "))
+    # Both suites, counted the way tools/make_tables.py counts them, so the
+    # sentence in Section 7.1 and the row in Table 7 read the same number. The
+    # sentence once counted only test_contract.py (30) while the table counted
+    # both (43).
+    t_pass = t_fail = 0
+    for name in ("test_contract.py", "test_review_regressions.py"):
+        t = subprocess.run([sys.executable, str(ROOT / "tests" / name)],
+                           capture_output=True, text=True)
+        p_, f_ = t.stdout.count("  PASS  "), t.stdout.count("  FAIL  ") + t.stdout.count("  ERROR ")
+        if p_ + f_ == 0:
+            raise SystemExit(f"[macros] {name} reported no test outcomes (exit {t.returncode})")
+        t_pass += p_; t_fail += f_
+    m["Tpass"] = fmt(t_pass); m["Tfail"] = fmt(t_fail); m["Ttotal"] = fmt(t_pass + t_fail)
     # independent reproduction
     #
     # Read from the reproducer's own result files rather than transcribed, so
@@ -543,8 +625,24 @@ def main() -> int:
                                   text=True).stdout.strip() or "UNCOMMITTED"
         except Exception:
             return "UNCOMMITTED"
-    m["Rcommit"] = _git("rev-parse", "HEAD")
-    m["Rtag"] = _git("describe", "--tags", "--always")
+    # The evaluated state is the release whose results are frozen in
+    # results/reference/, not whatever commit HEAD happens to be. Read from
+    # `git describe` this printed "v1.0.7-2-gc6466ea" after two manuscript-only
+    # commits, and the paper then named a describe suffix as its release tag.
+    # SNAPSHOT.txt names the tag at freeze time, and the tag resolves to the
+    # commit that stores the report; both are read, neither is typed.
+    snap = ROOT / "results" / "reference" / "SNAPSHOT.txt"
+    tag = None
+    if snap.exists():
+        mm = re.search(r"Reference results for release (\S+)", snap.read_text().splitlines()[0])
+        tag = mm.group(1) if mm else None
+    if tag:
+        m["Rtag"] = tag
+        commit = _git("rev-parse", f"{tag}^{{commit}}")
+        m["Rcommit"] = commit if commit != "UNCOMMITTED" and not commit.startswith(tag) else _git("rev-parse", "HEAD")
+    else:
+        m["Rcommit"] = _git("rev-parse", "HEAD")
+        m["Rtag"] = _git("describe", "--tags", "--always")
     # environment
     env = D["environment"]
     m["Vffmpeg"] = env["ffmpeg"].split()[2]
@@ -567,7 +665,7 @@ def main() -> int:
             "% Every numeric result in the manuscript comes from this file."]
     for k, v in sorted(m.items()):
         body.append(rf"\newcommand{{\{k.translate(digits)}}}{{{v}\xspace}}")
-    OUT.write_text("\n".join(body) + "\n")
+    OUT.write_text("\n".join(body) + "\n", newline="\n")
     print(f"[macros] results/numbers.tex  ({len(m)} macros)")
     return 0
 

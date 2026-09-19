@@ -2,7 +2,7 @@
 
 The v1 corpus carries one channel over one scope, so it never exhibits disjoint
 or partially overlapping scopes, and never the inapplicable-to-applicable
-transition that Proposition 4 turns on. This enumerates those cases directly.
+transition that Proposition 2 turns on. This enumerates those cases directly.
 """
 import itertools, sys
 from pathlib import Path
@@ -57,7 +57,7 @@ def run():
             continue
         small, large = aggregate([e1]), aggregate([e1, e2])
         cases += 1
-        # Proposition 4: enlarging D_y must not raise the channel in the lifted
+        # Proposition 2: enlarging D_y must not raise the channel in the lifted
         # domain. Unavailable is the bottom, so present-in-large/absent-in-small
         # is a rise, which is the case the original check skipped.
         sv, lv = small.S.get(MU), large.S.get(MU)
@@ -88,8 +88,8 @@ if __name__ == "__main__":
         "experiment": "L_scope_battery",
         "purpose": ("applicability cases the single-scope audio corpus cannot "
                     "reach: disjoint and overlapping scopes, and the "
-                    "inapplicable-to-applicable transition that Proposition 4 "
-                    "turns on"),
+                    "inapplicable-to-applicable transition that footprint "
+                    "monotonicity turns on"),
         "distinct_scopes": len(SCOPES),
         "enlargement_cases": c,
         "monotone": m,

@@ -1,102 +1,102 @@
 {
   "assertion_scaling": [
     {
-      "assertion_bytes": 588,
+      "assertion_bytes": 614,
       "audio_seconds": 0.256,
       "emitted_intervals": 1,
-      "median_ms": 0.0972,
+      "median_ms": 0.0223,
       "source_intervals": 1
     },
     {
-      "assertion_bytes": 914,
+      "assertion_bytes": 940,
       "audio_seconds": 0.512,
       "emitted_intervals": 2,
-      "median_ms": 0.1692,
+      "median_ms": 0.0433,
       "source_intervals": 2
     },
     {
-      "assertion_bytes": 1569,
+      "assertion_bytes": 1595,
       "audio_seconds": 1.024,
       "emitted_intervals": 4,
-      "median_ms": 0.3413,
+      "median_ms": 0.0763,
       "source_intervals": 4
     },
     {
-      "assertion_bytes": 2879,
+      "assertion_bytes": 2905,
       "audio_seconds": 2.048,
       "emitted_intervals": 8,
-      "median_ms": 0.6519,
+      "median_ms": 0.1373,
       "source_intervals": 8
     },
     {
-      "assertion_bytes": 5505,
+      "assertion_bytes": 5531,
       "audio_seconds": 4.096,
       "emitted_intervals": 16,
-      "median_ms": 1.3017,
+      "median_ms": 0.2868,
       "source_intervals": 16
     },
     {
-      "assertion_bytes": 10777,
+      "assertion_bytes": 10803,
       "audio_seconds": 8.192,
       "emitted_intervals": 32,
-      "median_ms": 2.6373,
+      "median_ms": 0.5934,
       "source_intervals": 32
     },
     {
-      "assertion_bytes": 21402,
+      "assertion_bytes": 21429,
       "audio_seconds": 16.384,
       "emitted_intervals": 64,
-      "median_ms": 4.923,
+      "median_ms": 1.0459,
       "source_intervals": 64
     },
     {
-      "assertion_bytes": 42710,
+      "assertion_bytes": 42737,
       "audio_seconds": 32.768,
       "emitted_intervals": 128,
-      "median_ms": 9.8683,
+      "median_ms": 2.4212,
       "source_intervals": 128
     },
     {
-      "assertion_bytes": 85422,
+      "assertion_bytes": 85449,
       "audio_seconds": 65.536,
       "emitted_intervals": 256,
-      "median_ms": 21.4332,
+      "median_ms": 8.4308,
       "source_intervals": 256
     }
   ],
   "audio_minutes_per_repetition": 1.4081,
   "baseline_bookkeeping_ms_per_repetition": {
-    "max": 1.5732,
-    "median": 0.8093,
-    "min": 0.7762,
+    "max": 0.8931,
+    "median": 0.6107,
+    "min": 0.5826,
     "n": 30,
-    "q1": 0.7995,
-    "q3": 0.8733
+    "q1": 0.5997,
+    "q3": 0.6277
   },
-  "baseline_ms_per_audio_minute": 0.5747,
+  "baseline_ms_per_audio_minute": 0.4337,
   "clips_per_repetition": 30,
   "em_assertion_bytes": {
-    "max": 1309.0,
-    "median": 1307.5,
-    "min": 1306.0,
+    "max": 1335.0,
+    "median": 1333.0,
+    "min": 1332.0,
     "n": 30,
-    "q1": 1307.0,
-    "q3": 1308.0
+    "q1": 1333.0,
+    "q3": 1334.0
   },
-  "em_assertion_bytes_per_audio_minute": 26294.6,
+  "em_assertion_bytes_per_audio_minute": 26807.4,
   "em_bookkeeping_ms_per_repetition": {
-    "max": 6.655,
-    "median": 2.9395,
-    "min": 2.7993,
+    "max": 4.7827,
+    "median": 2.1105,
+    "min": 2.0624,
     "n": 30,
-    "q1": 2.9201,
-    "q3": 3.1251
+    "q1": 2.0828,
+    "q3": 2.3233
   },
-  "em_ms_per_audio_minute": 2.0876,
-  "em_over_baseline_ratio": 3.6322,
-  "em_over_ffmpeg_fraction": 0.001333,
+  "em_ms_per_audio_minute": 1.4988,
+  "em_over_baseline_ratio": 3.4562,
+  "em_over_ffmpeg_fraction": 0.001456,
   "environment": {
-    "c2patool": "c2patool 0.27.2",
+    "c2patool": "c2patool 0.27.15",
     "cpu_count_logical": "12",
     "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
     "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
@@ -110,45 +110,45 @@
   },
   "experiment": "G_overhead",
   "ffmpeg_transcode_ms_per_repetition": {
-    "max": 2502.4396,
-    "median": 2205.6717,
-    "min": 1880.2655,
+    "max": 1660.5171,
+    "median": 1449.6785,
+    "min": 1318.4611,
     "n": 30,
-    "q1": 2131.2453,
-    "q3": 2301.7066
+    "q1": 1420.1796,
+    "q3": 1513.0311
   },
-  "first_iteration_effect_pct": 0.141,
+  "first_iteration_effect_pct": 0.059,
   "launch": "python3 experiments/overhead_benchmark.py, single process, no affinity or power-management control",
   "machine_dependence_note": "single-machine medians for a Python reference implementation; a compiled implementation will differ, so these are not language-independent constants",
-  "manifest_bytes_per_audio_minute": 299808.9,
+  "manifest_bytes_per_audio_minute": 300331.8,
   "manifest_overhead_bytes": {
-    "max": 14910.0,
-    "median": 14908.0,
-    "min": 14906.0,
+    "max": 14936.0,
+    "median": 14934.0,
+    "min": 14932.0,
     "n": 30,
-    "q1": 14906.0,
-    "q3": 14908.0
+    "q1": 14932.0,
+    "q3": 14934.0
   },
-  "median_em_assertion_bytes_per_asset": 1307,
-  "median_manifest_overhead_bytes_per_asset": 14908,
+  "median_em_assertion_bytes_per_asset": 1333,
+  "median_manifest_overhead_bytes_per_asset": 14934,
   "per_minute_caveat": "the corpus clips have a median duration of 2.98 s, and the C2PA manifest overhead is dominated by a fixed per-asset cost (certificate chain, COSE structure, hard binding) rather than by audio duration, so the per-audio-minute figures are extrapolations of a mostly fixed cost and should be read together with the per-asset figures and the interval-scaling table",
   "repetitions": 30,
-  "runtime_s": 72.711,
+  "runtime_s": 47.552,
   "sign_ms": {
-    "max": 137.4083,
-    "median": 115.4545,
-    "min": 96.3485,
+    "max": 232.7426,
+    "median": 67.2545,
+    "min": 55.5417,
     "n": 30,
-    "q1": 108.2588,
-    "q3": 121.316
+    "q1": 62.1118,
+    "q3": 73.1722
   },
   "validate_ms": {
-    "max": 62.7181,
-    "median": 55.105,
-    "min": 42.289,
+    "max": 42.8039,
+    "median": 28.0304,
+    "min": 21.5086,
     "n": 30,
-    "q1": 49.9399,
-    "q3": 60.0055
+    "q1": 24.9965,
+    "q3": 31.2986
   },
   "warm_up_policy": "none; the first repetition is included and the reported statistic is a median over all of them, so a single cold iteration cannot move it. The claim is checked rather than assumed: see first_iteration_effect_pct"
 }

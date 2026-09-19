@@ -1,7 +1,7 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: UNCOMMITTED
-tag: UNCOMMITTED
+commit: 5ec2829cf3b9ee1468084617f10f563a2ba358c0 (from PACKAGE_VERSION; no git history here)
+tag: v1.0.7 (from PACKAGE_VERSION; no git history here)
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
       commit that stores it by one. Re-run tools/preflight.py, or run_all.sh,
@@ -11,26 +11,26 @@ zenodo_concept_doi: PENDING - assign at archive time
 
 python: 3.13.4
 ffmpeg: ffmpeg version 9.0.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers
-c2patool: c2patool 0.27.2
+c2patool: c2patool 0.27.15
 node: v22.19.0
 espeak_ng: eSpeak NG text-to-speech: 1.52.0  Data at: C:\Program Files\eSpeak NG\/espeak-ng-data
 c2pa_spec_version: 2.4 (April 2026)
 os: Windows-11-10.0.26200-SP0
 
 benchmark stability, one process per row
-  measured: 2026-08-31T19:03:23Z UTC, load average None
+  measured: 2026-09-15T21:31:19Z UTC, load average None
   cv definition: sample standard deviation over the mean, in percent, with Bessel's correction
-  run 1: em 2.0802 ms, baseline 0.5873 ms, ratio 3.5421
-  run 2: em 2.0969 ms, baseline 0.5903 ms, ratio 3.5521
-  run 3: em 2.1088 ms, baseline 0.5959 ms, ratio 3.5389
-  run 4: em 2.0445 ms, baseline 0.5718 ms, ratio 3.5757
-  run 5: em 2.0455 ms, baseline 0.5639 ms, ratio 3.6271
-  run 6: em 2.1841 ms, baseline 0.5981 ms, ratio 3.6515
-  run 7: em 3.3735 ms, baseline 0.9557 ms, ratio 3.5299
-  run 8: em 2.1467 ms, baseline 0.6044 ms, ratio 3.5518
-  run 9: em 2.0832 ms, baseline 0.6087 ms, ratio 3.4225
-  absolute cv: 19.072%
-  ratio cv: 1.822%
+  run 1: em 1.5229 ms, baseline 0.4255 ms, ratio 3.5792
+  run 2: em 1.6295 ms, baseline 0.4651 ms, ratio 3.5039
+  run 3: em 1.59 ms, baseline 0.4599 ms, ratio 3.4576
+  run 4: em 1.5559 ms, baseline 0.4416 ms, ratio 3.5236
+  run 5: em 1.4857 ms, baseline 0.4277 ms, ratio 3.4739
+  run 6: em 1.5462 ms, baseline 0.4434 ms, ratio 3.487
+  run 7: em 1.6653 ms, baseline 0.494 ms, ratio 3.371
+  run 8: em 1.5542 ms, baseline 0.4293 ms, ratio 3.6207
+  run 9: em 1.5312 ms, baseline 0.4343 ms, ratio 3.5259
+  absolute cv: 3.544%
+  ratio cv: 2.047%
 
 cpu: Intel64 Family 6 Model 186 Stepping 3, GenuineIntel
 cpu_arch: AMD64
@@ -40,7 +40,7 @@ memory_gib: unavailable
 --- A  exhaustive finite-state conformance ---
 words_enumerated: 9840
 operator_cases: 98385
-checks_total: 885828
+checks_total: 984213
 checks_failed: 0
 composition_cases: 363
 
@@ -92,15 +92,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 2.0876
-median_baseline_ms_per_audio_minute: 0.5747
-em_over_baseline_ratio: 3.6322
-em_fraction_of_ffmpeg_time: 0.001333
-median_manifest_overhead_bytes_per_asset: 14908
-median_em_assertion_bytes_per_asset: 1307
-metadata_bytes_per_audio_minute: 299808.9
-median_sign_ms: 115.4545
-median_validate_ms: 55.105
+median_em_ms_per_audio_minute: 1.4988
+median_baseline_ms_per_audio_minute: 0.4337
+em_over_baseline_ratio: 3.4562
+em_fraction_of_ffmpeg_time: 0.001456
+median_manifest_overhead_bytes_per_asset: 14934
+median_em_assertion_bytes_per_asset: 1333
+metadata_bytes_per_audio_minute: 300331.8
+median_sign_ms: 67.2545
+median_validate_ms: 28.0304
 assertion_bytes_per_interval: 332.7
 
 --- K  kernel-support containment ---

@@ -108,7 +108,7 @@ def main() -> int:
           CH not in aggregate([a, b]).S)
     # A source to which the channel is not applicable at all used to be skipped,
     # leaving the channel computed from the rest. That is the same partial-subset
-    # situation as the case above, and it is what broke Proposition 4 for
+    # situation as the case above, and it is what broke Proposition 2 for
     # channels: enlarging D_y by a source that declares an otherwise
     # inapplicable channel raised it from unavailable to a value. Requirement
     # (iv) now covers both halves, so the channel is withheld.

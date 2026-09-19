@@ -280,7 +280,7 @@ def p6_complete_lineage(out: DerivedOutput, timelines: Dict[str, Timeline],
 # --- footprint monotonicity -------------------------------------------------
 
 def p_footprint_monotone(out: DerivedOutput, timelines: Dict[str, Timeline]) -> Check:
-    """Enlarging D_y can only weaken the emitted claim (Proposition 5).
+    """Enlarging D_y can only weaken the emitted claim (Proposition 2).
 
     Compared here as footprint-aware (larger D_y) versus footprint-blind.
     """

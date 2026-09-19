@@ -1,6 +1,6 @@
 """Experiment K -- direct test of kernel-support containment.
 
-Proposition 4 requires that the *declared* required-source set contain the
+Proposition 2 requires that the *declared* required-source set contain the
 *actual* dependency set. Agreement between predicted and actual output length,
 which the transformation matrix measures, does not establish that: an operator
 can emit exactly the predicted number of samples while depending on source

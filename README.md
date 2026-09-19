@@ -1,5 +1,12 @@
 # EM-Audio — evidence-monotone audio representation
 
+[![Container reproduction](https://github.com/1D-Coda/em-audio/actions/workflows/container-reproduction.yml/badge.svg)](https://github.com/1D-Coda/em-audio/actions/workflows/container-reproduction.yml)
+[![Windows reproduction path](https://github.com/1D-Coda/em-audio/actions/workflows/windows-reproduction.yml/badge.svg)](https://github.com/1D-Coda/em-audio/actions/workflows/windows-reproduction.yml)
+
+Both badges report a full run of the pipeline, not a lint: the container
+job rebuilds the results from a pinned image, and the Windows job runs
+`run_all.sh` and then compares every output against the released one.
+
 Reference implementation and reproducibility package for an **operator contract
 on derived audio representations**: a representation-only transformation may
 change, simplify, compress, aggregate or reorganise content, but it must not
@@ -29,7 +36,7 @@ results, and writes `results/PREFLIGHT.txt`.
 | Python | 3.11.15 | reference implementation (standard library only) |
 | FFmpeg | 9.0.1 | the only software in the audio signal path |
 | c2patool | 0.27.2 | C2PA signing and validation |
-| Node.js | 26.0.0 | second-language differential oracle |
+| Node.js | 26.7.0 | second-language differential oracle |
 | Piper (piper-tts) | 1.7.0 | neural-TTS robustness arm only |
 | eSpeak NG | 1.52.0 | locally generated synthetic speech |
 | matplotlib | 3.11.1 | figure rendering only |
@@ -86,6 +93,21 @@ chain.
 
 A cryptographically valid signature proves that an assertion was signed, not
 that it is true.
+
+## Generative AI
+
+Claude Opus 5 (Anthropic) and ChatGPT (OpenAI) were used as programming and
+review assistants on this repository, and to refine the language of the
+manuscript. Where a commit records that, it carries a `Co-Authored-By` trailer.
+
+Nothing they produced is a result. Every number in the paper comes from
+executing the committed code, and `run_all.sh` regenerates the tables, macros
+and figures from the machine-readable outputs. Authorship is one person, listed
+in `CITATION.cff`, who reviewed and verified the claims, the calculations, the
+code and the text, and is responsible for them.
+
+The manuscript states the same in its declaration of generative AI and
+AI-assisted technologies.
 
 ## Licence
 

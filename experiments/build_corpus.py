@@ -141,7 +141,7 @@ def main() -> int:
         if (i + 1) % 100 == 0:
             print(f"  built {i+1}/{N_CLIPS}")
 
-    (CORPUS / "corpus_index.json").write_text(json.dumps(index, indent=1) + "\n")
+    (CORPUS / "corpus_index.json").write_text(json.dumps(index, indent=1) + "\n", newline="\n")
     mism = sum(1 for r in index
                if r["ground_truth"][-1]["end"] != r["n_samples"])
     emit("C0_corpus_build", {

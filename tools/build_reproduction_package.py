@@ -110,13 +110,13 @@ def main() -> int:
         "verify_reproduction.py cannot compare the author's own results\n"
         "against themselves and report a match that never happened.\n\n"
         "After your run this holds the result files to send back.\n",
-        encoding="utf-8")
+        encoding="utf-8", newline="\n")
     (inner / "corpus").mkdir(parents=True, exist_ok=True)
     ci = ROOT / "corpus" / "corpus_index.json"
     if ci.exists():
         shutil.copy2(ci, inner / "corpus" / "corpus_index.json")
     (inner / ".reproduction_package").write_text(
-        f"built from {tag}\n", encoding="utf-8")
+        f"built from {tag}\n", encoding="utf-8", newline="\n")
 
     # The package carries no git history, so preflight.py cannot resolve a tag
     # and reports UNCOMMITTED. Results returned by a third party would then be
@@ -125,7 +125,7 @@ def main() -> int:
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                             capture_output=True, text=True).stdout.strip()
     (inner / "PACKAGE_VERSION").write_text(
-        f"tag: {tag}\ncommit: {commit or 'unknown'}\n", encoding="utf-8")
+        f"tag: {tag}\ncommit: {commit or 'unknown'}\n", encoding="utf-8", newline="\n")
 
     # The two documents the reader opens first, at the top of the archive.
     # One package for every platform. Splitting it by operating system meant a

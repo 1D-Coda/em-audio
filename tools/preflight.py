@@ -232,7 +232,7 @@ def main() -> int:
     add(f"tests_failed: {nfail}")
 
     out = ROOT / "results" / "PREFLIGHT.txt"
-    out.write_text("\n".join(lines) + "\n")
+    out.write_text("\n".join(lines) + "\n", newline="\n")
     print("\n".join(lines))
     return 0
 

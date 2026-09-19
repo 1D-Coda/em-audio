@@ -1,6 +1,6 @@
 """Experiment I -- the cost of conservatism (claim dilution).
 
-Proposition 4 (footprint monotonicity) makes over-approximating the required
+Proposition 2 (footprint monotonicity) makes over-approximating the required
 source set *safe*: it can never promote.  Safety alone is cheap -- declaring the
 whole asset as every sample's dependency is perfectly safe and perfectly useless,
 because every output interval near an ancestry change collapses to the weaker

@@ -19,7 +19,7 @@ The two must not be substituted for each other: output length can be exact
 while the dependency is wider than declared. Both are reported separately here
 for that reason.
 
-The recommendation errs large on purpose. Proposition 4 guarantees that a
+The recommendation errs large on purpose. Proposition 2 guarantees that a
 declaration containing the true dependency cannot promote, so a calibration that
 over-shoots costs dilution and nothing else, while one that under-shoots is the
 single direction the contract does not forgive.
@@ -238,7 +238,7 @@ def main() -> int:
         "probe_positions": len(positions),
         "signal_contexts": list(CONTEXTS),
         "operators": rows,
-    }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    }, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(f"\n[emit] {out.relative_to(ROOT)}")
 
     if under:

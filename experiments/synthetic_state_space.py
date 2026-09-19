@@ -88,7 +88,7 @@ def main() -> int:
                 # operator's nominal source ranges, without using the evidence
                 # algebra.  For zero-footprint operators the output state must
                 # equal it exactly; for kernel operators the output may only be
-                # weaker (Proposition 5), never stronger.
+                # weaker (Proposition 2), never stronger.
                 rep = set()
                 for p_ in out.pieces:
                     a, b = int(p_.src_start), int(p_.src_end)

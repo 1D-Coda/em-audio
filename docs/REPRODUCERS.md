@@ -13,7 +13,9 @@ Universidad de Sonora. ORCID 0009-0002-5180-0406.
 
 **Run 1, release v1.0.0, Linux, x86_64, FFmpeg 8.0.1.** The reproduction
 reported in Section 7.11. Ended in `RUN FAILED` and `REPRODUCTION INCOMPLETE`,
-with 189 deterministic differences, and both were reported rather than adjusted.
+with 189 build-dependent deterministic differences (192 against the current
+reference, the extra 3 being the size fields of Experiment A, whose suite grew
+in v1.0.4 after this run), and both were reported rather than adjusted.
 Found the two packaging defects behind the failed run.
 
 **Run 2, 2026-08-31, Windows 11, Intel, FFmpeg 9.0.1 gyan.dev full build.**
@@ -25,7 +27,26 @@ after `tools/fetch_voice.sh` failed, so this was not a clean single pass.
 
 Found: `fetch_voice.sh` still invoked a bare `python3`.
 
-The CPU family suggests runs 1 and 2 were the same machine. Two runs by one
+**Run 3, 2026-09-15, release v1.0.7, same Windows 11 machine.** The first
+single unattended pass of a released package on Windows: `results/PREFLIGHT.txt`
+names the tag itself, `run_all.sh` ended in `RUN OK`, and
+`verify_reproduction.py` exited 1 with 69 deterministic differences, all of
+them in the MP3 kernel measurements of Experiment K and in the time-stretch
+model deviation (463 samples against the reference build's 471, both inside
+the 2,048-sample guard band). Every other deterministic output is the
+reference value. Against his own Run 2 the only deterministic difference is
+the size of Experiment A, which grew between the two packages. This is the
+run Section 7.11 now reads its Windows numbers from; Run 2 is kept in
+`results/independent_windows_2026-08-31/`.
+
+Found, in the two attempts before this one succeeded: the v1.0.5 one-click
+script took `C:\Windows\system32\bash.exe` (the WSL launcher) for bash; the
+v1.0.6 one died at the corpus download because Windows curl could not reach a
+certificate-revocation server, and, underneath that, because PowerShell 5.1
+turned any native stderr line into a terminating error under the script's
+`$ErrorActionPreference = "Stop"`. Both fixed in v1.0.6 and v1.0.7.
+
+The CPU family suggests runs 1 to 3 were the same machine. Two runs by one
 person on one machine are not two independent validators, and the manuscript's
 single-validator limitation stands.
 

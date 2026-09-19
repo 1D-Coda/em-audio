@@ -4,7 +4,7 @@
  "em_lineage_omissions": 0,
  "em_provenance_promotions": 0,
  "environment": {
-  "c2patool": "c2patool 0.27.2",
+  "c2patool": "c2patool 0.27.15",
   "cpu_count_logical": "12",
   "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
@@ -53,6 +53,6 @@
    "em_promotions": 0
   }
  },
- "runtime_s": 0.655,
+ "runtime_s": 0.761,
  "worst_boundary_error_samples": 0
 }

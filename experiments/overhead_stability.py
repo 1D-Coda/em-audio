@@ -82,7 +82,7 @@ def main() -> int:
     # leave the recorded benchmark as the pipeline's own run produced it
     if keep is not None:
         src.write_text(json.dumps(keep, indent=2, sort_keys=True) + "\n",
-                       encoding="utf-8")
+                       encoding="utf-8", newline="\n")
 
     s_em, s_ratio = spread(em), spread(ratio)
     tighter = s_ratio["cv_pct"] <= s_em["cv_pct"]

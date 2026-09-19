@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TEX = ROOT / "paper" / "manuscript.tex"
 NUMBERS = ROOT / "results" / "numbers.tex"
+SUPP = ROOT / "paper" / "supplementary.tex"
 
 # Numbers that are structural, not measured.
 ALLOWED = {
@@ -66,11 +67,22 @@ def check_cover_letter() -> list[tuple[str, str]]:
     return out
 
 
+def check_supplement_release_tag(supplement: str) -> list[str]:
+    """The supplement's reproduction recipe once pinned v1.0.4 while the paper
+    reported v1.0.7, and no check read the supplement, so the recipe rebuilt a
+    release two behind the numbers it was meant to reproduce. The release
+    identity belongs to \\Rtag, which is read from SNAPSHOT.txt; a typed tag
+    anywhere in the supplement can only go stale."""
+    import re
+    return [f"line {supplement[:m.start()].count(chr(10)) + 1}: {m.group(0)!r} "
+            "is a typed release tag; use \\Rtag{} so it cannot drift"
+            for m in re.finditer(r"\bv\d+\.\d+\.\d+", supplement)]
+
+
 def check_supplement_pointers(manuscript: str, supplement: str) -> list[str]:
     """Every 'Supplementary Note/Table SN' must resolve to something the
     supplement actually numbers. A pointer at a table is only valid if the
-    supplement captions that many tables, which it will not do while its
-    longtables carry no caption."""
+    supplement captions that many tables."""
     import re
     problems = []
     # Existence is not enough. Every pointer was reported as resolving while
@@ -242,9 +254,17 @@ def main() -> int:
             print(f"  {tok!r}  ...{ctx}...")
         return 1
 
+    tag_bad = check_supplement_release_tag(SUPP.read_text()) if SUPP.exists() else []
+    if tag_bad:
+        print(f"{len(tag_bad)} typed release tag(s) in the supplement:")
+        for msg in tag_bad:
+            print(f"  {msg}")
+        return 1
+
     print("no hand-typed result numbers found in the manuscript source")
     print("no hand-typed result numbers found in the cover letter")
     print("all supplement pointers resolve")
+    print("the supplement names no release tag by hand")
     print("bundle documents agree with the current results")
     return 0
 

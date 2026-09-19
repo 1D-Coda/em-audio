@@ -14,7 +14,7 @@
   }
  },
  "environment": {
-  "c2patool": "c2patool 0.27.2",
+  "c2patool": "c2patool 0.27.15",
   "cpu_count_logical": "12",
   "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
@@ -30,5 +30,5 @@
  "neural_tts_engine": "Piper (VITS architecture), voice en_US-ljspeech-medium; LJSpeech source data is public domain",
  "noise_source": "ffmpeg anoisesrc, pink, -18 dB, locally generated, seeded per clip",
  "note": "the evidence algebra reads no acoustic features, so these arms test the pipeline machinery under different signal character, not a detector",
- "runtime_s": 42.91
+ "runtime_s": 51.515
 }

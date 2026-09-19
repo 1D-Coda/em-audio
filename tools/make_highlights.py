@@ -32,6 +32,6 @@ if not out.parent.is_dir():
     # manuscript, not to the experiments a validator is reproducing.
     print("[highlights] paper/ absent; skipped")
 else:
-    out.write_text("\n".join(lines) + "\n")
+    out.write_text("\n".join(lines) + "\n", newline="\n")
 for l in lines:
     print(f"{len(l):3d}  {l}")

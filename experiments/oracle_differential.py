@@ -90,7 +90,7 @@ def main() -> int:
     FIXTURES.mkdir(parents=True, exist_ok=True)
     cases = build_cases()
     path = FIXTURES / "oracle_cases.jsonl"
-    with open(path, "w") as fh:
+    with open(path, "w", newline="\n") as fh:
         for c in cases:
             d = {k: v for k, v in c.items() if k != "_py_model"}
             fh.write(json.dumps(d, sort_keys=True) + "\n")

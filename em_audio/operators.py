@@ -2,7 +2,7 @@
 
 Every operator returns a :class:`DerivedOutput` describing, for each contiguous
 derived span, which source samples that span represents.  The ``footprint``
-field is a *conservative over-approximation* of the kernel radius: Proposition 5
+field is a *conservative over-approximation* of the kernel radius: Proposition 2
 in the manuscript shows that enlarging the required source set can only weaken
 the emitted claim, so an over-approximation is always safe while an
 under-approximation is not.
@@ -34,7 +34,7 @@ FLAC_FOOTPRINT = 0
 ATEMPO_WINDOW_S = 0.030
 #: Declared guard bands, in source samples, absorbing the difference between an
 #: exact integer interval model and the frame- or packet-granular behaviour of a
-#: real implementation.  A guard band only *enlarges* D_y, which by Proposition 5
+#: real implementation.  A guard band only *enlarges* D_y, which by Proposition 2
 #: can only weaken the emitted claim, so an over-declared band is safe and an
 #: under-declared one is a conformance failure.  ``transform_matrix.py`` measures
 #: the model-versus-ffmpeg deviation on every corpus clip and fails if any

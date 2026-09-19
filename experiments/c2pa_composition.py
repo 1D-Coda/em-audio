@@ -194,7 +194,7 @@ def main() -> int:
 
         if not frozen:
             (FIXTURES / "manifest_composition_componentOf.json").write_text(
-                json.dumps(rep, indent=1, sort_keys=True) + "\n")
+                json.dumps(rep, indent=1, sort_keys=True) + "\n", newline="\n")
             frozen = True
 
     payload = {

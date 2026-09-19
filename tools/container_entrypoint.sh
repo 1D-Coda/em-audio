@@ -16,6 +16,9 @@ mkdir -p "$OUT"
 
 echo "=== environment fixed by this image"
 python3 -V; ffmpeg -version | head -1; c2patool --version; node -v; espeak-ng --version
+# The FFmpeg URL is stable but what it serves moves within 9.0.x, so say which
+# tarball this image was actually built from rather than implying one build.
+cat /usr/local/share/ffmpeg-tarball.sha256 2>/dev/null || true
 
 echo
 echo "=== pipeline"

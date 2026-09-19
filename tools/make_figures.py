@@ -30,7 +30,18 @@ UNV = "#718096"     # unverified
 
 
 def load(n):
-    return json.loads((MR / f"{n}.json").read_text())
+    # An upstream experiment that failed leaves its result file absent, and
+    # reading it then raised FileNotFoundError from inside pathlib. That is
+    # what an independent reproducer saw: seven frames of the standard library
+    # and no mention of the step that actually failed, several screens above.
+    p = MR / f"{n}.json"
+    if not p.exists():
+        raise SystemExit(
+            f"[figure] {p.name} is missing, so the experiment that writes it "
+            f"did not finish. This is a consequence, not the cause: look "
+            f"further up the log, or run "
+            f"`python3 tools/explain_failure.py run_all_output.txt`.")
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def save(fig, name):

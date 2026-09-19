@@ -45,7 +45,7 @@ class Signer:
             "[verify]\nverify_trust = true\n\n[trust]\ntrust_anchors = \"\"\"\n"
             + self.trust_anchor_pem.read_text()
             + "\"\"\"\ntrust_config = \"1.3.6.1.5.5.7.3.4\"\n"
-        )
+        , newline="\n")
         self.settings_path = p
         return p
 
@@ -59,7 +59,7 @@ def _c2pa(argv: Sequence[str], signer: Optional[Signer] = None,
 def sign(asset: Path, out: Path, manifest: Dict[str, object], signer: Signer,
          workdir: Path, parent: Optional[Path] = None) -> Dict[str, object]:
     mpath = workdir / f"{out.stem}.manifest.json"
-    mpath.write_text(json.dumps(manifest, indent=1))
+    mpath.write_text(json.dumps(manifest, indent=1), newline="\n")
     argv = [str(asset), "-m", str(mpath), "-o", str(out), "-f",
             "--settings", str(signer.settings(workdir))]
     if parent is not None:

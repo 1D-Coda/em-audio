@@ -35,7 +35,7 @@ Latest run:
 |---|---:|---:|---|
 | `fig1_counterexample` | 54,663 | 170,783 | no |
 | `fig2_architecture` | 20,036 | 96,869 | no |
-| `fig3_promotion` | 27,189 | 190,503 | yes |
+| `fig3_promotion` | 27,362 | 190,332 | yes |
 | `fig4_corpus` | 25,853 | 254,706 | yes |
 | `fig5_containment` | 21,097 | 133,050 | yes |
 | `fig6_dilution` | 23,764 | 201,388 | yes |

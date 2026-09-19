@@ -173,9 +173,9 @@ def main() -> int:
 
             if ext not in frozen_saved:
                 (FIXTURES / f"manifest_{ext}_signed.json").write_text(
-                    json.dumps(rep, indent=1, sort_keys=True) + "\n")
+                    json.dumps(rep, indent=1, sort_keys=True) + "\n", newline="\n")
                 (FIXTURES / f"manifest_{ext}_derived.json").write_text(
-                    json.dumps(drep, indent=1, sort_keys=True) + "\n")
+                    json.dumps(drep, indent=1, sort_keys=True) + "\n", newline="\n")
                 frozen_saved.add(ext)
 
         per_container[ext] = {
@@ -206,7 +206,7 @@ def main() -> int:
     }
     emit("F_c2pa_roundtrip", payload)
     (ROOT / "results" / "machine_readable" / "F_essence_rows.json").write_text(
-        json.dumps(essence_rows, indent=1) + "\n")
+        json.dumps(essence_rows, indent=1) + "\n", newline="\n")
     fail = any(v["validate_valid_or_better"] != v["n"]
                or v["derived_validate_trusted"] != v["n"]
                or v["essence_identical_pre_vs_em"] != v["n"]

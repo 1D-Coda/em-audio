@@ -101,7 +101,7 @@ def main() -> int:
     kvals = [k for _, k in made]
 
     FIXTURES.mkdir(parents=True, exist_ok=True)
-    with open(FIXTURES / "frozen_timelines.jsonl", "w") as fh:
+    with open(FIXTURES / "frozen_timelines.jsonl", "w", newline="\n") as fh:
         for i, w in enumerate(words):
             fh.write(json.dumps({"id": i, "word": w, "k_anomalies": kvals[i]}) + "\n")
 

@@ -7,7 +7,7 @@
   "valid_derived_manifest"
  ],
  "environment": {
-  "c2patool": "c2patool 0.27.2",
+  "c2patool": "c2patool 0.27.15",
   "cpu_count_logical": "12",
   "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
@@ -21,7 +21,7 @@
  },
  "experiment": "E_manifest_stripping",
  "n_clips": 60,
- "runtime_s": 48.013,
+ "runtime_s": 27.492,
  "scope_note": "an absent or invalid manifest is reported UNVERIFIED or INVALID; no claim is made that stripping indicates malicious intent",
  "state_tally": {
   "asset_modified_after_signing": {

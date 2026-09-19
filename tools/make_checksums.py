@@ -26,30 +26,55 @@ OUT = ROOT / "SHA256SUMS"
 SKIP = {"SHA256SUMS", ".DS_Store"}
 
 
-def _warn_if_worktree_differs_from_index() -> None:
+def _refuse_if_worktree_differs_from_checkout() -> None:
     """A manifest is only useful if it verifies for the person who downloaded.
 
     These hashes are taken from the working tree. For any path governed by an
     eol attribute the working tree can differ from what a clone checks out, and
     29 entries once did: they were written from bytes that existed only on the
     machine that generated them, so the manifest failed on every fresh clone.
-    Refuse to write one rather than ship a checksum file that cannot verify.
+
+    The first guard here asked `git status`, and `git status` normalises line
+    endings before comparing, so it reported a clean tree while 23 files copied
+    in from a Windows machine sat on disk with CRLF under an eol=lf attribute.
+    The manifest hashed them that way and failed in a clean clone, which is the
+    defect the guard existed to stop. `git ls-files --eol` reports the working
+    tree's actual endings beside the attribute, so compare those. Refuse to
+    write rather than ship a checksum file that cannot verify.
     """
+    import re
     import subprocess
-    r = subprocess.run(["git", "status", "--porcelain"],
+    r = subprocess.run(["git", "ls-files", "--eol"],
                        cwd=ROOT, capture_output=True, text=True)
     if r.returncode != 0:
         return  # no git: an archive, where the working tree is all there is
-    dirty = [l[3:] for l in r.stdout.splitlines() if l[:2] not in ("??",)]
-    if dirty:
-        print("[checksums] warning: the working tree differs from the index for "
-              f"{len(dirty)} tracked file(s). The manifest records what is on "
-              "disk here, which is what a downloader must see too. Commit or "
-              "check out first if these differ only by line endings.")
+    wrong = []
+    for line in r.stdout.splitlines():
+        # "i/lf    w/crlf  attr/text eol=lf      <TAB>path": the attribute
+        # field contains spaces, so split on the tab, not on whitespace.
+        meta, _, path = line.partition("\t")
+        wt_m = re.search(r"\bw/(\S+)", meta)
+        eol = re.search(r"\beol=(lf|crlf)\b", meta)
+        if not wt_m or not eol or not path:
+            continue  # no declared ending
+        wt = wt_m.group(1)
+        if wt in ("none", "-text"):
+            continue  # an empty or binary file
+        if wt != eol.group(1):
+            wrong.append(f"{path}: on disk {wt}, a clone gets {eol.group(1)}")
+    if wrong:
+        print("[checksums] REFUSING: the working tree's line endings differ from "
+              "what a clone checks out, so a manifest written now would fail "
+              "for whoever downloads it:")
+        for w in wrong:
+            print("   ", w)
+        print("    Rewrite them from the index first: "
+              "rm the files and `git checkout HEAD -- <path>`.")
+        raise SystemExit(2)
 
 
 def main() -> int:
-    _warn_if_worktree_differs_from_index()
+    _refuse_if_worktree_differs_from_checkout()
     # git lists exactly what the release distributes, but a reproduction package
     # has no history, and a tool that needs git to run is the same defect this
     # project already fixed once in verify_reproduction.py. Fall back to walking
@@ -78,7 +103,7 @@ def main() -> int:
         if not p.is_file():
             continue
         rows.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}")
-    OUT.write_text("\n".join(rows) + "\n")
+    OUT.write_text("\n".join(rows) + "\n", newline="\n")
     print(f"[checksums] SHA256SUMS  ({len(rows)} tracked files)")
     return 0
 

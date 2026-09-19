@@ -157,7 +157,7 @@ def main() -> int:
     }
     emit("E_manifest_stripping", payload)
     (ROOT / "results" / "machine_readable" / "E_per_clip.json").write_text(
-        json.dumps(per_clip, indent=1, default=str) + "\n")
+        json.dumps(per_clip, indent=1, default=str) + "\n", newline="\n")
     print(json.dumps(tally, indent=1))
     print(f"violations={len(violations)}")
     return 1 if violations else 0

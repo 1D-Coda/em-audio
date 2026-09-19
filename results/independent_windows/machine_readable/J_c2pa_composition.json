@@ -7,7 +7,7 @@
  "derived_parentOf": 30,
  "derived_trusted": 30,
  "environment": {
-  "c2patool": "c2patool 0.27.2",
+  "c2patool": "c2patool 0.27.15",
   "cpu_count_logical": "12",
   "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
@@ -24,7 +24,7 @@
  "failures_sample": [],
  "n_fixtures": 30,
  "placed_actions_reference_both": 30,
- "runtime_s": 44.006,
+ "runtime_s": 23.676,
  "sources_trusted": 60,
  "spec_notes": "componentOf per C2PA 2.4 Table 10; c2pa.placed carries a hashed-URI reference to each componentOf ingredient assertion per section 18.16.3, inserted by the claim generator from ingredientIds"
 }

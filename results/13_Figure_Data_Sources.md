@@ -20,7 +20,7 @@ Every visual element in every figure, and the committed result file it is read f
 | element | source |
 |---|---|
 | panel A, promotion by depth | `B_adversarial_timelines.json -> per_depth` |
-| panel B, policy ablation | `B2_policy_ablation.json -> arms` |
+| panel B, single operator applied alone | `B_adversarial_timelines.json -> per_operator_single_step` |
 | panel C, closed-form control | `B_adversarial_timelines.json -> control_uniform_positions` |
 
 ## `fig4_corpus`

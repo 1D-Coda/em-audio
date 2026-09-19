@@ -16,6 +16,25 @@ import re
 import sys
 from pathlib import Path
 
+def read_log(path: Path) -> str:
+    """Decode a log whichever shell produced it.
+
+    Windows PowerShell 5.1 writes Tee-Object output as UTF-16LE with a byte
+    order mark, so reading this file at the default encoding yields text with
+    a NUL between every character and no line that matches anything here. This
+    tool then reported "no traceback in this log" for the one real Windows
+    failure the project has, whose log names the missing voice file on the
+    line that matters, and CI emitted no annotation for four failed runs in a
+    row. Sniff the mark, and fall back to UTF-8 for every other shell.
+    """
+    raw = path.read_bytes()
+    for mark, enc in ((b"\xff\xfe", "utf-16"), (b"\xfe\xff", "utf-16"),
+                      (b"\xef\xbb\xbf", "utf-8-sig")):
+        if raw.startswith(mark):
+            return raw.decode(enc, errors="replace")
+    return raw.decode("utf-8", errors="replace")
+
+
 STEP = re.compile(r"^=== (.+?) ===\s*$")
 START = re.compile(r"^Traceback \(most recent call last\):")
 # The wrapper's message is "<tool> failed: <argv>\n<stderr>", so the useful text
@@ -49,7 +68,7 @@ def main() -> int:
     ap.add_argument("--max", type=int, default=2, help="failures to explain")
     args = ap.parse_args()
 
-    lines = Path(args.log).read_text(errors="replace").splitlines()
+    lines = read_log(Path(args.log)).splitlines()
     found = list(blocks(lines))
     if not found:
         print("no traceback in this log")

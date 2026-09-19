@@ -59,7 +59,7 @@ def main() -> int:
         "has no git history, still has something to compare against.\n\n"
         "The commit recorded here is the one that was current when the snapshot\n"
         "was written, which is necessarily the parent of the commit that stores\n"
-        "it. A file cannot contain the hash of the object that contains it.\n")
+        "it. A file cannot contain the hash of the object that contains it.\n", newline="\n")
 
     print(f"[reference] results/reference/  ({n} files frozen at {args.tag})")
     return 0

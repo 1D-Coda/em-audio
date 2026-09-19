@@ -202,7 +202,7 @@ def main() -> int:
     }
     emit("D_transform_matrix", payload)
     (ROOT / "results" / "machine_readable" / "D_essence_hashes.json").write_text(
-        json.dumps(essence_records, indent=1) + "\n")
+        json.dumps(essence_records, indent=1) + "\n", newline="\n")
     for k, v in sorted(summary.items()):
         print(f"  {k:20s} base {v['baseline_promotions']:4d}/{v['n']}  EM {v['em_promotions']}  "
               f"model_dev {v['model_vs_ffmpeg_max_abs_sample_dev']}")

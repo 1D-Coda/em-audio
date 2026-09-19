@@ -22,6 +22,11 @@ on:
       - '.github/workflows/container-reproduction.yml'
   workflow_dispatch:
 
+# Read the tree and upload the artifact; nothing here writes to the
+# repository, and saying so does not depend on the repository default.
+permissions:
+  contents: read
+
 jobs:
   container:
     name: Build and run the pinned container

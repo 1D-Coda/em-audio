@@ -24,6 +24,11 @@ on:
       - '.github/workflows/windows-reproduction.yml'
   workflow_dispatch:
 
+# Read the tree and upload the artifact; nothing here writes to the
+# repository, and saying so does not depend on the repository default.
+permissions:
+  contents: read
+
 jobs:
   install-path:
     name: One-click install path on a stripped PATH
@@ -299,6 +304,7 @@ jobs:
             Write-Host "::error::the log lost a stream: $log"; exit 1
           }
           Write-Host "::notice::native stderr is text, the run continues, and the exit code is kept"
+          exit 0
 
       - name: E4. c2patool is on PATH for the check
         shell: powershell

@@ -110,6 +110,6 @@ def emit(name: str, payload: Dict[str, object]) -> Path:
     payload.setdefault("experiment", name)
     payload.setdefault("environment", env())
     p = RESULTS / f"{name}.json"
-    p.write_text(json.dumps(payload, indent=1, sort_keys=True, default=str) + "\n")
+    p.write_text(json.dumps(payload, indent=1, sort_keys=True, default=str) + "\n", newline="\n")
     print(f"[emit] {p.relative_to(ROOT)}")
     return p

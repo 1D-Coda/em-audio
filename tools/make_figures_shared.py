@@ -394,7 +394,7 @@ def fig_adversarial():
     ax.grid(axis="x", linestyle=":")
     ax.set_axisbelow(True)
     ax.set_title("single operator", fontsize=8.4, loc="left")
-    S.panel_tag(ax, "A", dx=-0.055)
+    S.panel_tag(ax, "B", dx=-0.055)
     # No series labels here. Panel A already keys the same two series with the
     # same marker shapes, and this panel is too narrow to carry both without
     # them colliding; a second key would be clutter, not clarity.

@@ -19,7 +19,7 @@
  "disagreement_sample": [],
  "disagreements": 0,
  "environment": {
-  "c2patool": "c2patool 0.27.2",
+  "c2patool": "c2patool 0.27.15",
   "cpu_count_logical": "12",
   "cpu_model": "Intel64 Family 6 Model 186 Stepping 3, GenuineIntel",
   "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
@@ -36,5 +36,5 @@
  "javascript_algorithm": "brute-force per-output-sample evaluation, run-length encoded",
  "max_support_abs_difference": 0.0,
  "python_algorithm": "interval algebra with pulled-back source boundaries",
- "runtime_s": 24.88
+ "runtime_s": 18.174
 }

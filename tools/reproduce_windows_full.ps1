@@ -173,14 +173,14 @@ Write-Host "No cierres esta ventana."
 $ErrorActionPreference = "Continue"
 & $bashExe -lc "cd '$($root -replace '\\','/')' && ./run_all.sh" 2>&1 |
   ForEach-Object { "$_" } |
-  Tee-Object -FilePath (Join-Path $root "run_all_output.txt")
+  Tee-Object -FilePath (Join-Path $root "run_all_output.txt") -Encoding utf8
 $runRc = $LASTEXITCODE
 if ($runRc -eq 0) { Ok "  run_all.sh termino en RUN OK" }
 else { Bad "  run_all.sh salio $runRc. Eso es un resultado: mandanoslo igual." }
 
 & $vpy (Join-Path $root "tools\verify_reproduction.py") 2>&1 |
   ForEach-Object { "$_" } |
-  Tee-Object -FilePath (Join-Path $root "verify_output.txt")
+  Tee-Object -FilePath (Join-Path $root "verify_output.txt") -Encoding utf8
 $verRc = $LASTEXITCODE
 $ErrorActionPreference = "Stop"
 Write-Host "`n  verify_reproduction.py salio $verRc"

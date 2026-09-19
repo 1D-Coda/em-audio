@@ -17,7 +17,18 @@ import em_audio.operators as O
 
 
 def load(n):
-    return json.loads((MR / f"{n}.json").read_text())
+    # An upstream experiment that failed leaves its result file absent, and
+    # reading it then raised FileNotFoundError from inside pathlib. That is
+    # what an independent reproducer saw: seven frames of the standard library
+    # and no mention of the step that actually failed, several screens above.
+    p = MR / f"{n}.json"
+    if not p.exists():
+        raise SystemExit(
+            f"[table] {p.name} is missing, so the experiment that writes it "
+            f"did not finish. This is a consequence, not the cause: look "
+            f"further up the log, or run "
+            f"`python3 tools/explain_failure.py run_all_output.txt`.")
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 PRETTY = {
@@ -52,7 +63,7 @@ def write(name, body, colspec=None, header=None):
     if colspec:
         parts.append(r"\bottomrule")
         parts.append(r"\end{tabular}")
-    (OUT / f"{name}.tex").write_text("\n".join(parts) + "\n")
+    (OUT / f"{name}.tex").write_text("\n".join(parts) + "\n", newline="\n")
     print(f"[table] results/tables/{name}.tex")
 
 

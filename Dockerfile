@@ -29,8 +29,8 @@
 # rather than by reading the pipeline's traceback.
 FROM debian:trixie-20250630-slim
 
-ARG FFMPEG_TAG=autobuild-2026-08-30-13-12
-ARG FFMPEG_FILE=ffmpeg-N-126335-gb32f8d1c23-linux64-gpl.tar.xz
+ARG FFMPEG_TAG=latest
+ARG FFMPEG_FILE=ffmpeg-n9.0-latest-linux64-gpl-9.0.tar.xz
 # 0.27.15, not the newest. 0.27.16 fails to embed a manifest in experiment E on
 # both Linux and Windows, while 0.27.15 is what the independent reproduction
 # used successfully and 0.27.2 is what the reference machine used. Pinning the
@@ -49,10 +49,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# FFmpeg: a static build pinned by release tag rather than the distribution's,
-# which moves. The exact build is part of what this image specifies.
+# FFmpeg: a static build of the 9.0 line, the line the reference machine runs,
+# from an upstream URL that does not rotate. The previous pin named a nightly
+# autobuild, and BtbN garbage-collects those after about thirty-five days, so
+# the image stopped building the moment its build was deleted. This URL keeps
+# working; what it serves moves forward within 9.0.x, which is why the digest
+# of what was actually fetched is recorded below and printed at run time. The
+# image cannot promise one build for ever, so it reports the one it got.
 RUN curl -fsSL "https://github.com/BtbN/FFmpeg-Builds/releases/download/${FFMPEG_TAG}/${FFMPEG_FILE}" \
       -o /tmp/ffmpeg.tar.xz \
+    && sha256sum /tmp/ffmpeg.tar.xz | tee /usr/local/share/ffmpeg-tarball.sha256 \
     && tar -xJf /tmp/ffmpeg.tar.xz -C /tmp \
     && install -m755 /tmp/ffmpeg-*/bin/ffmpeg /usr/local/bin/ffmpeg \
     && install -m755 /tmp/ffmpeg-*/bin/ffprobe /usr/local/bin/ffprobe \
