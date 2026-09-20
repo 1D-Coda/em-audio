@@ -13,8 +13,8 @@ authors:
     affiliation: Independent researcher
 repository-code: "https://github.com/1D-Coda/em-audio"
 license: MIT
-version: 1.0.9
-date-released: "2026-09-19"
+version: 1.1.0
+date-released: "2026-09-20"
 keywords:
   - digital evidence
   - media provenance

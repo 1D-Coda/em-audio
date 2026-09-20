@@ -35,3 +35,9 @@ tools/test_certs/*.csr
 
 # Generated release kits; rebuild with tools/build_validation_kit.py
 dist/
+
+# LaTeX build artefacts. .fls records an absolute PWD, so a tracked copy
+# publishes the author's home directory in every source archive and deposit.
+*.fls
+*.fdb_latexmk
+
