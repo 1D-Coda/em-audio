@@ -109,6 +109,19 @@ class MapPiece:
     footprint: int = 0
     label: str = ""
 
+    def __post_init__(self) -> None:
+        # SourceInterval refuses an empty span and this did not, so a zero-length
+        # piece was constructible: trim with start == end, or concat given an
+        # empty part. source_range then returns (0, 0) for it, which is not
+        # distinguishable from a real range at the origin, and the containment
+        # experiment's fallback path reads that as a sample outside every
+        # declared range. The error is in the safe direction, a violation
+        # reported where none exists, and no run has produced one; refusing the
+        # object is cheaper than reasoning about it again.
+        if self.out_end <= self.out_start:
+            raise ValueError(
+                f"empty or reversed output span [{self.out_start},{self.out_end})")
+
     @property
     def n_out(self) -> int:
         return self.out_end - self.out_start

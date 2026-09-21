@@ -1,8 +1,15 @@
 """Experiment A -- exhaustive finite-state conformance.
 
 Every source word over {C, G, ⊥} up to a stated length is pushed through every
-v1 operator and checked against the full property suite.  Deterministic: no
+single-source v1 operator, and through concatenation of one source with
+itself, then checked against the full property suite.  Deterministic: no
 sampling, no seeds, exact counts.
+
+Overlay is not here.  Its output range is covered by two pieces at once, and
+the required set of an output interval is then the union across pieces, which
+is a geometry this enumeration does not construct.  It is exercised by the
+regression suite, which runs the same property checks on a genuine overlay,
+and by the mixed-origin corpus.
 """
 from __future__ import annotations
 

@@ -21,7 +21,13 @@ from .interval_map import DerivedOutput, MapPiece
 #: taps per phase of the swresample polyphase FIR, pinned via
 #: ``-af aresample=filter_size=32`` (see ffmpeg_ops.resample).
 RESAMPLE_FILTER_SIZE = 32
-#: MPEG-1 Layer III long-window length in samples (2 granules x 576).
+#: MPEG-1 Layer III long-window length in samples (2 granules x 576). The
+#: corpus is 16 kHz, which libmp3lame encodes as MPEG-2 LSF with 576-sample
+#: frames, measured from the packet durations of an encode at that rate. The
+#: larger MPEG-1 figure is kept deliberately: it over-covers the frames this
+#: configuration produces, and by Proposition 2 over-declaring only weakens
+#: the emitted claim. The operative justification is the measured reach, not
+#: this window; see the containment experiment.
 MP3_WINDOW = 1152
 #: LAME encoder delay in samples.
 MP3_ENCODER_DELAY = 576

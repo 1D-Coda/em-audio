@@ -124,6 +124,37 @@ def check_supplement_pointers(manuscript: str, supplement: str) -> list[str]:
     return problems
 
 
+def check_label_macros() -> list[str]:
+    """The cross-document macros must match what the manuscript just printed.
+
+    make_macros.py reads these from paper/manuscript.aux so the supplement
+    cannot disagree with the manuscript's own numbering. That holds only while
+    numbers.tex is current. Moving one table to the supplement renumbered the
+    rest, numbers.tex was not regenerated before the commit, and the supplement
+    went out naming Table 3 for a table the manuscript prints as Table 2. The
+    generator was right and the file was stale, which nothing here checked.
+    """
+    import re
+    aux = ROOT / "paper" / "manuscript.aux"
+    if not aux.exists() or not NUMBERS.exists():
+        return []                      # nothing built yet; make_macros says so
+    atext = aux.read_text(errors="ignore")
+    ntext = NUMBERS.read_text()
+    labels = {"PropFootprint": "prop:footprint", "PropUnion": "prop:union",
+              "ThmComposition": "thm:composition", "TabOperators": "tab:operators"}
+    bad = []
+    for macro, label in labels.items():
+        am = re.search(r"\\newlabel\{" + re.escape(label) + r"\}\{\{([^}]*)\}", atext)
+        nm = re.search(r"\\newcommand\{\\" + macro + r"\}\{([^\\}]*)", ntext)
+        if not am or not nm:
+            continue
+        if am.group(1).strip() != nm.group(1).strip():
+            bad.append(f"\\{macro} is {nm.group(1).strip()!r} but the manuscript "
+                       f"now numbers {label} as {am.group(1).strip()!r}; "
+                       f"run tools/make_macros.py")
+    return bad
+
+
 def check_bundle_docs():
     """Internal bundle documents must not contradict the manuscript.
 
@@ -265,6 +296,13 @@ def main() -> int:
     print("no hand-typed result numbers found in the cover letter")
     print("all supplement pointers resolve")
     print("the supplement names no release tag by hand")
+    stale = check_label_macros()
+    if stale:
+        print("stale cross-document macro(s):", file=sys.stderr)
+        for b in stale:
+            print("   ", b, file=sys.stderr)
+        return 1
+    print("cross-document macros match the manuscript's own numbering")
     print("bundle documents agree with the current results")
     return 0
 
