@@ -4,10 +4,9 @@
 
   This file is deliberately almost empty. It finds Python and hands over to
   tools/bootstrap_reproduction.py, which does the fetching, checking, running
-  and collecting. That split is the point: the Python was written and exercised
-  on the machine that produced it, and this wrapper is the only part that has
-  never run on Windows. Keeping it to a dozen lines keeps the untested surface
-  to a dozen lines.
+  and collecting. The logic lives in Python, which runs the same on every
+  platform; this wrapper only locates an interpreter, and keeping it to a
+  dozen lines keeps the PowerShell-specific surface to a dozen lines.
 
   Usage, from any PowerShell prompt:
       .\reproduce.ps1                 fetch, check, run, collect

@@ -10,8 +10,8 @@ binds the same Rust core that ``c2patool`` wraps, at a different version and
 through a different API, so agreement here rules out a CLI-specific artefact and
 a version-specific serialisation change. It does not rule out a shared defect in
 the core, and no claim of interoperability with an unrelated implementation
-follows from it. A genuinely independent reader would be the stronger check and
-this is not one.
+follows from it. An independently implemented reader would be the stronger
+check, and this is not one.
 
 Two things are measured:
 
@@ -19,7 +19,7 @@ Two things are measured:
    label, with a payload equal to what the serialiser emitted?
 2. **Graceful degradation.** If a consumer ignores the custom label entirely,
    is it still left with a valid standard C2PA manifest and its ingredient
-   graph? Section 9 asserts this as a design intention. Here it is measured.
+   graph? Section 9 states this as a design intention; this measures it.
 
 Skipped rather than failed when the library is absent, since it is not part of
 the pipeline's required dependency set.

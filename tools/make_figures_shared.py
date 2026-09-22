@@ -1,9 +1,9 @@
 """The figures built on the shared visual language in tools/figstyle.py.
 
-Four of the manuscript's seven figures live here: adversarial validation, the
+Four of the seven generated figures live here: adversarial validation, the
 mixed-origin corpus, kernel-support containment and claim dilution. The
 remaining three, the counterexample, the architecture diagram and the cost
-scaling, are in tools/make_figures.py.
+scaling, are in tools/make_figures.py; the manuscript prints the first six.
 
 Every figure is generated entirely from results/machine_readable/. No measured
 number is typed here: if a value is absent from the result files the figure

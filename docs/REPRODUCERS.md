@@ -33,7 +33,7 @@ names the tag itself, `run_all.sh` ended in `RUN OK`, and
 `verify_reproduction.py` exited 1 with 69 deterministic differences, all of
 them in the MP3 kernel measurements of Experiment K and in the time-stretch
 model deviation (463 samples against the reference build's 471, both inside
-the 2,048-sample guard band). Every other deterministic output is the
+the 2,048-sample declared margin). Every other deterministic output is the
 reference value. Against his own Run 2 the only deterministic difference is
 the size of Experiment A, which grew between the two packages. This is the
 run Section 7.11 now reads its Windows numbers from; Run 2 is kept in
@@ -72,8 +72,7 @@ because the run has not completed.
 
 ## Brenda Cecilia Guerra Flores
 
-ORCID 0009-0000-8932-683X. No affiliation on the ORCID record; ask before
-printing one.
+ORCID 0009-0000-8932-683X.
 
 **MacBook Air, Apple Silicon, macOS 26.3.1, FFmpeg 9.0.1 Homebrew.** Reached
 `RUN OK`, and `verify_reproduction.py` exited 0: every deterministic output
@@ -87,8 +86,6 @@ c2patool 0.27.16 against the reference's 0.27.2, node 26.8.1 and Python 3.11.16.
 The deterministic results are therefore not sensitive to those versions.
 
 Measured MP3 kernel reach 1,555 source samples, the reference value exactly.
-
-A second run on another of her machines is expected.
 
 
 ## What the MP3 reach measurements now show

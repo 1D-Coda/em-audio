@@ -68,8 +68,8 @@ DETERMINISTIC = {
                              "violations"],
     # These three carry headline claims and were absent from this list, so the
     # tool reported a comparison as complete while never opening them. They
-    # agree on the reproduction that exposed the gap, which is luck rather than
-    # coverage: the corpus recovery rate, the C2PA composition wiring and the
+    # agree on the reproduction that exposed the omission, which is luck rather
+    # than coverage: the corpus recovery rate, the C2PA composition wiring and the
     # robustness arm are all results the paper states.
     "C_public_audio_splice": ["n_clips", "exact_interval_recovery",
                               "generated_interval_recovered",
@@ -171,8 +171,8 @@ def _unclassified_timings():
     The list of such fields was maintained by hand and drifted: median_sign_ms
     and median_validate_ms were absent, so two wall-clock measurements were held
     to exact equality and a reproduction was told its clock differed from the
-    reference's. Enumerating the actual result files makes the gap visible
-    instead of waiting for a reproducer to hit it.
+    reference's. Enumerating the result files shows a missing field before a
+    reproducer hits it.
     """
     suspicious = []
     for name, keys in DETERMINISTIC.items():

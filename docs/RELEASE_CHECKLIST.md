@@ -3,14 +3,15 @@
 The order matters, and two steps are easy to get wrong because they depend on
 outputs produced later in the sequence.
 
-1. `./run_all.sh` — must end in `RUN OK`
-2. Build the PDFs: `pdflatex` / `bibtex` / `pdflatex` x3 for `manuscript`,
-   `supplementary`, `cover_letter`
-3. `python3 tools/freeze_reference.py --tag vX.Y.Z` — deliberately not part of
+1. `./run_all.sh` must end in `RUN OK`
+2. Build the PDFs: `latexmk -C` first, then `pdflatex` / `bibtex` /
+   `pdflatex` x3 for `manuscript` and `supplementary`. Without the clean, a
+   stale PDF ships.
+3. `python3 tools/freeze_reference.py --tag vX.Y.Z`, deliberately not part of
    `run_all.sh`. If the reference snapshot were refreshed on every run it would
    always match what was just produced and `verify_reproduction.py` would be
    comparing a file against itself.
-4. `python3 tools/make_checksums.py` — **after the PDFs and after the freeze**,
+4. `python3 tools/make_checksums.py`, after the PDFs and after the freeze,
    both of which it covers. `run_all.sh` generates the manifest before the
    documents exist in their final form, so a release cut without this step
    ships a manifest that fails on its own PDFs; and the manifest hashes the

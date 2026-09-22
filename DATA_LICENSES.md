@@ -79,7 +79,7 @@ the generated segment stays generated.
 |---|---|---|---|
 | FFmpeg | 9.0.1 | LGPL-2.1-or-later / GPL-2.0-or-later (this build is `--enable-gpl`) | the only software in the audio signal path |
 | c2patool | 0.27.2 | MIT / Apache-2.0 | signing and validation of C2PA manifests |
-| Node.js | 26.0.0 | MIT | second-language differential oracle |
+| Node.js | 26.7.0 | MIT | second-language differential oracle |
 | Python | 3.11.15 | PSF | reference implementation |
 
 ## Signing credential

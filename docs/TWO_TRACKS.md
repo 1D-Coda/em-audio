@@ -13,17 +13,20 @@ Running both at once is why an independent reproduction ended in `RUN FAILED`
 while every contract-level count was in fact identical: the failure came from
 the second question and had to be disentangled from the first by hand.
 
-## Track A — the container
+## Track A: the container
 
     docker build -t em-audio .
     docker run --rm -v "$PWD/out:/out" em-audio
 
 FFmpeg, `c2patool`, Node and eSpeak NG are pinned in the image, so every run of
-it sees the same tools. The comparison is against `results/reference_container/`,
-frozen from a run of this same image, not against `results/reference/`, which
-came from the author's macOS machine. Comparing a Linux container against a
-macOS reference would rediscover the build-specific footprint findings and
-report them as failures of the container.
+it sees the same tools. The comparison is meant to be against
+`results/reference_container/`, frozen from a run of this same image, not
+against `results/reference/`, which came from the author's macOS machine:
+comparing a Linux container against a macOS reference would rediscover the
+build-specific footprint findings and report them as failures of the
+container. No container reference ships in this release, so a container run
+reports conformance and the declarations, and its results can serve as that
+reference.
 
 What a deterministic difference means here is unambiguous: the implementation
 did not reproduce. There is no environment left to explain it. That is a
@@ -33,7 +36,7 @@ It also runs identically on Windows through Docker Desktop, which matters
 because the Windows native path has its own FFmpeg and `c2patool` problems, and
 a validator should not have to become an expert in them to help.
 
-## Track B — native
+## Track B: native
 
     pip install -r requirements.txt
     ./run_all.sh

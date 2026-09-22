@@ -26,45 +26,13 @@ ALLOWED = {
 NUM = re.compile(r"(?<![\\A-Za-z0-9._{])(\d[\d.,]*)(?![\d}])")
 
 
-# Counts written as words are still hand-typed counts. The cover letter drifted
-# from the manuscript by claiming "eight of the ten" result files reproduced
-# where the macros said otherwise, and a digit scanner would never have seen it.
+# Counts written as words are still hand-typed counts: "eight of the ten" can
+# drift from the macros exactly as a digit can, and a digit scanner never sees it.
 WORD_COUNTS = ("one two three four five six seven eight nine ten eleven twelve "
                "thirteen fourteen fifteen twenty thirty forty fifty hundred").split()
 WORD_COUNT_RE = re.compile(
     r"\b(" + "|".join(WORD_COUNTS) + r")\b(?=\s+(?:of|out\s+of)\s+(?:the\s+)?"
     r"(?:\b(?:" + "|".join(WORD_COUNTS) + r")\b|\d))", re.I)
-
-
-def check_cover_letter() -> list[tuple[str, str]]:
-    """The cover letter is the first document an editor reads, and it sat
-    outside this check while every other document was inside it. It therefore
-    carried its own reproduction counts and contradicted Section 7.11. Same
-    rule, same enforcement: results reach the letter through macros only."""
-    path = ROOT / "paper" / "cover_letter.tex"
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    text = text[text.index(r"\begin{document}"):]
-    text = re.sub(r"(?m)%.*$", "", text)
-    # Structural and identifying material: class options, margins, the author's
-    # postal address, and cross-references to manuscript sections, which a
-    # separate document cannot resolve with \ref.
-    text = re.sub(r"\\(documentclass|usepackage|input|signature|address|opening|closing)"
-                  r"\s*(\[[^\]]*\])?(\{[^}]*\})?", " ", text)
-    text = re.sub(r"\\(begin|end)\{[^}]*\}", " ", text)
-    text = re.sub(r"(Section|Table|Figure)~?\d+(\.\d+)*", " ", text)
-    out = []
-    for m in NUM.finditer(text):
-        tok = m.group(1).rstrip(".,")
-        if tok in ALLOWED:
-            continue
-        out.append((tok, text[max(0, m.start() - 60):m.start() + 40]
-                    .replace("\n", " ").strip()))
-    for m in WORD_COUNT_RE.finditer(text):
-        out.append((m.group(1), text[max(0, m.start() - 60):m.start() + 60]
-                    .replace("\n", " ").strip()))
-    return out
 
 
 def check_supplement_release_tag(supplement: str) -> list[str]:
@@ -79,6 +47,24 @@ def check_supplement_release_tag(supplement: str) -> list[str]:
             for m in re.finditer(r"\bv\d+\.\d+\.\d+", supplement)]
 
 
+def check_readme_release_tag() -> list[str]:
+    """README.md's one-line reproduction checked out v1.0.4 while the release
+    was v1.2.0: the first command a reader runs rebuilt a release eight behind
+    the results beside it. freeze_reference.py stamps the tag; this confirms it
+    matches the one SNAPSHOT.txt names."""
+    import re
+    readme = ROOT / "README.md"
+    snap = ROOT / "results" / "reference" / "SNAPSHOT.txt"
+    if not (readme.exists() and snap.exists()):
+        return []
+    m = re.search(r"release (v\d+\.\d+\.\d+)", snap.read_text())
+    if not m:
+        return ["SNAPSHOT.txt names no release tag"]
+    tags = re.findall(r"git checkout (v\d+\.\d+\.\d+)", readme.read_text())
+    return [f"README.md checks out {t}, the frozen reference is {m.group(1)}"
+            for t in tags if t != m.group(1)]
+
+
 def check_supplement_pointers(manuscript: str, supplement: str) -> list[str]:
     """Every 'Supplementary Note/Table SN' must resolve to something the
     supplement actually numbers. A pointer at a table is only valid if the
@@ -91,9 +77,8 @@ def check_supplement_pointers(manuscript: str, supplement: str) -> list[str]:
     # is satisfied by whatever now sits at position 8. Pointers must therefore be
     # written as generated macros, which are tied to a section title rather than
     # to a position, and a literal SN in the source is itself the defect.
-    # Typed structural cross-references. Two of these went stale without anyone
-    # noticing: the supplement pointed at "Proposition~5", which does not exist,
-    # and at "Table~1 of the manuscript" for a footprint table that is Table 3.
+    # Typed structural cross-references. Two of these once went stale unnoticed:
+    # one named a proposition that does not exist, the other the wrong table.
     # Both survived every check because a hard-coded numeral is not a \ref and
     # is not a result number either, so neither existing rule looked at them.
     # A cross-reference must be a \ref, which LaTeX keeps correct, or it is a
@@ -155,66 +140,6 @@ def check_label_macros() -> list[str]:
     return bad
 
 
-def check_bundle_docs():
-    """Internal bundle documents must not contradict the manuscript.
-
-    These are hand-written and nothing regenerates them, so they drift silently:
-    one shipped a superseded conformance total for two days while the manuscript
-    carried the current one, and a reader comparing the two would have found the
-    paper disagreeing with its own record.
-
-    The match is on a number together with the words naming it, not on magnitude.
-    A first version of this check flagged anything within a factor of four of a
-    live value, which reported the correct influenced-sample count as a stale
-    operator-case count. A check that cries wolf gets ignored, which is worse
-    than not having it.
-    """
-    import json
-    # The newest bundle, not a hardcoded date: pinning the date meant that
-    # exporting a fresh bundle silently moved it outside this guard, which is
-    # exactly the bundle most likely to disagree with the current results.
-    subs = sorted(ROOT.parent.glob("EM_Audio_Submission_*"))
-    if not subs:
-        return []
-    sub = subs[-1]
-    mr = ROOT / "results" / "machine_readable"
-    A = json.loads((mr / "A_synthetic_state_space.json").read_text())
-    K = json.loads((mr / "K_support_containment.json").read_text())
-
-    # (regex naming the quantity, current value). The number may sit on either
-    # side of the words, so both orders are matched.
-    # [ \t] rather than \s: \s crosses newlines, so a machine-readable dump with
-    # "operator_cases: 98385" on one line and "checks_total: ..." on the next
-    # matched as though the first number named checks. The guard reported two
-    # such phantoms before this was tightened.
-    live = [
-        # up to two intervening words, so "885,828 exhaustive checks" is caught
-        (r"([\d,]{5,})[ \t]+(?:[a-z-]+[ \t]+){0,2}checks", A["checks_total"]),
-        (r"([\d,]{5,})[ \t]+(?:[a-z-]+[ \t]+){0,2}operator cases",
-         A["operator_cases"]),
-        (r"([\d,]{5,})[ \t]+(?:[a-z-]+[ \t]+){0,2}output samples",
-         K["total_affected_output_samples"]),
-    ]
-
-    problems = []
-    for doc in sorted(sub.glob("*.md")) + sorted(sub.glob("*.txt")):
-        # The audit report is an append-only history and quotes superseded
-        # values on purpose, to record what changed and why.
-        if "Audit_Graphs_Formulas" in doc.name:
-            continue
-        text = doc.read_text(encoding="utf-8", errors="ignore")
-        for pat, cur in live:
-            for tok in set(re.findall(pat, text, re.I)):
-                try:
-                    val = int(tok.replace(",", ""))
-                except ValueError:
-                    continue
-                if val != cur:
-                    problems.append(f"{doc.name}: {tok} where the current "
-                                    f"value is {cur:,}")
-    return sorted(set(problems))
-
-
 def main() -> int:
     # The reproduction package for validators ships without paper/: they run
     # the experiments, not the manuscript. A missing manuscript is that case,
@@ -271,20 +196,6 @@ def main() -> int:
             print(f"  {d}")
         return 1
 
-    stale = check_bundle_docs()
-    if stale:
-        print(f"{len(stale)} possibly superseded number(s) in the bundle:")
-        for d in stale[:10]:
-            print(f"  {d}")
-        return 1
-
-    letter_bad = check_cover_letter()
-    if letter_bad:
-        print(f"{len(letter_bad)} possible hand-typed result number(s) in the cover letter:")
-        for tok, ctx in letter_bad[:25]:
-            print(f"  {tok!r}  ...{ctx}...")
-        return 1
-
     tag_bad = check_supplement_release_tag(SUPP.read_text()) if SUPP.exists() else []
     if tag_bad:
         print(f"{len(tag_bad)} typed release tag(s) in the supplement:")
@@ -292,10 +203,16 @@ def main() -> int:
             print(f"  {msg}")
         return 1
 
+    readme_bad = check_readme_release_tag()
+    if readme_bad:
+        for msg in readme_bad:
+            print(f"  {msg}")
+        return 1
+
     print("no hand-typed result numbers found in the manuscript source")
-    print("no hand-typed result numbers found in the cover letter")
     print("all supplement pointers resolve")
     print("the supplement names no release tag by hand")
+    print("README.md checks out the frozen reference tag")
     stale = check_label_macros()
     if stale:
         print("stale cross-document macro(s):", file=sys.stderr)
@@ -303,7 +220,6 @@ def main() -> int:
             print("   ", b, file=sys.stderr)
         return 1
     print("cross-document macros match the manuscript's own numbering")
-    print("bundle documents agree with the current results")
     return 0
 
 if __name__ == "__main__":

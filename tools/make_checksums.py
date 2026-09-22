@@ -4,9 +4,8 @@
 The manifest was written by hand once and then never again, so by the time the
 repository was published 61 of its 140 entries no longer matched the files they
 name. An integrity manifest that fails on legitimate files is worse than none:
-it cannot distinguish a stale line from a tampered one, so a reader who checks
-it learns nothing and a reader who does not check it was better served by
-silence. It is generated here and refreshed on every run.
+it cannot distinguish a stale line from a tampered one, so checking it tells a
+reader nothing. It is generated here and refreshed on every run.
 
 Only tracked files are covered. Generated audio, working directories and
 anything gitignored are excluded, because they are not part of what the release

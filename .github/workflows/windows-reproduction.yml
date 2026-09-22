@@ -46,8 +46,8 @@ jobs:
           # asserts it installs what is missing and finds it afterwards.
           #
           # It still is not a clean machine: winget may report a package as
-          # already installed and only repair PATH. That is precisely the case
-          # that broke before, so it is worth asserting either way.
+          # already installed and only repair PATH. That case broke before, so
+          # the assertion runs either way.
           Write-Host "PSVersion: $($PSVersionTable.PSVersion)"
 
       - name: Hide the preinstalled tools, then run the entry point

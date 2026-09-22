@@ -1,7 +1,7 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 636d4cbd0fa2de96658e1fd282c393557d4267e8
-tag: v1.1.0-18-g636d4cb
+commit: 8e0033fb7f02c2dcff5489874c59eed1514c855a
+tag: 8e0033f
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
       commit that stores it by one. Re-run tools/preflight.py, or run_all.sh,
@@ -130,6 +130,6 @@ oracle_disagreements: 0
 oracle_max_support_difference: 0.0
 
 --- totals ---
-tests_total: 30
-tests_passed: 30
+tests_total: 43
+tests_passed: 43
 tests_failed: 0

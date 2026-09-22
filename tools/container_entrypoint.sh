@@ -3,7 +3,7 @@
 #
 # The container answers the narrower of the project's two questions: whether the
 # implementation reproduces when the environment is held still. It therefore
-# compares against results/reference_container/, frozen from a run of this same
+# compares, when one is present, against results/reference_container/, frozen from a run of this same
 # image, and not against results/reference/, which was produced on the author's
 # macOS machine with a different FFmpeg. Comparing a Linux container against a
 # macOS reference would rediscover the build-specific footprint findings and
@@ -64,7 +64,7 @@ fi
 if [ "$under" -eq 1 ]; then
   echo "declarations on this build: AT LEAST ONE IS UNDER-DECLARED"
   echo "  This is the finding of Section 7.11, measured again on this image's"
-  echo "  FFmpeg. The declared footprints of Table 3 are calibrated for the"
+  echo "  FFmpeg. The declared footprints in the operator table are calibrated for the"
   echo "  reference build and the manuscript says they must be re-declared and"
   echo "  re-tested for another one. Reported, not absorbed."
   grep -E "UNDER-DECLARED|outside declared support" "$OUT/run_all_output.txt" | sed "s/^/  /"

@@ -8,8 +8,8 @@ It runs the overhead benchmark several times as independent processes and
 reports the spread of the absolute cost against the spread of the ratio to the
 baseline. Both arms are timed in the same process on the same machine, so
 whatever sets the absolute scale on a given run moves them together and cancels
-in their quotient. The prediction is that the ratio is the tighter quantity, and
-the point of running it is that the prediction can fail.
+in their quotient. The prediction is that the ratio is the tighter quantity,
+and the experiment can refute it.
 
 Within one sitting the machine is in one state, so this understates the
 variation a reader reproducing the work weeks later will see; it is a lower

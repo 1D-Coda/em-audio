@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Run the reproduction inside the pinned container, on any host.
 
-This is the path for Windows. The native Windows path does not currently work:
-experiments C2, D and E fail there in FFmpeg and c2patool for reasons that have
-not been diagnosed, and shipping it while it fails would waste a validator's
-afternoon. The container sidesteps that entirely, because what runs inside it is
-Linux and is the same on every host.
+The pinned-environment path, on any host. What runs inside the container is
+Linux with fixed tool versions, so it is the same everywhere; the native path
+is the one to use when the question is whether the declarations transfer to
+another build.
 
     python3 tools/run_container.py            build, run, collect
     python3 tools/run_container.py --check    check Docker only, run nothing

@@ -38,12 +38,11 @@ EXCLUDE_SUFFIX = {".pyc", ".aux", ".out", ".fls", ".fdb_latexmk", ".blg",
 EXCLUDE_NAMES = {".DS_Store"}
 
 # Tooling for building releases and packages. A validator runs the experiments;
-# none of this is part of that, and shipping it only invites the question of
-# what it is for. explain_failure.py stays: it is what turns a traceback in
+# none of this is part of that. explain_failure.py stays: it is what turns a traceback in
 # their log into a cause. run_container/run_on_windows stay: the Docker path is
 # documented and they are its entry points.
 EXCLUDE_TOOLS = {"build_reproduction_package.py", "build_validation_kit.py",
-                 "freeze_reference.py", "make_repro_docx.py"}
+                 "freeze_reference.py"}
 
 # Written by the pipeline on their machine. Shipping our copies adds bulk and,
 # worse, leaves outputs lying in the tree that their run is supposed to produce.
@@ -51,8 +50,8 @@ EXCLUDE_RESULTS = {"figures", "tables"}
 
 # Internal: how we cut a release, publish the repository and deposit the
 # archive. Nothing a reproducer does.
-EXCLUDE_DOCS = {"PUBLISH_REPO.md", "RELEASE_AND_DEPOSIT.md",
-                "RELEASE_CHECKLIST.md", "reference_figures"}
+EXCLUDE_DOCS = {"RELEASE_CHECKLIST.md",
+                "reference_figures"}
 
 
 def copy_into(src: Path, dst: Path) -> None:
@@ -149,7 +148,7 @@ def main() -> int:
     if guide.exists():
         shutil.copy2(guide, stage / "REPRODUCTION_GUIDE.md")
 
-    # Assert the two properties the package's own honesty depends on.
+    # Assert the two properties a valid comparison depends on.
     leftovers = list((inner / "results" / "machine_readable").glob("*.json"))
     if leftovers:
         print(f"REFUSING: results/machine_readable/ ships {len(leftovers)} result "

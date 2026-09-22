@@ -1,0 +1,528 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,graphicx,xspace,microtype,longtable}
+\usepackage{alltt}
+% cmtt has no OMS shape, so a maths-font backslash was being substituted
+% inside alltt and did not match the verbatim blocks. This one comes from
+% whatever font the block is already set in.
+\newcommand{\bs}{\char92\relax}
+\usepackage[hyphens]{url}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+% Long literals are single unbreakable words. \path lets a line break at the
+% punctuation a path already contains; a SHA-256 digest contains none, so
+% \digest also permits a break after a hexadecimal character. Neither command
+% adds or removes a character: only the line breaking changes.
+\DeclareUrlCommand\digest{\urlstyle{tt}%
+  \def\UrlBreaks{\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9%
+    \do\a\do\b\do\c\do\d\do\e\do\f}}
+\input{../results/numbers}
+\newcommand{\C}{\ensuremath{C}}
+\newcommand{\G}{\ensuremath{G}}
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\arabic{table}}
+
+\title{Supplementary material for\\
+\emph{Evidence-Monotone Audio Representation: Preventing Provenance Promotion
+Across Derived Audio Transformations}}
+\author{Alejandro Urias}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Transfer memo: what is prior work and what is new}
+\label{s:transfer}
+
+Written before any code was produced. Every row in the first column is prior
+work and is cited rather than claimed.
+
+\begin{longtable}{p{\dimexpr0.333\linewidth-2\tabcolsep\relax}%
+                  p{\dimexpr0.333\linewidth-2\tabcolsep\relax}%
+                  p{\dimexpr0.333\linewidth-2\tabcolsep\relax}}
+\caption{Transfer memo, written before any code was produced: what carries
+over from prior work unchanged, what carries over modified, and what does
+not carry over.}\label{tab:transfer}\\
+\toprule
+Transfers unchanged (prior work) & Transfers with modification (new here) &
+Does not transfer \\
+\midrule
+\endfirsthead
+\toprule
+Transfers unchanged (prior work) & Transfers with modification (new here) &
+Does not transfer \\
+\midrule
+\endhead
+Evidence record $(P,S,A,L)$: provenance set, typed support channels,
+applicability scope, complete-source lineage &
+The domain of $D_y$ becomes a \emph{temporal} required-source set over half-open
+sample intervals &
+Polyline simplification in every form; there is no geometric tolerance in audio
+\\
+\addlinespace
+Provenance as a set of ancestry atoms, mixed produced only by union &
+Alphabet changes from measured/interpolated to captured/generated; the
+measurand is different even though the algebra is identical &
+Terrain support profiles, directional ray classifiers, roughness proxies \\
+\addlinespace
+Same-channel meet by minimum &
+Unchanged as an operation; the channel is capture-support &
+Contour extraction rules and closed-ring anchoring \\
+\addlinespace
+Absence of verified evidence is absorbing and is not an atom &
+Strengthened: a $\bot$ element also makes every numeric channel unavailable
+over the represented span (requirement iv$'$) &
+Every spatial result, table and figure \\
+\addlinespace
+Applicability intersection and lineage union &
+Unchanged &
+The spatial simplification operator itself \\
+\addlinespace
+Non-promotion in the spatial setting &
+Restated modality-independently and, following the Phase-0 search, presented as
+an \emph{instance} of a known meet-semilattice construction rather than as a
+new theorem &
+Any prior source-code audit and its counterexample \\
+\addlinespace
+Conformance-test philosophy: exhaustive enumeration, deterministic adversarial
+fixtures, a separately implemented oracle, frozen expectations, explicit non-prevalence
+language &
+Reused as a method template; all results are new &
+Any prior third-party generalizer audit \\
+\addlinespace
+--- &
+\textbf{New with no spatial analogue:} the kernel-footprint rule with declared
+per-operator implementation margins and measured model-versus-implementation
+deviation;
+footprint monotonicity; signal transparency on decoded PCM; a signed C2PA
+transport with temporal regions of interest; the unverified state as an
+operational outcome of a real validator &
+--- \\
+\bottomrule
+\end{longtable}
+
+\begin{table}[htbp]
+\centering
+\caption{Relation to the spatial predecessor, cited in the manuscript.
+Inherited elements are prior work and are cited, not claimed; every reported
+number in this paper is new.}
+\label{tab:inherited}
+\small
+\begin{tabular}{p{0.46\linewidth}p{0.46\linewidth}}
+\toprule
+Inherited from the spatial work & New in this work \\
+\midrule
+Evidence record $(P,S,A,L)$; provenance as an atom set with mixed by union &
+Temporal required-source sets over half-open sample intervals \\
+\addlinespace
+Same-channel meet by minimum; scope intersection; lineage union &
+The captured/generated alphabet and the capture-support channel \\
+\addlinespace
+Absorbing unverified state &
+Requirement (iv): a channel not applicable to \emph{every} required source is
+withheld, not computed from the rest \\
+\addlinespace
+& Requirement (iv$'$): a $\bot$ source also withholds every numeric channel \\
+\addlinespace
+Non-promotion in the spatial setting &
+Kernel footprints with declared source-support bounds; temporal mapping
+validated per clip against stock FFmpeg and source-support containment tested
+separately by differential influence probes; footprint monotonicity
+(Proposition~\PropFootprint{}) \\
+\addlinespace
+Conformance-test methodology (exhaustive enumeration, frozen fixtures,
+separately implemented oracle) &
+Signal transparency on decoded PCM; signed C2PA transport with temporal
+regions; the claim-dilution cost metric \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Novelty search and closest-work matrix}
+\label{s:novelty}
+
+\paragraph{Search date} First pass 2026-08-19; re-run 2026-09-05 before
+submission. The re-run is reported below with the first pass, since what a
+novelty search establishes depends on when it was last attempted.
+
+\paragraph{Databases and interfaces} Open-literature web search; arXiv; IACR
+Cryptology ePrint Archive; ACM Digital Library and LIPIcs listings; the C2PA
+specification site; OpenSLR.
+
+\begingroup
+% The query strings are set in typewriter, whose interword space has no
+% stretch, so justifying them stretches the surrounding roman text.
+\raggedright
+\paragraph{Query strings}
+(1) \texttt{provenance semiring non-amplification derived media operator
+monotone provenance lattice};
+(2) \texttt{C2PA content credentials audio provenance derived asset ingredient
+inheritance research paper 2026};
+(3) \texttt{"provenance laundering" OR "metadata washing" media provenance
+attack C2PA};
+(4) \texttt{audio editing provenance preservation composition proof interval
+lineage trim concatenate resample formal};
+(5) \texttt{Denning lattice model secure information flow non-interference
+applied to media provenance labels 2025 2026};
+(6) \texttt{audio deepfake detection survey 2026 speech antispoofing ASVspoof 5
+generalization};
+(7) \texttt{audio watermarking soft binding C2PA durable content credentials
+AudioSeal 2026}.
+\par\endgroup
+
+\paragraph{Outcome} The columns \emph{complete-source operator rule} and
+\emph{C2PA-integrated interval-level enforcement} were empty across every prior
+row. Because provenance-semiring and information-flow work already yields the
+non-amplification property abstractly, the theorem is not claimed as new; it is
+presented as an instance and the contribution is relocated to the executable
+temporal contract, the transport and the measurements. The full matrix is in
+\path{paper/novelty_search.md} in the repository.
+
+\paragraph{Outcome of the re-run} The re-run was conducted to falsify the
+novelty claim rather than to support it, and targeted the three statements this
+work depends on: that a derived segment must not carry provenance stronger than
+its weakest required source; that per-operator kernel support is declared and
+calibrated rather than assumed; and that the resulting interval evidence is
+carried in a signed C2PA manifest over temporal regions. No prior work stating
+any of the three was found. The searches did return the established algebraic
+material the paper takes as given, which is the outcome the claim predicts: the
+meet-semilattice construction and the restriction of semiring provenance to
+monotone queries are prior art and are cited as such. Two 2026 preprints are the
+closest adjacent work, one on anonymous provenance for verifiably edited audio
+and one a security analysis of C2PA and its implementations; both were already
+cited before the re-run, and neither defines an inheritance rule over media
+time. C2PA itself records multiple sources as ingredients but specifies no rule
+constraining what a derived asset may claim relative to them, which is what
+this work supplies. Nothing found in the re-run changed a claim in this paper
+or added a reference; a search that surfaces only works already cited is the
+result we report, not evidence that none was sought. A later journal-context
+search conducted during target-journal preparation added four FSI:DI papers on
+forensic representation and tool-output variability for problem framing; none
+altered the novelty claims or the closest-work assessment above.
+
+\section{Threat-model matrix}
+\label{s:threat}
+
+\begin{longtable}{p{\dimexpr0.30\linewidth-2\tabcolsep\relax}%
+                  p{\dimexpr0.36\linewidth-2\tabcolsep\relax}%
+                  p{\dimexpr0.33\linewidth-2\tabcolsep\relax}}
+\caption{Threat-model matrix: what each attacker capability meets in the
+contract, and what the contract does not prevent.}\label{tab:threat}\\
+\toprule
+Attacker capability & Contract behaviour & Not prevented \\
+\midrule
+\endfirsthead
+\toprule
+Attacker capability & Contract behaviour & Not prevented \\
+\midrule
+\endhead
+Passes a mixed-origin asset through a benign transformation to obtain a
+captured-only claim &
+Output claim is the meet over the complete required source set, so it stays
+mixed &
+Nothing, if the attacker also controls the signer \\
+\addlinespace
+Trims away the boundaries so that only captured material is at the edges &
+Interior sources remain in $D_y$; claim stays mixed &
+A trim that genuinely removes all generated material, which legitimately yields
+a captured-only claim \\
+\addlinespace
+Relies on a filtered operator so that a generated sample bleeds into a
+neighbouring output region without appearing in the nominal range &
+The declared kernel footprint enlarges $D_y$; over-approximation is safe by
+Proposition~\PropFootprint{} (footprint monotonicity) &
+An under-declared footprint, which is a conformance failure of that
+implementation \\
+\addlinespace
+Strips the manifest and redistributes &
+State becomes \textsc{unverified} &
+Detection of the stripping as intentional; re-signing under a fresh, dishonest
+chain \\
+\addlinespace
+Modifies the asset after signing &
+Hard binding fails; state becomes \textsc{invalid} &
+Attacks on the cryptographic layer itself \\
+\addlinespace
+Signs a false assertion with a valid key &
+Nothing. The contract governs propagation, not truthfulness &
+Everything: a valid signature proves signing, not truth \\
+\addlinespace
+Records a loudspeaker playing synthetic speech &
+A captured claim propagates, correct at the sensor layer &
+The semantic origin; see the replay limitation in the manuscript \\
+\bottomrule
+\end{longtable}
+
+\section{EM assertion schema}
+\label{s:schema}
+
+The assertion label is \texttt{\Clabel{}}. The payload is:
+
+\begingroup\small
+\begin{verbatim}
+{
+  "schema": "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md",
+  "policy": "complete-source",
+  "operator": "trim",
+  "operatorParameters": { "start": 4800, "end": 43200 },
+  "asset": { "sampleRate": 16000, "sampleCount": 38400 },
+  "intervals": [
+    {
+      "regionOfInterest": {
+        "type": "temporal",
+        "time": { "type": "npt", "start": "0.000000000", "end": "0.612500000" }
+      },
+      "samples": { "start": 0, "end": 9800 },
+      "provenance": ["C"],
+      "state": "CAPTURED",
+      "support": { "capture-support": 0.9 },
+      "applicability": { "capture-support": ["digital-asset"] },
+      "lineage": ["urn:emaudio:librispeech:1272-128104-0000"]
+    },
+    {
+      "regionOfInterest": {
+        "type": "temporal",
+        "time": { "type": "npt", "start": "0.612500000", "end": "1.437500000" }
+      },
+      "samples": { "start": 9800, "end": 23000 },
+      "provenance": ["G"],
+      "state": "GENERATED",
+      "support": { "capture-support": 0.1 },
+      "applicability": { "capture-support": ["digital-asset"] },
+      "lineage": ["urn:emaudio:espeak-ng:1.52.0:0042"]
+    },
+    {
+      "regionOfInterest": {
+        "type": "temporal",
+        "time": { "type": "npt", "start": "1.437500000", "end": "2.400000000" }
+      },
+      "samples": { "start": 23000, "end": 38400 },
+      "provenance": ["C"],
+      "state": "CAPTURED",
+      "support": { "capture-support": 0.9 },
+      "applicability": { "capture-support": ["digital-asset"] },
+      "lineage": ["urn:emaudio:librispeech:1272-128104-0000"]
+    }
+  ]
+}
+\end{verbatim}
+\endgroup
+
+Normative fields are \texttt{provenance} (\texttt{null} means unverified and is
+never an atom), \texttt{support}, \texttt{applicability} and \texttt{lineage}.
+The \texttt{state} field is a presentation label. A channel omitted from
+\texttt{support} is unavailable, which is different from a channel present with
+a low value. Temporal ranges follow the C2PA \texttt{npt} convention with
+inclusive start and exclusive end; sample-exact bounds are carried alongside
+because \texttt{npt} strings are lossy at sample resolution.
+
+\section{Composition manifest wiring}
+\label{s:composition}
+
+Two implementation notes for the C2PA-native composition fixtures
+(manuscript Section on heterogeneous composition), recorded so a replicating
+reader does not lose time on them. First, the official tool resolves
+\texttt{ResourceRef} identifiers relative to the directory of the
+manifest-definition file, so an ingredient's stored \path{manifest_data.c2pa}
+must be referenced by a path relative to that directory; an absolute path is
+reported as \texttt{resource not found} even when the file exists. Second, a
+\texttt{c2pa.placed} action must carry a hashed-URI reference to its
+\texttt{componentOf} ingredient assertion (C2PA 2.4 \S18.16.3); writing the
+reference by hand is impossible before signing, and the supported route is to
+give the action an \texttt{ingredientIds} parameter naming the ingredient's
+\texttt{instance\_id}, which the claim generator resolves to the hashed URI at
+signing time. A frozen composition manifest with both \texttt{componentOf}
+ingredients, both resolved \texttt{c2pa.placed} references, both source
+\texttt{digitalSourceType} values and the EM aggregate is committed at
+\path{fixtures/expected/manifest_composition_componentOf.json}.
+
+\section{Robustness-arm materials}
+\label{s:robustness}
+
+The neural arm uses Piper \texttt{piper-tts} 1.7.0 (MIT, VITS architecture)
+with the voice \path{en_US-ljspeech-medium}, whose training data is the LJ
+Speech Dataset. That dataset states ``This dataset is in the public domain in
+the US (and most likely other countries as well)'' and consists of LibriVox
+recordings by Linda Johnson of non-fiction texts published between 1884 and
+1964, all public domain. The \texttt{lessac} voices were considered and
+rejected: their Blizzard 2013 training data carries a restrictive licence. No
+voice of any identified living person is cloned.
+
+\begingroup
+% Line breaking inside a digest is fine, a page break inside one is not, so
+% this paragraph is kept on a single page.
+\interlinepenalty=10000
+The model is fetched rather than committed, by \path{tools/fetch_voice.sh},
+which verifies both files against pinned digests. For
+\path{en_US-ljspeech-medium.onnx} the SHA-256 is
+\digest{6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22}, and
+for \path{en_US-ljspeech-medium.onnx.json} it is
+\digest{141d612cc0a95ed7efc1ca936b845c2364967f2e9217c5dbfcf69fc4d6c65860}.
+Voice output is 22\,050~Hz and is resampled to 16~kHz by stock ffmpeg before
+use.
+\par\endgroup
+
+The noise arm generates pink noise locally, seeded by clip index so the arm is
+deterministic, and mixes it under the clip at $-18$~dB. The exact command, as
+executed:
+
+\begin{verbatim}
+ffmpeg -i <clip> \
+  -f lavfi -i "anoisesrc=r=16000:colour=pink:amplitude=0.12:seed=<index>" \
+  -filter_complex "[1:a]volume=-18dB[nz];\
+                   [0:a][nz]amix=inputs=2:duration=first:normalize=0[out]" \
+  -map "[out]" -c:a pcm_s16le <output>
+\end{verbatim}
+
+The noise is modelled as a second generated-derived source covering the whole
+clip, so under the contract every captured segment becomes mixed ancestry while
+the generated segment stays generated, union adding no new atom. Both facts are
+asserted per interval by the experiment.
+
+\section{Reproduction}
+\label{s:repro}
+
+\begin{alltt}
+git clone https://github.com/1D-Coda/em-audio \bs
+  && cd em-audio \bs
+  && git checkout \Rtag{} \bs
+  && ./run_all.sh
+\end{alltt}
+
+\path{run_all.sh} fetches the checksum-pinned corpus, generates the test
+signing credential, runs the named regression tests and experiments A--N,
+regenerates every table, macro and figure from the machine-readable results,
+writes \path{results/PREFLIGHT.txt}, and exits non-zero if any conformance
+check fails. The preflight report is the single source of every number in the
+manuscript; a checker script verifies that no numeric result appears in the
+manuscript source outside the generated macro file.
+
+\paragraph{What to record} The environment: the person or group, the machine,
+operating system, hardware, runtime and tool versions, and the release tag and
+commit reproduced. The execution: a clean clone, dependency installation, a full
+\path{run_all.sh}, and a comparison of the emitted machine-readable results
+against those shipped with that tag.
+
+\paragraph{Which outputs must match, and which must not} The classification
+matters more than the checklist, and it is applied by
+\path{tools/verify_reproduction.py} rather than by judgement after the fact.
+
+The \emph{deterministic} outputs are those a correct reimplementation must match
+exactly: conformance counts and pass/fail totals, promotion classifications,
+lineage sets, interval structure, support-channel behaviour, and the
+before-and-after-signing identity of every decoded-essence digest. Any
+difference among them exits non-zero. The digests themselves are not compared
+across environments: a different decoder build decodes to different bytes, so
+equality of a digest is defined within one environment, and what must transfer
+is that signing leaves it unchanged.
+
+The \emph{environment-dependent} outputs are those that should be expected to
+differ, and whose difference is not a defect: wall-clock timings and their
+interquartile ranges, the absolute cost figures of Section~7.10 of the
+manuscript, and the bytes of a freshly signed file, which differ because signing
+incorporates a timestamp. A reproduction reporting identical timings would be
+the surprising result, not a reassuring one.
+
+A difference in the first class should be classified rather than absorbed, as an
+environment difference, a tool-version difference, an ambiguity in the
+specification of the contract, or a genuine discrepancy, and reported as such
+whichever it turns out to be.
+
+\section{Independent reproduction: environment and per-operator detail}
+\label{s:independent}
+
+The run reported in Section~7.11 of the manuscript was performed by
+D.~A.~Balderrama-Alvarez (Universidad de Sonora, ORCID 0009-0002-5180-0406),
+who is not an author. His environment, as his own preflight report records it:
+a \IRcpu{} with \IRcores{} logical processors and \IRmem{}~GiB, \IRos{} on
+\IRarch{}, Python~\IRpython{}, FFmpeg~\IRffmpeg{},
+\texttt{c2patool}~\IRcTwopatool{}, Node~\IRnode{} and
+eSpeak~NG~\IRespeak{}. The reference machine for every other
+number in the paper is \Vos{} on \Varch{} with Python~\Vpython{},
+FFmpeg~\Vffmpeg{}, \texttt{c2patool}~\VcTwopatool{} and Node~\Vnode{}. He ran the
+package twice on consecutive days. The first run was incomplete: two Python
+dependencies were missing from the instructions he was given, so the figure and
+robustness arms did not execute. The second run, on \IRdate{}, is the one
+released and tabulated here; both runs returned the same values for the two
+operators whose declarations his build does not satisfy. His unmodified outputs, his preflight report, his full pipeline log and
+the classified comparison his run produced are released in
+\path{results/independent/}.
+
+Two later runs on the released package are summarised in Section~7.11 of the
+manuscript; their environments are as follows. B.~C.~Guerra Flores ran it on
+an \XBMacCpu{} under \XBMacOs{}, with FFmpeg~\XBMacFfmpeg{} from the same
+package manager as the reference machine on different hardware, and with a
+\texttt{c2patool} and a Node newer than the reference. Her
+\texttt{verify\_reproduction.py} exited zero and \XBMacVerdict{} matched the
+package she was given, an earlier release whose suite had \XBMacChecks{}
+checks, the \XBMacEnvDiffs{} differences being timings.
+D.~A.~Balderrama-Alvarez ran the released package, tag~\XBWinTag{}, as a
+single unattended pass on \XBWinOs{} with FFmpeg~\XBWinFfmpeg{}, a different
+build of the same FFmpeg version. His verifier reported \XBWinDetDiffs{}
+deterministic differences, all of them in the MP3 kernel measurements of
+Experiment~K and in the time-stretch model deviation, on which the two builds
+also disagree, \XBRefStretchDev{} against \XBWinStretchDev{} samples, both
+inside the \XBStretchGuard{}-sample margin.
+
+Table~\ref{tab:independent} gives the containment result per operator on both
+machines rather than only the operator that differs, so the selection made in
+the main text can be checked. \IRopsAgree{} of the \IRopsNonzero{} operators
+that declare a non-zero footprint reproduce their measured reach exactly across
+the two builds; the MP3 encoder does not, and its declared footprint does not
+contain the reach his build measures. The other \IRopsZero{} rows declare no
+footprint and measure no reach on either machine.
+
+\begin{table}[htbp]
+\centering
+\caption{Kernel-support containment on the reference machine and on the
+independent reproducer's machine. \emph{Declared} is the footprint of
+Table~\TabOperators{} of the manuscript, in source samples; \emph{Reach} is the widest
+measured influence of a single input sample; \emph{Outside} counts output
+samples whose dependency falls outside the declared support. The dagger marks
+the one operator whose reach did not reproduce.}
+\label{tab:independent}
+\input{../results/tables/independent_containment}
+\end{table}
+
+\section{Raw rows behind two summary figures}
+
+A coefficient of variation and a maximum measured reach are both summaries, and
+a summary that ships without the rows it summarises has to be taken on trust.
+These are those rows. Neither table is typed: both are emitted by
+\path{tools/make_tables.py} from the same result files the main text reads.
+
+\begin{table}[htbp]
+\centering
+\caption{The benchmark of Section~7.10 as nine independent processes. The
+coefficient of variation is the sample standard deviation over the mean, in
+percent, with Bessel's correction. The absolute columns move with machine state;
+under the within-machine variation measured here, the ratio is markedly more
+stable than either of them.}
+\input{../results/tables/benchmark_rows}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Calibration probes per operator, with the context and source position
+that produced the widest measured influence. The full per-probe record, all
+\Kprobes{} rows, is in \texttt{results/machine\_readable/CALIBRATION.json};
+this table gives the worst case for each operator,
+which is the value the declaration has to cover. The \Kops{} rows are the
+single-source configurations: concatenation assembles the corpus rather than
+transforming it, and overlay takes several sources at once.}
+\input{../results/tables/calibration_rows}
+\end{table}
+
+\section{Feasibility log}
+\label{s:feasibility}
+
+Two pitfalls in the signed-transport layer are recorded so that a replicating
+reader does not lose time on them. First, the signing key must be supplied to
+the official tool in PKCS\#8 form and as PEM \emph{content}, not as a path; a
+SEC1 key or a path produces a decoder error that does not name the cause.
+Second, a hand-written \texttt{c2pa.opened} action without an
+\texttt{ingredients} parameter is rejected with
+\texttt{assertion.action.ingredientMismatch}, because the specification requires
+that action to carry a hashed-URI reference to the \texttt{parentOf} ingredient
+assertion; the correct move is to let the claim generator insert it.
+
+\end{document}

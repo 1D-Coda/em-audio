@@ -18,7 +18,7 @@
 #   docker build -t em-audio .
 #   docker run --rm -v "$PWD/out:/out" em-audio
 #
-# Works the same on Windows, macOS and Linux, which is the point: the Windows
+# Works the same on Windows, macOS and Linux. The Windows
 # native path has failures of its own in FFmpeg and c2patool, and a validator on
 # Windows should not have to become an expert in them to help.
 

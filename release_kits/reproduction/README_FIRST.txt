@@ -1,4 +1,4 @@
-EM-Audio — validación independiente en Windows
+EM-Audio: validación independiente en Windows
 ==============================================
 
 Gracias por hacer esto. Son unos 25 a 40 minutos de máquina y casi nada de tu

@@ -1,4 +1,4 @@
-# EM-Audio — evidence-monotone audio representation
+# EM-Audio: evidence-monotone audio representation
 
 [![Container reproduction](https://github.com/1D-Coda/em-audio/actions/workflows/container-reproduction.yml/badge.svg)](https://github.com/1D-Coda/em-audio/actions/workflows/container-reproduction.yml)
 [![Windows reproduction path](https://github.com/1D-Coda/em-audio/actions/workflows/windows-reproduction.yml/badge.svg)](https://github.com/1D-Coda/em-audio/actions/workflows/windows-reproduction.yml)
@@ -21,7 +21,7 @@ real, and makes no claim about the truthfulness of speech.
 ## One-command reproduction
 
 ```bash
-git clone https://github.com/1D-Coda/em-audio && cd em-audio && git checkout v1.0.4 && ./run_all.sh
+git clone https://github.com/1D-Coda/em-audio && cd em-audio && git checkout v1.2.0 && ./run_all.sh
 ```
 
 `run_all.sh` exits non-zero if any conformance check fails.  It fetches the
@@ -53,9 +53,9 @@ em_audio/            reference implementation
   essence.py         decoded-PCM essence hashing (signal transparency, P8)
   manifest_schema.py EM assertion, serialised with C2PA temporal regions
   c2pa_bridge.py     signing and validation through the official c2patool
-oracle_js/oracle.js  independent second implementation (different algorithm)
+oracle_js/oracle.js  second implementation, written separately, different algorithm
 tests/               named regression tests
-experiments/         experiments A-I, each emitting machine-readable results
+experiments/         experiments A-N, each emitting machine-readable results
 fixtures/            frozen timelines, frozen oracle cases, frozen manifests
 results/             machine_readable/ + tables/ + figures/ + PREFLIGHT.txt
 tools/               corpus and voice fetch, test credential, tables, figures, preflight
@@ -68,15 +68,19 @@ tools/               corpus and voice fetch, test credential, tables, figures, p
 | A | Does the contract hold on every finite source word over `{C, G, ⊥}`? | zero failed checks |
 | B | How often does boundary-only inheritance promote, and does EM ever? | EM zero at every depth and operator |
 | C | Is the generated interval still identifiable after transformation? | exact recovery on every clip |
-| D | Does the interval model match real FFmpeg output, and does EM promote? | guard bands adequate, EM zero |
+| D | Does the interval model match real FFmpeg output, and does EM promote? | declared margins adequate, EM zero |
 | E | What happens when provenance is absent or broken? | never CAPTURED; stripped ⇒ UNVERIFIED |
 | F | Does the signed round-trip work, and is the signal unchanged? | validation passes; decoded essence identical |
 | G | What does the bookkeeping cost? | reported, not gated |
-| H | Do two independent algorithms agree, in both interval geometries? | exact agreement |
+| H | Do two separately written algorithms agree, in both interval geometries? | exact agreement |
 | B2 | Which baseline shortcut causes which failure? | each shortcut fails exactly one arm |
 | I | What does the conservatism cost in evidence? | dilution confined to footprint-wide boundary bands |
 | J | Does the contract ride inside a real C2PA `componentOf` composition? | all compositions trusted, aggregate MIXED, zero essence mismatches |
 | C2 | Does the result survive neural TTS and buried boundaries? | exact recovery, EM zero, on both arms |
+| K | Does each operator read only source samples inside its declared footprint? | no probe outside declared support |
+| L | Does enlarging the source set stay monotone for scopes the corpus never reaches? | zero violations |
+| M | Does the measured cost hold when measured again? | reported, not gated |
+| N | Does a second C2PA reader recover the evidence assertion? | recovered from every signed asset |
 
 ## Scope
 
@@ -98,7 +102,7 @@ that it is true.
 
 Claude Opus 5 (Anthropic) and ChatGPT (OpenAI) were used as programming and
 review assistants on this repository, and to refine the language of the
-manuscript. Where a commit records that, it carries a `Co-Authored-By` trailer.
+manuscript.
 
 Nothing they produced is a result. Every number in the paper comes from
 executing the committed code, and `run_all.sh` regenerates the tables, macros

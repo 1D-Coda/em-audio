@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -60,6 +61,18 @@ def main() -> int:
         "The commit recorded here is the one that was current when the snapshot\n"
         "was written, which is necessarily the parent of the commit that stores\n"
         "it. A file cannot contain the hash of the object that contains it.\n", newline="\n")
+
+    # The README's one-line reproduction names a tag, and typed by hand it sat
+    # eight releases behind. It is stamped here, by the same step that decides
+    # what the release is, and check_numbers.py fails if the two disagree.
+    readme = ROOT / "README.md"
+    text = readme.read_text(encoding="utf-8")
+    stamped, count = re.subn(r"git checkout v\d+\.\d+\.\d+",
+                             f"git checkout {args.tag}", text)
+    if count != 1:
+        print(f"README.md names {count} checkout tags, expected 1", file=sys.stderr)
+        return 1
+    readme.write_text(stamped, encoding="utf-8", newline="\n")
 
     print(f"[reference] results/reference/  ({n} files frozen at {args.tag})")
     return 0

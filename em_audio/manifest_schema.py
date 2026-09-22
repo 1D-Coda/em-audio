@@ -25,10 +25,10 @@ from .interval_map import OutputInterval
 NAMESPACE = "io.github.1d-coda"
 ASSERTION_LABEL = f"{NAMESPACE}.emaudio.evidence"
 
-# The schema identifier a reader may try to resolve. It is set to the archived
-# deposit rather than to a web page, so that it keeps resolving after any
-# repository is renamed or moved. Until the archive exists this is the
-# repository itself, and the deposit DOI replaces it before submission.
+# The schema identifier a reader may try to resolve. It is the schema document
+# in the repository rather than a DOI: it sits inside every signed manifest and
+# frozen fixture, so it has to be fixed before the archive that would mint a DOI
+# can exist, and the repository is not renamed or moved.
 SCHEMA = "https://github.com/1D-Coda/em-audio/blob/main/docs/em-audio-schema-1.0.md"
 SCHEMA_VERSION = "1.0"
 

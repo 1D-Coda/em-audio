@@ -152,7 +152,7 @@ step "I  claim dilution (cost of conservatism)"
 
 # Table S5 and the calibration rows are built from CALIBRATION.json, which was a
 # tracked result file that no pipeline step regenerated. On a working tree the
-# committed copy is present and the table builds, so the gap was invisible here;
+# committed copy is present and the table builds, so the defect did not show;
 # in the reproduction package, whose results/machine_readable/ ships empty so a
 # comparison cannot pass vacuously, nothing recreated it and make_tables.py died
 # on the missing file. That is what ended the independent reproduction of
@@ -163,9 +163,8 @@ step "I  claim dilution (cost of conservatism)"
 # when the library is absent, because it is not a required dependency.
 step "N  second C2PA reader (optional, skipped if c2pa-python is absent)"
 # Advisory, not a gate. The paper depends on nothing here, and an optional
-# check that can end a third party's run in RUN FAILED is the exact defect this
-# release is fixing. Its result file is what we read; a non-zero exit is printed
-# and recorded rather than propagated.
+# check must not end a third party's run in RUN FAILED. Its result file is what
+# is read; a non-zero exit is printed and recorded rather than propagated.
 ( cd "$ROOT"/experiments && $PY second_reader.py ) \
   || echo "  (advisory: the second reader reported a problem; see N_second_reader.json)"
 

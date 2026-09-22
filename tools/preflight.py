@@ -223,10 +223,14 @@ def main() -> int:
     add(f"oracle_max_support_difference: {H['max_support_abs_difference']}")
     add("")
     add("--- totals ---")
-    tests = subprocess.run([sys.executable, str(ROOT / "tests" / "test_contract.py")],
-                           capture_output=True, text=True)
-    npass = tests.stdout.count("  PASS  ")
-    nfail = tests.stdout.count("  FAIL  ")
+    # Both suites, as make_tables.py and make_macros.py count them, so this
+    # report and the manuscript state the same total.
+    npass = nfail = 0
+    for name in ("test_contract.py", "test_review_regressions.py"):
+        out = subprocess.run([sys.executable, str(ROOT / "tests" / name)],
+                             capture_output=True, text=True).stdout
+        npass += out.count("  PASS  ")
+        nfail += out.count("  FAIL  ")
     add(f"tests_total: {npass + nfail}")
     add(f"tests_passed: {npass}")
     add(f"tests_failed: {nfail}")

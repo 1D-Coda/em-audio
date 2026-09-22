@@ -40,4 +40,3 @@ dist/
 # publishes the author's home directory in every source archive and deposit.
 *.fls
 *.fdb_latexmk
-

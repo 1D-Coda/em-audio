@@ -38,7 +38,7 @@ Two of the three exit codes are successes.
 | 1 | Something else went wrong, which is a defect worth reporting |
 
 **Exit 3 is a result, not a failure.** The paper's central claim is that the
-footprint declarations in Table 3 are calibrated for one FFmpeg build and must
+footprint declarations in the operator table are calibrated for one FFmpeg build and must
 be re-measured for another. An independent reproduction on FFmpeg 8.0.1 already
 measured the MP3 encoder reaching 4,317 source samples against 2,304 declared,
 and that is published as a finding rather than absorbed by widening the
@@ -101,9 +101,8 @@ Windows job never exercised the case an ordinary machine has. It was found by
 an independent run on someone else's machine, which is the argument for having
 one.
 
-This document previously said the native path did not work and that the cause
-had not been diagnosed. It has been, and the causes were two defects of this
-software rather than anything about Windows or about the evidence contract:
+The native path had two defects of this software, neither about Windows as
+such nor about the evidence contract:
 
 - `c2patool` refused to sign with `resource not found` for a file that was on
   disk. A C2PA ResourceRef identifier is a URI-style path, and `str()` on a
@@ -144,7 +143,7 @@ run that was made to pass: the previous reproduction exited non-zero and found
 two real defects in the paper's declared numbers, both of which are now
 published as results.
 
-## Honesty about this path
+## The Docker wrapper on Windows
 
 `run_on_windows.ps1` is forty lines and has never been executed on Windows. It
 finds Python and hands over to `tools/run_container.py`, which was written and

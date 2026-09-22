@@ -1,4 +1,4 @@
-# Independent reproduction — what to run and what to send back
+# Independent reproduction: what to run and what to send back
 
 Two ways in. Both end in the same place: a zip to send back, whatever the
 outcome. **A run that fails and is reported is worth more to us than a run that
@@ -31,10 +31,10 @@ From a PowerShell prompt:
 It fetches the repository, installs the pinned packages, runs the self-test,
 runs the pipeline and the comparison, and collects everything into a zip.
 
-Be warned that **this script has never been executed on Windows.** It was
-written on macOS. If it breaks, that is a defect in the bootstrapper and not in
-your machine: send the error text and we will fix it. You can also run the
-Linux commands above under Git Bash or WSL, which is the better-tested path.
+It runs on every push in continuous integration on windows-latest. If it
+breaks on your machine, that is a defect in the bootstrapper and not in your
+machine: send the error text. The Linux commands above also work under Git
+Bash or WSL.
 
 The pipeline itself is a bash script, so Git for Windows or WSL is required
 either way.
