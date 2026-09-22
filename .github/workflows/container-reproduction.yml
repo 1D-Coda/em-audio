@@ -74,12 +74,19 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p out
-          docker run --rm -v "$PWD/out:/out" em-audio:ci
-          echo "rc=$?" >> "$GITHUB_OUTPUT"
+          rc=0
+          docker run --rm -v "$PWD/out:/out" em-audio:ci || rc=$?
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "::notice::container exit code $rc (0 = declarations hold, 3 = one does not hold on this build)"
+          [ "$rc" -eq 0 ] || [ "$rc" -eq 3 ] || exit "$rc"
 
       - name: Say what happened, readable without a token
         if: always()
         run: |
+          # Diagnostic only; the verdict is the next step. A grep that finds
+          # nothing is information here, not a failure, and under -e/pipefail it
+          # ended this step whenever no tool had failed, which skipped the verdict.
+          set +e +o pipefail
           if [ -f out/run_all_output.txt ]; then
             tail -3 out/run_all_output.txt | while read -r l; do echo "::notice::run_all: $l"; done
             grep -E "RUN OK|RUN FAILED" out/run_all_output.txt | while read -r l; do echo "::notice::$l"; done
@@ -91,7 +98,7 @@ jobs:
               echo "::notice::first tool failure at line $n"
               sed -n "$((n>8 ? n-8 : 1)),$((n+18))p" out/run_all_output.txt \
                 | while read -r l; do
-                    [ -n "$l" ] && echo "::error::ctx: ${l:0:170}"
+                    if [ -n "$l" ]; then echo "::error::ctx: ${l:0:170}"; fi
                   done
             fi
             grep -E "^=== " out/run_all_output.txt | tail -3 \
@@ -111,10 +118,10 @@ jobs:
                 echo "::error::signal: ${l:0:170}"
               done
             grep -A14 "A3b footprint calibration" out/run_all_output.txt | head -16 \
-              | while read -r l; do [ -n "$l" ] && echo "::notice::calib: ${l:0:170}"; done
+              | while read -r l; do if [ -n "$l" ]; then echo "::notice::calib: ${l:0:170}"; fi; done
 
             tail -14 out/run_all_output.txt | tac | while read -r l; do
-              [ -n "$l" ] && echo "::error::tail: ${l:0:170}"
+              if [ -n "$l" ]; then echo "::error::tail: ${l:0:170}"; fi
             done
           else
             echo "::error::the container produced no run log"
@@ -135,6 +142,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Conformance passed, and any failure is the documented one
+        if: always()
         run: |
           # The container's job is not to be green. It is to say which of two
           # things happened, and to fail loudly on anything that is neither.
@@ -157,7 +165,17 @@ jobs:
             exit 0
           fi
 
-          # Not RUN OK. The only acceptable reason is the paper's own finding.
+          # Not RUN OK. The only acceptable reason is the paper's own finding, and
+          # it may account for the failed steps it causes and for nothing else:
+          # the containment probe and the calibration. Any other failed step is a
+          # defect, even when the finding is also present.
+          other=$(sed -n '/the step(s) that failed:/,$p' "$log" | grep -E '^  - ' \
+                  | grep -vE '^  - (K  kernel-support containment|A3b footprint calibration)' || true)
+          if [ -n "$other" ]; then
+            echo "::error::steps failed beyond the documented finding:"
+            echo "$other" | while read -r l; do echo "::error::${l:0:160}"; done
+            exit 1
+          fi
           if grep -qE "UNDER-DECLARED|outside declared support [1-9]" "$log"; then
             grep -E "UNDER-DECLARED|outside declared support" "$log" | head -4 \
               | while read -r l; do echo "::notice::finding: ${l:0:160}"; done

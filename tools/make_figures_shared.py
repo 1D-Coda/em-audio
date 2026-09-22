@@ -193,13 +193,18 @@ def fig_containment():
     def _pct(v):
         d = v["declared_footprint_samples"]
         return 100.0 * v["max_measured_reach_source_samples"] / d if d else 0.0
-    if ind:
+    # A single build can exceed its own declaration too: that is what any
+    # reproduction on another FFmpeg may measure. The layout then has to be the
+    # anchored one, which keeps labels off the connectors whatever the data.
+    exceeded = any(_pct(v) > 100.0 for v in K.values() if v["declared_footprint_samples"])
+    anchored = bool(ind) or exceeded
+    if anchored:
         widest = max([_pct(v) for k, v in K.items() if v["declared_footprint_samples"]]
                      + [_pct(ind[k]) for k in K if k in ind and K[k]["declared_footprint_samples"]])
         # Proportional, not fixed: the anchored labels keep a constant pixel
         # width, so as the axis grows they cover more data units and a fixed
         # margin stops being enough.
-        xmax = max(205.0, widest + 18.0)
+        xmax = max(205.0 if ind else 150.0, widest + 18.0)
     else:
         xmax = 132
     ax.axvspan(100, xmax, color="#f2dede", alpha=0.55, linewidth=0, zorder=0)
@@ -221,7 +226,7 @@ def fig_containment():
         # another. Both numbers sit at fixed x on their row, distinguished by
         # colour and by the marks they annotate, so the layout is the same
         # whatever the data says.
-        if ind:
+        if anchored:
             ax.text(-1.5, i, f"{reach:,}", fontsize=7.2, va="center",
                     ha="right", color=S.MEASURED)
         else:
@@ -241,7 +246,7 @@ def fig_containment():
         # Beside it is where the connectors run, and which connector passes
         # through that point depends on whether a measurement exceeded its
         # declaration, so a conditional offset only moved the collision around.
-        ax.text(101.5, i - (0.34 if ind else 0.0), f"of {decl:,}",
+        ax.text(101.5, i - (0.34 if anchored else 0.0), f"of {decl:,}",
                 fontsize=7.2, va="center", color="#555555")
         if iv:
             ireach = iv["max_measured_reach_source_samples"]
@@ -262,9 +267,9 @@ def fig_containment():
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([S.label_of(k) for k, _ in rows])
     ax.set_xlabel("measured reach as a percentage of the declared footprint")
-    ax.set_xlim(-14 if ind else 0, xmax)
+    ax.set_xlim(-14 if anchored else 0, xmax)
     ax.set_ylim(-1.15, len(rows) - 0.42)
-    ax.set_xticks([0, 25, 50, 75, 100] + ([150, 200] if ind else []))
+    ax.set_xticks([0, 25, 50, 75, 100] + [x for x in (150, 200) if anchored and x < xmax])
     ax.grid(axis="x", linestyle=":", zorder=0)
     ax.set_axisbelow(True)
 
@@ -276,31 +281,35 @@ def fig_containment():
     # measurement, so it moves with the data and collided with the fixed
     # "declaration" label whenever that measurement approached the declaration.
     # Where there is a legend, it already says what the marks are.
-    if not ind:
+    if not anchored:
         ax.annotate("measured reach", xy=(tp, 1.005), xytext=(tp - 13, 1.10),
                     xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
                     color="#222222", annotation_clip=False,
                     arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
-    if ind:
+    if anchored:
         from matplotlib.lines import Line2D
-        ax.legend(handles=[
-            Line2D([], [], marker=S.M_MEASURED, color=S.MEASURED, linestyle="",
-                   markersize=5, label="reference build"),
-            Line2D([], [], marker="X", color=S.BASE, linestyle="",
-                   markersize=6, label="independent build"),
+        # With one build that exceeds its declaration, the floating callout sat
+        # beside the "declaration" label and read as one phrase; a key does not.
+        keys = ([Line2D([], [], marker=S.M_MEASURED, color=S.MEASURED, linestyle="",
+                        markersize=5, label="reference build"),
+                 Line2D([], [], marker="X", color=S.BASE, linestyle="",
+                        markersize=6, label="independent build")] if ind else
+                [Line2D([], [], marker=S.M_MEASURED, color=S.MEASURED, linestyle="",
+                        markersize=5, label="measured reach")])
         # Below the axes rather than inside it. Placed inside, the legend
         # collided with the independent build's label as soon as that label
         # moved, and the label's position is a measurement: any other build
         # puts it somewhere else. A legend whose correctness depends on the
         # data it describes is not a legend.
-        ], loc="upper center", bbox_to_anchor=(0.5, -0.34), ncol=2,
-            fontsize=6.9, frameon=False, handletextpad=0.4, borderpad=0.1)
+        ax.legend(handles=keys, loc="upper center", bbox_to_anchor=(0.5, -0.34),
+                  ncol=2, fontsize=6.9, frameon=False, handletextpad=0.4,
+                  borderpad=0.1)
     ax.annotate("declaration", xy=(100, 1.005), xytext=(100, 1.10),
                 xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
                 color="#222222", annotation_clip=False,
                 arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
     ax.text(100 + (xmax - 100) / 2, -0.78,
-            "violation: reach exceeds the declaration" if ind
+            "violation: reach exceeds the declaration" if anchored
             else "a violation would land in here",
             fontsize=6.9, ha="center", va="center", color=S.BASE)
 
@@ -311,6 +320,10 @@ def fig_containment():
         # not the failing measurement.
         title = (f"Declarations hold on the reference build ({outside} samples "
                  f"outside) and not on another ({iout:,})")
+    elif outside:
+        # The title states what was measured, so it must change with it.
+        title = (f"A declaration does not contain its own measurement on this "
+                 f"build ({outside:,} influenced samples outside)")
     else:
         title = (f"Every declaration contains its own measurement "
                  f"({outside} influenced samples fell outside)")
