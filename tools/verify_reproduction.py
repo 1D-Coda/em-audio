@@ -134,6 +134,10 @@ def _flatten(obj, prefix=""):
 
 
 REFERENCE_DIR = ROOT / "results" / "reference"
+# The snapshot answers for the release it was frozen at and for no other. A
+# request for another tag once read the snapshot anyway, so --ref v1.0.0 reported
+# a match against the current release while printing the older tag's name.
+USE_SNAPSHOT = True
 
 
 def _reference(tag: str, name: str):
@@ -146,7 +150,7 @@ def _reference(tag: str, name: str):
     convenience.
     """
     snap = REFERENCE_DIR / f"{name}.json"
-    if snap.exists():
+    if USE_SNAPSHOT and snap.exists():
         try:
             return json.loads(snap.read_text())
         except json.JSONDecodeError:
@@ -160,7 +164,7 @@ def _reference(tag: str, name: str):
 
 
 def _reference_source(tag: str) -> str:
-    if REFERENCE_DIR.is_dir() and any(REFERENCE_DIR.glob("*.json")):
+    if USE_SNAPSHOT and REFERENCE_DIR.is_dir() and any(REFERENCE_DIR.glob("*.json")):
         return f"results/reference/ (snapshot shipped with the release)"
     return f"git tag {tag}"
 
@@ -244,9 +248,20 @@ def main() -> int:
     ap.add_argument("--ref", default=RELEASE,
                     help=f"release tag to compare against (default {RELEASE})")
     args = ap.parse_args()
+    global REFERENCE_DIR, USE_SNAPSHOT
     if args.reference_dir:
-        global REFERENCE_DIR
         REFERENCE_DIR = Path(args.reference_dir)
+    elif args.ref != RELEASE:
+        # Another release than the one frozen here: only git can supply it.
+        USE_SNAPSHOT = False
+        ok = subprocess.run(["git", "rev-parse", "--verify", "--quiet",
+                             f"{args.ref}^{{commit}}"], cwd=ROOT,
+                            capture_output=True).returncode == 0
+        if not ok:
+            print(f"{args.ref} is not available here. This tree carries the "
+                  f"snapshot of {RELEASE} only; comparing against another "
+                  f"release needs a git clone that has its tag.")
+            return 2
 
     print(f"Comparing the working tree against {_reference_source(args.ref)}.")
     print("Deterministic outputs must match exactly. Environment-dependent "

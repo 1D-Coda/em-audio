@@ -61,7 +61,7 @@ Promotion Across Derived Audio Transformations}
 \address[aur]{Independent researcher, Hermosillo, Sonora, Mexico}
 
 \begin{abstract}
-Derived audio can keep its exact waveform while silently strengthening what it
+Derived audio can keep its waveform while silently strengthening what it
 says about its origin. Under a boundary-only inheritance policy, a constructed reference and not any
 named product, a clip assembled from captured and generated material, then
 trimmed, resampled and re-encoded, emerges described as captured-only. We specify an operator contract for derived audio:
@@ -70,7 +70,7 @@ minimises, applicability intersects and lineage unions, and an unverified source
 interval is absorbing. The algebra is a known meet-semilattice
 construction; new are the executable temporal instantiation over
 sample-exact intervals with declared kernel footprints, a signed transport
-inside C2PA temporal regions, and a measurement. No
+inside C2PA temporal regions, and its evaluation. No
 model is trained.
 Across \Achecks{} contract checks, \Btimelines{} adversarial timelines,
 \Cclips{} mixed-origin clips transformed by stock FFmpeg and \Hcases{}
@@ -82,7 +82,7 @@ unrelated hardware and a different FFmpeg major version returned every
 conformance, promotion and oracle outcome unchanged and found two
 build-specific declarations its build does not satisfy,
 reported as results rather than widened: the algebra holds by proof, the audio
-instantiation only for a validated build. The
+instantiation only where its footprints were measured. The
 contract constrains what a derived representation may claim about its sources,
 and binds only an operator that implements it; it does not detect deepfakes,
 and a valid signature proves only that an assertion was signed.
@@ -1558,7 +1558,9 @@ differences remain, in \IRdiffFiles{} files. \IRdetSuite{} of them are the size
 fields of Experiment~A and are not a failing check: his package's suite had
 \IRachecks{} checks and every one passed, and the released suite has
 \Achecks{} because the structural checks were added after his run; the later
-Windows run of tag~\XBWinTag{} reproduces the \XBWinChecks{} exactly. The
+Windows run of tag~\XBWinTag{} reproduces the \XBWinChecks{} exactly, and every
+deterministic output of that tag is identical to that of the evaluated release,
+\Rtag{}. The
 remaining \IRdetBuild{} fall in two files and trace to the same cause, the one
 Section~\ref{sec:limits} names in advance: the kernel footprints of
 Table~\ref{tab:operators} are declarations calibrated against one FFmpeg build,
@@ -1765,11 +1767,16 @@ ingredient graph, but that is an intention, not a tested outcome.
 synthesiser at \CcorpusFs{}~Hz is a mechanism corpus, not a balanced design
 over speakers, languages, conditions, codecs or editing styles. It supports
 the claim that the mechanism is real and the rule works on realistic audio,
-not any rate claim about audio in general. Acoustic diversity is not the axis along which the result generalises, since
-the contract never reads the audio. The axes that can change the outcome are
-operator and codec configuration and ancestry geometry, which are varied
-exhaustively, and more codec configurations are what would extend the result,
-the direction Section~\ref{sec:res-independent} shows to be load-bearing.
+not any rate claim about audio in general. The propagation rule is independent
+of acoustic content, since the contract never reads the audio; the footprint
+declarations are not, because adaptive and lossy operators depend on the signal
+(Section~\ref{sec:res-containment}), which is why they hold only at the tested
+configurations and operating points. The axes that can change the outcome are
+therefore operator and codec configuration, signal context for adaptive
+operators, and ancestry geometry. Production material at other rates, channel
+counts and codecs would further validate the footprint layer; it is not a
+requirement of the contract, and more codec configurations are the direction
+Section~\ref{sec:res-independent} shows to be load-bearing.
 
 \paragraph{Footprints are declarations} The kernel footprints are conservative
 bounds for the exact configurations used here, validated against those and no
