@@ -165,7 +165,7 @@ def main() -> int:
     # reported as a hand-typed count. Kept narrow on purpose: the digits must
     # follow one of these names, so a bare 11 anywhere else is still caught.
     text = re.sub(r"\b(Windows|PowerShell|macOS|Ubuntu|Debian|Python|FFmpeg|"
-                  r"Node|c2patool|eSpeak(?:\s+NG)?)(?:~|\s|\s?v)?\d[\d.]*",
+                  r"Node|c2patool|Opus|eSpeak(?:\s+NG)?)(?:~|\s|\s?v)?\d[\d.]*",
                   r"\1", text, flags=re.I)
     text = text.replace("[0,1]", " ")
     text = re.sub(r"(?m)%.*$", "", text)

@@ -100,9 +100,9 @@ that it is true.
 
 ## Generative AI
 
-Claude Opus 5 (Anthropic) and ChatGPT (OpenAI) were used as programming and
-review assistants on this repository, and to refine the language of the
-manuscript.
+Claude Opus 5 and Opus 5.5 (Anthropic) and ChatGPT (OpenAI) were used as
+programming and review assistants on this repository, and to refine the
+language of the manuscript.
 
 Nothing they produced is a result. Every number in the paper comes from
 executing the committed code, and `run_all.sh` regenerates the tables, macros
