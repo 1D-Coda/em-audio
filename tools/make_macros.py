@@ -311,9 +311,21 @@ def manuscript_labels():
     import re
     aux = ROOT / "paper" / "manuscript.aux"
     if not aux.exists():
-        print("[macros] paper/manuscript.aux absent; the manuscript's own "
-              "numbering is not available, so cross-document labels are skipped")
-        return {}
+        # A fresh clone has no .aux (it is a build product), and dropping these
+        # macros left the supplement unable to compile. Keep the values already
+        # committed; check_numbers.py compares them with the .aux whenever one
+        # exists, so a stale value cannot survive a manuscript build.
+        numbers = ROOT / "results" / "numbers.tex"
+        kept = {}
+        if numbers.exists():
+            src = numbers.read_text()
+            for key in MANUSCRIPT_LABELS:
+                mm = re.search(r"\\newcommand\{\\" + key + r"\}\{([^}]*?)\\xspace\}", src)
+                if mm:
+                    kept[key] = mm.group(1)
+        print("[macros] paper/manuscript.aux absent; cross-document labels kept "
+              f"from the committed numbers.tex ({len(kept)} of {len(MANUSCRIPT_LABELS)})")
+        return kept
     text = aux.read_text(errors="ignore")
     out = {}
     for key, label in MANUSCRIPT_LABELS.items():
