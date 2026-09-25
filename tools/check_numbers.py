@@ -169,6 +169,8 @@ def main() -> int:
                   r"\1", text, flags=re.I)
     text = text.replace("[0,1]", " ")
     text = re.sub(r"(?m)%.*$", "", text)
+    # \href{url}{text}: a link is an identifier, whatever its visible text.
+    text = re.sub(r"\\href\{[^}]*\}\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}", " ", text)
     text = re.sub(r"\\(includegraphics|input|label|ref|eqref|cite\w*|usepackage|graphicspath|section|subsection|url|path)\s*(\[[^\]]*\])?\{[^}]*\}", " ", text)
     text = re.sub(r"\\(begin|end)\{[^}]*\}(\{[^}]*\})?", " ", text)
     text = re.sub(r"p\{[0-9.]+\\linewidth\}", " ", text)
