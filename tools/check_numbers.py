@@ -169,7 +169,7 @@ def main() -> int:
                   r"\1", text, flags=re.I)
     text = text.replace("[0,1]", " ")
     text = re.sub(r"(?m)%.*$", "", text)
-    text = re.sub(r"\\(includegraphics|input|label|ref|eqref|cite\w*|usepackage|graphicspath|section|subsection)\s*(\[[^\]]*\])?\{[^}]*\}", " ", text)
+    text = re.sub(r"\\(includegraphics|input|label|ref|eqref|cite\w*|usepackage|graphicspath|section|subsection|url|path)\s*(\[[^\]]*\])?\{[^}]*\}", " ", text)
     text = re.sub(r"\\(begin|end)\{[^}]*\}(\{[^}]*\})?", " ", text)
     text = re.sub(r"p\{[0-9.]+\\linewidth\}", " ", text)
     text = re.sub(r"width=\\linewidth", " ", text)
