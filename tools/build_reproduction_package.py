@@ -54,7 +54,24 @@ EXCLUDE_DOCS = {"RELEASE_CHECKLIST.md",
                 "reference_figures"}
 
 
+def _tracked() -> set[str] | None:
+    """Paths git tracks, or None outside a checkout.
+
+    The package is built from the working tree, and anything gitignored that
+    happened to be on disk went into it: the local test CA's private keys among
+    them. Only what the repository distributes may ship.
+    """
+    r = subprocess.run(["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, text=True)
+    return set(r.stdout.split("\0")) - {""} if r.returncode == 0 else None
+
+
+TRACKED = _tracked()
+
+
 def copy_into(src: Path, dst: Path) -> None:
+    if TRACKED is not None:
+        if src.is_file() and src.relative_to(ROOT).as_posix() not in TRACKED:
+            return
     if src.is_file():
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
@@ -68,6 +85,8 @@ def copy_into(src: Path, dst: Path) -> None:
         if src.name == "tools" and rel.name in EXCLUDE_TOOLS:
             continue
         if src.name == "docs" and rel.parts[0] in EXCLUDE_DOCS:
+            continue
+        if TRACKED is not None and p.relative_to(ROOT).as_posix() not in TRACKED:
             continue
         if p.is_file():
             t = dst / p.relative_to(src)
