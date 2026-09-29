@@ -42,6 +42,16 @@ FORBIDDEN_HOST_TOOLS = ("git clone", "Get-Command python", "Get-Command git",
                         "python3 ", "py -3")
 
 
+def _tracked():
+    """Paths git tracks, or None outside a checkout. Gitignored files on disk,
+    the local test CA's private keys among them, must not reach a kit."""
+    r = subprocess.run(["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, text=True)
+    return set(r.stdout.split("\0")) - {""} if r.returncode == 0 else None
+
+
+TRACKED = _tracked()
+
+
 def copy_tree(src: Path, dst: Path) -> int:
     n = 0
     for p in src.rglob("*"):
@@ -49,6 +59,8 @@ def copy_tree(src: Path, dst: Path) -> int:
         if any(part in EXCLUDE_DIRS for part in rel.parts):
             continue
         if p.is_dir():
+            continue
+        if TRACKED is not None and p.relative_to(ROOT).as_posix() not in TRACKED:
             continue
         if p.suffix in EXCLUDE_SUFFIX:
             continue
