@@ -191,8 +191,10 @@ def main() -> int:
             compile(q.read_text(), str(q), "exec")
         except SyntaxError as exc:
             broken.append(f"{q.relative_to(inner)}: {exc}")
+    # -B: importing to prove the modules load must not leave bytecode in the
+    # tree that is about to be zipped. It did, after the filtering had run.
     check = subprocess.run(
-        [sys.executable, "-c",
+        [sys.executable, "-B", "-c",
          "import importlib.util, pathlib, sys\n"
          "sys.path[:0] = ['experiments', '.']\n"
          "for q in sorted(pathlib.Path('experiments').glob('*.py')):\n"
@@ -205,6 +207,10 @@ def main() -> int:
         cwd=inner, capture_output=True, text=True)
     if check.stdout.strip():
         broken += check.stdout.strip().splitlines()
+    debris = [q.relative_to(inner).as_posix() for q in inner.rglob("*")
+              if q.name == "__pycache__" or q.suffix == ".pyc"]
+    if debris:
+        broken.append(f"build debris in the staged tree: {debris[:5]}")
     if broken:
         print("REFUSING: the staged package does not import cleanly:")
         for b in broken[:10]:
