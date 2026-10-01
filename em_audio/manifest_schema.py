@@ -50,7 +50,10 @@ def interval_to_json(iv: OutputInterval, fs: int) -> Dict[str, object]:
         "samples": {"start": iv.out_start, "end": iv.out_end},
         "provenance": prov,
         "state": label_of(ev.P),
-        "support": {k: round(float(v), 12) for k, v in sorted(ev.S.items())},
+        # Exact: JSON writes the shortest decimal that round-trips the binary64
+        # value. Rounding to twelve places could round a minimum upward, which
+        # the non-promotion property does not allow even by 1e-13.
+        "support": {k: float(v) for k, v in sorted(ev.S.items())},
         "applicability": {k: sorted(v) for k, v in sorted(ev.A.items())},
         "lineage": sorted(ev.L),
     }

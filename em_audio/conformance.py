@@ -184,37 +184,25 @@ def p3_unverified_non_promotion(out: DerivedOutput, timelines: Dict[str, Timelin
 
 def p4_support_non_promotion(out: DerivedOutput, timelines: Dict[str, Timeline],
                              intervals: Sequence[OutputInterval]) -> Check:
+    """Requirements (ii), (iv) and (iv'): exactly the canonical numeric channels.
+
+    A channel is emitted exactly when every required source is verified, declares
+    it applicable and reports a value, and the common scope is non-empty; its
+    value is then exactly the minimum. An upper bound alone accepted a support
+    lowered to 0.0, or a channel dropped, as conforming: conservative outputs,
+    but not the exact reduction the contract specifies.
+    """
     for iv in intervals:
         srcs = _required(out, timelines, iv.piece_indices, iv.out_start, iv.out_end)
-        # Requirement (iv'): one unverified required source withholds every
-        # numeric channel. Checked before the per-channel loop, which never runs
-        # when S is empty and so could not catch an output that kept a value.
-        if any(isinstance(s.ev.P, _Bot) for s in srcs) and iv.ev.S:
+        exp = aggregate([s.ev for s in srcs])
+        if set(iv.ev.S) != set(exp.S):
             return Check("P4_support_non_promotion", False,
-                         f"[{iv.out_start},{iv.out_end}) kept channels "
-                         f"{sorted(iv.ev.S)} although a required source is unverified")
+                         f"[{iv.out_start},{iv.out_end}) channels {sorted(iv.ev.S)}, "
+                         f"the reduction emits {sorted(exp.S)}")
         for mu, val in iv.ev.S.items():
-            # Requirement (iv): a channel not applicable to *every* required
-            # source is withheld, not computed from the ones that have it. The
-            # previous form selected the applicable sources and then reasoned
-            # only about those, which is the partial-subset computation (iv)
-            # exists to forbid.
-            lacking = [s for s in srcs if mu not in s.ev.A]
-            if lacking:
+            if val != exp.S[mu]:
                 return Check("P4_support_non_promotion", False,
-                             f"[{iv.out_start},{iv.out_end}) channel {mu} emitted although "
-                             f"{len(lacking)} required source(s) do not declare it applicable")
-            applicable = [s.ev for s in srcs if mu in s.ev.A]
-            if not applicable:
-                return Check("P4_support_non_promotion", False,
-                             f"channel {mu} emitted with no applicable source")
-            if any(mu not in e.S for e in applicable):
-                return Check("P4_support_non_promotion", False,
-                             f"channel {mu} emitted although an applicable source reports no value")
-            for e in applicable:
-                if val > e.S[mu] + 1e-12:
-                    return Check("P4_support_non_promotion", False,
-                                 f"[{iv.out_start},{iv.out_end}) {mu}={val} > source {e.S[mu]}")
+                             f"[{iv.out_start},{iv.out_end}) {mu}={val}, the minimum is {exp.S[mu]}")
     return Check("P4_support_non_promotion", True, f"{len(intervals)} intervals")
 
 
@@ -242,16 +230,21 @@ def p9_channel_scope_agreement(out: "DerivedOutput", timelines: Dict[str, Timeli
 
 def p5_applicability_non_broadening(out: DerivedOutput, timelines: Dict[str, Timeline],
                                     intervals: Sequence[OutputInterval]) -> Check:
+    """Requirement (iii): each emitted scope is exactly the common scope.
+
+    Narrower is conservative, but it is not the reduction the contract
+    specifies, and the subset test accepted it.
+    """
     for iv in intervals:
         srcs = _required(out, timelines, iv.piece_indices, iv.out_start, iv.out_end)
+        exp = aggregate([s.ev for s in srcs])
         for mu, scope in iv.ev.A.items():
-            applicable = [s.ev for s in srcs if mu in s.ev.A]
-            if not applicable:
+            if mu not in exp.A:
                 return Check("P5_applicability_non_broadening", False, f"channel {mu} invented")
-            inter = frozenset.intersection(*[e.A[mu] for e in applicable])
-            if not scope <= inter:
+            if scope != exp.A[mu]:
                 return Check("P5_applicability_non_broadening", False,
-                             f"[{iv.out_start},{iv.out_end}) scope {sorted(scope)} broader than {sorted(inter)}")
+                             f"[{iv.out_start},{iv.out_end}) scope {sorted(scope)}, "
+                             f"the intersection is {sorted(exp.A[mu])}")
     return Check("P5_applicability_non_broadening", True, f"{len(intervals)} intervals")
 
 
@@ -313,10 +306,14 @@ def compose_timeline(out: DerivedOutput, timelines: Dict[str, Timeline],
                               for iv in ivs])
 
 
-def p7_composition(chain: Sequence[Tuple[DerivedOutput, Dict[str, Timeline]]],
-                   final: Sequence[OutputInterval],
+def p7_composition(final: Sequence[OutputInterval],
                    direct: Sequence[OutputInterval]) -> Check:
-    """A composed chain refuses at least as much as the equivalent direct meet."""
+    """A composed chain is nowhere stronger than the equivalent direct reduction.
+
+    Compared on the whole record: provenance, which channels are available,
+    their values, their scopes, and lineage. Provenance alone accepted a
+    composed output whose support had risen from 0.9 to 1.0.
+    """
     # Compared on the common refinement of both partitions. The previous form
     # returned PASS as soon as the two partitions had different lengths, with a
     # message promising a pointwise comparison that the branch then skipped, so
@@ -349,6 +346,16 @@ def p7_composition(chain: Sequence[Tuple[DerivedOutput, Dict[str, Timeline]]],
         if not leq_claim(fa.ev.P, da.ev.P):
             return Check("P7_composition", False,
                          f"[{a},{b}) composed chain stronger than direct meet")
+        for mu, v in fa.ev.S.items():
+            if mu not in da.ev.S or v > da.ev.S[mu]:
+                return Check("P7_composition", False,
+                             f"[{a},{b}) composed {mu}={v} exceeds the direct reduction")
+            if not fa.ev.A.get(mu, frozenset()) <= da.ev.A.get(mu, frozenset()):
+                return Check("P7_composition", False,
+                             f"[{a},{b}) composed scope of {mu} broader than the direct reduction")
+        if not da.ev.L <= fa.ev.L:
+            return Check("P7_composition", False,
+                         f"[{a},{b}) composed lineage omits {sorted(da.ev.L - fa.ev.L)}")
     return Check("P7_composition", True,
                  f"{len(cuts) - 1} common-refinement intervals")
 

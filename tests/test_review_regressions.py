@@ -70,7 +70,7 @@ def test_p6_requires_exact_lineage():
 def test_p7_rejects_strengthened_composition():
     final = [OutputInterval(0, 20, CAP)]
     direct = [OutputInterval(0, 10, CAP), OutputInterval(10, 20, Evidence(claim_of(["G"])))]
-    assert not c.p7_composition([], final, direct).passed, \
+    assert not c.p7_composition(final, direct).passed, \
         "P7 accepted an all-captured composition against a direct meet that is generated on [10,20)"
 
 
@@ -78,7 +78,7 @@ def test_p7_accepts_equivalent_partitions():
     # The same evidence split at a different point is the same claim.
     final = [OutputInterval(0, 5, CAP), OutputInterval(5, 20, CAP)]
     direct = [OutputInterval(0, 20, CAP)]
-    assert c.p7_composition([], final, direct).passed
+    assert c.p7_composition(final, direct).passed
 
 
 def test_partial_evidence_is_not_extrapolated():
@@ -265,6 +265,64 @@ def test_overlay_source_map_overlap_stays_legitimate():
     assert canon and canon[0].ev.label == "MIXED"
     for f in ALL_CHECKS:
         assert f(out, tls, canon).passed, f"{f.__name__} rejected a legitimate overlay"
+
+
+
+# --- mutations of a valid output: the suite must reject an inexact reduction ---
+
+def _trim_case():
+    tl = {"s": Timeline("s", [SourceInterval("s", 0, 20, CAP)])}
+    return O.trim("s", 20, 0, 20), tl
+
+
+def _rejected(ev) -> bool:
+    out, tl = _trim_case()
+    return not all(f(out, tl, [OutputInterval(0, 20, ev, (0,))]).passed for f in ALL_CHECKS)
+
+
+def test_mutation_support_lowered_is_rejected():
+    """Requirement (ii) is the exact minimum. 0.0 is conservative and wrong."""
+    assert _rejected(Evidence(claim_of(["C"]), {"mu": 0.0}, {"mu": SCOPE}, frozenset({"a"}))), \
+        "a support below the minimum was accepted"
+
+
+def test_mutation_channel_dropped_is_rejected():
+    assert _rejected(Evidence(claim_of(["C"]), {}, {}, frozenset({"a"}))), \
+        "dropping an available channel and its scope was accepted"
+
+
+def test_mutation_scope_narrowed_is_rejected():
+    wide = frozenset({"audio", "speech"})
+    tl = {"s": Timeline("s", [SourceInterval("s", 0, 20, Evidence(claim_of(["C"]), {"mu": 0.9},
+                                                                  {"mu": wide}, frozenset({"a"})))])}
+    out = O.trim("s", 20, 0, 20)
+    bad = [OutputInterval(0, 20, Evidence(claim_of(["C"]), {"mu": 0.9}, {"mu": SCOPE},
+                                          frozenset({"a"})), (0,))]
+    assert not all(f(out, tl, bad).passed for f in ALL_CHECKS), "a narrowed scope was accepted"
+
+
+def test_mutation_lineage_removed_is_rejected():
+    assert _rejected(Evidence(claim_of(["C"]), {"mu": 0.9}, {"mu": SCOPE}, frozenset())), \
+        "an empty lineage was accepted"
+
+
+def test_mutation_composition_support_raised_is_rejected():
+    """P7 compares the whole record, not provenance alone."""
+    iv = lambda s: [OutputInterval(0, 20, Evidence(claim_of(["C"]), {"mu": s}, {"mu": SCOPE},
+                                                   frozenset({"a"})), (0,))]
+    assert not c.p7_composition(iv(1.0), iv(0.9)).passed, "a composed support increase was accepted"
+    assert c.p7_composition(iv(0.9), iv(0.9)).passed
+
+
+def test_support_survives_serialisation_exactly():
+    """The wire value must equal the computed minimum: no rounding up."""
+    import json
+    v = 0.1234567890126
+    iv = OutputInterval(0, 20, Evidence(claim_of(["C"]), {"mu": v}, {"mu": SCOPE},
+                                        frozenset({"a"})), (0,))
+    doc = json.loads(json.dumps(em_assertion([iv], 16000, 20, "complete-source", "trim", {})))
+    got = doc["intervals"][0]["support"]["mu"]
+    assert got == v, f"serialised {got!r} for {v!r}"
 
 
 if __name__ == "__main__":

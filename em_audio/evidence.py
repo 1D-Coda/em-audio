@@ -88,9 +88,11 @@ def leq_claim(a: Claim, b: Claim) -> bool:
 
 
 def promotes(source_claim: Claim, output_claim: Claim) -> bool:
-    """True iff ``output_claim`` is *strictly stronger* than ``source_claim``.
+    """True iff ``output_claim`` is not ``⊑ source_claim``: a forbidden change.
 
-    This is the negation of the contract requirement ``output ⊑ source``.
+    The order is partial, so this covers two cases: a strictly stronger claim,
+    and an incomparable one, such as captured-only replaced by generated-only.
+    Both are rejected; only the first is a promotion in the strict sense.
     """
     return not leq_claim(output_claim, source_claim)
 

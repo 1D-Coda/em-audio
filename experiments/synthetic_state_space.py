@@ -134,7 +134,7 @@ def main() -> int:
                 o2 = O.trim("s2", tl2.end, 0, tl2.end)
                 comp = em_intervals(o2, {"s2": tl2})
                 direct = em_intervals(o1, tls)
-                chk = p7_composition([(o1, tls), (o2, {"s2": tl2})], comp, direct)
+                chk = p7_composition(comp, direct)
                 checks_total += 1
                 d = per_check.setdefault(chk.name, {"pass": 0, "fail": 0})
                 if chk.passed:

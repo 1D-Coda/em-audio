@@ -81,9 +81,12 @@ class Timeline:
         b = max(self.start, min(self.end, int(b)))
         if b <= a:
             return [self.at(a)]
-        lo = bisect_right(self._starts, a) - 1
+        # Indexed, not sliced: a slice copied the rest of the list on every
+        # query, which made propagation quadratic in the number of intervals.
+        ivs = self.intervals
         out = []
-        for iv in self.intervals[max(0, lo):]:
+        for k in range(max(0, bisect_right(self._starts, a) - 1), len(ivs)):
+            iv = ivs[k]
             if iv.start >= b:
                 break
             if iv.end > a:
