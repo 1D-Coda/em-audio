@@ -32,6 +32,16 @@ def load(n):
     return json.loads(p.read_text(encoding="utf-8"))
 
 
+# Added in the revision after the independent reproductions had run. Their
+# results cannot contain these, so they are left out of every count quoted for
+# those runs and nowhere else.
+ADDED_AFTER_REPRODUCTIONS_FILES = {"K2_footprint_holdout"}
+ADDED_AFTER_REPRODUCTIONS_FIELDS = {
+    "length_change_samples", "outside_or_unmapped_strict", "alignment_offset_samples",
+    "probes_with_length_change", "total_outside_or_unmapped_strict",
+    "max_abs_alignment_offset_samples"}
+
+
 def fmt(x):
     if isinstance(x, int):
         return f"{x:,}".replace(",", r"\,")
@@ -174,11 +184,20 @@ def independent_macros():
     clean = det = envd = 0
     per_file = {}
     for name, keys in V.DETERMINISTIC.items():
+        # Measurements this paper added after the reproductions ran, the K2
+        # experiment and K's strict and alignment fields, are excluded by name so
+        # they cannot move the count quoted for those runs. Everything else is
+        # compared exactly as verify_reproduction.py compares it, absent fields
+        # included, so a reader rerunning the tool sees this same count.
+        if name in ADDED_AFTER_REPRODUCTIONS_FILES:
+            continue
         cur, ref = L(ind, name), V._reference(V.RELEASE, name)
         n = 0
         for key in keys:
             flat_cur = dict(V._flatten(cur[key], key))
             for path, rv in V._flatten(ref[key], key):
+                if path.split(".")[-1].split("[")[0] in ADDED_AFTER_REPRODUCTIONS_FIELDS:
+                    continue
                 cv = flat_cur.get(path, "<absent>")
                 if cv == rv:
                     continue
@@ -189,7 +208,7 @@ def independent_macros():
         det += n
         clean += (n == 0)
         per_file[name] = n
-    m["IRfiles"] = fmt(len(V.DETERMINISTIC))
+    m["IRfiles"] = fmt(sum(1 for nm in V.DETERMINISTIC if nm not in ADDED_AFTER_REPRODUCTIONS_FILES))
     m["IRclean"] = fmt(clean)
     m["IRdet"] = fmt(det)
     m["IRenv"] = fmt(envd)
@@ -496,6 +515,34 @@ def main() -> int:
     m["KsilenceMargin"] = fmt(po["silence_removal"]["min_margin_inside_declared_range"])
     m["KsilenceReach"] = fmt(po["silence_removal"]["max_measured_reach_source_samples"])
     m["KoutsideTotal"] = fmt(sum(v["total_outside_declared_support"] for v in po.values()))
+    # Strict outcome and interior alignment, reported beside the original.
+    m["KstrictTotal"] = fmt(sum(v.get("total_outside_or_unmapped_strict", 0) for v in po.values()))
+    m["KunmappedTotal"] = fmt(sum(v["output_samples_beyond_modelled_extent"] for v in po.values()))
+    m["KalignSelection"] = fmt(po["silence_removal"].get("max_abs_alignment_offset_samples") or 0)
+    m["KalignStretch"] = fmt(po["time_stretch_1.10"].get("max_abs_alignment_offset_samples") or 0)
+    m["KalignResample"] = fmt(po["resample_16_8"].get("max_abs_alignment_offset_samples") or 0)
+
+    # K2 holdout challenge
+    K2 = load("K2_footprint_holdout")
+    q = K2["per_operator"]
+    m["KtwoProbesPerOp"] = fmt(q["transcode_mp3"]["probes"])
+    m["KtwoProbes"] = fmt(sum(v["probes"] for v in q.values()))
+    m["KtwoContexts"] = fmt(len(K2["signal_contexts"]))
+    m["KtwoHoldoutContexts"] = fmt(len(K2["holdout_contexts"]))
+    m["KtwoAmps"] = fmt(len(K2["impulse_amplitudes"]))
+    m["KtwoAmpMax"] = fmt(max(K2["impulse_amplitudes"]))
+    m["KtwoPositions"] = fmt(len(K2["probe_positions"]))
+    m["KtwoMpExceed"] = fmt(q["transcode_mp3"]["probes_exceeding_declaration"])
+    m["KtwoMpReach"] = fmt(q["transcode_mp3"]["max_measured_reach_source_samples"])
+    m["KtwoStExceed"] = fmt(q["time_stretch_1.10"]["probes_exceeding_declaration"])
+    m["KtwoStReach"] = fmt(q["time_stretch_1.10"]["max_measured_reach_source_samples"])
+    m["KtwoStMinAmp"] = fmt(min(q["time_stretch_1.10"]["exceeding_amplitudes"]))
+    m["KtwoAmpMin"] = fmt(min(K2["impulse_amplitudes"]))
+    m["KtwoResampleReach"] = fmt(q["resample_16_8"]["max_measured_reach_source_samples"])
+    m["KtwoSelReach"] = fmt(q["silence_removal"]["max_measured_reach_source_samples"])
+    m["KtwoNormCtrlExceed"] = fmt(q["normalize_estimated_gain"]["probes_exceeding_declaration"])
+    m["KtwoNormCtrlReach"] = fmt(q["normalize_estimated_gain"]["max_measured_reach_source_samples"])
+    m["KtwoContentExceeding"] = fmt(len(K2["content_operators_exceeding"]))
     Dm = load("D_transform_matrix")["per_transformation"]
     m["DbasePromo"] = fmt(sum(v["baseline_promotions"] for v in Dm.values()))
     m["DemPromo"] = fmt(sum(v["em_promotions"] for v in Dm.values()))
@@ -551,6 +598,12 @@ def main() -> int:
     m["ImaxAnyPct"] = f"{100*max(v['max_dilution_fraction'] for v in pt_i.values()):.2f}"
     m["IzeroTf"] = fmt(sum(1 for v in pt_i.values() if v["max_dilution_fraction"] == 0))
     m["ItfCount"] = fmt(len(pt_i))
+    # The whole-asset comparator on the same clips.
+    corpus_tf = [k for k in pt_i if k != "overlay_generated"]
+    m["IwholeMinMedianPct"] = f"{100*min(pt_i[k]['whole_asset_median_dilution_fraction'] for k in corpus_tf):.2f}"
+    m["IwholeOverlayPct"] = f"{100*pt_i['overlay_generated']['whole_asset_median_dilution_fraction']:.2f}"
+    m["IwholePromoted"] = fmt(sum(v["whole_asset_promoted_samples"] for v in pt_i.values()))
+    m["IemMaxMedianPct"] = f"{100*max(v['median_dilution_fraction'] for v in pt_i.values()):.2f}"
     cd = I["composition_chain"]
     m["IchainDeep"] = f"{100*cd[-1]['median_dilution_fraction']:.2f}"
     m["IchainDeepMax"] = f"{100*cd[-1]['max_dilution_fraction']:.2f}"

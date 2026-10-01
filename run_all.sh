@@ -132,6 +132,9 @@ step "D  transformation matrix (stock ffmpeg)"
 step "K  kernel-support containment (impulse probe)"
 ( cd "$ROOT"/experiments && $PY support_containment.py ) || note
 
+step "K2 footprint holdout challenge (prespecified, reports exceedances)"
+( cd "$ROOT"/experiments && $PY footprint_holdout.py ) || note
+
 step "E  provenance-loss behaviour"
 ( cd "$ROOT"/experiments && $PY manifest_stripping.py ) || note
 

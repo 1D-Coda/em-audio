@@ -81,6 +81,7 @@ def base_signal(kind: str = "tone") -> List[int]:
     """
     import math
     out = []
+    state = 0
     for i in range(N):
         t = i / FS
         if kind == "tone":
@@ -97,6 +98,18 @@ def base_signal(kind: str = "tone") -> List[int]:
             v = 0.0
             for h, f in enumerate((311.0, 523.7, 787.1, 1103.3, 1471.9, 1873.7), 1):
                 v += (BASE_AMP / 6.0) * math.sin(2 * math.pi * f * t + h)
+        elif kind == "noise":
+            # Holdout only (Experiment K2): deterministic white noise from a
+            # linear congruential generator, so no random module and no seed state.
+            state = (1103515245 * (state if i else 12345) + 12345) % 2**31
+            v = (BASE_AMP / 3.0) * (2.0 * state / 2**31 - 1.0)
+        elif kind == "speech_like":
+            # Holdout only (Experiment K2): a 140 Hz harmonic voice with a 4 Hz
+            # syllable envelope and a pause in every third syllable.
+            syl = int(t * 4.0)
+            env = 0.0 if syl % 3 == 2 else math.sin(math.pi * ((t * 4.0) % 1.0)) ** 2
+            v = sum((BASE_AMP / (2.0 * h)) * math.sin(2 * math.pi * 140.0 * h * t)
+                    for h in range(1, 9)) * env
         else:
             raise ValueError(kind)
         out.append(max(-32768, min(32767, int(v))))
@@ -138,7 +151,7 @@ def probe(name: str, run, model, k: int, wd: Path, ctx: str = "tone") -> Dict[st
     n = min(len(a), len(b))
     affected = [i for i in range(n) if a[i] != b[i]]
 
-    outside, worst, beyond_extent, reach = 0, 0, 0, 0
+    outside, worst, beyond_extent, reach, unmapped_outside = 0, 0, 0, 0, 0
     margin = None            # smallest distance from k to the edge of a declared range
     for o in affected:
         lo = hi = None
@@ -157,6 +170,8 @@ def probe(name: str, run, model, k: int, wd: Path, ctx: str = "tone") -> Dict[st
             beyond_extent += 1
             p = model.pieces[-1]
             lo, hi = p.source_range(p.out_start, p.out_end, with_footprint=True)
+            if not (lo <= k < hi):
+                unmapped_outside += 1
         if not (lo <= k < hi):
             outside += 1
             worst = max(worst, lo - k if k < lo else k - hi + 1)
@@ -184,7 +199,32 @@ def probe(name: str, run, model, k: int, wd: Path, ctx: str = "tone") -> Dict[st
             "max_samples_outside": worst,
             "min_margin_inside_declared_range": margin,
             "max_measured_reach_source_samples": reach,
-            "decoded_length": n}
+            "decoded_length": n,
+            # Strict outcome, reported beside the original: an affected sample
+            # the model does not map is not contained by a declaration the
+            # emitted map never makes, and a length change is itself an effect
+            # of the perturbation that min(len) discarded.
+            "length_change_samples": abs(len(a) - len(b)),
+            "outside_or_unmapped_strict": (outside - unmapped_outside) + beyond_extent
+                                          + abs(len(a) - len(b)),
+            # Interior alignment: where the model puts source sample k in the
+            # output against where the difference actually peaks. A correct
+            # length says nothing about alignment; this measures it.
+            "alignment_offset_samples": _alignment_offset(model, k, a, b, n)}
+
+
+def _alignment_offset(model, k: int, a, b, n: int):
+    """Peak of |a-b| minus the model's predicted output index of source sample k."""
+    if n == 0:
+        return None
+    peak = max(range(n), key=lambda i: abs(a[i] - b[i]))
+    if a[peak] == b[peak]:
+        return None
+    for p in model.pieces:
+        if p.src_start <= k < p.src_end:
+            scale = (p.out_end - p.out_start) / (p.src_end - p.src_start)
+            return peak - round(p.out_start + (k - p.src_start) * scale)
+    return None
 
 
 def main() -> int:
@@ -250,6 +290,11 @@ def main() -> int:
             "probes_with_spread_above_one": sum(
                 1 for r in rows if r["affected_output_samples"] > 1),
             "declared_footprint_samples": model.pieces[0].footprint,
+            "probes_with_length_change": sum(1 for r in rows if r["length_change_samples"]),
+            "total_outside_or_unmapped_strict": sum(r["outside_or_unmapped_strict"] for r in rows),
+            "max_abs_alignment_offset_samples": max(
+                [abs(r["alignment_offset_samples"]) for r in rows
+                 if r["alignment_offset_samples"] is not None] or [None]),
             "min_margin_inside_declared_range": min(
                 [r["min_margin_inside_declared_range"] for r in rows
                  if r["min_margin_inside_declared_range"] is not None] or [None]),

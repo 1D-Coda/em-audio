@@ -108,57 +108,81 @@
    "clips_with_any_dilution": 0,
    "max_dilution_fraction": 0.0,
    "mean_dilution_fraction": 0.0,
-   "median_dilution_fraction": 0.0
+   "median_dilution_fraction": 0.0,
+   "whole_asset_max_dilution_fraction": 1.0,
+   "whole_asset_median_dilution_fraction": 1.0,
+   "whole_asset_promoted_samples": 0
   },
   "overlay_generated": {
    "clips": 600,
    "clips_with_any_dilution": 0,
    "max_dilution_fraction": 0.0,
    "mean_dilution_fraction": 0.0,
-   "median_dilution_fraction": 0.0
+   "median_dilution_fraction": 0.0,
+   "whole_asset_max_dilution_fraction": 1.0,
+   "whole_asset_median_dilution_fraction": 0.969881,
+   "whole_asset_promoted_samples": 0
   },
   "resample_16_8": {
    "clips": 600,
    "clips_with_any_dilution": 600,
    "max_dilution_fraction": 0.01385,
    "mean_dilution_fraction": 0.00878,
-   "median_dilution_fraction": 0.00861
+   "median_dilution_fraction": 0.00861,
+   "whole_asset_max_dilution_fraction": 1.0,
+   "whole_asset_median_dilution_fraction": 1.0,
+   "whole_asset_promoted_samples": 0
   },
   "silence_removal": {
    "clips": 600,
    "clips_with_any_dilution": 600,
    "max_dilution_fraction": 0.583333,
    "mean_dilution_fraction": 0.325321,
-   "median_dilution_fraction": 0.313373
+   "median_dilution_fraction": 0.313373,
+   "whole_asset_max_dilution_fraction": 1.0,
+   "whole_asset_median_dilution_fraction": 1.0,
+   "whole_asset_promoted_samples": 0
   },
   "time_stretch_1.10": {
    "clips": 600,
    "clips_with_any_dilution": 600,
    "max_dilution_fraction": 0.449153,
    "mean_dilution_fraction": 0.231396,
-   "median_dilution_fraction": 0.226403
+   "median_dilution_fraction": 0.226403,
+   "whole_asset_max_dilution_fraction": 0.999979,
+   "whole_asset_median_dilution_fraction": 0.999952,
+   "whole_asset_promoted_samples": 0
   },
   "transcode_flac": {
    "clips": 600,
    "clips_with_any_dilution": 0,
    "max_dilution_fraction": 0.0,
    "mean_dilution_fraction": 0.0,
-   "median_dilution_fraction": 0.0
+   "median_dilution_fraction": 0.0,
+   "whole_asset_max_dilution_fraction": 1.0,
+   "whole_asset_median_dilution_fraction": 1.0,
+   "whole_asset_promoted_samples": 0
   },
   "transcode_mp3": {
    "clips": 600,
    "clips_with_any_dilution": 600,
    "max_dilution_fraction": 0.325608,
    "mean_dilution_fraction": 0.206417,
-   "median_dilution_fraction": 0.202425
+   "median_dilution_fraction": 0.202425,
+   "whole_asset_max_dilution_fraction": 1.0,
+   "whole_asset_median_dilution_fraction": 1.0,
+   "whole_asset_promoted_samples": 0
   },
   "trim_10_90": {
    "clips": 600,
    "clips_with_any_dilution": 0,
    "max_dilution_fraction": 0.0,
    "mean_dilution_fraction": 0.0,
-   "median_dilution_fraction": 0.0
+   "median_dilution_fraction": 0.0,
+   "whole_asset_max_dilution_fraction": 1.0,
+   "whole_asset_median_dilution_fraction": 1.0,
+   "whole_asset_promoted_samples": 0
   }
  },
- "runtime_s": 1.379
+ "runtime_s": 1.249
 }

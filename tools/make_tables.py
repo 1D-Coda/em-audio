@@ -35,7 +35,7 @@ PRETTY = {
     "transcode_mp3": "transcode to MP3", "transcode_flac": "transcode to FLAC",
     "resample_16_8": "resample 16 to 8 kHz", "normalize": "amplitude normalisation",
     "trim_10_90": "trim to the middle 80\\%", "time_stretch_1.10": "time stretch 1.10",
-    "silence_removal": "silence removal", "overlay_generated": "overlay a generated source",
+    "silence_removal": "retained-run selection", "overlay_generated": "overlay a generated source",
 }
 
 
@@ -124,7 +124,7 @@ def operator_table():
          "scalar gain; see note"),
         ("time stretch 1.10", r"$t_\mathrm{src}=\tau\; t_\mathrm{out}$",
          fp_st, O.GUARD_BAND["time_stretch"], "overlap-add window"),
-        ("silence removal", "explicit retained runs", 0, O.GUARD_BAND["silence_removal"],
+        ("retained-run selection", "explicit retained runs", 0, O.GUARD_BAND["silence_removal"],
          "frame-granular selector"),
         ("mix / overlay", "1:1 from every covering source", 0, O.GUARD_BAND["overlay"],
          "sample-wise sum"),

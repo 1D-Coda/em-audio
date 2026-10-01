@@ -62,12 +62,12 @@ def fig1():
     ax = axes[0]
     ax.plot(t, sig, lw=0.6, color="#2d3748")
     ax.set_xlim(0, 5); ax.set_yticks([]); ax.set_ylim(-1.3, 1.3)
-    ax.set_ylabel("decoded\nPCM", fontsize=8)
-    ax.set_title("One decoded audio stream, two evidence claims", fontsize=10, pad=6)
+    ax.set_ylabel("illustrative\nsignal", fontsize=8)
+    ax.set_title("One audio stream, two whole-asset claims", fontsize=10, pad=6)
     ax.set_xticks(range(6)); ax.set_xticklabels([])
     for k in range(1, 5):
         ax.axvline(k, color="#cbd5e0", lw=0.6, ls=":")
-    ax.annotate("source interval 2 is generated-derived", xy=(2.5, 0.95), xytext=(3.05, 1.15),
+    ax.annotate("third source interval [2,3) is generated-derived", xy=(2.5, 0.95), xytext=(3.05, 1.15),
                 fontsize=7.5, color=GEN,
                 arrowprops=dict(arrowstyle="->", color=GEN, lw=0.8))
     ax.axvspan(2, 3, color=GEN, alpha=0.13, lw=0)
@@ -93,10 +93,10 @@ def fig1():
             color="white", fontsize=8.5, fontweight="bold")
     ax.set_xlim(0, 5); ax.set_ylim(0, 1); ax.set_yticks([])
     ax.set_xticks(range(6)); ax.set_xlabel("time (source intervals)", fontsize=8)
-    ax.set_ylabel("emitted\nclaim", fontsize=8)
+    ax.set_ylabel("whole-asset\nclaim", fontsize=8)
     ax.spines[:].set_visible(False)
-    fig.text(0.5, -0.045, "The waveform is identical under both policies. Only the evidential "
-             "claim differs.", ha="center", fontsize=8, style="italic", color="#4a5568")
+    fig.text(0.5, -0.045, "Illustrative signal, not a corpus clip. The waveform is identical under both "
+             "policies; only the evidential claim differs.", ha="center", fontsize=8, style="italic", color="#4a5568")
     save(fig, "fig1_counterexample")
 
 

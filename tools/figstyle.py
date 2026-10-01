@@ -114,7 +114,7 @@ OPERATOR_LABELS = {
     "normalize": "amplitude normalisation",
     "overlay_generated": "generated-source overlay",
     "resample_16_8": "resample 16 to 8 kHz",
-    "silence_removal": "silence removal",
+    "silence_removal": "retained-run selection",
     "time_stretch_1.10": "time stretch 1.10",
     "transcode_flac": "transcode to FLAC",
     "transcode_mp3": "transcode to MP3",

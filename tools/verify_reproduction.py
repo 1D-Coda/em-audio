@@ -57,6 +57,9 @@ DETERMINISTIC = {
     "B2_policy_ablation": ["arms"],
     "D_transform_matrix": ["n_clips", "per_transformation"],
     "H_oracle_differential": ["cases", "disagreements"],
+    # Which content operators exceed a declaration under the holdout, and how
+    # often: a build-dependent finding like K's, so compared the same way.
+    "K2_footprint_holdout": ["content_operators_exceeding"],
     "K_support_containment": ["total_probes", "total_affected_output_samples",
                               "per_operator"],
     "L_scope_battery": ["enlargement_cases", "monotone", "violations",

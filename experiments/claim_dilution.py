@@ -26,7 +26,7 @@ import json, statistics, sys, time
 from typing import Dict, List, Tuple
 
 from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
-from em_audio.evidence import Evidence, _Bot, claim_of, leq_claim
+from em_audio.evidence import Evidence, _Bot, aggregate, claim_of, leq_claim
 from em_audio.interval_map import SourceInterval, Timeline, em_intervals
 import em_audio.operators as O
 
@@ -80,6 +80,28 @@ def diluted_samples(model, tls) -> Tuple[int, int]:
     return weak, total
 
 
+def whole_asset(model, tls) -> Tuple[int, int, int]:
+    """(weakened, total, promoted) output samples under whole-asset aggregation.
+
+    The safe coarse comparator: one claim over the whole output, the reduction of
+    every source interval of every asset the output draws on. It cannot promote,
+    and it gives up all local specificity, which is the cost this measures
+    beside the declared footprints'.
+    """
+    srcs = {p.src for p in model.pieces}
+    every = aggregate([iv.ev for s in sorted(srcs) for iv in tls[s].intervals])
+    ref = em_intervals(model, tls, footprint_aware=False)
+    weak = total = promoted = 0
+    for iv in ref:
+        n = iv.out_end - iv.out_start
+        total += n
+        if strictly_weaker(every, iv.ev):
+            weak += n
+        if not leq_claim(every.P, iv.ev.P):
+            promoted += n
+    return weak, total, promoted
+
+
 def main() -> int:
     t0 = time.time()
     index = json.loads((CORPUS / "corpus_index.json").read_text())
@@ -108,7 +130,7 @@ def main() -> int:
 
     per_tf: Dict[str, Dict[str, object]] = {}
     for name, mk in jobs.items():
-        fracs = []
+        fracs, wa_fracs, wa_promoted = [], [], 0
         for rec in index:
             n = rec["n_samples"]
             tls = {"clip": timeline_of(rec), "tone": tone_tl}
@@ -116,15 +138,23 @@ def main() -> int:
                 if mk == "OVERLAY" else mk(n)
             weak, total = diluted_samples(model, tls)
             fracs.append(weak / total if total else 0.0)
+            w, tot, pr = whole_asset(model, tls)
+            wa_fracs.append(w / tot if tot else 0.0)
+            wa_promoted += pr
         per_tf[name] = {
             "clips": len(fracs),
             "median_dilution_fraction": round(statistics.median(fracs), 6),
             "mean_dilution_fraction": round(statistics.fmean(fracs), 6),
             "max_dilution_fraction": round(max(fracs), 6),
             "clips_with_any_dilution": sum(1 for f in fracs if f > 0),
+            # The coarse safe comparator on the same clips.
+            "whole_asset_median_dilution_fraction": round(statistics.median(wa_fracs), 6),
+            "whole_asset_max_dilution_fraction": round(max(wa_fracs), 6),
+            "whole_asset_promoted_samples": wa_promoted,
         }
         print(f"  {name:20s} median {per_tf[name]['median_dilution_fraction']*100:6.3f}%  "
-              f"max {per_tf[name]['max_dilution_fraction']*100:6.3f}%")
+              f"max {per_tf[name]['max_dilution_fraction']*100:6.3f}%   whole-asset median "
+              f"{per_tf[name]['whole_asset_median_dilution_fraction']*100:6.2f}%")
 
     # --- composition: does conservatism compound along a chain? ------------
     chain_ops = [

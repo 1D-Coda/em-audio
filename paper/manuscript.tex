@@ -943,10 +943,10 @@ interior evidence is discarded no downstream operator can recover it
 (Figure~\ref{fig:promotion}A). Across the \BopCount{} operator configurations
 applied singly, baseline promotion ranged from \BopMin{}\% to \BopMax{}\% and
 complete-source propagation produced \BemOpAll{} promotions
-(Figure~\ref{fig:promotion}B). In the control arm, with anomaly positions
+(Figure~\ref{fig:promotion}C). In the control arm, with anomaly positions
 uniform over all positions, measured baseline rates agreed with the closed-form
 prediction to within \BctrlDev{} in absolute rate (\BctrlDevPct{} percentage
-points) in every cell (Figure~\ref{fig:promotion}C). The adversarial arm's near-unity rate is thus a property of the
+points) in every cell (Figure~\ref{fig:promotion}B). The adversarial arm's near-unity rate is thus a property of the
 construction, arithmetically predictable, and carries no information about
 deployed software; the informative quantity is the exact zero on the other
 side.
@@ -957,16 +957,11 @@ side.
 \caption{Boundary-only versus complete-source inheritance on \Btimelines{}
 deterministic timelines. (A) Promotion does not grow with composition depth,
 because the loss is established at the first derivation and no downstream
-operator can recover evidence already discarded. (B) Each operator applied
-alone, as a pair of marks per row: filled circles are boundary-only, open
-diamonds are complete-source. Complete-source is zero for every operator and is
-drawn as a mark rather than as a bar of no extent, so that a zero reads as the
-result it is and not as missing data. (C) Control arm with anomaly positions
-uniform over all positions, measured against the closed form
-$\binom{n-2}{k}/\binom{n}{k}$. Its vertical axis is truncated to 80--100\%,
-marked on the panel, so that any divergence between measurement and prediction
-is visible rather than compressed; the truncation exposes prediction error and
-is not a prevalence estimate. Percentages throughout quantify mechanism stress
+operator can recover evidence already discarded. (B) Control arm with anomaly
+positions uniform over all positions, measured against the closed form
+$\binom{n-2}{k}/\binom{n}{k}$, on an axis truncated to 80--100\% to expose
+prediction error. (C) Each operator applied alone: filled circles are
+boundary-only, open diamonds complete-source, which is zero for every operator. Percentages throughout quantify mechanism stress
 on a frozen fixture family and are not real-world prevalence.}
 \label{fig:promotion}
 \end{figure}

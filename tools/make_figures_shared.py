@@ -387,7 +387,7 @@ def fig_adversarial():
     ax.set_title("adversarial timelines", fontsize=8.4, loc="left")
     S.panel_tag(ax, "A", dx=-0.13)
 
-    # Panel B: one row per operator, baseline against complete-source
+    # Panel C (bottom, full width): one row per operator, baseline against complete-source
     ax = axd["B"]
     per = B["per_operator_single_step"]
     ops = sorted(per, key=lambda k: per[k]["baseline_rate"])
@@ -407,12 +407,12 @@ def fig_adversarial():
     ax.grid(axis="x", linestyle=":")
     ax.set_axisbelow(True)
     ax.set_title("single operator", fontsize=8.4, loc="left")
-    S.panel_tag(ax, "B", dx=-0.055)
+    S.panel_tag(ax, "C", dx=-0.055)
     # No series labels here. Panel A already keys the same two series with the
     # same marker shapes, and this panel is too narrow to carry both without
     # them colliding; a second key would be clutter, not clarity.
 
-    # Panel C: measured against the closed form
+    # Panel B (top right): measured against the closed form
     ax = axd["C"]
     ks = sorted(B["control_uniform_positions"]["G"], key=int)
     kx = [int(k) for k in ks]
@@ -437,7 +437,7 @@ def fig_adversarial():
                 textcoords="offset points", fontsize=7.0, color=S.MEASURED,
                 ha="left")
     ax.set_title("control arm", fontsize=8.4, loc="left")
-    S.panel_tag(ax, "C", dx=-0.14)
+    S.panel_tag(ax, "B", dx=-0.14)
     ax.text(0.97, 0.95, "axis truncated", transform=ax.transAxes,
             fontsize=6.8, ha="right", va="top", color="#666666")
 
@@ -500,9 +500,12 @@ def fig_dilution():
             zorder=2)
     ax.plot(d, med, color=S.MEASURED, marker=S.M_MEASURED, markersize=3.6,
             zorder=3)
-    ax.set_xlabel("composition depth")
+    ax.set_xlabel("composition depth (operator added at each step)")
     ax.set_ylabel("diluted (%)")
     ax.set_xticks(d)
+    # Which operator each step adds, so the jumps can be read off the axis.
+    steps = ["trim", "+resample", "+MP3", "+normalise", "+stretch"]
+    ax.set_xticklabels([f"{x}\n{s}" for x, s in zip(d, steps[:len(d)])], fontsize=7.0)
     ax.set_ylim(-4, 108)
     ax.grid(axis="y", linestyle=":")
     ax.set_axisbelow(True)
@@ -532,7 +535,7 @@ def fig_dilution():
             zorder=3)
     ax.set_xscale("log")
     ax.set_yscale("log")
-    ax.set_xlabel("asset duration (s, log)")
+    ax.set_xlabel("asset duration (s, log); boundary count fixed")
     ax.set_ylabel("diluted (%, log)")
     ax.grid(True, which="major", linestyle=":")
     ax.set_axisbelow(True)
