@@ -119,13 +119,17 @@ def check(fig, name):
         ti, bi, axi = boxes[i]
         for j in range(i + 1, len(boxes)):
             tj, bj, axj = boxes[j]
-            if axi is not axj:
-                continue                       # different panels cannot collide
+            # Figure-level text (a suptitle, a note) belongs to no axes and can
+            # land on any panel, so it is compared with everything. Text in two
+            # different panels cannot collide.
+            if axi is not axj and axi is not None and axj is not None:
+                continue
             # tick labels on the same axis are laid out by matplotlib
-            if ti in list(axi.get_xticklabels()) and tj in list(axi.get_xticklabels()):
-                continue
-            if ti in list(axi.get_yticklabels()) and tj in list(axi.get_yticklabels()):
-                continue
+            if axi is not None and axi is axj:
+                if ti in list(axi.get_xticklabels()) and tj in list(axi.get_xticklabels()):
+                    continue
+                if ti in list(axi.get_yticklabels()) and tj in list(axi.get_yticklabels()):
+                    continue
             area = _overlap_area(bi, bj)
             if area > MIN_OVERLAP_AREA:
                 problems.append(

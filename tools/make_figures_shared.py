@@ -159,182 +159,99 @@ def fig_corpus():
 # --- Figure: declared footprint versus measured dependency reach ------------
 
 def fig_containment():
-    """Measured reach against declared footprint.
+    """Measured reach against the declared footprint, every recorded run.
 
-    The operators span two orders of magnitude, from a 97-sample resampler to a
-    4,096-sample silence remover, so a shared linear axis in samples renders the
-    smallest declaration as a dot at the origin and hides exactly the row whose
-    headroom is tightest. The axis is therefore the measurement expressed as a
-    fraction of its own declaration, which is precisely the containment claim:
-    every operator is comparable, and a violation is anything crossing 100%.
-    Absolute sample counts are carried as direct labels so nothing is lost.
-
-    Both builds are drawn. The reference build satisfies every declaration; the
-    independent reproduction's FFmpeg does not, and its MP3 reach lands well
-    inside the violation band. Showing only the reference build would give the
-    figure a title that is true of one machine and false of the other, and would
-    leave the paper's most informative measurement to a supplement table.
+    One row per operator with a non-zero declaration, the reach of each run as a
+    percentage of its declaration on a logarithmic axis, and the exact values in
+    a table beneath. Every run on record is drawn, not a chosen pair, and the
+    holdout challenge on the reference build is drawn beside them, because it is
+    the measurement that shows where a declaration stops holding. A reproduction
+    package carries neither the independent runs nor K2; the figure then draws
+    what is present and says so in its title.
     """
-    K = load("K_support_containment")["per_operator"]
-    # The other build, when its results are present. A reproduction package
-    # ships without them, and the figure is then simply the reference build.
-    IND = ROOT / "results" / "independent" / "machine_readable" / "K_support_containment.json"
-    ind = json.loads(IND.read_text())["per_operator"] if IND.exists() else {}
-    rows = [(k, v) for k, v in K.items() if v["declared_footprint_samples"] > 0]
-    rows.sort(key=lambda kv: kv[1]["max_measured_reach_source_samples"] /
-              kv[1]["declared_footprint_samples"])
-    zeros = [k for k, v in K.items() if v["declared_footprint_samples"] == 0]
+    import math
+    ops = [("resample_16_8", "resample 16 to 8 kHz"),
+           ("transcode_mp3", "transcode to MP3"),
+           ("time_stretch_1.10", "time stretch 1.10"),
+           ("silence_removal", "retained-run selection")]
+    runs = [("reference build", "o", S.MEASURED, MR / "K_support_containment.json")]
+    for label, marker, colour, sub in [
+            ("independent macOS", "s", "#5b5b5b", "independent_mac"),
+            ("independent Windows", "^", "#2c6fb0", "independent_windows"),
+            ("independent Linux", "X", S.BASE, "independent")]:
+        f = ROOT / "results" / sub / "machine_readable" / "K_support_containment.json"
+        if f.exists():
+            runs.append((label, marker, colour, f))
+    data = [(lab, mk, col, json.loads(f.read_text())["per_operator"]) for lab, mk, col, f in runs]
+    K2F = MR / "K2_footprint_holdout.json"
+    hold = json.loads(K2F.read_text())["per_operator"] if K2F.exists() else None
+    decl = {k: data[0][3][k]["declared_footprint_samples"] for k, _ in ops}
 
-    fig, ax = plt.subplots(figsize=(6.4, 2.5), constrained_layout=True)
+    def pct(reach, d):
+        return 100.0 * max(reach, 1) / d
 
-    # Wide enough for the largest thing drawn, from either build. A fixed
-    # ceiling let a mark run off the axis and its connector then crossed the
-    # whole width into the labels anchored at the right margin.
-    def _pct(v):
-        d = v["declared_footprint_samples"]
-        return 100.0 * v["max_measured_reach_source_samples"] / d if d else 0.0
-    # A single build can exceed its own declaration too: that is what any
-    # reproduction on another FFmpeg may measure. The layout then has to be the
-    # anchored one, which keeps labels off the connectors whatever the data.
-    exceeded = any(_pct(v) > 100.0 for v in K.values() if v["declared_footprint_samples"])
-    anchored = bool(ind) or exceeded
-    if anchored:
-        widest = max([_pct(v) for k, v in K.items() if v["declared_footprint_samples"]]
-                     + [_pct(ind[k]) for k in K if k in ind and K[k]["declared_footprint_samples"]])
-        # Proportional, not fixed: the anchored labels keep a constant pixel
-        # width, so as the axis grows they cover more data units and a fixed
-        # margin stops being enough.
-        xmax = max(205.0 if ind else 150.0, widest + 18.0)
-    else:
-        xmax = 132
-    ax.axvspan(100, xmax, color="#f2dede", alpha=0.55, linewidth=0, zorder=0)
-    ax.axvline(100, color=S.BASE, linewidth=1.0, zorder=2)
-
-    for i, (key, v) in enumerate(rows):
-        reach = v["max_measured_reach_source_samples"]
-        decl = v["declared_footprint_samples"]
-        pct = 100.0 * reach / decl
-        ax.plot([pct, 100], [i, i], color=S.MARGIN, linewidth=3.0,
-                solid_capstyle="round", zorder=1)
-        ax.scatter([pct], [i], s=34, marker=S.M_MEASURED, color=S.MEASURED,
-                   zorder=4)
-        ax.scatter([100], [i], s=34, marker=S.M_DECLARED, facecolor="white",
-                   edgecolor=S.DECLARED, linewidth=1.2, zorder=4)
-        iv_pre = ind.get(key)
-        # Anchored, not attached. A label that follows its mark moves with the
-        # measurement, and every position that worked for one build collided on
-        # another. Both numbers sit at fixed x on their row, distinguished by
-        # colour and by the marks they annotate, so the layout is the same
-        # whatever the data says.
-        if anchored:
-            ax.text(-1.5, i, f"{reach:,}", fontsize=7.2, va="center",
-                    ha="right", color=S.MEASURED)
-        else:
-            ax.text(pct - 2.2, i, f"{reach:,}", fontsize=7.2, va="center",
-                    ha="right", color="#222222")
-        # the same operator measured on the independent build
-        iv = iv_pre
-        crossed = bool(iv and iv["max_measured_reach_source_samples"] != reach)
-        # The "of N" label sits just right of the declaration line, which is
-        # where the second build's connector now runs. Put it below the row for
-        # the crossing operator so the two do not overlap.
-        # Just right of the declaration line is where the second build's
-        # connector runs, so on a row that has one the declaration label drops
-        # below its own row. With both reach numbers now anchored at the
-        # margins, there is nothing down there to hit.
-        # Always below the row when a second build is drawn, never beside it.
-        # Beside it is where the connectors run, and which connector passes
-        # through that point depends on whether a measurement exceeded its
-        # declaration, so a conditional offset only moved the collision around.
-        ax.text(101.5, i - (0.34 if anchored else 0.0), f"of {decl:,}",
-                fontsize=7.2, va="center", color="#555555")
-        if iv:
-            ireach = iv["max_measured_reach_source_samples"]
-            if crossed:
-                ipct = 100.0 * ireach / decl
-                ax.plot([100, ipct], [i, i], color=S.BASE, linewidth=1.6,
-                        linestyle=(0, (2, 1.6)), zorder=3)
-                ax.scatter([ipct], [i], s=40, marker="X", color=S.BASE,
-                           zorder=5)
-                # Below its own mark. Anchoring it at the right margin kept it
-                # clear of the marks but not of the connectors, which reach
-                # further the larger the measurement is. Nothing else is drawn
-                # below the row line, so this is clear by construction rather
-                # than by arithmetic about the current data.
-                ax.text(ipct, i - 0.30, f"{ireach:,}", fontsize=7.2,
-                        va="center", ha="center", color=S.BASE)
-
-    ax.set_yticks(range(len(rows)))
-    ax.set_yticklabels([S.label_of(k) for k, _ in rows])
-    ax.set_xlabel("measured reach as a percentage of the declared footprint")
-    ax.set_xlim(-14 if anchored else 0, xmax)
-    ax.set_ylim(-1.15, len(rows) - 0.42)
-    ax.set_xticks([0, 25, 50, 75, 100] + [x for x in (150, 200) if anchored and x < xmax])
+    fig = plt.figure(figsize=(6.8, 4.6))
+    ax = fig.add_axes([0.25, 0.47, 0.72, 0.43])
+    ys = list(range(len(ops)))[::-1]
+    offs = [0.24, 0.08, -0.08, -0.24][:len(data)]
+    allx = []
+    for (lab, mk, col, po), dy in zip(data, offs):
+        xs = [pct(po[k]["max_measured_reach_source_samples"], decl[k]) for k, _ in ops]
+        allx += xs
+        ax.scatter(xs, [y + dy for y in ys], marker=mk, s=30, color=col, zorder=4,
+                   label=lab, linewidths=0)
+    if hold:
+        hx = [pct(hold[k]["max_measured_reach_source_samples"], decl[k]) for k, _ in ops]
+        allx += hx
+        ax.scatter(hx, ys, marker="*", s=95, facecolor="white", edgecolor=S.BASE,
+                   linewidth=1.1, zorder=5, label="holdout, reference build")
+    xmax = max(130.0, max(allx) * 1.6)
+    ax.set_xscale("log")
+    ax.set_xlim(20, xmax)
+    ax.axvspan(100, xmax, color="#f6e3e3", alpha=0.6, linewidth=0, zorder=0)
+    ax.axvline(100, color=S.BASE, linestyle=(0, (4, 2)), linewidth=1.0, zorder=2)
+    ticks = [t for t in (25, 50, 100, 200, 400, 800) if t < xmax]
+    ax.set_xticks(ticks)
+    ax.set_xticklabels([f"{t}" for t in ticks])
+    ax.minorticks_off()
+    ax.set_yticks(ys)
+    ax.set_yticklabels([lab for _, lab in ops], fontsize=8.0)
+    ax.set_ylim(-0.6, len(ops) - 0.4)
+    ax.set_xlabel("measured reach as % of the declared footprint (log)", fontsize=8.0)
+    ax.tick_params(axis="x", labelsize=7.5)
     ax.grid(axis="x", linestyle=":", zorder=0)
-    ax.set_axisbelow(True)
+    ax.text(100 * 1.04, len(ops) - 0.48, "exceeds the declaration", fontsize=7.2,
+            color=S.BASE, va="bottom", ha="left")
+    ax.legend(loc="lower center", bbox_to_anchor=(0.42, 1.02), ncol=3 if hold else len(data),
+              fontsize=7.2, frameon=False, handletextpad=0.3, columnspacing=1.0)
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
 
-    top = len(rows) - 1
-    tp = (100.0 * rows[top][1]["max_measured_reach_source_samples"] /
-          rows[top][1]["declared_footprint_samples"])
-    tr = ax.get_xaxis_transform()          # x in data, y in axes fraction
-    # Only without a legend. The callout is anchored to the top row's
-    # measurement, so it moves with the data and collided with the fixed
-    # "declaration" label whenever that measurement approached the declaration.
-    # Where there is a legend, it already says what the marks are.
-    if not anchored:
-        ax.annotate("measured reach", xy=(tp, 1.005), xytext=(tp - 13, 1.10),
-                    xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
-                    color="#222222", annotation_clip=False,
-                    arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
-    if anchored:
-        from matplotlib.lines import Line2D
-        # With one build that exceeds its declaration, the floating callout sat
-        # beside the "declaration" label and read as one phrase; a key does not.
-        keys = ([Line2D([], [], marker=S.M_MEASURED, color=S.MEASURED, linestyle="",
-                        markersize=5, label="reference build"),
-                 Line2D([], [], marker="X", color=S.BASE, linestyle="",
-                        markersize=6, label="independent build")] if ind else
-                [Line2D([], [], marker=S.M_MEASURED, color=S.MEASURED, linestyle="",
-                        markersize=5, label="measured reach")])
-        # Below the axes rather than inside it. Placed inside, the legend
-        # collided with the independent build's label as soon as that label
-        # moved, and the label's position is a measurement: any other build
-        # puts it somewhere else. A legend whose correctness depends on the
-        # data it describes is not a legend.
-        ax.legend(handles=keys, loc="upper center", bbox_to_anchor=(0.5, -0.34),
-                  ncol=2, fontsize=6.9, frameon=False, handletextpad=0.4,
-                  borderpad=0.1)
-    ax.annotate("declaration", xy=(100, 1.005), xytext=(100, 1.10),
-                xycoords=tr, textcoords=tr, fontsize=7.3, ha="center",
-                color="#222222", annotation_clip=False,
-                arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
-    ax.text(100 + (xmax - 100) / 2, -0.78,
-            "violation: reach exceeds the declaration" if anchored
-            else "a violation would land in here",
-            fontsize=6.9, ha="center", va="center", color=S.BASE)
-
-    outside = sum(v["total_outside_declared_support"] for v in K.values())
-    if ind:
-        iout = sum(v["total_outside_declared_support"] for v in ind.values())
-        # A title true of one build and false of the other is the defect here,
-        # not the failing measurement.
-        title = (f"Declarations hold on the reference build ({outside} samples "
-                 f"outside) and not on another ({iout:,})")
-    elif outside:
-        # The title states what was measured, so it must change with it.
-        title = (f"A declaration does not contain its own measurement on this "
-                 f"build ({outside:,} influenced samples outside)")
-    else:
-        title = (f"Every declaration contains its own measurement "
-                 f"({outside} influenced samples fell outside)")
-    ax.set_title(title, fontsize=8.6, loc="left", pad=22)
-    if zeros:
-        fig.text(0.0, -0.055,
-                 "Zero-footprint operators ("
-                 + ", ".join(S.label_of(z) for z in sorted(zeros))
-                 + ") are omitted: reach and declaration are both zero, so the "
-                   "ratio is undefined.",
-                 fontsize=6.8, color="#666666")
+    # Exact values beneath: the plot shows where each run falls, the table what
+    # it measured, in source samples.
+    cols = ["declared"] + [lab.replace("independent ", "ind. ").replace(" build", "")
+                           for lab, *_ in data] + (["holdout"] if hold else [])
+    rows = []
+    for k, _ in ops:
+        r = [f"{decl[k]:,}"] + [f"{po[k]['max_measured_reach_source_samples']:,}" for *_, po in data]
+        if hold:
+            r.append(f"{hold[k]['max_measured_reach_source_samples']:,}")
+        rows.append(r)
+    tab = fig.add_axes([0.25, 0.02, 0.72, 0.30]); tab.axis("off")
+    tb = tab.table(cellText=rows, rowLabels=[lab for _, lab in ops], colLabels=cols,
+                   loc="center", cellLoc="right", rowLoc="right", edges="horizontal")
+    tb.auto_set_font_size(False); tb.set_fontsize(7.4); tb.scale(1.0, 1.25)
+    for (r, c), cell in tb.get_celld().items():
+        if r == 0:
+            cell.set_text_props(fontweight="bold")
+        if r > 0 and c >= 1:
+            k = ops[r - 1][0]
+            v = int(cell.get_text().get_text().replace(",", ""))
+            if v > decl[k]:
+                cell.set_text_props(color=S.BASE, fontweight="bold")
+    fig.text(0.25, 0.335, "reach in source samples; red: exceeds the declaration",
+             fontsize=7.0, color="#555555")
+    # No title in the figure: the caption carries it, as the journal requires.
     save(fig, "fig5_containment")
 
 

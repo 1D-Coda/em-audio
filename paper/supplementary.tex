@@ -90,9 +90,9 @@ Reused as a method template; all results are new &
 Any prior third-party generalizer audit \\
 \addlinespace
 --- &
-\textbf{New with no spatial analogue:} the kernel-footprint rule with declared
+\textbf{New, not part of the spatial work:} the kernel-footprint rule with declared
 per-operator implementation margins and measured model-versus-implementation
-deviation;
+deviation, challenged on held-out signals;
 footprint monotonicity; signal transparency on decoded PCM; a signed C2PA
 transport with temporal regions of interest; the unverified state as an
 operational outcome of a real validator &
@@ -126,8 +126,8 @@ withheld, not computed from the rest \\
 Non-promotion in the spatial setting &
 Kernel footprints with declared source-support bounds; temporal mapping
 validated per clip against stock FFmpeg and source-support containment tested
-separately by differential influence probes; footprint monotonicity
-(Proposition~\PropFootprint{}) \\
+separately by differential influence probes and challenged on held-out
+signals; footprint monotonicity (Proposition~\PropFootprint{}) \\
 \addlinespace
 Conformance-test methodology (exhaustive enumeration, frozen fixtures,
 separately implemented oracle) &
@@ -230,8 +230,9 @@ Relies on a filtered operator so that a generated sample bleeds into a
 neighbouring output region without appearing in the nominal range &
 The declared kernel footprint enlarges $D_y$; over-approximation is safe by
 Proposition~\PropFootprint{} (footprint monotonicity) &
-An under-declared footprint, which is a conformance failure of that
-implementation \\
+An under-declared footprint, a conformance failure of that implementation;
+the holdout challenge finds one for the encoder and the stretcher, which a
+strict deployment gives whole-asset dependency \\
 \addlinespace
 Strips the manifest and redistributes &
 State becomes \textsc{unverified} &
@@ -482,6 +483,27 @@ the one operator whose reach did not reproduce.}
 \label{tab:independent}
 \input{../results/tables/independent_containment}
 \end{table}
+
+\section{Holdout challenge: per-operator detail}
+\label{sec:supp-holdout}
+
+The holdout challenge probes each operator \KtwoProbesPerOp{} times: \KtwoContexts{}
+signal contexts, \KtwoHoldoutContexts{} of them (white noise and a speech-like
+voice) unused while the declarations were set, \KtwoAmps{} impulse amplitudes
+from \KtwoAmpMin{} to \KtwoAmpMax{}, and \KtwoPositions{} probe positions
+disjoint from Experiment~K's, all fixed before the run. Its outputs are in
+\path{results/machine_readable/K2_footprint_holdout.json}, one row per probe.
+
+The MP3 encoder exceeded its declaration in \KtwoMpExceed{} probes, with a reach
+of \KtwoMpReach{} source samples, and the time stretcher in \KtwoStExceed{},
+with a reach of \KtwoStReach{}; the stretcher's exceedances occur at every
+amplitude down to \KtwoStMinAmp{}. Resampling (reach \KtwoResampleReach{}),
+retained-run selection (reach \KtwoSelReach{}) and fixed-gain normalisation
+showed none. With the gain estimated from each input, normalisation reached
+\KtwoNormCtrlReach{} source samples in \KtwoNormCtrlExceed{} probes: the whole
+input, through the gain, which the contract treats as a control dependency
+rather than represented content. A finite challenge can refute a declaration
+and cannot establish one; no exceedance here is not containment at every input.
 
 \section{Raw rows behind two summary figures}
 

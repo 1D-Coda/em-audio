@@ -3,10 +3,11 @@ import json
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MR = ROOT / "results" / "machine_readable"
-B = json.loads((MR / "B_adversarial_timelines.json").read_text())
 F = json.loads((MR / "F_c2pa_roundtrip.json").read_text())
-G = json.loads((MR / "G_overhead.json").read_text())
-d1 = B["per_depth"]["1"]
+D = json.loads((MR / "D_transform_matrix.json").read_text())
+pt = D["per_transformation"]
+d_runs = sum(v["n"] for v in pt.values())
+d_base = sum(v["baseline_promotions"] for v in pt.values())
 n_rt = sum(v["n"] for v in F["per_container"].values())
 # Each highlight is capped at 85 characters including spaces. The limit is
 # enforced here rather than trusted, because these lines are regenerated on
@@ -15,9 +16,9 @@ LIMIT = 85
 lines = [
  "Derived audio can keep its waveform while claiming stronger provenance.",
  "A complete-source contract makes the derived claim the meet over its sources.",
- "Declared kernel footprints make the rule work on real codecs; erring large is safe.",
- f"Boundary-only inheritance promoted on {100*d1['baseline_promotion_rate']:.1f}% of timelines; complete-source on none.",
- f"Interval evidence survived {n_rt} signed C2PA round-trips at {100*G['em_over_ffmpeg_fraction']:.3f}% of FFmpeg time.",
+ "Measured codec footprints failed a holdout test; whole-asset dependency stays safe.",
+ f"Boundary-only inheritance promoted in {d_base:,} of {d_runs:,} FFmpeg runs; ours in none.",
+ f"Decoded essence was unchanged across {n_rt:,} signed C2PA round-trips.",
 ]
 over = [(len(l), l) for l in lines if len(l) > LIMIT]
 if over:

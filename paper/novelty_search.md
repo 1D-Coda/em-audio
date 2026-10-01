@@ -39,8 +39,9 @@ Legend: ● provided · ○ not provided · ◐ partial.
 | EMTRF (Urias 2026), prior work by the same author | terrain geometry | ○ | ● (spatial) | ● (spatial instantiation) | ○ (spatial, not temporal) | ● | ○ | ● |
 | **This work** | audio | ● | ● | ● (presented as an instance) | ● | ● | ● | ● |
 
-Two columns are empty across every prior row: *complete-source operator rule* and
-*C2PA-integrated interval-level enforcement*.  No prior row combines a
+Among prior rows, only the author's spatial predecessor has a *complete-source
+operator rule*, and none has *C2PA-integrated interval-level enforcement*. No
+prior row combines a
 complete-source operator rule with a temporal media instantiation and a signed
 transport.
 

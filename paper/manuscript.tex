@@ -61,28 +61,28 @@ Promotion Across Derived Audio Transformations}
 \address[aur]{Independent researcher, Hermosillo, Sonora, Mexico}
 
 \begin{abstract}
-Derived audio can keep its waveform while silently strengthening what it
-says about its origin. Under a boundary-only inheritance policy, a constructed reference and not any
-named product, a clip assembled from captured and generated material, then
+Derived audio can keep its waveform while strengthening what it says about
+its origin. Under a boundary-only inheritance policy, a constructed reference and not any
+named product, a clip assembled from captured and generated material,
 trimmed, resampled and re-encoded, emerges described as captured-only. We specify an operator contract for derived audio:
 over the complete required source set, provenance unions, same-channel support
 minimises, applicability intersects and lineage unions, and an unverified source
 interval is absorbing. The algebra is a known meet-semilattice
-construction; new are the executable temporal instantiation over
-sample-exact intervals with declared kernel footprints, a signed transport
-inside C2PA temporal regions, and its evaluation. No
-model is trained.
+construction; new are its executable temporal instantiation with declared
+kernel footprints, a signed transport inside C2PA temporal regions, and the
+evaluation.
 Across \Achecks{} contract checks, \Btimelines{} adversarial timelines,
 \Cclips{} mixed-origin clips transformed by stock FFmpeg and \Hcases{}
 differential-oracle cases, complete-source propagation produced \Afailed{}
-failures and \Dem{} promotions, while boundary-only inheritance promoted in
+failures and \Dem{} promotions, whereas boundary-only inheritance promoted in
 \Dbase{} of \Druns{} stock-FFmpeg transformation runs. Decoded essence was identical before and after signing in \Ftotal{}
 round-trips, at \Gratio{}$\times$ the bookkeeping baseline. An independent reproduction on
-unrelated hardware and a different FFmpeg major version returned every
+other hardware and FFmpeg major version returned every
 conformance, promotion and oracle outcome unchanged and found two
-build-specific declarations its build does not satisfy,
-reported as results rather than widened: the algebra holds by proof, the audio
-instantiation only where its footprints were measured. The
+build-specific declarations its build does not satisfy, and a holdout
+challenge exceeded the measured encoder and stretcher declarations on the
+reference build: the algebra holds by proof, the audio instantiation only where
+the declared map contains the real dependencies. The
 contract constrains what a derived representation may claim about its sources,
 and binds only an operator that implements it; it does not detect deepfakes,
 and a valid signature proves only that an assertion was signed.
@@ -159,8 +159,8 @@ usable in a temporal medium with a real signed transport and real processing
 software, and what it costs. What is inherited and what is new, row by row, is
 Supplementary Note~\NoteTransfer{}, and no earlier result is reused: the algebra transfers, and the temporal
 interval maps, the kernel-footprint problem, the validations against
-third-party processing, signal transparency and the signed transport have no
-spatial analogue.
+third-party processing, signal transparency and the signed transport are not
+part of the spatial work.
 
 
 The algebra, a meet over
@@ -169,8 +169,9 @@ is an instance of constructions that are decades old, in semiring-based
 provenance annotation \citep{green2007provenance} and in label lattices for
 secure information flow \citep{denning1976lattice,goguen1982noninterference}.
 We do not claim the non-amplification property as a new theorem; we state it as
-an instance, prove the one part specific to the temporal setting, and locate the
-contribution in what is executable and measured.
+an instance, prove the footprint-monotonicity result the temporal
+instantiation relies on, and locate the contribution in what is executable and
+measured.
 
 \paragraph{Contributions} Each is traceable to a completed experiment.
 
@@ -183,7 +184,7 @@ contribution in what is executable and measured.
   with a declared conservative kernel footprint, with a footprint-monotonicity
   result showing that over-approximating the required source set is always safe
   (Section~\ref{sec:audio}, Proposition~\ref{prop:footprint}).
-\item \textbf{A signed transport, and what each part of the rule buys.}
+\item \textbf{A signed transport, and an ablation of the rule.}
   Interval evidence carried inside C2PA temporal regions of interest, surviving
   derivation and re-signing on \Fcontainers{} containers with \Ftotal{}
   round-trips, with a C2PA-native composition of signed captured and generated
@@ -203,12 +204,13 @@ contribution in what is executable and measured.
   separately by differential influence probes
   (Section~\ref{sec:res-containment}), since agreement on output length says
   nothing about how far a dependency reaches, both passes packaged as
-  \path{tools/calibrate_footprint.py}; and cost on both axes, runtime, where
+  \path{tools/calibrate_footprint.py}, then challenged on held-out signals,
+  which the encoder and stretcher declarations fail (Section~\ref{sec:res-holdout}); and cost on both axes, runtime, where
   bookkeeping is \GffmpegPct{}\% of the processing it accompanies and the
   assertion grows at \GperInterval{}~B per evidence interval
   (Section~\ref{sec:res-overhead}), and \emph{evidential}, a claim-dilution
   metric priced in samples per ancestry boundary rather than in fractions of
-  the asset (Section~\ref{sec:res-dilution}).
+  the asset and compared with a whole-asset claim (Section~\ref{sec:res-dilution}).
 \end{enumerate}
 
 The contract does not infer authenticity from acoustic features; it prevents a
@@ -473,7 +475,11 @@ q_1 \supseteq q_2),
 \label{eq:order}
 \end{equation}
 read ``$q_1$ is no stronger than $q_2$'': a larger atom set is a weaker
-claim and $\bot$, which asserts nothing, is the bottom element. This is a
+claim and $\bot$, which asserts nothing, is the bottom element. It is a policy
+order: it governs permission to make an exclusive-origin claim, and is not an
+ordering of truth, credibility or forensic reliability; a known mixture is not
+the same as uncertainty about origin, and neither captured nor generated means
+true or false speech. This is a
 partial order under which two claims always have a greatest lower bound but
 need not have an upper bound ($\{\C\}$ and $\{\G\}$ have none), so the
 structure is a meet-semilattice rather than a lattice, with meet
@@ -590,16 +596,18 @@ lineage composes by union of the per-operator source maps.
 \end{proof}
 
 Theorem~\ref{thm:composition} is the standard consequence of combining in a
-meet-semilattice; the next proposition is specific to the temporal setting and
-is what makes the contract implementable against real processing software: more
+meet-semilattice. The next proposition is not specific to time, since its proof
+uses only inclusion, union, minimum and intersection, but it is what makes the
+temporal instantiation implementable against real processing software: more
 possible source dependencies may weaken an output claim and can never
 strengthen it, so erring towards a larger footprint errs safely.
 
 \begin{proposition}[Footprint monotonicity]
 \label{prop:footprint}
-If $\Dy \subseteq \Dy'$ then the claim computed from $\Dy'$ is no stronger than
-the claim computed from $\Dy$, and for every channel $\mu$ the value computed
-from $\Dy'$ is $\preceq$ the value computed from $\Dy$ in $\mathcal{S}$.
+For finite source sets $\emptyset \neq \Dy \subseteq \Dy'$, the claim the
+canonical reduction computes from $\Dy'$ is no stronger than the claim it
+computes from $\Dy$, and for every channel $\mu$ the value computed from $\Dy'$
+is $\preceq$ the value computed from $\Dy$ in $\mathcal{S}$.
 \end{proposition}
 \begin{proof}
 Enlarging the index set of a union can only add atoms, and by~\eqref{eq:order}
@@ -613,8 +621,10 @@ member of $\Dy \subseteq \Dy'$ does too, and $\mu$ is available on $\Dy$ as
 well; the emitted value is a minimum over the larger set $\Dy'$, which is no
 larger than the minimum over $\Dy$. Suppose instead $\mu$ is unavailable on
 $\Dy$. Some member of $\Dy$ then fails to declare $\mu$ applicable, fails to
-supply a value, or is in state $\bot$; that same member lies in $\Dy'$, so $\mu$
-is unavailable on $\Dy'$ as well, and $\bot_{\mu} \preceq \bot_{\mu}$. The
+supply a value, or is in state $\bot$, or the scopes over $\Dy$ already have an
+empty intersection; that member lies in $\Dy'$, and an intersection over more
+scopes is no larger, so $\mu$ is unavailable on $\Dy'$ as well, and
+$\bot_{\mu} \preceq \bot_{\mu}$. The
 remaining case is an added source whose scope empties the intersection
 in~(iii): requirements~(ii) and~(iii) then withhold the channel, giving
 $\bot_{\mu}$, which by~\eqref{eq:supportdomain} is $\preceq$ every element of
@@ -624,6 +634,10 @@ The condition $\Dy^{\mu} = \Dy$ carries the weight here. Under the weaker
 $\Dy^{\mu} \neq \emptyset$ the statement is false: with $\Dy = \{x_1\}$ and
 $\mu$ not applicable to $x_1$, enlarging to $\Dy' = \{x_1, x_2\}$ where $x_2$
 declares $\mu$ with value $v$ would raise the channel from $\bot_{\mu}$ to $v$.
+The hypothesis $\Dy \neq \emptyset$ is needed as well: an empty set reduces to
+$\bot$, and enlarging it to one captured source would strengthen the claim. An
+output position with no required source is therefore not covered by the
+proposition, and the implementation marks it unverified.
 \end{proof}
 
 Proposition~\ref{prop:footprint} is the practical result of this section: an
@@ -631,14 +645,18 @@ implementation does not need the exact dependency set of a filtered operator,
 because a \emph{conservative over-approximation} is always safe and only
 under-approximation can promote. That converts knowing which input samples
 every output sample depends on inside a third-party codec into a tractable
-requirement: declare a bound, and test that it holds.
+requirement: declare a set that contains the true one. An analytical radius can
+establish that; a probe can only test it, and Section~\ref{sec:audio} says which
+of the two each operator's declaration rests on.
 
 \paragraph{Signal transparency (P8)} The contract must not change the audio.
 The canonical essence of an asset is the SHA-256 of its decoded stream rendered
 to signed 16-bit little-endian PCM at the asset's own rate and channel count,
 and it must be identical whether the EM assertion or the baseline assertion is
 attached. Whole-file hashes are unusable here because embedding a manifest
-changes the file by construction (Section~\ref{sec:res-transport}).
+changes the file by construction (Section~\ref{sec:res-transport}). Equality
+of this canonical 16-bit rendering is what is established, not equality of every
+higher-precision decoded representation.
 
 \section{Audio instantiation}
 \label{sec:audio}
@@ -701,11 +719,11 @@ MPEG-1 long window, \MpThreeWindow{}, plus the encoder delay, giving
 \MpThreeKernel{}, and one frame of alignment guard. That derivation is necessary but not sufficient: the pinned
 \texttt{libmp3lame} runs with its bit reservoir enabled, which carries bits
 across frames, so the encoder is stateful in a way no window-and-delay
-argument captures. The declared \MpThreeDeclared{} is therefore an
-\emph{empirically validated bound for this frozen configuration}, confirmed by
-the probes of Section~\ref{sec:res-containment} at a measured reach of
-\KmpThreeReach{}; a different bitrate, encoder or reservoir setting requires
-re-probing. For overlap-add time stretching the footprint covers the analysis window
+argument captures. The declared \MpThreeDeclared{} is therefore a
+\emph{measured} declaration for this frozen configuration, containing a reach of
+\KmpThreeReach{} at the operating points probed in
+Section~\ref{sec:res-containment}; it is not a bound, and the holdout challenge
+of Section~\ref{sec:res-holdout} finds inputs on which this encoder exceeds it. For overlap-add time stretching the footprint covers the analysis window
 scaled by the tempo factor; for a frame-granular selector it covers the
 difference between the exact retained-sample model and the implementation's
 frame-aligned cuts. Two experiments check these numbers against software we do not control, and
@@ -722,6 +740,24 @@ operation, mark the interval unverified, which Section~\ref{sec:model} makes abs
 whole-asset dependency and pay the dilution of
 Section~\ref{sec:res-dilution}. Emitting the claim an unvalidated
 declaration would license is the one course forbidden.
+
+\paragraph{Three kinds of footprint evidence} A declared footprint rests on one
+of three grounds, and the guarantee is as strong as its ground. An
+\emph{analytical} footprint follows from the algorithm and its pinned
+configuration: trimming, concatenation, lossless transcoding, fixed-gain
+scaling, and the polyphase resampler, whose radius is the filter length. A
+\emph{measured} footprint contains the dependency observed on a stated set of
+probes; probes can refute it and cannot establish it, because an adaptive
+operator re-decides when its input changes. The \emph{fallback} is whole-asset
+dependency, which needs no measurement and gives up local specificity. The lossy
+encoder and the overlap-add stretcher are adaptive, and a prespecified holdout
+challenge finds inputs on which both exceed their measured declarations on the
+reference build itself (Section~\ref{sec:res-holdout}); a strict deployment
+treats them with whole-asset dependency, at the cost
+Section~\ref{sec:res-dilution} measures. The contract prevents promotion when
+the declared map contains the relevant source dependencies; the probes measure
+that condition at stated operating points and do not certify a universal support
+radius for an adaptive operator.
 
 \begin{table}[t]
 \centering
@@ -761,7 +797,7 @@ ingredient'' \citep[Table~10, \S18.16.3]{c2pa24}, and the minimal way to
 inherit from a parent over a retained region is to read its endpoints. Since
 the specification does not define the reduction, every implementation that
 derives an asset supplies one, deliberately or by default, and endpoint
-inheritance is the reading its own vocabulary most directly suggests. The
+inheritance is one such rule. The
 baseline isolates one consequence of that underspecification without
 attributing it to any implementation; how deployed software behaves would need
 a survey this paper does not contain.
@@ -822,7 +858,7 @@ any deployed system promotes provenance.
 
 Experiment~A enumerates every source word of length $1$ to \Amaxlen{} over
 $\{\C, \G, \bot\}$, giving \Awords{} words, and pushes each through up to ten
-operator configurations. Two configurations require a minimum word length: the inner trim needs at least three elements and silence removal at least two. So the \AwordsShortOne{} single-element words receive eight configurations,
+operator configurations. Two configurations require a minimum word length: the inner trim needs at least three elements and retained-run selection at least two. So the \AwordsShortOne{} single-element words receive eight configurations,
 the \AwordsShortTwo{} two-element words nine, and the remaining \AwordsFull{}
 words the full ten, giving \Acases{} cases. Each case is checked against the property suite and against a closed-form
 oracle that recomputes the expected state from the operator's nominal source
@@ -857,7 +893,8 @@ principle depend on signal character. A robustness arm demonstrates that
 rather than leaving it to argument, rebuilding \CtwoNeuralN{} clips with a neural TTS
 (Piper, a VITS-architecture engine with a voice trained on the public-domain
 LJSpeech corpus) and overlaying \CtwoNoiseN{} clips with locally generated pink
-noise at $-18$~dB so that every ancestry boundary is acoustically buried.
+noise mixed at a volume setting of $-18$~dB over every ancestry boundary,
+a volume setting rather than a measured signal-to-noise ratio.
 
 Concatenation and every subsequent transformation are performed by
 \textbf{stock FFmpeg through its command line, with no project code in the
@@ -922,8 +959,9 @@ During development the suite failed on the overlay operator,
 where the implementation evaluated overlapping map pieces independently and
 emitted a captured claim and a generated claim over the same output interval
 instead of one mixed claim; that was a defect in our own code, fixed by making the
-output partition global across pieces. A conformance suite that has never
-failed is evidence of nothing.
+output partition global across pieces. Passing checks are limited evidence;
+these regressions, and the mutation tests that reject an inexact reduction,
+show that the suite is sensitive to these particular defects.
 
 \subsection{Adversarial timelines}
 \label{sec:res-adversarial}
@@ -997,7 +1035,7 @@ fails exactly one arm, and only the full contract clears both.}
 
 On \Cclips{} clips, complete-source propagation recovered the evidence
 interval structure exactly, every boundary at sample resolution, for \Cexact{}
-clips, and identified the generated interval with its exact bounds for \Cgen{},
+clips, and propagated the supplied generated-source annotation with its exact bounds for \Cgen{},
 with no detector, no training and no acoustic feature. The ground truth is
 constructed rather than discovered: the question is
 whether evidence originating at the capture and generation steps
@@ -1005,7 +1043,7 @@ whether evidence originating at the capture and generation steps
 could be inferred from the signal, and nothing here supports a claim that
 generated audio can be identified without evidence. The robustness arm behaves
 identically: \CtwoNeuralExact{} of \CtwoNeuralN{} neural-TTS clips and
-\CtwoNoiseExact{} of \CtwoNoiseN{} noise-buried clips recovered their full
+\CtwoNoiseExact{} of \CtwoNoiseN{} noise-overlaid clips recovered their full
 interval structure, with \CtwoNeuralEm{} and \CtwoNoiseEm{} promotions; under
 the noise overlay the captured segments correctly become \textsc{mixed} while
 the generated segment stays \textsc{generated}, since union adds no atom.
@@ -1019,16 +1057,17 @@ promoted on \Dbase{} runs and complete-source propagation on \Dem{}, with
 \DemLineage{} lineage omissions. Two transformations produced \emph{no}
 baseline promotion, and we report that as readily as the rest: overlay declares
 the generated source as a separate top-level ingredient, so a boundary-only
-reading still sees both, and silence removal happened to retain runs whose
+reading still sees both, and retained-run selection happened to retain runs whose
 boundaries fell inside the generated region.
 
 The interval model was validated against FFmpeg's actual output on every PCM
 run and on a \DdetermN{}-clip subset for the coded containers. The largest
 deviation between predicted and actual output sample count was \DsilenceDev{}
-samples for silence removal, \DstretchDev{} for time stretching,
+samples for retained-run selection, \DstretchDev{} for time stretching,
 \DmpThreeDev{} for MP3 and \DresampleDev{} for resampling; for \DguardOK{}
 transformations the declared mapping margin covered it. That measurement
-validates the \emph{mapping and alignment} of the interval model and not the
+compares output \emph{lengths} only: it does not establish interior alignment,
+which the probes of Section~\ref{sec:res-containment} measure, nor the
 \emph{support containment} Proposition~\ref{prop:footprint} requires, because
 an operator can emit exactly the predicted number of samples while depending
 on sources outside the declared footprint; containment is tested directly in
@@ -1048,7 +1087,7 @@ Each row is a pair of marks: a filled circle for the boundary-only reference
 policy and an open diamond for complete-source propagation, with counts written
 directly rather than read off the axis. Boundary-only promoted in
 \DbasePromo{} of \DtotalRuns{} runs and complete-source in \DemPromo{}.
-Generated-source overlay and silence removal produce no baseline promotion
+Generated-source overlay and retained-run selection produce no baseline promotion
 either, for the structural reasons given in Section~\ref{sec:res-corpus}, and
 are marked as such rather than left to look like missing rows. (B) The mechanism
 behind panel A, measured in the same runs: the mean number of evidence intervals
@@ -1097,28 +1136,17 @@ conservative direction.
 
 \begin{figure}[tbp]
 \centering
-\includegraphics[width=0.88\linewidth]{fig5_containment.pdf}
-\caption{Kernel-support containment. Each operator configuration was probed
-with a proportionate single-sample impulse at ten prespecified positions in each
-of \Kcontexts{} deterministic signal contexts, \Kprobes{} probes in total.
-Filled circles are the furthest any one source sample was measured to influence
-the output beyond the nominal source range on the reference build; open diamonds
-are the declared footprint; crosses are the same measurement on the independent
-reproduction's FFmpeg (Section~\ref{sec:res-independent}), shown wherever the
-two builds disagree. The axis is the measurement as a percentage of its own declaration,
-because the operators span two orders of magnitude in samples and a shared
-linear axis would hide the tightest row; absolute counts are given as direct
-labels. Containment requires the measurement to fall at or left of its
-declaration. On the reference build \KoutsideTotal{} influenced samples fell
-outside. On the independent build the MP3 declaration does not contain its own
-measurement: the reach is \IRmpReach{} source samples against \IRmpDeclared{}
-declared, which is the mark in the shaded band, and \IRmpOutside{} output
-samples fall outside the declared support. That row is the paper's own
-counterexample to treating these numbers as portable. Silence
-removal is the reason this experiment exists: an earlier declaration was
-exceeded, the probe detected it, and the band was raised to \KsilenceFp{}
-samples. These are measurements of the frozen configurations tested, not
-universal codec constants.}
+\includegraphics[width=\linewidth]{fig5_containment.pdf}
+\caption{Kernel-support reach against the declared footprint. Each mark is the
+furthest any one source sample influenced the output beyond its nominal source
+range, as a percentage of the declaration on a logarithmic axis; the dashed line
+is the declaration, and marks to its right exceed it. Circles, squares,
+triangles and crosses are the containment probes of
+Section~\ref{sec:res-containment} on the reference build and the three
+independent runs (Section~\ref{sec:res-independent}); stars are the maximum over
+the holdout challenge on the reference build (Section~\ref{sec:res-holdout}). The
+table gives each reach in source samples. Zero-footprint operators are omitted.
+Probes can refute a declaration and cannot establish one.}
 \label{fig:containment}
 \end{figure}
 
@@ -1162,18 +1190,67 @@ every context produced influence for every operator, so no row passes
 vacuously. That zero was not free. A shorter probe passes trivially for the
 large-footprint operators because a declared footprint of \KstretchFp{} samples
 spans a whole short source; lengthening it made the test able to fail, and it
-did. Silence removal failed: a frame-granular selector emitted a frame
+did. Retained-run selection failed: a frame-granular selector emitted a frame
 beginning \KsilenceReach{} source samples before a retained run's start, well
 beyond the margin declared at the time. That is an under-declaration, the one
 direction Proposition~\ref{prop:footprint} does not forgive; the band was
 raised to \KsilenceFp{}, above the measured reach, and the operator now
 contains with a margin of \KsilenceMargin{}. We report this rather than
-quietly shipping the corrected number because it is the clearest evidence that
-the bounds are measured rather than asserted. The bands are also reasonably
+quietly shipping the corrected number because it shows the declarations are
+measured rather than asserted. The bands are also reasonably
 tight, which matters because a larger one would be equally safe and more
 dilutive: resampling reached \KresampleReach{} against \KresampleFp{}, MP3
 \KmpThreeReach{} against \KmpThreeFp{}, and time stretching \KstretchReach{}
 against \KstretchFp{}.
+
+That outcome accepts an influenced output sample beyond the model's extent by
+checking it against the last piece's whole declared range. Counted strictly, as
+a sample the emitted map does not cover, \KunmappedTotal{} such samples appear,
+in retained-run selection and time stretching, so the strict outcome is
+\KstrictTotal{} rather than \KoutsideTotal{}: an extent shortfall of the mapping,
+not a support exceedance. Interior alignment, the offset between where the model
+places a probed source sample and where its influence peaks, reached
+\KalignSelection{} samples for retained-run selection and \KalignStretch{} for
+time stretching, inside their declared margins, and \KalignResample{} for
+resampling; a correct output length had not shown either.
+
+\subsection{Holdout challenge to the declarations}
+\label{sec:res-holdout}
+
+Passing those probes shows that each declaration contains what was measured at
+the operating points used while it was being set. A finite probe family can
+refute a declaration and cannot establish one for an adaptive operator, so we
+challenged the declarations with inputs that played no part in setting them,
+fixed before the run (\texttt{experiments/footprint\_holdout.py}):
+\KtwoContexts{} signal contexts, \KtwoHoldoutContexts{} of them new (white noise
+and a speech-like voice); \KtwoAmps{} absolute impulse amplitudes from
+\KtwoAmpMin{} to \KtwoAmpMax{}, all within 16-bit range; and \KtwoPositions{}
+positions disjoint from those above, \KtwoProbesPerOp{} probes per operator and
+\KtwoProbes{} in total, on the reference build.
+
+Resampling, retained-run selection and fixed-gain normalisation showed no
+exceedance, and resampling's reach stayed at \KtwoResampleReach{} against its
+analytical \KresampleFp{}. The two adaptive operators did not hold. MP3 exceeded
+its declaration in \KtwoMpExceed{} of \KtwoProbesPerOp{} probes, all on the
+low-level carrier at the largest amplitude, reaching \KtwoMpReach{} source
+samples; time stretching exceeded in \KtwoStExceed{}, on the low-level carrier
+and on the held-out speech-like voice, at every amplitude from \KtwoStMinAmp{}
+upward, reaching \KtwoStReach{}. A large impulse on a quiet carrier makes the
+encoder re-allocate bits and the stretcher's correlation search re-align
+globally. That is a dependency of the output on the source sample, and a change
+of operating mode is no ground for excluding it. These two declarations
+therefore characterise the tested operating points on the build that produced
+them, and a strict deployment uses whole-asset dependency for these operators
+(Section~\ref{sec:audio}), whose cost Section~\ref{sec:res-dilution} reports.
+
+Normalisation was run in two modes. With a fixed gain no exceedance occurred.
+With the gain estimated from each input, as peak normalisation does,
+\KtwoNormCtrlExceed{} of \KtwoProbesPerOp{} probes influenced output samples
+across the asset, up to \KtwoNormCtrlReach{} source samples away: a control
+dependency through the gain, not a content one. The contract labels origin by
+the content an output sample represents and so excludes control dependencies by
+definition; the measurement shows that this is a semantic choice, not an
+empirical property of the operator.
 
 \begin{table}[t]
 \centering
@@ -1183,11 +1260,9 @@ beyond the nominal, footprint-free source range, so containment compares two
 concrete quantities rather than resting on an assertion: it holds exactly when
 the reach does not exceed the declaration. Headroom is the difference, so a
 small headroom means a tight declaration and a large one a conservative one.
-$^{\dagger}$~Amplitude normalisation's declared footprint is
-\emph{representational}: an output sample represents one source sample, while
-the scalar gain depends computationally on the whole signal. The probe therefore
-confirms the representational reading and does not show that the computational
-dependency is zero, which it is not.}
+$^{\dagger}$~Probed with a fixed gain: the content footprint of a sample-wise
+scaling. Estimating the gain from the input adds a whole-asset control
+dependency, measured in Section~\ref{sec:res-holdout}.}
 \label{tab:containment}
 \small
 \input{../results/tables/containment_table}
@@ -1234,31 +1309,26 @@ as a fixture in the repository.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.84\linewidth]{fig6_dilution.pdf}
-\caption{What the declared footprints cost. (A) Dilution through a composition
-chain, median with the maximum envelope. The cost compounds with depth and is
-the headline of this figure, which is why it takes the full width. The plateau
-at depth four is amplitude normalisation, whose declared representational
-footprint is zero and which therefore adds none. (B) Dilution for a single
-transformation over \IclipsPerTf{} clips: filled circles are medians, bars
-reach the maximum, and open circles are exact zeros drawn as marks so that a
-zero is legible as a result rather than as missing data. (C) The same
-depth-three chain over three asset durations on logarithmic axes, showing that
-fixed-width bands occupy a smaller fraction of a longer asset. Panel C holds the
-chain and the boundary count fixed and is not a claim about arbitrary chains:
-more ancestry boundaries would place more bands. Dilution is a weaker claim over
-part of an asset, never a stronger one, so this is the price of conservatism and
-not a failure mode.}
+\caption{What the declared footprints cost, as the fraction of output samples
+whose claim is weaker than over the nominal map. (A) Through a composition chain,
+with the operator each step adds; the shaded band runs from median to maximum
+over clips and is not an uncertainty interval. Normalisation adds nothing: its
+content footprint is zero. (B) Each transformation alone over \IclipsPerTf{}
+clips: circles are medians, bars reach the maximum, open circles are exact
+zeros. (C) One depth-three chain at three durations with the boundary count
+fixed, on logarithmic axes. Dilution weakens a claim and never strengthens one.}
 \label{fig:dilution}
 \end{figure}
 
 Zero promotion is only half of a useful result, because safety alone is cheap:
-declaring the whole asset as every sample's dependency is perfectly safe under
-Proposition~\ref{prop:footprint} and perfectly useless. We therefore measure
-what the declared footprints cost. The \emph{dilution fraction} of a derived
-output is the fraction of its samples whose footprint-aware evidence record is
-strictly weaker, in claim, channel or support value, than the record computed
-over the nominal represented content, which on this corpus is exact by
-construction.
+declaring the whole asset as every sample's dependency is safe under
+Proposition~\ref{prop:footprint} and gives up all local specificity. We
+therefore measure what the declared footprints cost. The \emph{dilution
+fraction} of a derived output is the fraction of its samples whose
+footprint-aware evidence record is strictly weaker, in claim, channel or support
+value, than the record computed over the nominal represented content. It
+measures conservatism added relative to the nominal map, not a comparison with a
+known true codec dependency.
 
 Measuring this caught a second defect in our own implementation, reported for
 the same reason as the first. Footprint widening was originally applied at the
@@ -1280,12 +1350,22 @@ because its nominal required-source set already contains every covering
 source. The remainder
 dilute the footprint-wide neighbourhood of each ancestry boundary: median
 dilution is \IresampleMedianPct{}\% for resampling, \ImpThreeMedianPct{}\% for
-MP3, \IsilenceMedianPct{}\% for silence removal and \IstretchMedianPct{}\% for
+MP3, \IsilenceMedianPct{}\% for retained-run selection and \IstretchMedianPct{}\% for
 time stretching, with a single-transformation worst case of \ImaxAnyPct{}\%.
 Each band has a \emph{fixed radius in samples} and the clips average
 \CmeanDurS{}~s, so the same bands on a one-hour asset would occupy a fraction
 three orders of magnitude smaller: the fraction shrinks with duration, the
 absolute band does not.
+
+The whole-asset comparator, one claim over the output computed from every source
+interval of the asset, promotes nowhere (\IwholePromoted{} promoted samples) and
+dilutes every sample of every corpus transformation (median
+\IwholeMinMedianPct{}\%; \IwholeOverlayPct{}\% for overlay, whose nominal map is
+already partly mixed), against a median of at most \IemMaxMedianPct{}\% under
+the declared footprints. That difference is what the local footprints buy: the
+same non-promotion with the interval structure kept. It is also the cost of the
+strict profile for the two adaptive operators of
+Section~\ref{sec:res-holdout}.
 
 Composition is where conservatism bites. Along the chain trim, resample 16 to
 8~kHz, transcode to MP3, normalise, time stretch by 1.10, deliberately
@@ -1293,7 +1373,11 @@ front-loading a rate change so that the large bands are scaled by it, median
 dilution reaches \IchainDeep{}\% by depth~\IchainDepth{} with a worst case of
 \IchainDeepMax{}\%; depth~4 equals depth~3 to the last digit because the
 operator added there, normalisation, has a zero footprint. Whether a rate change rescales upstream bands is not isolated by this design,
-whose only rate change occurs before any upstream band exists. Holding a routine three-operator chain fixed (trim,
+whose only rate change occurs before any upstream band exists. The chain is a
+model of how declared footprints compound: its MP3 and stretch stages run at
+8~kHz, configurations Section~\ref{sec:res-containment} did not probe, so it does
+not show that those declarations contain the chained audio's dependency.
+Holding a routine three-operator chain fixed (trim,
 normalise, MP3) and varying only duration, dilution is \IlongShortPct{}\% at
 the corpus median length, \IlongThirtyPct{}\% at 30~s and
 \IlongThreeHundredPct{}\% at five minutes: each tenfold increase in duration
@@ -1438,7 +1522,7 @@ Predicted versus actual output sample counts on every PCM run and a
 \DdetermN{}-clip coded subset, against declared margins &
 Kernel-support containment, a different property; the margins on other
 codecs, builds or configurations &
-\textbf{No}: silence-removal deviation rises from \IRsilDevRef{} to
+\textbf{No}: retained-run selection deviation rises from \IRsilDevRef{} to
 \IRsilDev{} samples against a \IRsilGuard{}-sample margin \\
 \addlinespace
 Kernel-support containment &
@@ -1579,7 +1663,7 @@ it, which is promotion. An over-declared footprint costs dilution; an
 under-declared one costs the guarantee, and a reader on an untested FFmpeg
 build should assume the same until the calibration says otherwise.
 
-For silence removal, the deviation between the modelled temporal mapping and
+For retained-run selection, the deviation between the modelled temporal mapping and
 the one FFmpeg performs rises from \IRsilDevRef{} samples on the reference
 build to \IRsilDev{} on his, against a declared margin of \IRsilGuard{}. The
 median deviation is \IRsilMedian{}, a systematic offset rather than an outlier,
@@ -1773,11 +1857,13 @@ counts and codecs would further validate the footprint layer; it is not a
 requirement of the contract, and more codec configurations are the direction
 Section~\ref{sec:res-independent} shows to be load-bearing.
 
-\paragraph{Footprints are declarations} The kernel footprints are conservative
-bounds for the exact configurations used here, validated against those and no
-others; a different FFmpeg build, resampler setting, codec or tempo factor
-requires re-declaration and re-testing, and Proposition~\ref{prop:footprint}
-guarantees only that erring large is safe.
+\paragraph{Footprints are declarations} The kernel footprints are declarations
+for the exact configurations used here: analytical for the linear operators,
+measured for the two adaptive ones, and the holdout challenge of
+Section~\ref{sec:res-holdout} finds inputs on which the measured ones are
+exceeded on their own build. A different FFmpeg build, resampler setting, codec
+or tempo factor requires re-declaration and re-testing, and
+Proposition~\ref{prop:footprint} guarantees only that erring large is safe.
 Re-declaration needs two passes, one per quantity of
 Section~\ref{sec:audio}, and neither substitutes for the other: output length
 can be exact while the dependency is wider than declared. Both are
@@ -1792,14 +1878,16 @@ Section~\ref{sec:res-dilution}. Two of the declarations shipped here sit below
 the tool's recommended margin while containing their reach, and are marked as
 such rather than quietly raised.
 
-\paragraph{Normalisation is a modelling choice} Amplitude normalisation is the
-operator where representational and computational dependency diverge
-completely: the gain is computed from the whole signal, but each output sample
-represents one source sample. The contract governs representational dependency,
-so the default footprint is zero; the maximally conservative alternative, every
-output sample representing the whole signal, is implemented and tested as well.
-Both readings are defensible, the reported results use the first, and the second
-pays dilution without gaining promotion safety, since neither can promote.
+\paragraph{Content and control dependency} Peak normalisation is where the two
+diverge completely: each output sample represents one source sample, and the
+gain that scales it depends on the whole signal, which the holdout challenge
+measures directly. The contract labels origin by represented content, so the
+footprint is zero and the gain is a control dependency outside the label. That is
+a semantic choice the measurement cannot justify, and the same choice governs the
+encoder's bit allocation and the stretcher's alignment search. A deployment that
+counts control dependencies gives such operators whole-asset dependency; the
+maximally conservative reading of normalisation is implemented and tested, and
+pays dilution without gaining promotion safety.
 
 \paragraph{Replay, identity and truth} A microphone recording a loudspeaker
 playing synthetic speech produces audio that is genuinely captured at the
@@ -1835,10 +1923,11 @@ audio untouched and costs a fraction of a percent of the processing it
 accompanies. An independent reproduction returned those results unchanged and
 found two build-specific declarations that do not transfer, which locates the
 part of this work that has to be re-measured before it is reused. Non-promotion
-is proved from the requirements; the audio instantiation delivers it only on a build whose
-mapping and footprint declarations have been validated, and
-Section~\ref{sec:audio} says what an implementation must do when they have
-not. It does not
+is proved from the requirements; the audio instantiation delivers it where the
+declared map contains the real dependencies, which holds analytically for the
+linear operators and, for the encoder and the stretcher, only at the operating
+points tested: a holdout challenge on the reference build exceeds both, and a
+strict deployment gives them whole-asset dependency. It does not
 detect deepfakes, does not establish that speech is truthful, and a valid
 signature proves only that an assertion was signed.
 
@@ -1850,9 +1939,9 @@ CC~BY~4.0, fetched by a checksum-pinned script, and from locally generated
 eSpeak~NG output. The robustness arm also uses a Piper neural
 text-to-speech voice trained on the public-domain LJ Speech corpus, fetched and
 checksum-verified rather than committed, and pink noise generated locally,
-seeded per clip. No human-subject,
-proprietary or login-walled data is used, and no voice of any identified living
-person is cloned. Licences, versions, URLs, access dates, digests and redistribution clauses are
+seeded per clip. No new human participants were recruited; existing public
+speech data were used, and no proprietary or login-walled data. No voice of any
+identified living person is cloned. Licences, versions, URLs, access dates, digests and redistribution clauses are
 recorded in \texttt{DATA\_LICENSES.md}.
 
 \section*{Code availability}
@@ -1905,9 +1994,9 @@ Section~\ref{sec:res-conformance} rather than quietly fixed.
 
 During the preparation of this work, the author used Claude Opus~5 and Opus~5.5 (Anthropic)
 and ChatGPT (OpenAI) to improve language clarity and readability, and as
-programming assistants on the verification and reproducibility tooling. No
-reported value was generated by these tools; every one comes from executing the
-committed code. After using these services the author reviewed and edited the
+programming assistants on the verification and reproducibility tooling. Every
+reported value was obtained by executing the committed experiments, and the
+author verified the code that produced it. After using these services the author reviewed and edited the
 content as needed and takes full responsibility for the content of the
 publication.
 
