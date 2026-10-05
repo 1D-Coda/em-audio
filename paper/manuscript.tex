@@ -79,9 +79,9 @@ failures and \Dem{} promotions, whereas boundary-only inheritance promoted in
 round-trips; bookkeeping cost \Gratio{}$\times$ the baseline. An independent reproduction on
 other hardware and FFmpeg major version returned every
 conformance, promotion and oracle outcome unchanged and found two
-build-specific declarations its build does not satisfy, and a holdout
+build-specific declarations its build does not satisfy. A holdout
 challenge exceeded the measured encoder and stretcher declarations on the
-reference build: the algebra holds by proof, the audio instantiation only where
+reference build. The algebra holds by proof, the audio instantiation only where
 the declared map contains the real dependencies. The
 contract constrains what a derived representation may claim about its sources,
 and binds only an operator that implements it; it does not detect deepfakes,
@@ -137,7 +137,7 @@ stronger evidential claim than the complete source material it represents,
 without any change to the decoded signal. The requirement that prevents it,
 \emph{evidence monotonicity}, is that along a chain of representation-only
 transformations the emitted claim is no stronger than the meet of every required
-source, ancestry accumulates rather than disappears, and the absence of verified
+source (the strongest claim all of them support), ancestry accumulates rather than disappears, and the absence of verified
 evidence is absorbing.
 
 Digital forensics already treats the step from stored evidence to
@@ -172,49 +172,50 @@ measured.
 
 The contract reads decoded samples, not file formats, so it applies to any
 format FFmpeg decodes. Lossless formats such as WAV, AIFF and FLAC reproduce
-each sample exactly and take a zero footprint; MP3 appears often in what
+each sample exactly and take a zero kernel footprint (the reach in neighbouring
+source samples that an operator can mix into one output sample); MP3 appears often in what
 follows because, as a lossy and adaptive encoder, it is the hardest case to
 declare, not because the method is limited to it.
 
 \paragraph{Contributions} Each is traceable to a completed experiment.
 
 \begin{enumerate}
-\item \textbf{The contract, and its temporal instantiation.} An operator
-  contract for derived media stated without reference to any modality, its
-  non-amplification property presented as an instance of a known
-  meet-semilattice construction (Section~\ref{sec:model}); instantiated over
-  sample-exact half-open intervals for eight representation operators, each
-  with a declared conservative kernel footprint, with a footprint-monotonicity
-  result showing that over-approximating the required source set is always safe
+\item \textbf{The contract, and its temporal instantiation.} We state an
+  operator contract for derived media without reference to any modality, and
+  present its non-amplification property as an instance of a known
+  meet-semilattice construction (Section~\ref{sec:model}). We instantiate it
+  over sample-exact half-open intervals for eight representation operators,
+  each with a declared conservative kernel footprint. A footprint-monotonicity
+  result shows that over-approximating the required source set is always safe
   (Section~\ref{sec:audio}, Proposition~\ref{prop:footprint}).
 \item \textbf{A signed transport, and an ablation of the rule.}
-  Interval evidence carried inside C2PA temporal regions of interest, surviving
-  derivation and re-signing on \Fcontainers{} containers with \Ftotal{}
-  round-trips, with a C2PA-native composition of signed captured and generated
+  Interval evidence is carried inside C2PA temporal regions of interest and
+  survives derivation and re-signing on \Fcontainers{} containers with \Ftotal{}
+  round-trips. A C2PA-native composition joins signed captured and generated
   \texttt{componentOf} ingredients (Sections~\ref{sec:transport},
-  \ref{sec:res-transport}, \ref{sec:res-composition}); and a policy ablation
-  showing that complete-source aggregation and declared kernel footprints are
-  such that dropping either one fails within the tested policy family
+  \ref{sec:res-transport}, \ref{sec:res-composition}). A policy ablation
+  shows that dropping either complete-source aggregation or declared kernel
+  footprints fails within the tested policy family
   (Section~\ref{sec:res-ablation}).
 \item \textbf{Evidence that it holds, and what it costs.} An executable
-  conformance suite of \Achecks{} checks over every source word of length up to
-  \Amaxlen{} over $\{\C,\G,\bot\}$ with \Afailed{} failures, and a two-language
-  differential over \Hcases{} frozen cases with \Hdis{} disagreements, those
-  frozen cases being the conformance target a third-party reimplementation can
+  conformance suite runs \Achecks{} checks over every source word of length up to
+  \Amaxlen{} over $\{\C,\G,\bot\}$, with \Afailed{} failures. A two-language
+  differential over \Hcases{} frozen cases gives \Hdis{} disagreements; those
+  frozen cases are the conformance target a third-party reimplementation can
   be run against (Sections~\ref{sec:res-conformance},
-  \ref{sec:res-oracle}); \Cclips{} mixed-origin clips processed entirely by
-  stock FFmpeg, with the interval mapping validated against software we do not
-  control (Section~\ref{sec:res-corpus}) and the declared footprints tested
-  separately by differential influence probes
-  (Section~\ref{sec:res-containment}), since agreement on output length says
-  nothing about how far a dependency reaches, both passes packaged as
-  \path{tools/calibrate_footprint.py}, then challenged on held-out contexts, amplitudes and positions,
-  which the encoder and stretcher declarations fail (Section~\ref{sec:res-holdout}); and cost on both axes, runtime, where
+  \ref{sec:res-oracle}). \Cclips{} mixed-origin clips are processed entirely by
+  stock FFmpeg, which validates the interval mapping against software we do not
+  control (Section~\ref{sec:res-corpus}). Agreement on output length says
+  nothing about how far a dependency reaches, so differential influence probes
+  test the declared footprints separately
+  (Section~\ref{sec:res-containment}). Both passes are packaged as
+  \path{tools/calibrate_footprint.py}. The declarations are then challenged on held-out contexts, amplitudes and positions,
+  and the encoder and stretcher declarations fail (Section~\ref{sec:res-holdout}). Cost is measured on two axes. In runtime,
   bookkeeping is \GffmpegPct{}\% of the processing it accompanies and the
   assertion grows at \GperInterval{}~B per evidence interval
-  (Section~\ref{sec:res-overhead}), and \emph{evidential}, a claim-dilution
-  metric priced in samples per ancestry boundary rather than in fractions of
-  the asset and compared with a whole-asset claim (Section~\ref{sec:res-dilution}).
+  (Section~\ref{sec:res-overhead}). The \emph{evidential} cost is a claim-dilution
+  metric, the share of output whose claim the footprints weaken. It is priced in samples per ancestry boundary rather than in fractions of
+  the asset, and compared with a whole-asset claim (Section~\ref{sec:res-dilution}).
 \end{enumerate}
 
 The contract does not infer authenticity from acoustic features; it prevents a
@@ -845,14 +846,15 @@ deployed standard and tests the mapping against a real validator.
 
 \subsection{Study design}
 
-The experiments separate three questions that are easy to conflate: whether the
-implementation realises the stated guarantees (a mathematical question, answered
-by exhaustive enumeration and by differential testing); whether a competing
-metadata rule produces counterexamples on adversarial and on realistic input (a
-mechanism question, answered by frozen fixtures and a labelled corpus); and what
-the contract costs (an engineering question, answered by timed repetitions).
+The experiments keep apart three questions that are easy to conflate. The first
+is mathematical: whether the implementation realises the stated guarantees. We
+answer it by exhaustive enumeration and by differential testing. The second is a
+mechanism question: whether a competing metadata rule produces counterexamples
+on adversarial and on realistic input. Frozen fixtures and a labelled corpus
+answer it. The third is an engineering question, what the contract costs, and
+timed repetitions answer it.
 Exact algebraic properties and finite-state classifications are reported as
-deterministic counts and are not assigned $p$-values, and
+deterministic counts and are not assigned $p$-values.
 Table~\ref{tab:boundary} states, for each class of claim, which evidence is
 used for it and what that evidence does not establish. Fixture failure
 frequencies characterise the frozen fixture family and are a \textbf{mechanism
@@ -895,11 +897,11 @@ a modest interior interval.
 
 Because the evidence algebra reads no acoustic feature, the result cannot in
 principle depend on signal character. A robustness arm demonstrates that
-rather than leaving it to argument, rebuilding \CtwoNeuralN{} clips with a neural TTS
+rather than leaving it to argument. It rebuilds \CtwoNeuralN{} clips with a neural TTS
 (Piper, a VITS-architecture engine with a voice trained on the public-domain
-LJSpeech corpus) and overlaying \CtwoNoiseN{} clips with locally generated pink
-noise mixed at a volume setting of $-18$~dB over every ancestry boundary,
-a volume setting rather than a measured signal-to-noise ratio.
+LJSpeech corpus). It also overlays \CtwoNoiseN{} clips with locally generated pink
+noise over every ancestry boundary, mixed at a volume setting of $-18$~dB; this
+is a volume setting, not a measured signal-to-noise ratio.
 
 Concatenation and every subsequent transformation are performed by
 \textbf{stock FFmpeg through its command line, with no project code in the
@@ -1154,12 +1156,12 @@ contain the actual dependency set, a statement about which source samples
 influence which output samples, not about how many output samples there are.
 We test it directly on the \Kops{} single-source
 configurations; concatenation and overlay take several sources and have no
-temporal kernel to under-declare. For
+temporal kernel to under-declare. The probe works on pairs of sources. For
 each configuration, each of \Kcontexts{} signal contexts and each of ten probe
-positions, two \KimpulseN{}-sample sources are built that are identical except
-at one sample, where one carries an added impulse; both go through the same
-stock FFmpeg command and both outputs are decoded, so the entire difference
-between the paired outputs is attributable to that one sample. Containment
+positions, we build two \KimpulseN{}-sample sources that are identical except
+at one sample, where one carries an added impulse. Both go through the same
+stock FFmpeg command and both outputs are decoded. The entire difference
+between the paired outputs is therefore attributable to that one sample. Containment
 holds when the probe position lies inside the declared required-source range of
 every output sample whose value it changed, on 16-bit PCM at a threshold of one
 least significant bit.
@@ -1212,13 +1214,13 @@ resampling; a correct output length had not shown either.
 
 Passing those probes shows that each declaration contains what was measured at
 the operating points used while it was being set. A finite probe family can
-refute a declaration and cannot establish one for an adaptive operator, so we
-challenged the declarations with inputs that played no part in setting them,
-fixed before the run (\texttt{experiments/footprint\_holdout.py}):
-\KtwoContexts{} signal contexts, \KtwoHoldoutContexts{} of them new (white noise
-and a speech-like voice); \KtwoAmps{} absolute impulse amplitudes from
-\KtwoAmpMin{} to \KtwoAmpMax{}, all within 16-bit range; and \KtwoPositions{}
-positions disjoint from those above, \KtwoProbesPerOp{} probes per operator and
+refute a declaration and cannot establish one for an adaptive operator. We
+therefore challenged the declarations with inputs that played no part in setting them,
+fixed before the run (\texttt{experiments/footprint\_holdout.py}). The challenge
+used \KtwoContexts{} signal contexts, \KtwoHoldoutContexts{} of them new (white noise
+and a speech-like voice). It used \KtwoAmps{} absolute impulse amplitudes from
+\KtwoAmpMin{} to \KtwoAmpMax{}, all within 16-bit range, and \KtwoPositions{}
+positions disjoint from those above. This gives \KtwoProbesPerOp{} probes per operator and
 \KtwoProbes{} in total, on the reference build.
 
 Resampling, retained-run selection and fixed-gain normalisation showed no
@@ -1266,10 +1268,10 @@ dependency, measured in Section~\ref{sec:res-holdout}.}
 
 The strongest form of the standards argument is executable. For \Jfixtures{}
 fixtures, a captured source and a generated source are each signed with their
-own \texttt{digitalSourceType}; stock FFmpeg concatenates them; the
+own \texttt{digitalSourceType}, and stock FFmpeg concatenates them. The
 composition is signed with both sources as \texttt{componentOf} ingredients
-carrying their full manifests, a \texttt{c2pa.placed} action referencing each,
-and the EM assertion computed over the two component timelines; it is then
+carrying their full manifests. It also carries a \texttt{c2pa.placed} action referencing each source,
+and the EM assertion computed over the two component timelines. The composition is then
 derived across the ancestry boundary and re-signed with \texttt{parentOf}.
 
 \texttt{c2pa.mixed} is defined for
@@ -1283,11 +1285,11 @@ presupposes \texttt{c2pa.placed}, so the placed actions are required under any
 reading, and the choice does not affect the contract, which reads the
 ingredient graph and the interval map, not the action label.
 
-All \Jfixtures{} compositions validated as trusted under the declared anchor,
-with both \texttt{componentOf} ingredients recorded in \Jcomponents{} cases and
-both \texttt{c2pa.placed} references resolved in \Jplaced{}; the EM assertion
-returned byte-equivalent in \Jroundtrip{}; the whole-asset aggregate was
-\textsc{mixed} with both intervals individually recoverable in \Jmixed{}; and
+All \Jfixtures{} compositions validated as trusted under the declared anchor.
+Both \texttt{componentOf} ingredients were recorded in \Jcomponents{} cases, and
+both \texttt{c2pa.placed} references resolved in \Jplaced{}. The EM assertion
+returned byte-equivalent in \Jroundtrip{}. The whole-asset aggregate was
+\textsc{mixed} with both intervals individually recoverable in \Jmixed{}. Finally,
 the derived asset stayed \textsc{mixed} and trusted in \JderivedMixed{} of
 \JderivedTrusted{} derivations, with \Jessence{} essence mismatches. This is
 the object the vocabulary-versus-reduction distinction describes: the component
@@ -1332,10 +1334,10 @@ In Table~\ref{tab:dilution} and Figure~\ref{fig:dilution}, \IzeroTf{} of \ItfCou
 transformations dilute nothing, lossless transcoding among them, and overlay
 because its nominal required-source set already contains every covering
 source. The remainder
-dilute the footprint-wide neighbourhood of each ancestry boundary: median
+dilute the footprint-wide neighbourhood of each ancestry boundary. Median
 dilution is \IresampleMedianPct{}\% for resampling, \ImpThreeMedianPct{}\% for
 MP3, \IsilenceMedianPct{}\% for retained-run selection and \IstretchMedianPct{}\% for
-time stretching, with a single-transformation worst case of \ImaxAnyPct{}\%.
+time stretching. The single-transformation worst case is \ImaxAnyPct{}\%.
 Each band has a \emph{fixed radius in samples} and the clips average
 \CmeanDurS{}~s, so the same bands on a one-hour asset would occupy a fraction
 three orders of magnitude smaller: the fraction shrinks with duration, the
@@ -1667,16 +1669,16 @@ byte-equivalent through the official tool (Sections~\ref{sec:res-transport},
 \ref{sec:res-composition}); a consumer walking that graph can detect
 \emph{invented} ancestry, an atom the emitted claim asserts and no named source
 holds, which is the second half of Proposition~\ref{prop:union}. Detecting
-promotion is the harder direction and v1 does not support it: the assertion
+promotion is the harder direction, and v1 does not support it. The assertion
 records the operator that produced the output and its parameters, not the
-chain, so where a derivation composed several operators the required source set
-cannot be recovered from it, and a claim stronger than the meet over whole
+chain. Where a derivation composed several operators, the required source set
+therefore cannot be recovered from it. A claim stronger than the meet over whole
 sources is also what a legitimate trim produces
 (Table~\ref{tab:boundary}). Carrying the map, or the
 operator chain that determines it, would supply it and is the schema change
 we would make first. No consumer check reaches an operator that misdeclares
-its own operation or footprint, whose effect is the dependency miss
-Section~\ref{sec:res-independent} measures at \IRmpOutside{} output samples and which no consumer can tell from a build mismatch: the dishonest signer of
+its own operation or footprint. The effect of such misdeclaration is the dependency miss
+Section~\ref{sec:res-independent} measures at \IRmpOutside{} output samples, and no consumer can tell it from a build mismatch. That operator is the dishonest signer of
 Section~\ref{sec:threat} rather than the negligent one addressed here.
 
 \paragraph{Deployment, and what a reader may conclude} The contract deploys as
@@ -1742,9 +1744,9 @@ can be exact while the dependency is wider than declared. Both are
 in \texttt{tools/calibrate\_footprint.py}, which exits non-zero whenever a
 declaration fails to contain its measured reach. The support pass
 probes ten prespecified positions in each of \Kcontexts{} contexts, not an
-exhaustive sweep, and adaptive operators re-decide when the input changes
-enough, so the declared footprints characterise dependency around the tested
-operating points, not a universal support radius; where no local radius can be
+exhaustive sweep. Adaptive operators also re-decide when the input changes
+enough. The declared footprints therefore characterise dependency around the tested
+operating points, not a universal support radius. Where no local radius can be
 supplied, whole-asset dependency remains safe at the dilution cost of
 Section~\ref{sec:res-dilution}. Two of the declarations shipped here sit below
 the tool's recommended margin while containing their reach, and are marked as
@@ -1788,10 +1790,10 @@ that principle has an exact form: provenance is the union over the complete
 required source set, support the minimum, applicability the intersection,
 lineage the union, and an unverified source interval is absorbing. The algebra
 is not new. This work provides the executable temporal contract, the
-kernel-footprint treatment that makes it implementable against FFmpeg, a
-signed transport inside an existing standard, and measurements showing that the
+kernel-footprint treatment that makes it implementable against FFmpeg, and a
+signed transport inside an existing standard. Its measurements show that the
 rule eliminates promotion relative to the declared map on every fixture and
-clip tested, leaves decoded WAV, FLAC and MP3 audio untouched and costs a fraction of a percent of the processing it
+clip tested. The rule leaves decoded WAV, FLAC and MP3 audio untouched and costs a fraction of a percent of the processing it
 accompanies. An independent reproduction returned those results unchanged and
 found two build-specific declarations that do not transfer, which locates the
 part of this work that has to be re-measured before it is reused. Non-promotion
