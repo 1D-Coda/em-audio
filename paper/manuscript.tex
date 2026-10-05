@@ -72,10 +72,10 @@ construction; new are its executable temporal instantiation with declared
 kernel footprints, a signed transport inside C2PA temporal regions, and the
 evaluation.
 Across \Achecks{} contract checks, \Btimelines{} adversarial timelines,
-\Cclips{} mixed-origin clips transformed by stock FFmpeg and \Hcases{}
-differential-oracle cases, complete-source propagation produced \Afailed{}
+\Cclips{} mixed-origin clips transformed by stock FFmpeg, \Qclips{} third-party
+PartialSpoof utterances and \Hcases{} differential-oracle cases, complete-source propagation produced \Afailed{}
 failures and \Dem{} promotions, whereas boundary-only inheritance promoted in
-\Dbase{} of \Druns{} FFmpeg runs. Decoded essence was identical before and after signing in \Ftotal{}
+\Dbase{} of \Druns{} FFmpeg runs and \Qbase{} of \Qruns{} on PartialSpoof. Decoded essence was identical before and after signing in \Ftotal{}
 round-trips; bookkeeping cost \Gratio{}$\times$ the baseline. An independent reproduction on
 other hardware and FFmpeg major version returned every
 conformance, promotion and oracle outcome unchanged and found one
@@ -84,7 +84,7 @@ challenge exceeded the measured encoder and stretcher declarations on the
 reference build. A strict profile gives those two whole-asset dependency, safe by
 construction, and had \DstrictPromo{} promotions. The algebra holds by proof, the audio instantiation only where
 the declared map contains the real dependencies. The
-contract binds only operators that implement it; it does not detect deepfakes,
+contract does not detect deepfakes,
 and a valid signature proves only that an assertion was signed.
 \end{abstract}
 
@@ -205,7 +205,10 @@ declare, not because the method is limited to it.
   be run against (Sections~\ref{sec:res-conformance},
   \ref{sec:res-oracle}). \Cclips{} mixed-origin clips are processed entirely by
   stock FFmpeg, which validates the interval mapping against software we do not
-  control (Section~\ref{sec:res-corpus}). Agreement on output length says
+  control (Section~\ref{sec:res-corpus}), and \Qclips{} PartialSpoof utterances
+  carry third-party ground truth (Section~\ref{sec:res-partialspoof}). A
+  consumer verifier recomputes every claim from a signed dependency declaration
+  (Section~\ref{sec:res-consumer}). Agreement on output length says
   nothing about how far a dependency reaches, so differential influence probes
   test the declared footprints separately
   (Section~\ref{sec:res-containment}). Both passes are packaged as
@@ -1109,6 +1112,32 @@ corpus, not a prevalence estimate.}
 \label{fig:corpus}
 \end{figure}
 
+\subsection{Third-party mixed-origin speech}
+\label{sec:res-partialspoof}
+
+Our corpus places its own generated segments, so its ground truth is ours as
+well. PartialSpoof \citep{zhang2021partialspoof,zhang2023partialspoof} embeds
+segments from the ASVspoof~2019 spoofing systems \citep{wang2020asvspoof2019}
+inside bona fide utterances and publishes where they are, as timestamps
+\citep{zhang2021partialspoofdata}. We took \Qclips{} spoofed development
+utterances, every \Qstep{}th of \QspoofedDev{} in sorted order, fixed before any
+result was computed, with the archive checksums published on the record verified
+by \path{tools/fetch_partialspoof.py}. Bona fide spans are captured and spoofed
+spans generated; a non-speech span takes the dataset's own 10~ms label. The
+same eight transformations ran unchanged.
+
+Over \Qruns{} runs boundary-only inheritance promoted on \Qbase{} and
+complete-source propagation on \Qem{}, with \QemLineage{} lineage omissions and
+\Qstrict{} promotions under the strict profile. The consumer verifier of
+Section~\ref{sec:res-consumer} accepted all \QconsHonest{} honest strict-profile
+assertions and flagged \QconsFlagged{} of the \QconsPromo{} promoting runs, and
+\QconsLocal{} further outputs promoted only locally. FFmpeg emitted more output
+than modelled in \QfallbackOutputs{} outputs, which the fitted map covered with
+whole-asset dependency. The time-stretch mapping deviation reached
+\QstretchDev{} samples, inside its margin; overlay, whose margin is declared
+zero, deviated by \QoverlayDev{} samples on one output, a mapping finding on
+third-party audio that the fitted map covers.
+
 \subsection{Signed transport, derivation and provenance loss}
 \label{sec:res-transport}
 
@@ -1667,7 +1696,8 @@ calibration tool is what transfers to a new one.
 \label{sec:discussion}
 
 \paragraph{What is established} A complete-source rule can be implemented over
-media time against stock FFmpeg. With the declared map it promoted on no
+media time against stock FFmpeg, on our corpus and on third-party PartialSpoof
+speech. With the declared map it promoted on no
 fixture or corpus clip tested, but that map is unsound on the holdout; with the
 strict profile it promoted on none and is sound by Proposition~\ref{prop:footprint}.
 It travels in an existing signed
@@ -1836,7 +1866,9 @@ CC~BY~4.0, fetched by a checksum-pinned script, and from locally generated
 eSpeak~NG output. The robustness arm also uses a Piper neural
 text-to-speech voice trained on the public-domain LJ Speech corpus, fetched and
 checksum-verified rather than committed, and pink noise generated locally,
-seeded per clip. No new human participants were recruited; existing public
+seeded per clip. Experiment~Q uses \Qclips{} utterances of the PartialSpoof
+v1.2 development set \citep{zhang2021partialspoofdata}, licensed CC~BY~4.0,
+fetched and checksum-verified by script rather than redistributed. No new human participants were recruited; existing public
 speech data were used, and no proprietary or login-walled data. No voice of any
 identified living person is cloned. Licences, versions, URLs, access dates, digests and redistribution clauses are
 recorded in \texttt{DATA\_LICENSES.md}.

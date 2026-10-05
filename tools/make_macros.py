@@ -36,7 +36,8 @@ def load(n):
 # Added in the revision after the independent reproductions had run. Their
 # results cannot contain these, so they are left out of every count quoted for
 # those runs and nowhere else.
-ADDED_AFTER_REPRODUCTIONS_FILES = {"K2_footprint_holdout", "P_consumer_verification"}
+ADDED_AFTER_REPRODUCTIONS_FILES = {"K2_footprint_holdout", "P_consumer_verification",
+                                   "Q_partialspoof_matrix", "Q_partialspoof_consumer"}
 ADDED_AFTER_REPRODUCTIONS_FIELDS = {
     "length_change_samples", "outside_or_unmapped_strict", "alignment_offset_samples",
     "probes_with_length_change", "total_outside_or_unmapped_strict",
@@ -581,6 +582,25 @@ def main() -> int:
                           ("gap_cases", "PgapCases"), ("gap_flagged", "PgapFlagged"),
                           ("narrowed_cases", "PnarrowCases"), ("narrowed_passed", "PnarrowPassed")):
         m[k_mac] = fmt(Pc[k_json])
+    Qp = MR / "Q_partialspoof_matrix.json"
+    if Qp.exists():
+        Q = json.loads(Qp.read_text()); Qt = Q["per_transformation"]
+        Qc = load("Q_partialspoof_consumer")
+        m["Qclips"] = fmt(Q["n_clips"]); m["Qruns"] = fmt(sum(v["n"] for v in Qt.values()))
+        m["Qbase"] = fmt(sum(v["baseline_promotions"] for v in Qt.values()))
+        m["Qem"] = fmt(sum(v["em_promotions"] for v in Qt.values()))
+        m["QemLineage"] = fmt(sum(v["em_lineage_omissions"] for v in Qt.values()))
+        m["Qstrict"] = fmt(sum(v["strict_promotions"] for v in Qt.values()))
+        m["QfallbackOutputs"] = fmt(sum(v["outputs_with_fallback"] for v in Qt.values()))
+        m["QstretchDev"] = fmt(Qt["time_stretch_1.10"]["model_vs_ffmpeg_max_abs_sample_dev"])
+        m["QoverlayDev"] = fmt(Qt["overlay_generated"]["model_vs_ffmpeg_max_abs_sample_dev"])
+        m["QmarginExceeded"] = fmt(sum(1 for v in Qt.values() if not v["guard_band_covers_deviation"]))
+        m["QconsFlagged"] = fmt(Qc["baseline_promoting_flagged"]); m["QconsPromo"] = fmt(Qc["baseline_promoting"])
+        m["QconsLocal"] = fmt(Qc["baseline_clean_flagged"]); m["QconsHonest"] = fmt(Qc["honest_strict_ok"])
+        sub = json.loads((ROOT / "corpus" / "partialspoof" / "partialspoof_subset.json").read_text()) \
+            if (ROOT / "corpus" / "partialspoof" / "partialspoof_subset.json").exists() else None
+        if sub:
+            m["QspoofedDev"] = fmt(sub["spoofed_dev_utterances"]); m["Qstep"] = fmt(sub["selection_step"])
     m["DstrictPromo"] = fmt(sum(v.get("strict_promotions", 0) for v in Dm.values()))
     m["DstrictLineage"] = fmt(sum(v.get("strict_lineage_omissions", 0) for v in Dm.values()))
     m["DfallbackOutputs"] = fmt(sum(v.get("outputs_with_fallback", 0) for v in Dm.values()))

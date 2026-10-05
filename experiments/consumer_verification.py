@@ -56,7 +56,12 @@ def assertion_for(model, ivs, profile, n_src):
 
 def main() -> int:
     t0 = time.time()
-    index = json.loads((CORPUS / "corpus_index.json").read_text())
+    ps = "--partialspoof" in sys.argv
+    if ps:
+        from transform_matrix import partialspoof_index
+        index = partialspoof_index()
+    else:
+        index = json.loads((CORPUS / "corpus_index.json").read_text())
     tone_ev = Evidence(P=claim_of(["G"]), S={CHANNEL: 0.05}, A={CHANNEL: SCOPE},
                        L=frozenset({"urn:emaudio:ffmpeg-lavfi-sine:660Hz"}))
     n_tone = FS // 2
@@ -127,7 +132,7 @@ def main() -> int:
                 c["narrowed_cases"] += 1
                 c["narrowed_passed"] += verify(assertion_for(narrow, em_intervals(narrow, tls), "declared",
                                                              n_src), srcs)["consistent"]
-    emit("P_consumer_verification", dict(c, n_clips=len(index), transformations=sorted(jobs),
+    emit("Q_partialspoof_consumer" if ps else "P_consumer_verification", dict(c, n_clips=len(index), transformations=sorted(jobs),
                                          runtime_s=round(time.time() - t0, 3)))
     for k, v in c.items():
         print(f"  {k:28s} {v}")

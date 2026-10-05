@@ -49,9 +49,54 @@ def timeline_of(rec) -> Timeline:
     return Timeline("clip", ivs)
 
 
+def partialspoof_index():
+    """PartialSpoof utterances as corpus records, ground truth from the dataset.
+
+    Bona fide spans are captured and spoofed spans generated. Non-speech spans
+    (label 2 in the timestamp files) take the dataset's own 10 ms frame label at
+    their midpoint, so no provenance is assigned that the dataset does not give.
+    """
+    sub = json.loads((CORPUS / "partialspoof" / "partialspoof_subset.json").read_text())
+    recs = []
+    for i, (uid, u) in enumerate(sorted(sub["utterances"].items())):
+        path = CORPUS / "partialspoof" / "wav" / f"{uid}.wav"
+        n = frames(path)
+        lab = u["seglab_0.01"]
+        rows = []
+        for a, b, c in u["vad"]:
+            if c == 2:
+                k = min(len(lab) - 1, int((a + b) / 2 / 0.01))
+                c = lab[k] if lab else 1
+            kind = "C" if c == 1 else "G"
+            s, e = min(n, round(a * FS)), min(n, round(b * FS))
+            if e <= s:
+                continue
+            if rows and rows[-1][0] == kind:
+                rows[-1][2] = e
+            else:
+                rows.append([kind, s, e])
+        if not rows:
+            continue
+        rows[0][1] = 0
+        rows[-1][2] = n
+        for x, y in zip(rows, rows[1:]):
+            y[1] = x[2]
+        gt = [{"kind": k, "start": s, "end": e, "lineage": f"urn:partialspoof:{uid}:{j}"}
+              for j, (k, s, e) in enumerate(rows) if e > s]
+        recs.append({"id": i, "uid": uid, "path": str(path.relative_to(ROOT)),
+                     "n_samples": n, "ground_truth": gt})
+    return recs
+
+
 def main() -> int:
+    global WORK
     t0 = time.time()
-    index = json.loads((CORPUS / "corpus_index.json").read_text())
+    ps = "--partialspoof" in sys.argv
+    if ps:
+        index = partialspoof_index()
+        WORK = CORPUS / "partialspoof" / "transformed"
+    else:
+        index = json.loads((CORPUS / "corpus_index.json").read_text())
     WORK.mkdir(parents=True, exist_ok=True)
 
     gen_tone = WORK / "_overlay_tone.wav"
@@ -217,15 +262,23 @@ def main() -> int:
         "ffmpeg": F.versions()["ffmpeg"],
         "runtime_s": round(time.time() - t0, 3),
     }
-    emit("D_transform_matrix", payload)
-    (ROOT / "results" / "machine_readable" / "D_essence_hashes.json").write_text(
-        json.dumps(essence_records, indent=1) + "\n", newline="\n")
+    if ps:
+        payload["corpus"] = ("PartialSpoof v1.2 development subset (Zhang et al.; CC BY 4.0); "
+                             "ground truth from the dataset's own timestamps")
+        payload["mixed_utterances"] = sum(1 for r in index if len({g["kind"] for g in r["ground_truth"]}) > 1)
+        emit("Q_partialspoof_matrix", payload)
+    else:
+        emit("D_transform_matrix", payload)
+        (ROOT / "results" / "machine_readable" / "D_essence_hashes.json").write_text(
+            json.dumps(essence_records, indent=1) + "\n", newline="\n")
     for k, v in sorted(summary.items()):
         print(f"  {k:20s} base {v['baseline_promotions']:4d}/{v['n']}  EM {v['em_promotions']}  "
               f"model_dev {v['model_vs_ffmpeg_max_abs_sample_dev']}")
+    # On third-party audio a mapping-margin excess is a reported finding, not a
+    # pipeline failure; promotions and lineage omissions remain failures.
     fail = det_mismatch or any(v["em_promotions"] or v["em_lineage_omissions"]
                                or v["strict_promotions"] or v["strict_lineage_omissions"]
-                               or not v["guard_band_covers_deviation"]
+                               or (not v["guard_band_covers_deviation"] and not ps)
                                for v in summary.values())
     return 1 if fail else 0
 

@@ -23,6 +23,19 @@ No speaker is identified, no voice is cloned, and no speaker-identity claim is
 made anywhere in this work.  The corpus is used only as a source of genuinely
 captured audio with a redistributable licence.
 
+## Third-party mixed-origin speech (Experiment Q)
+
+| Field | Value |
+|---|---|
+| Corpus | PartialSpoof Database v1.2, development set (subset) |
+| Record | https://zenodo.org/records/5766198, doi:10.5281/zenodo.5766198 |
+| Licence | Creative Commons Attribution 4.0 International (CC BY 4.0), as stated on the record |
+| Use | 600 spoofed development utterances, every 26th of 15,847 in sorted order; timestamp (`vad`) and 0.01 s segment labels |
+| Integrity | Published MD5 of `database_dev.tar.gz`, `database_vad.tar.gz` and `database_segment_labels_v1.2.tar.gz` verified over the full stream; per-file SHA-256 in `corpus/partialspoof/partialspoof_subset.json` |
+| Citation | Zhang et al. (2021, Interspeech; 2023, IEEE/ACM TASLP 31:813-825); ASVspoof 2019 (Wang et al., 2020, Computer Speech & Language 64:101114) |
+| Access date | 2026-10-05 |
+| Login wall | None. Fetch is scripted in `tools/fetch_partialspoof.py`; the audio is not redistributed here. |
+
 ## Generated-speech source
 
 | Field | Value |
