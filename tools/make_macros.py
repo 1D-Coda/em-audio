@@ -7,6 +7,7 @@ LaTeX source outside this file.
 from __future__ import annotations
 
 import json
+import math
 import re, subprocess, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -604,7 +605,8 @@ def main() -> int:
     m["ItfCount"] = fmt(len(pt_i))
     # The whole-asset comparator on the same clips.
     corpus_tf = [k for k in pt_i if k != "overlay_generated"]
-    m["IwholeMinMedianPct"] = f"{100*min(pt_i[k]['whole_asset_median_dilution_fraction'] for k in corpus_tf):.2f}"
+    # Floored, not rounded: 99.995% must not print as 100.00%.
+    m["IwholeMinMedianPct"] = f"{math.floor(10000*min(pt_i[k]['whole_asset_median_dilution_fraction'] for k in corpus_tf))/100:.2f}"
     m["IwholeOverlayPct"] = f"{100*pt_i['overlay_generated']['whole_asset_median_dilution_fraction']:.2f}"
     m["IwholePromoted"] = fmt(sum(v["whole_asset_promoted_samples"] for v in pt_i.values()))
     m["IemMaxMedianPct"] = f"{100*max(v['median_dilution_fraction'] for v in pt_i.values()):.2f}"

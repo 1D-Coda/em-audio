@@ -205,7 +205,7 @@ measured.
   separately by differential influence probes
   (Section~\ref{sec:res-containment}), since agreement on output length says
   nothing about how far a dependency reaches, both passes packaged as
-  \path{tools/calibrate_footprint.py}, then challenged on held-out signals,
+  \path{tools/calibrate_footprint.py}, then challenged on held-out contexts, amplitudes and positions,
   which the encoder and stretcher declarations fail (Section~\ref{sec:res-holdout}); and cost on both axes, runtime, where
   bookkeeping is \GffmpegPct{}\% of the processing it accompanies and the
   assertion grows at \GperInterval{}~B per evidence interval
@@ -1357,7 +1357,7 @@ absolute band does not.
 
 The whole-asset comparator, one claim over the output computed from every source
 interval of the asset, promotes nowhere (\IwholePromoted{} promoted samples). Its median dilution is
-\IwholeMinMedianPct{}\% on every corpus transformation except overlay, whose
+at least \IwholeMinMedianPct{}\% on every corpus transformation except overlay, whose
 nominal map is already partly mixed (\IwholeOverlayPct{}\%), against a median of
 at most \IemMaxMedianPct{}\% under the declared footprints; dilution is counted
 on provenance and support, so a sample whose nominal record already equals the
