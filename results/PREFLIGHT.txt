@@ -1,7 +1,7 @@
 EM-AUDIO PREFLIGHT REPORT
 ========================================================================
-commit: 50085c1a6c775781325821b7d37a11753019928c
-tag: v1.2.0-20-g50085c1
+commit: 7c3d2e8d4674ce4854b2d1727bb6ee6617842893
+tag: v1.2.0-24-g7c3d2e8
 note: 'commit' is HEAD when this report was generated. Because the report is
       itself committed, the copy stored in the repository necessarily lags the
       commit that stores it by one. Re-run tools/preflight.py, or run_all.sh,
@@ -18,19 +18,19 @@ c2pa_spec_version: 2.4 (April 2026)
 os: macOS-26.5.2-arm64-arm-64bit
 
 benchmark stability, one process per row
-  measured: 2026-10-05T02:10:14Z UTC, load average [15.15, 15.24, 13.68]
+  measured: 2026-10-05T22:42:50Z UTC, load average [6.23, 7.09, 7.03]
   cv definition: sample standard deviation over the mean, in percent, with Bessel's correction
-  run 1: em 1.3818 ms, baseline 0.412 ms, ratio 3.3539
-  run 2: em 1.34 ms, baseline 0.4066 ms, ratio 3.2959
-  run 3: em 1.363 ms, baseline 0.4107 ms, ratio 3.319
-  run 4: em 1.355 ms, baseline 0.4057 ms, ratio 3.3395
-  run 5: em 1.3535 ms, baseline 0.4059 ms, ratio 3.3348
-  run 6: em 1.3522 ms, baseline 0.4038 ms, ratio 3.3488
-  run 7: em 1.3837 ms, baseline 0.4099 ms, ratio 3.3753
-  run 8: em 1.3729 ms, baseline 0.4135 ms, ratio 3.3202
-  run 9: em 1.3565 ms, baseline 0.4059 ms, ratio 3.3418
-  absolute cv: 1.075%
-  ratio cv: 0.688%
+  run 1: em 1.3708 ms, baseline 0.4088 ms, ratio 3.3534
+  run 2: em 1.3521 ms, baseline 0.4069 ms, ratio 3.3232
+  run 3: em 1.4182 ms, baseline 0.4175 ms, ratio 3.3972
+  run 4: em 1.3714 ms, baseline 0.4046 ms, ratio 3.3892
+  run 5: em 1.4327 ms, baseline 0.4151 ms, ratio 3.4516
+  run 6: em 1.3774 ms, baseline 0.4096 ms, ratio 3.363
+  run 7: em 1.3624 ms, baseline 0.4079 ms, ratio 3.3397
+  run 8: em 1.3826 ms, baseline 0.4146 ms, ratio 3.3344
+  run 9: em 1.389 ms, baseline 0.4115 ms, ratio 3.3752
+  absolute cv: 1.882%
+  ratio cv: 1.173%
 
 cpu: Apple M3 Max
 cpu_arch: arm64
@@ -92,15 +92,15 @@ signal_mismatches: 0
 file_hash_changed_by_signing: 120
 
 --- G  overhead ---
-median_em_ms_per_audio_minute: 1.3869
-median_baseline_ms_per_audio_minute: 0.4134
-em_over_baseline_ratio: 3.3548
-em_fraction_of_ffmpeg_time: 0.001539
+median_em_ms_per_audio_minute: 1.3936
+median_baseline_ms_per_audio_minute: 0.4148
+em_over_baseline_ratio: 3.3599
+em_fraction_of_ffmpeg_time: 0.001552
 median_manifest_overhead_bytes_per_asset: 14932
 median_em_assertion_bytes_per_asset: 1333
 metadata_bytes_per_audio_minute: 300291.6
-median_sign_ms: 19.9415
-median_validate_ms: 16.553
+median_sign_ms: 15.1783
+median_validate_ms: 12.5386
 assertion_bytes_per_interval: 332.7
 
 --- K  kernel-support containment ---

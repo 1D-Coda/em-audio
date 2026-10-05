@@ -102,36 +102,46 @@ def fig1():
 
 # --- Figure 2: architecture --------------------------------------------------
 def fig2():
-    fig, ax = plt.subplots(figsize=(7.2, 2.4))
-    ax.set_xlim(-1, 101); ax.set_ylim(0, 34); ax.axis("off")
-    boxes = [
-        (0.0, "source audio\n+ evidence\nintervals", "#e2e8f0"),
-        (17.0, "stock FFmpeg\noperator\n(signal path)", "#fed7aa"),
-        (34.0, "interval map\n+ kernel\nfootprint", "#bee3f8"),
-        (51.0, "complete-source\nevidence meet\n$\\sqcap_{x\\in D_y}$", "#d6bcfa"),
-        (68.0, "EM assertion in\nC2PA temporal\nregions", "#c6f6d5"),
-        (84.5, "signed manifest\n$\\rightarrow$ verifier", "#e2e8f0"),
-    ]
-    for x, label, col in boxes:
-        ax.add_patch(FancyBboxPatch((x, 11), 14.6, 12, boxstyle="round,pad=0.25",
+    # Two lanes, so the audio and the evidence are visibly separate paths that
+    # meet only at signing, and a third row for what a consumer does with the
+    # signed result.
+    fig, ax = plt.subplots(figsize=(7.2, 3.3))
+    ax.set_xlim(-1, 101); ax.set_ylim(0, 48); ax.axis("off")
+
+    def box(x, y, w, label, col):
+        ax.add_patch(FancyBboxPatch((x, y), w, 8.6, boxstyle="round,pad=0.25",
                                     facecolor=col, edgecolor="#4a5568", lw=0.8))
-        ax.text(x + 7.3, 17, label, ha="center", va="center", fontsize=6.8)
-    for x in (15.0, 32.0, 49.0, 66.0, 82.8):
-        ax.add_patch(FancyArrowPatch((x, 17), (x + 1.4, 17), arrowstyle="-|>",
-                                     mutation_scale=8, color="#4a5568", lw=0.9))
-    ax.add_patch(FancyBboxPatch((17.0, 1.2), 82.0, 6.2, boxstyle="round,pad=0.25",
-                                facecolor="#fff5f5", edgecolor="#c53030", lw=0.8, ls="--"))
-    ax.text(58.0, 4.3, "signal transparency (P8): decoded PCM identical before and after "
-            "signing, under either policy",
-            ha="center", va="center", fontsize=6.2, color="#c53030")
-    for x in (24.3, 91.8):
-        ax.add_patch(FancyArrowPatch((x, 7.6), (x, 10.7), arrowstyle="-|>", mutation_scale=8,
-                                     color="#c53030", lw=0.8))
-    ax.text(57.5, 30.0, "evidence path: provenance $\\cup$, support $\\min$, "
-            "scope $\\cap$, lineage $\\cup$",
-            ha="center", fontsize=7.2, color="#4a5568")
-    ax.add_patch(FancyArrowPatch((7.3, 26.0), (91.8, 26.0), arrowstyle="-|>", mutation_scale=9,
-                                 color="#a0aec0", lw=0.9, ls=":"))
+        ax.text(x + w / 2, y + 4.3, label, ha="center", va="center", fontsize=6.6)
+
+    def arrow(x0, y0, x1, y1, col="#4a5568", ls="-"):
+        ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle="-|>",
+                                     mutation_scale=8, color=col, lw=0.9, ls=ls))
+
+    ax.text(-0.5, 44.5, "audio path", fontsize=7.0, color="#4a5568", style="italic")
+    box(0, 34, 16, "source audio", "#e2e8f0")
+    box(22, 34, 18, "stock FFmpeg\noperator", "#fed7aa")
+    box(46, 34, 16, "derived audio", "#e2e8f0")
+    arrow(16.6, 38.3, 21.6, 38.3); arrow(40.6, 38.3, 45.6, 38.3)
+
+    ax.text(-0.5, 28.0, "evidence path", fontsize=7.0, color="#4a5568", style="italic")
+    box(0, 17, 16, "source evidence\nintervals", "#e2e8f0")
+    box(22, 17, 18, "interval map +\nfootprints, fitted\nto decoded length", "#bee3f8")
+    box(46, 17, 16, "complete-source\nmeet $\\sqcap_{x\\in D_y}$", "#d6bcfa")
+    box(68, 17, 15, "assertion +\ndependency\ndeclaration", "#c6f6d5")
+    arrow(16.6, 21.3, 21.6, 21.3); arrow(40.6, 21.3, 45.6, 21.3); arrow(62.6, 21.3, 67.6, 21.3)
+
+    box(86, 25.5, 14, "signed C2PA\nmanifest", "#e2e8f0")
+    arrow(62.6, 38.3, 92.8, 34.6); arrow(83.6, 22.5, 88.0, 25.2)
+    arrow(48.0, 33.6, 36.0, 26.0, col="#a0aec0", ls=":")
+    ax.text(43.5, 29.8, "decoded length", fontsize=6.0, color="#718096")
+
+    ax.text(-0.5, 10.8, "consumer", fontsize=7.0, color="#4a5568", style="italic")
+    box(44, 0.5, 40, "decode the asset; rebuild the declared map;\n"
+        "recompute every claim and report the verdict", "#fefcbf")
+    arrow(93.0, 25.0, 83.6, 6.0)
+
+    ax.text(0, 3.4, "signal transparency (P8): decoded PCM identical\nbefore and after signing, "
+            "under either policy", fontsize=6.1, color="#c53030", va="center")
     save(fig, "fig2_architecture")
 
 

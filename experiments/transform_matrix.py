@@ -19,7 +19,9 @@ from typing import Dict, List, Tuple
 from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from em_audio import ffmpeg_ops as F
 from em_audio.essence import decoded_pcm, essence_hash
-from em_audio.evidence import Evidence, aggregate, claim_of, promotes
+from em_audio.evidence import Evidence, aggregate, claim_of, leq_claim, promotes
+from em_audio.consumer import verify
+from consumer_verification import assertion_for, source_assertion
 from em_audio.interval_map import (SourceInterval, Timeline, conform_to_decoded, em_intervals,
                                    span_evidence, strict_profile)
 from em_audio.manifest_schema import em_assertion
@@ -47,6 +49,21 @@ def timeline_of(rec) -> Timeline:
                                            A={CHANNEL: SCOPE},
                                            L=frozenset({seg["lineage"]}))))
     return Timeline("clip", ivs)
+
+
+def interval_promotes(claimed, model, tls) -> bool:
+    """True if any claimed interval asserts more than the complete-source record
+    over the nominal map for exactly its own output samples: promotion at
+    interval level, which a whole-output aggregate can hide."""
+    from em_audio.interval_map import _sources_for
+    for c in claimed:
+        srcs = []
+        for p in model.pieces:
+            if p.out_start < c.out_end and c.out_start < p.out_end:
+                srcs.extend(_sources_for(p, tls, c.out_start, c.out_end, footprint_aware=False))
+        if srcs and not leq_claim(c.ev.P, aggregate([s.ev for s in srcs]).P):
+            return True
+    return False
 
 
 def partialspoof_index():
@@ -152,6 +169,9 @@ def main() -> int:
                 "container": ext,
                 "strict_promotions": 0, "strict_lineage_omissions": 0,
                 "fallback_samples": 0, "outputs_with_fallback": 0,
+                "baseline_interval_promotions": 0, "baseline_either_promotions": 0,
+                "em_interval_promotions": 0,
+                "declared_rejected_on_decoded_length": 0, "strict_verified_on_decoded_length": 0,
             })
             st["n"] += 1
 
@@ -188,10 +208,24 @@ def main() -> int:
             if not frozenset(rep_lineage) <= e_st.L:
                 st["strict_lineage_omissions"] += 1
 
+            b_local = interval_promotes(spans, model, tls)
+            st["baseline_interval_promotions"] += b_local
+            st["em_interval_promotions"] += interval_promotes(ivs, model, tls)
+            # Consumer, given the decoded length: the declared profile's map
+            # stops at the modelled length; the strict profile's is fitted.
+            srcs = {"clip": source_assertion(tl), "tone": source_assertion(tone_tl)}
+            n_src_d = {s: n_src[s] for s in {pc.src for pc in model.pieces}}
+            st["declared_rejected_on_decoded_length"] += not verify(
+                assertion_for(model, ivs, "declared", n_src_d), srcs, actual)["consistent"]
+            sm = strict_profile(conf, n_src)
+            st["strict_verified_on_decoded_length"] += verify(
+                assertion_for(sm, em_intervals(sm, tls), "strict", n_src_d), srcs, actual)["consistent"]
+
             e_em = aggregate([iv.ev for iv in ivs])
             e_bs = aggregate([iv.ev for iv in spans])
             if promotes(truth, e_bs.P):
                 st["baseline_promotions"] += 1
+            st["baseline_either_promotions"] += promotes(truth, e_bs.P) or b_local
             if promotes(truth, e_em.P):
                 st["em_promotions"] += 1
             if not frozenset(rep_lineage) <= e_em.L:
@@ -229,6 +263,11 @@ def main() -> int:
             "baseline_lineage_omissions": st["baseline_lineage_omissions"],
             "em_lineage_omissions": st["em_lineage_omissions"],
             "strict_promotions": st["strict_promotions"],
+            "baseline_interval_promotions": st["baseline_interval_promotions"],
+            "baseline_either_promotions": st["baseline_either_promotions"],
+            "em_interval_promotions": st["em_interval_promotions"],
+            "declared_rejected_on_decoded_length": st["declared_rejected_on_decoded_length"],
+            "strict_verified_on_decoded_length": st["strict_verified_on_decoded_length"],
             "strict_lineage_omissions": st["strict_lineage_omissions"],
             "fallback_samples": st["fallback_samples"],
             "outputs_with_fallback": st["outputs_with_fallback"],
@@ -266,6 +305,16 @@ def main() -> int:
         payload["corpus"] = ("PartialSpoof v1.2 development subset (Zhang et al.; CC BY 4.0); "
                              "ground truth from the dataset's own timestamps")
         payload["mixed_utterances"] = sum(1 for r in index if len({g["kind"] for g in r["ground_truth"]}) > 1)
+        segs = [len(r["ground_truth"]) for r in index]
+        gen = [sum(g["end"] - g["start"] for g in r["ground_truth"] if g["kind"] == "G") / r["n_samples"]
+               for r in index]
+        payload["structure"] = {
+            "median_intervals_per_utterance": statistics.median(segs), "max_intervals": max(segs),
+            "median_duration_s": round(statistics.median(r["n_samples"] for r in index) / FS, 3),
+            "median_generated_fraction": round(statistics.median(gen), 4),
+            "boundary_source": "dataset timestamps rounded to the nearest sample; non-speech spans "
+                               "labelled from the 10 ms segment labels"}
+        payload["utterance_ids"] = [r["uid"] for r in index]
         emit("Q_partialspoof_matrix", payload)
     else:
         emit("D_transform_matrix", payload)
@@ -278,6 +327,8 @@ def main() -> int:
     # pipeline failure; promotions and lineage omissions remain failures.
     fail = det_mismatch or any(v["em_promotions"] or v["em_lineage_omissions"]
                                or v["strict_promotions"] or v["strict_lineage_omissions"]
+                               or v["em_interval_promotions"]
+                               or v["strict_verified_on_decoded_length"] != v["n"]
                                or (not v["guard_band_covers_deviation"] and not ps)
                                for v in summary.values())
     return 1 if fail else 0

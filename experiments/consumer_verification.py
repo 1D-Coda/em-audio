@@ -19,14 +19,15 @@ Over the mixed-origin corpus and the eight transformations of Experiment D:
 """
 from __future__ import annotations
 
-import json, sys, time
+import json, statistics, sys, time
 from typing import Dict
 
 from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from em_audio.consumer import verify
 from em_audio.evidence import Evidence, claim_of, promotes, aggregate
 from em_audio.interval_map import (DerivedOutput, MapPiece, OutputInterval, SourceInterval,
-                                   Timeline, em_intervals, span_evidence, strict_profile)
+                                   Timeline, conform_to_decoded, em_intervals, span_evidence,
+                                   strict_profile)
 from em_audio.manifest_schema import (dependency_declaration, em_assertion, interval_to_json,
                                       with_declaration)
 import em_audio.operators as O
@@ -80,7 +81,9 @@ def main() -> int:
                         "baseline_promoting_flagged", "baseline_clean_flagged",
                         "tamper_promote_cases", "tamper_promote_flagged",
                         "tamper_lineage_cases", "tamper_lineage_flagged",
-                        "gap_cases", "gap_flagged", "narrowed_cases", "narrowed_passed")}
+                        "gap_cases", "gap_flagged", "narrowed_cases", "narrowed_passed",
+                        "shortened_cases", "shortened_flagged")}
+    bytes_plain, bytes_decl, verify_ms = [], [], []
     for rec in index:
         n = rec["n_samples"]
         tl = timeline_of(rec)
@@ -92,7 +95,13 @@ def main() -> int:
             n_src = {s: (n if s == "clip" else n_tone) for s in {p.src for p in model.pieces}}
             c["outputs"] += 1
             ivs = em_intervals(model, tls)
-            c["honest_declared_ok"] += verify(assertion_for(model, ivs, "declared", n_src), srcs)["consistent"]
+            plain = em_assertion(ivs, FS, model.n_out, "complete-source", model.operator, model.params)
+            bytes_plain.append(len(json.dumps(plain).encode()))
+            honest = assertion_for(model, ivs, "declared", n_src)
+            bytes_decl.append(len(json.dumps(honest).encode()))
+            t1 = time.perf_counter()
+            c["honest_declared_ok"] += verify(honest, srcs)["consistent"]
+            verify_ms.append((time.perf_counter() - t1) * 1000.0)
             sm = strict_profile(model, n_src)
             c["honest_strict_ok"] += verify(assertion_for(sm, em_intervals(sm, tls), "strict", n_src),
                                             srcs)["consistent"]
@@ -124,6 +133,13 @@ def main() -> int:
                 c["gap_cases"] += 1
                 a["dependencyDeclaration"]["pieces"].pop()
                 c["gap_flagged"] += verify(a, srcs)["verdict"] == "COVERAGE_FAILURE"
+            # A declaration shortened consistently, map and length together,
+            # over unchanged audio: caught only by a consumer that decodes.
+            if model.n_out > 200:
+                short = conform_to_decoded(model, model.n_out - 100, n_src)
+                c["shortened_cases"] += 1
+                c["shortened_flagged"] += verify(assertion_for(short, em_intervals(short, tls), "declared",
+                                                              n_src), srcs, model.n_out)["verdict"] == "LENGTH_MISMATCH"
             # The limit: a producer that under-declares and stays consistent with it.
             if any(p.footprint for p in model.pieces):
                 narrow = DerivedOutput(model.n_out, [MapPiece(p.out_start, p.out_end, p.src, p.src_start,
@@ -132,7 +148,11 @@ def main() -> int:
                 c["narrowed_cases"] += 1
                 c["narrowed_passed"] += verify(assertion_for(narrow, em_intervals(narrow, tls), "declared",
                                                              n_src), srcs)["consistent"]
-    emit("Q_partialspoof_consumer" if ps else "P_consumer_verification", dict(c, n_clips=len(index), transformations=sorted(jobs),
+    cost = {"median_assertion_bytes_without_declaration": int(statistics.median(bytes_plain)),
+            "median_assertion_bytes_with_declaration": int(statistics.median(bytes_decl)),
+            "median_verify_ms": round(statistics.median(verify_ms), 3),
+            "max_verify_ms": round(max(verify_ms), 3)}
+    emit("Q_partialspoof_consumer" if ps else "P_consumer_verification", dict(c, cost=cost, n_clips=len(index), transformations=sorted(jobs),
                                          runtime_s=round(time.time() - t0, 3)))
     for k, v in c.items():
         print(f"  {k:28s} {v}")
@@ -140,7 +160,8 @@ def main() -> int:
           and c["baseline_promoting_flagged"] == c["baseline_promoting"]
           and c["tamper_promote_flagged"] == c["tamper_promote_cases"]
           and c["tamper_lineage_flagged"] == c["tamper_lineage_cases"]
-          and c["gap_flagged"] == c["gap_cases"])
+          and c["gap_flagged"] == c["gap_cases"]
+          and c["shortened_flagged"] == c["shortened_cases"])
     return 0 if ok else 1
 
 

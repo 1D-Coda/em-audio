@@ -36,7 +36,7 @@
 % Reference-list spacing. The default leaves the last two entries alone on a
 % page; this keeps them with the list without touching any entry.
 \setlength{\bibsep}{0pt plus 0.1ex}
-\renewcommand{\bibfont}{\footnotesize\linespread{0.97}\selectfont}
+\renewcommand{\bibfont}{\footnotesize\linespread{0.95}\selectfont}
 % Fourteen floats at the class defaults spend about a page on the white space
 % around them alone. These are the class values less a few points each, which
 % keeps floats clearly separated from the text without the excess space.
@@ -74,8 +74,8 @@ evaluation.
 Across \Achecks{} contract checks, \Btimelines{} adversarial timelines,
 \Cclips{} mixed-origin clips transformed by stock FFmpeg, \Qclips{} third-party
 PartialSpoof utterances and \Hcases{} differential-oracle cases, complete-source propagation produced \Afailed{}
-failures and \Dem{} promotions, whereas boundary-only inheritance promoted in
-\Dbase{} of \Druns{} FFmpeg runs and \Qbase{} of \Qruns{} on PartialSpoof. Decoded essence was identical before and after signing in \Ftotal{}
+failures and \Dem{} promotions, whereas boundary-only inheritance promoted at interval level in
+\Deither{} of \Druns{} FFmpeg runs and \Qeither{} of \Qruns{} on PartialSpoof. Decoded essence was unchanged by signing in \Ftotal{}
 round-trips; bookkeeping cost \Gratio{}$\times$ the baseline. An independent reproduction on
 other hardware and FFmpeg major version returned every
 conformance, promotion and oracle outcome unchanged and found one
@@ -132,9 +132,11 @@ was forged, and wherever a disclosure obligation is discharged by reading a
 manifest rather than inspecting a signal the result is not a missed detection
 but a confident wrong answer with a valid signature attached.
 
-We call this \emph{provenance promotion}: a derived representation acquiring a
-stronger evidential claim than the complete source material it represents,
-without any change to the decoded signal. The requirement that prevents it,
+We call this \emph{provenance promotion}: a derived representation acquiring an
+evidential claim its complete source material does not support, without any
+change to the decoded signal. The claim may be strictly stronger, such as
+captured-only for mixed sources, or incomparable, such as captured for a
+generated source; both are promotion. The requirement that prevents it,
 \emph{evidence monotonicity}, is that along a chain of representation-only
 transformations the emitted claim is no stronger than the meet of every required
 source (the strongest claim all of them support), ancestry accumulates rather than disappears, and the absence of verified
@@ -170,12 +172,14 @@ an instance, prove the footprint-monotonicity result the temporal
 instantiation relies on, and locate the contribution in what is executable and
 measured.
 
-The contract reads decoded samples, not file formats, so it applies to any
-format FFmpeg decodes. Lossless formats such as WAV, AIFF and FLAC reproduce
-each sample exactly and take a zero kernel footprint (the reach in neighbouring
-source samples that an operator can mix into one output sample); MP3 appears often in what
-follows because, as a lossy and adaptive encoder, it is the hardest case to
-declare, not because the method is limited to it.
+The propagation rule operates on evidence intervals indexed in decoded-sample
+coordinates, so the interval representation is independent of the audio
+container. A transformation that preserves decoded samples and their alignment,
+such as lossless transcoding between WAV and FLAC, takes a zero kernel
+footprint (the reach in neighbouring source samples that an operator can mix
+into one output sample); other transformations need their own dependency model.
+MP3 appears often in what follows because, as a lossy and adaptive encoder, it
+is the hardest case to declare, not because the method is limited to it.
 
 \paragraph{Contributions} Each is traceable to a completed experiment.
 
@@ -600,7 +604,11 @@ invented; absorption of $\bot$ is preserved inductively because no later
 operator receives a verified element in place of an unverified ancestor. For a
 channel $\mu$, each operator either refuses the channel or emits a value bounded
 by its applicable inputs, and transitivity of $\preceq$ bounds the final value by
-every applicable ancestor. Repeated intersection cannot broaden a scope, and
+every applicable ancestor. Where the channel stays available at every step, each
+step emits exactly the minimum over its inputs, each input is itself the minimum
+over its own ancestors, and a minimum of minima over sets whose union is the ancestral
+set is the minimum over the whole set; the final value therefore equals that
+minimum, not merely bounded by it. Repeated intersection cannot broaden a scope, and
 lineage composes by union of the per-operator source maps.
 \end{proof}
 
@@ -704,11 +712,13 @@ which gives each emitted interval a stable complete required source set.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{fig2_architecture.pdf}
-\caption{Where the contract sits. Stock FFmpeg performs the transformation; the
-interval map with its declared kernel footprint determines the complete required
-source set; the complete-source meet produces the emitted evidence; the result
-is serialised as C2PA temporal regions of interest and signed. The evidence path
-never touches the signal path, which is what signal transparency (P8) measures.}
+\caption{Where the contract sits. Audio and evidence travel separate paths that
+meet only at signing. Stock FFmpeg transforms the audio; the interval map, its
+footprints and the decoded output length determine each output interval's
+required source set; the complete-source meet produces the claims, which are
+signed with the dependency declaration. A consumer decodes the asset, rebuilds the
+declared map and recomputes every claim (Section~\ref{sec:res-consumer}). Signal
+transparency (P8) measures that the evidence path never alters the audio.}
 \label{fig:architecture}
 \end{figure}
 
@@ -763,7 +773,8 @@ encoder and the overlap-add stretcher are adaptive, and a prespecified holdout
 challenge finds inputs on which both exceed their measured declarations on the
 reference build itself (Section~\ref{sec:res-holdout}). The \emph{strict
 profile} evaluated alongside the declared footprints keeps the analytical ones,
-gives these two operators whole-asset dependency, and fits every emitted map to
+gives these two operators whole-asset dependency, does the same for
+retained-run selection, whose margin is also measured, and fits every emitted map to
 the length the processing actually decoded: the map must cover that output
 exactly, and any tail the model does not predict takes whole-asset dependency. The contract prevents promotion when
 the declared map contains the relevant source dependencies; the probes measure
@@ -832,7 +843,10 @@ interval. Each entry gives a temporal region of interest as an \texttt{npt}
 range \citep[\S18.2.2.3]{c2pa24}, the sample-exact bounds alongside it because
 \texttt{npt} strings are lossy at sample resolution, the provenance atom list
 (\texttt{null} for unverified, never an atom), the available support channels,
-their applicability scopes, and the lineage set. Derivation records the source
+their applicability scopes, and the lineage set. Support values are written as
+the shortest decimal that reads back to the same binary64 value, so a minimum
+survives serialisation exactly; a regression test fails if any rounding is
+reintroduced. Derivation records the source
 as an ingredient with relationship \texttt{parentOf}; the specification requires
 a corresponding \texttt{c2pa.opened} action carrying a hashed-URI reference to
 that ingredient assertion \citep[\S15.11.3.2]{c2pa24}, which the claim generator
@@ -1071,11 +1085,20 @@ in \DfallbackOutputs{} outputs FFmpeg emitted more, \DfallbackSamples{} samples 
 all, and the declared profile makes no claim for them. Fitted to the decoded
 length, with whole-asset dependency on that tail, complete-source propagation
 under the strict profile promoted on \DstrictPromo{} runs with \DstrictLineage{}
-lineage omissions. Two transformations produced \emph{no}
-baseline promotion, and we report that as readily as the rest: overlay declares
-the generated source as a separate top-level ingredient, so a boundary-only
-reading still sees both, and retained-run selection happened to retain runs whose
-boundaries fell inside the generated region.
+lineage omissions.
+
+These counts score the claim over the whole output. Scored per interval, each
+claimed interval against the complete-source record for exactly its own output
+samples, boundary-only inheritance promoted on \Deither{} of \Druns{} runs
+(\DeitherPct{}\%) and complete-source propagation on \DemInterval{}. The
+difference is overlay: its whole-output claim is a correct \textsc{mixed},
+because the generated source is a separate top-level ingredient, yet in
+\DoverlayInterval{} of its outputs the clip's own interval claims captured-only
+over samples whose sources include generated speech. Retained-run selection
+produced no promotion at either level in this corpus (\DselInterval{}), because
+the retained runs' boundaries fell inside the generated region. A correct
+whole-output label can thus hide incorrect local claims, and the interval-level
+count is the endpoint the contract is written for.
 
 The interval model was validated against FFmpeg's actual output on every PCM
 run and on a \DdetermN{}-clip subset for the coded containers. The largest
@@ -1098,17 +1121,17 @@ here, and support containment in Section~\ref{sec:res-containment}.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.82\linewidth]{fig4_corpus.pdf}
-\caption{Promotion by transformation over \Cclips{} mixed-origin clips
-processed by stock FFmpeg, \DtotalRuns{} runs in all. (A) Filled circle:
-boundary-only reference policy; open diamond: complete-source propagation.
-Boundary-only promoted in \DbasePromo{} of \DtotalRuns{} runs and complete-source
-in \DemPromo{}. Overlay and retained-run selection produce no baseline promotion
-in this corpus (Section~\ref{sec:res-corpus}). (B) Mean evidence intervals
-emitted per output. A single interval can carry a correct whole-output
-\textsc{mixed} claim; the baseline promotes because it reads that claim from the
-endpoints rather than from every source the interval requires. The baseline is
-a constructed policy, not a named product, and these are counts over a frozen
-corpus, not a prevalence estimate.}
+\caption{Promotion by transformation, \Cclips{} mixed-origin clips per
+transformation processed by stock FFmpeg, \DtotalRuns{} runs in all. (A) Whole-output
+claim: filled circle, boundary-only reference policy; open diamond,
+complete-source propagation. Boundary-only promoted in \DbasePromo{} runs and
+complete-source in \DemPromo{}. (B) The same boundary-only runs scored per
+interval, on our corpus (circles) and on PartialSpoof (squares,
+Section~\ref{sec:res-partialspoof}); filled marks count whole-output promotion,
+open marks promotion in any interval. Overlay's whole-output claim is correct
+while one of its intervals promotes. Complete-source propagation promoted in no
+interval on either corpus. The baseline is a constructed policy, and these are
+counts over frozen corpora, not prevalence estimates.}
 \label{fig:corpus}
 \end{figure}
 
@@ -1126,12 +1149,23 @@ by \path{tools/fetch_partialspoof.py}. Bona fide spans are captured and spoofed
 spans generated; a non-speech span takes the dataset's own 10~ms label. The
 same eight transformations ran unchanged.
 
-Over \Qruns{} runs boundary-only inheritance promoted on \Qbase{} and
-complete-source propagation on \Qem{}, with \QemLineage{} lineage omissions and
-\Qstrict{} promotions under the strict profile. The consumer verifier of
+The utterances have a median of \QmedIntervals{} evidence intervals and last a
+median \QmedDur{}~s, of which a median \QgenPct{}\% is generated: more
+fragmented and more generated than our clips. Two cautions apply. The dataset's
+timestamps are rounded to the nearest sample, and a non-speech span carries a
+10~ms label, so boundaries are exact only to that resolution. The labels are
+annotations imported as source evidence, not signed capture or generation
+provenance. The selected identifiers are listed in the result file.
+
+Over \Qruns{} runs boundary-only inheritance promoted on \Qbase{} at whole-output
+level and on \Qeither{} (\QeitherPct{}\%) at interval level; complete-source
+propagation promoted on \Qem{} at either level (\QemInterval{} by interval), with
+\QemLineage{} lineage omissions and \Qstrict{} promotions under the strict profile. The consumer verifier of
 Section~\ref{sec:res-consumer} accepted all \QconsHonest{} honest strict-profile
 assertions and flagged \QconsFlagged{} of the \QconsPromo{} promoting runs, and
-\QconsLocal{} further outputs promoted only locally. FFmpeg emitted more output
+\QconsLocal{} further outputs with a stronger interval record in claim, support or
+lineage; checked against the decoded
+length, \QstrictVerified{} of \Qruns{} strict-profile assertions verified. FFmpeg emitted more output
 than modelled in \QfallbackOutputs{} outputs, which the fitted map covered with
 whole-asset dependency. The time-stretch mapping deviation reached
 \QstretchDev{} samples, inside its margin; overlay, whose margin is declared
@@ -1399,13 +1433,21 @@ at least \IwholeMinMedianPct{}\% on every corpus transformation except overlay, 
 nominal map is already partly mixed (\IwholeOverlayPct{}\%), against a median of
 at most \IemMaxMedianPct{}\% under the declared footprints; dilution is counted
 on provenance and support, so a sample whose nominal record already equals the
-whole-asset record is not diluted, which is what lowers overlay. Three policies
+whole-asset record is not diluted, which is what lowers overlay. A worked case
+shows why the other values approach 100\%. In a clip of captured, generated and
+captured intervals, the nominal record of a captured sample is captured with the
+captured support value, and of a generated sample generated with the lower
+generated one; the whole-asset record is \textsc{mixed} with the lower value,
+the minimum. Every captured sample loses provenance and support, and every
+generated sample loses provenance, so every sample is diluted unless the clip
+carries one kind only. Three policies
 should be kept apart here. Boundary-only inheritance is specific and wrong on
 known counterexamples. The measured local footprints are specific and safe only
 where their containment holds, which the holdout of
 Section~\ref{sec:res-holdout} refutes for the encoder and the stretcher. The
 strict profile is safe for those two operators by construction and pays for
-it: median dilution is \IstrictMpPct{}\% for MP3 and \IstrictStPct{}\% for time stretching,
+it: median dilution is \IstrictMpPct{}\% for MP3, \IstrictStPct{}\% for time stretching and
+\IstrictSelPct{}\% for retained-run selection,
 against \IstrictFlacPct{}\% for lossless transcoding, whose footprint is
 analytical.
 
@@ -1460,14 +1502,28 @@ assertions verified in \PhonestDecl{} of \Pout{} under the declared profile and
 \PhonestStrict{} under the strict profile. Boundary-only claims under the same
 declaration were flagged in \PbaseFlagged{} of the \PbasePromo{} promoting runs,
 and in \PbaseLocal{} further outputs whose whole-asset claim does not promote but
-some interval does: overlay and retained-run selection, which Experiment~D
-counts as clean, promote locally. One interval promoted after the fact was
+some interval carries a stronger record, in claim, support or lineage, than its
+sources support; the provenance claim alone accounts for the \DoverlayInterval{}
+overlay outputs of Section~\ref{sec:res-corpus}. One interval promoted after the fact was
 flagged in \PtamperFlagged{} of \PtamperCases{} cases, one dropped lineage entry
 in \PlinFlagged{} of \PlinCases{}, and a declaration missing its last piece in
 \PgapFlagged{} of \PgapCases{}. A producer that declares zero footprints and
 computes its claims to match passed in \PnarrowPassed{} of \PnarrowCases{}: the
 check establishes consistency with the signed declaration, not that the
 declaration describes the processing, which only calibration can test.
+
+The consumer must also take the output length from the audio rather than from
+the declaration. Given the decoded length of every Experiment~D output, it
+rejected \DdeclRejected{} declared-profile assertions, whose maps stop at the
+modelled length, and verified \DstrictVerified{} of \Druns{} strict-profile
+assertions, whose maps are fitted. A declaration shortened consistently, map and
+length together, over unchanged audio was rejected in \PshortFlagged{} of
+\PshortCases{} cases. These assertions were evaluated as JSON; the signed
+transport of an assertion is the byte-equivalent round-trip of
+Section~\ref{sec:res-transport}, and binding each source's evidence to its signed
+ingredient manifest is left to the ingredient graph. The declaration raises the
+median assertion from \PbytesPlain{} to \PbytesDecl{}~B, and recomputation took a
+median \PverifyMs{}~ms per output.
 
 \subsection{Two-language differential}
 \label{sec:res-oracle}
@@ -1583,10 +1639,11 @@ Kernel-support containment &
 \Kprobes{} probes: ten positions in each of \Kcontexts{} contexts across
 \Kops{} operator configurations, on decoded PCM at one least significant bit &
 Containment at untested positions, signals, codecs or configurations; the
-operators as configured here, not the operator class; which configuration
-produced a given asset, which the assertion does not record &
-\textbf{No}: the MP3 declaration is under-sized on the other build, reach
-\IRmpReach{} against \IRmpDeclared{} \\
+operators as configured here, not the operator class; that a declared build
+identifier matches the processing actually run &
+\textbf{No}: the MP3 and time-stretch declarations are exceeded by the holdout on
+the reference build, and the MP3 declaration under Experiment~K on the other
+build, reach \IRmpReach{} against \IRmpDeclared{} \\
 \addlinespace
 Signed transport and signal transparency &
 \Ftotal{} round-trips through the official tool over
@@ -1597,12 +1654,13 @@ signing tool accepts but this experiment did not carry &
 Yes: identical before and after signing on both machines \\
 \addlinespace
 Consumer-side verification &
-Per-interval lineage and the ingredient graph, both returning
-byte-equivalent through the official tool
-(Sections~\ref{sec:res-transport}, \ref{sec:res-composition}) &
-Detection of promotion: the assertion records an operator, not the chain,
-so a consumer cannot recover the required source set &
-\textbf{No} for detection; the schema omits it, not the build \\
+Consistency of every emitted interval with the dependency declaration and the
+source evidence, over both corpora and against the decoded length
+(Sections~\ref{sec:res-consumer}, \ref{sec:res-partialspoof}) &
+Truthfulness of the declaration; that the processing ran as declared; source
+evidence bound to signed ingredient manifests, evaluated here as JSON;
+an independent implementation of the verifier &
+Not yet: added after the external runs \\
 \addlinespace
 Runtime cost &
 \Greps{} timed repetitions on one declared machine &
@@ -1719,12 +1777,6 @@ where detectors are weakest, on short interior edits in genuine recordings, and
 useless on media that arrive with no evidence; on the specification's security
 we cite a public analysis \citep{golaszewski2026c2pa} rather than assert.
 
-\paragraph{Attack surface} The contract closes one
-provenance-laundering pathway, a mixed-origin asset cleaned by passing through
-a benign conforming operator, and does nothing against a malicious signer, a
-compromised key or an actor who strips provenance and starts a dishonest chain
-(Section~\ref{sec:threat}).
-
 \paragraph{What a consumer can check} How much of the rest a consumer can
 check is a property of the transport, and the schema settles it. Each
 interval carries its atoms and the
@@ -1738,10 +1790,11 @@ only if the assertion carries the map. We therefore added a versioned dependency
 declaration to the assertion: output length, each piece's source range,
 footprint and its basis (analytical, measured or whole-asset), the profile and
 the processing build. Section~\ref{sec:res-consumer} shows that a consumer reading
-only JSON recomputes every claim from it. No consumer check reaches an operator that misdeclares
-its own operation or footprint. The effect of such misdeclaration is the dependency miss
-Section~\ref{sec:res-independent} measures at \IRmpOutside{} output samples, and no consumer can tell it from a build mismatch. That operator is the dishonest signer of
-Section~\ref{sec:threat} rather than the negligent one addressed here.
+only JSON recomputes every claim from it. No consumer check reaches an operator whose declaration misstates its own
+operation or footprint, whether through a stale calibration, a different build or
+intent. Its effect is the dependency miss
+Section~\ref{sec:res-independent} measures at \IRmpOutside{} output samples, and a
+consumer cannot tell these causes apart from the assertion alone.
 
 \paragraph{Deployment, and what a reader may conclude} The contract deploys as
 a library beside the processing step, whose caller already knows the parameters
@@ -1760,14 +1813,10 @@ calibration tested.
 author-written; the differential tests transcription and interval-arithmetic
 error, not author independence. All processing is stock FFmpeg and all signing
 the official \texttt{c2patool}. The third-party runs of
-Section~\ref{sec:res-independent} are independent in execution only, and their
-comparison criteria were fixed in \path{tools/verify_reproduction.py} before
-anyone ran it: deterministic outputs must match exactly, environment-dependent
-ones are reported (Supplementary Note~\NoteRepro{}). A third-party
-reimplementation remains outstanding and is the stronger check; it would run
-against the \Hcases{} frozen cases of \path{fixtures/oracle_cases.jsonl}, which
-the second implementation of Section~\ref{sec:res-oracle} already consumes
-across a process boundary.
+Section~\ref{sec:res-independent} are independent in execution only, against
+criteria fixed in code beforehand (Supplementary Note~\NoteRepro{}). A
+third-party reimplementation remains outstanding; it would run against the
+\Hcases{} frozen cases of \path{fixtures/oracle_cases.jsonl}.
 
 \paragraph{One validator, not an interoperability result} Every round-trip is
 produced and checked by the official \texttt{c2patool} under a locally generated
@@ -1826,10 +1875,9 @@ contract says nothing about semantic content.
 
 \paragraph{From a machine-readable claim to an examiner's reading} The
 motivation drawn from \citet{andersen2025toolbias} is a human-factors result:
-examiners erred on how a tool presented data. What this work supplies is a
-machine-readable claim, and whether an examiner reads \textsc{mixed} correctly
-and acts differently for it is untested here. Closing that distance needs a
-study with examiners, not another conformance suite.
+examiners erred on how a tool presented data. Whether an examiner reads
+\textsc{mixed} correctly and acts on it is untested here and needs a study with
+examiners.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -1843,7 +1891,8 @@ lineage the union, and an unverified source interval is absorbing. The algebra
 is not new. This work provides the executable temporal contract, the
 kernel-footprint treatment that makes it implementable against FFmpeg, and a
 signed transport inside an existing standard. Its measurements show that the
-rule promoted on no fixture or clip tested. The rule leaves decoded WAV, FLAC and MP3 audio untouched and costs a fraction of a percent of the processing it
+rule, with the complete-source policy and the strict profile, promoted on no
+fixture, corpus clip or PartialSpoof utterance tested. The rule leaves decoded WAV, FLAC and MP3 audio untouched and costs a fraction of a percent of the processing it
 accompanies. An independent reproduction returned those results unchanged and
 found two build-specific declarations that do not transfer, which locates the
 part of this work that has to be re-measured before it is reused. Non-promotion
@@ -1869,8 +1918,8 @@ checksum-verified rather than committed, and pink noise generated locally,
 seeded per clip. Experiment~Q uses \Qclips{} utterances of the PartialSpoof
 v1.2 development set \citep{zhang2021partialspoofdata}, licensed CC~BY~4.0,
 fetched and checksum-verified by script rather than redistributed. No new human participants were recruited; existing public
-speech data were used, and no proprietary or login-walled data. No voice of any
-identified living person is cloned. Licences, versions, URLs, access dates, digests and redistribution clauses are
+speech data were used, and no proprietary or login-walled data. The robustness arm uses a pretrained
+voice as distributed and trains or adapts none. Licences, versions, URLs, access dates, digests and redistribution clauses are
 recorded in \texttt{DATA\_LICENSES.md}.
 
 \section*{Code availability}
@@ -1909,15 +1958,9 @@ public, commercial, or not-for-profit sectors.
 \section*{Declaration of competing interest}
 
 The author declares no competing financial or personal interests. No commercial
-product is experimentally evaluated or compared in this work; named forensic
-products appear only in describing findings reported in the cited peer-reviewed
-literature, and no claim is made that any named product implements the
-constructed reference policy or exhibits provenance promotion. The comparison
-policy is a constructed reference policy derived from the C2PA specification's
-own \texttt{parentOf} definition; all processing is stock FFmpeg and all signing
-the official \texttt{c2patool}, neither authored or controlled by the author;
-and a non-conformance found in the author's own implementation is reported in
-Section~\ref{sec:res-conformance} rather than quietly fixed.
+product is evaluated or compared; named forensic products appear only in findings
+reported in the cited literature, and no claim is made that any of them
+implements the constructed reference policy or promotes provenance.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
 
@@ -1934,13 +1977,11 @@ publication.
 We thank Daniel A. Balderrama-Alvarez (Universidad de Sonora, ORCID
 0009-0002-5180-0406) for the reproductions reported in
 Section~\ref{sec:res-independent}, for reporting their failures without
-adjusting them, and for the portability defects his Windows~11 runs found in
-code paths hosted continuous integration had not exercised; Miguel Arroyo
+adjusting them, and for the portability defects his Windows~11 runs found;
+Miguel Arroyo
 (Nagoya Industries Promotion Corporation, ORCID 0009-0008-8423-8345) for
 testing the reproduction software on Windows~11 and reporting two further
-defects invisible to hosted continuous integration, in tool location and in
-directory removal under Windows file locking, both fixed in the archived
-release; and Brenda Cecilia Guerra Flores (ORCID 0009-0000-8932-683X) for the
+defects, both fixed in the archived release; and Brenda Cecilia Guerra Flores (ORCID 0009-0000-8932-683X) for the
 reproduction reported in Section~\ref{sec:res-independent}, the first by a
 third party to return every deterministic output unchanged, on hardware and
 tool versions she chose. None of them had any part in the design of the

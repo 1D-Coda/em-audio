@@ -85,7 +85,7 @@ def fig_corpus():
             # boundaries fall; it is not a property of the operator.
             ax.scatter([b], [i], s=36, marker=S.M_BASE, facecolor="white",
                        edgecolor=S.BASE, linewidth=1.2, zorder=4)
-            ax.text(4.0, i, f"{bn}/{n:,} in this corpus", fontsize=7.0,
+            ax.text(4.0, i, f"{bn}/{n:,} whole output", fontsize=7.0,
                     va="center", color="#777777")
         ax.scatter([e], [i], s=36, marker=S.M_EM, facecolor="white",
                    edgecolor=S.EM, linewidth=1.2, zorder=5)
@@ -117,38 +117,42 @@ def fig_corpus():
                  fontsize=8.6, loc="left", pad=26)
     S.panel_tag(ax, "A", dx=-0.055)
 
-    # Panel B: the mechanism behind panel A, from the same run
+    # Panel B: the same runs scored per interval, on both corpora. A correct
+    # whole-output MIXED claim can still hide intervals that claim more than
+    # their sources, so the interval-level count is the contract's own endpoint.
     ax = axd["why"]
-    bi = [per[k]["mean_baseline_intervals"] for k in rows]
-    ei = [per[k]["mean_em_intervals"] for k in rows]
-    y = list(range(len(rows)))
-    for i, key in enumerate(rows):
-        ax.plot([bi[i], ei[i]], [i, i], color=S.MARGIN, linewidth=3.0,
-                solid_capstyle="round", zorder=1)
-        ax.scatter([bi[i]], [i], s=32, marker=S.M_BASE, color=S.BASE, zorder=4)
-        ax.scatter([ei[i]], [i], s=32, marker=S.M_EM, facecolor="white",
-                   edgecolor=S.EM, linewidth=1.2, zorder=4)
-    ax.set_yticks(y)
+    Qf = MR / "Q_partialspoof_matrix.json"
+    corpora = [("ours", per)]
+    if Qf.exists():
+        corpora.append(("PartialSpoof", json.loads(Qf.read_text())["per_transformation"]))
+    off = {0: -0.17, 1: 0.17}
+    for ci, (lab, pt) in enumerate(corpora):
+        for i, key in enumerate(rows):
+            v = pt.get(key)
+            if not v or "baseline_either_promotions" not in v:
+                continue
+            w = 100 * v["baseline_promotions"] / v["n"]
+            a = 100 * v["baseline_either_promotions"] / v["n"]
+            y = i + off[ci]
+            ax.plot([w, a], [y, y], color=S.MARGIN, linewidth=2.4,
+                    solid_capstyle="round", zorder=1)
+            ax.scatter([w], [y], s=26, marker=S.M_BASE if ci == 0 else "s",
+                       color=S.BASE, zorder=4)
+            ax.scatter([a], [y], s=26, marker=S.M_BASE if ci == 0 else "s",
+                       facecolor="white", edgecolor=S.BASE, linewidth=1.1, zorder=5)
+    ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([S.label_of(k) for k in rows], fontsize=7.4)
-    ax.set_xlabel("mean evidence intervals emitted per output")
-    ax.set_xlim(0, max(ei) + 1.1)
+    ax.set_xlabel("boundary-only runs with promotion (%): filled, whole output; "
+                  "open, any interval", fontsize=7.6)
+    ax.set_xlim(-6, 106)
     ax.set_ylim(-0.7, len(rows) - 0.3)
     ax.grid(axis="x", linestyle=":", zorder=0)
     ax.set_axisbelow(True)
     S.panel_tag(ax, "B", dx=-0.055)
-    tr2 = ax.get_xaxis_transform()          # x in data, y in axes fraction
-    ax.annotate("one claim, read from\nthe endpoints only", xy=(min(bi), 1.005),
-                xytext=(min(bi), 1.115), xycoords=tr2, textcoords=tr2,
-                fontsize=6.9, color=S.BASE, ha="center", linespacing=1.3,
-                annotation_clip=False,
-                arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
-    ax.annotate("one claim per interval,\nfrom every required source",
-                xy=(max(ei), 1.005), xytext=(max(ei), 1.115),
-                xycoords=tr2, textcoords=tr2, fontsize=6.9, color=S.EM,
-                ha="center", linespacing=1.3, annotation_clip=False,
-                arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
-    ax.set_title("Interval structure: one interval is not itself the error; "
-                 "reading it from the endpoints is", fontsize=8.4, loc="left", pad=44)
+    names = " and ".join(f"{'circles' if i == 0 else 'squares'} {lab}"
+                         for i, (lab, _) in enumerate(corpora))
+    ax.set_title(f"Whole-output versus interval-level promotion ({names})",
+                 fontsize=8.4, loc="left", pad=8)
 
     save(fig, "fig4_corpus")
 

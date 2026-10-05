@@ -38,7 +38,8 @@ def rebuild(declaration: Dict[str, object]) -> DerivedOutput:
 
 
 def verify(assertion: Dict[str, object],
-           source_assertions: Dict[str, Dict[str, object]]) -> Dict[str, object]:
+           source_assertions: Dict[str, Dict[str, object]],
+           decoded_samples: int = None) -> Dict[str, object]:
     """Recompute the assertion's claims from its declaration and the sources.
 
     Returns the verdict and, per disagreement, the output span, the emitted and
@@ -50,6 +51,13 @@ def verify(assertion: Dict[str, object],
         return {"verdict": "NO_DECLARATION", "consistent": False, "findings": []}
     model = rebuild(decl)
     findings: List[Dict[str, object]] = []
+    # The declaration states its own output length. A consumer that decodes the
+    # asset itself passes the decoded count, and a declaration that stops short
+    # of the audio, or runs past it, fails here whatever its map says.
+    if decoded_samples is not None and decoded_samples != model.n_out:
+        return {"verdict": "LENGTH_MISMATCH", "consistent": False,
+                "findings": [{"kind": "length", "declared": model.n_out,
+                              "decoded": decoded_samples}]}
     try:
         check_coverage(model, model.n_out)
     except ValueError as e:

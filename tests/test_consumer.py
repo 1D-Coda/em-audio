@@ -45,3 +45,12 @@ def test_missing_declaration_is_reported():
     a = _assertion(m, em_intervals(m, {"s": TL}))
     del a["dependencyDeclaration"]
     assert verify(a, SRC)["verdict"] == "NO_DECLARATION"
+
+
+def test_consistently_shortened_declaration_fails_on_decoded_length():
+    from em_audio.interval_map import conform_to_decoded
+    m = O.trim("s", N, 0, N)
+    short = conform_to_decoded(m, N - 100, {"s": N})
+    a = _assertion(short, em_intervals(short, {"s": TL}))
+    assert verify(a, SRC)["verdict"] == "CONSISTENT"
+    assert verify(a, SRC, decoded_samples=N)["verdict"] == "LENGTH_MISMATCH"

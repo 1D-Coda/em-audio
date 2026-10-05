@@ -1,5 +1,5 @@
 Derived audio can keep its waveform while claiming stronger provenance.
 A complete-source contract makes the derived claim the meet over its sources.
 Measured codec footprints failed a holdout test; whole-asset dependency stays safe.
-Boundary-only inheritance promoted in 3,600 of 4,800 FFmpeg runs; ours in none.
+Boundary-only promoted at interval level in 4,200 of 4,800 FFmpeg runs; ours in none.
 Decoded essence was unchanged across 120 signed C2PA round-trips.

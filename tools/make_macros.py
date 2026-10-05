@@ -47,7 +47,9 @@ ADDED_AFTER_REPRODUCTIONS_FIELDS = {
     "outside_strict_profile", "first_outside_conformed_sample",
     "total_outside_conformed_map", "total_outside_strict_profile", "total_fallback_samples",
     "strict_promotions", "strict_lineage_omissions", "outputs_with_fallback",
-    "strict_median_dilution_fraction", "strict_max_dilution_fraction"}
+    "strict_median_dilution_fraction", "strict_max_dilution_fraction",
+    "baseline_interval_promotions", "baseline_either_promotions", "em_interval_promotions",
+    "declared_rejected_on_decoded_length", "strict_verified_on_decoded_length"}
 
 
 def fmt(x):
@@ -595,12 +597,38 @@ def main() -> int:
         m["QstretchDev"] = fmt(Qt["time_stretch_1.10"]["model_vs_ffmpeg_max_abs_sample_dev"])
         m["QoverlayDev"] = fmt(Qt["overlay_generated"]["model_vs_ffmpeg_max_abs_sample_dev"])
         m["QmarginExceeded"] = fmt(sum(1 for v in Qt.values() if not v["guard_band_covers_deviation"]))
+        m["Qinterval"] = fmt(sum(v.get("baseline_interval_promotions", 0) for v in Qt.values()))
+        m["Qeither"] = fmt(sum(v.get("baseline_either_promotions", 0) for v in Qt.values()))
+        m["QeitherPct"] = f"{100*sum(v.get('baseline_either_promotions', 0) for v in Qt.values())/sum(v['n'] for v in Qt.values()):.1f}"
+        m["QemInterval"] = fmt(sum(v.get("em_interval_promotions", 0) for v in Qt.values()))
+        m["QstrictVerified"] = fmt(sum(v.get("strict_verified_on_decoded_length", 0) for v in Qt.values()))
+        s = Q.get("structure", {})
+        if s:
+            m["QmedIntervals"] = fmt(s["median_intervals_per_utterance"]) if isinstance(s["median_intervals_per_utterance"], int) else f"{s['median_intervals_per_utterance']:g}"
+            m["QmedDur"] = f"{s['median_duration_s']:.2f}"
+            m["QgenPct"] = f"{100*s['median_generated_fraction']:.1f}"
         m["QconsFlagged"] = fmt(Qc["baseline_promoting_flagged"]); m["QconsPromo"] = fmt(Qc["baseline_promoting"])
         m["QconsLocal"] = fmt(Qc["baseline_clean_flagged"]); m["QconsHonest"] = fmt(Qc["honest_strict_ok"])
         sub = json.loads((ROOT / "corpus" / "partialspoof" / "partialspoof_subset.json").read_text()) \
             if (ROOT / "corpus" / "partialspoof" / "partialspoof_subset.json").exists() else None
         if sub:
             m["QspoofedDev"] = fmt(sub["spoofed_dev_utterances"]); m["Qstep"] = fmt(sub["selection_step"])
+    def _tot(D, k):
+        return sum(v.get(k, 0) for v in D.values())
+    m["Dinterval"] = fmt(_tot(Dm, "baseline_interval_promotions"))
+    m["Deither"] = fmt(_tot(Dm, "baseline_either_promotions"))
+    m["DeitherPct"] = f"{100*_tot(Dm, 'baseline_either_promotions')/_tot(Dm, 'n'):.1f}"
+    m["DemInterval"] = fmt(_tot(Dm, "em_interval_promotions"))
+    m["DdeclRejected"] = fmt(_tot(Dm, "declared_rejected_on_decoded_length"))
+    m["DstrictVerified"] = fmt(_tot(Dm, "strict_verified_on_decoded_length"))
+    m["DoverlayInterval"] = fmt(Dm["overlay_generated"].get("baseline_interval_promotions", 0))
+    m["DselInterval"] = fmt(Dm["silence_removal"].get("baseline_interval_promotions", 0))
+    m["PshortFlagged"] = fmt(Pc.get("shortened_flagged", 0)); m["PshortCases"] = fmt(Pc.get("shortened_cases", 0))
+    cst = Pc.get("cost", {})
+    if cst:
+        m["PbytesPlain"] = fmt(cst["median_assertion_bytes_without_declaration"])
+        m["PbytesDecl"] = fmt(cst["median_assertion_bytes_with_declaration"])
+        m["PverifyMs"] = f"{cst['median_verify_ms']:.2f}"
     m["DstrictPromo"] = fmt(sum(v.get("strict_promotions", 0) for v in Dm.values()))
     m["DstrictLineage"] = fmt(sum(v.get("strict_lineage_omissions", 0) for v in Dm.values()))
     m["DfallbackOutputs"] = fmt(sum(v.get("outputs_with_fallback", 0) for v in Dm.values()))
@@ -666,6 +694,7 @@ def main() -> int:
     if "strict_median_dilution_fraction" in pt_i["transcode_mp3"]:
         m["IstrictMpPct"] = f"{math.floor(10000*pt_i['transcode_mp3']['strict_median_dilution_fraction'])/100:.2f}"
         m["IstrictStPct"] = f"{math.floor(10000*pt_i['time_stretch_1.10']['strict_median_dilution_fraction'])/100:.2f}"
+        m["IstrictSelPct"] = f"{math.floor(10000*pt_i['silence_removal']['strict_median_dilution_fraction'])/100:.2f}"
         m["IstrictFlacPct"] = f"{100*pt_i['transcode_flac']['strict_median_dilution_fraction']:.2f}"
     m["IwholePromoted"] = fmt(sum(v["whole_asset_promoted_samples"] for v in pt_i.values()))
     m["IemMaxMedianPct"] = f"{100*max(v['median_dilution_fraction'] for v in pt_i.values()):.2f}"

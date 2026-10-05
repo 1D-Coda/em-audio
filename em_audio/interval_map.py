@@ -300,10 +300,12 @@ def span_evidence(out: DerivedOutput, timelines: Dict[str, Timeline], policy: st
 # Output coverage and the strict deployment profile
 # ---------------------------------------------------------------------------
 
-#: Map pieces whose footprint rests on measurement rather than on the algorithm.
-#: The holdout challenge (Experiment K2) refutes both declarations on the
-#: reference build, so the strict profile does not use them.
-MEASURED_FOOTPRINT_LABELS = ("transcode:mp3", "time_stretch")
+#: Map pieces whose footprint or mapping margin rests on measurement rather than
+#: on the algorithm. The holdout challenge (Experiment K2) refutes the encoder and
+#: stretcher declarations on the reference build, and the frame-granular
+#: selector's margin was set from a measurement and exceeded on another build,
+#: so the strict profile uses none of them.
+MEASURED_FOOTPRINT_LABELS = ("transcode:mp3", "time_stretch", "retained[")
 
 
 def _whole_asset_piece(oa: int, ob: int, src: str, n_src: int, label: str) -> MapPiece:

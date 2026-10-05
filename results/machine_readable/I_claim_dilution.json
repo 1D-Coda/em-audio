@@ -145,8 +145,8 @@
    "max_dilution_fraction": 0.583333,
    "mean_dilution_fraction": 0.325321,
    "median_dilution_fraction": 0.313373,
-   "strict_max_dilution_fraction": 0.583333,
-   "strict_median_dilution_fraction": 0.313373,
+   "strict_max_dilution_fraction": 1.0,
+   "strict_median_dilution_fraction": 1.0,
    "whole_asset_max_dilution_fraction": 1.0,
    "whole_asset_median_dilution_fraction": 1.0,
    "whole_asset_promoted_samples": 0
@@ -200,5 +200,5 @@
    "whole_asset_promoted_samples": 0
   }
  },
- "runtime_s": 2.388
+ "runtime_s": 2.399
 }
