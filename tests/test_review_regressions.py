@@ -338,3 +338,12 @@ if __name__ == "__main__":
             failed += 1; print(f"  ERROR {t.__name__}"); traceback.print_exc(limit=1)
     print(f"\n{len(tests) - failed}/{len(tests)} passed")
     sys.exit(1 if failed else 0)
+
+
+def test_support_rejects_nan_infinity_and_out_of_range():
+    import math
+    import pytest
+    from em_audio.evidence import Evidence, claim_of
+    for bad in (math.nan, math.inf, -math.inf, -0.01, 1.01):
+        with pytest.raises(ValueError):
+            Evidence(P=claim_of(["C"]), S={"cap": bad}, A={"cap": frozenset({"s"})})

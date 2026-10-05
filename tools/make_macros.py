@@ -37,7 +37,8 @@ def load(n):
 # results cannot contain these, so they are left out of every count quoted for
 # those runs and nowhere else.
 ADDED_AFTER_REPRODUCTIONS_FILES = {"K2_footprint_holdout", "P_consumer_verification",
-                                   "Q_partialspoof_matrix", "Q_partialspoof_consumer"}
+                                   "Q_partialspoof_matrix", "Q_partialspoof_consumer",
+                                   "P2_signed_consumer"}
 ADDED_AFTER_REPRODUCTIONS_FIELDS = {
     "length_change_samples", "outside_or_unmapped_strict", "alignment_offset_samples",
     "probes_with_length_change", "total_outside_or_unmapped_strict",
@@ -621,8 +622,17 @@ def main() -> int:
     m["DemInterval"] = fmt(_tot(Dm, "em_interval_promotions"))
     m["DdeclRejected"] = fmt(_tot(Dm, "declared_rejected_on_decoded_length"))
     m["DstrictVerified"] = fmt(_tot(Dm, "strict_verified_on_decoded_length"))
+    # Every output whose decoded length differs from the model is rejected; the
+    # longer ones are those that needed a whole-asset tail.
+    m["DshorterOut"] = fmt(_tot(Dm, "declared_rejected_on_decoded_length") - _tot(Dm, "outputs_with_fallback"))
     m["DoverlayInterval"] = fmt(Dm["overlay_generated"].get("baseline_interval_promotions", 0))
     m["DselInterval"] = fmt(Dm["silence_removal"].get("baseline_interval_promotions", 0))
+    m["PjsCases"] = fmt(Pc.get("js_cases", 0)); m["PjsDis"] = fmt(Pc.get("js_disagreements", 0))
+    P2p = MR / "P2_signed_consumer.json"
+    if P2p.exists():
+        P2 = json.loads(P2p.read_text())
+        m["PtwoClips"] = fmt(P2["clips"]); m["PtwoHonest"] = fmt(P2["honest_verified"])
+        m["PtwoWrongValid"] = fmt(P2["wrong_valid"]); m["PtwoWrongFlagged"] = fmt(P2["wrong_flagged"])
     m["PshortFlagged"] = fmt(Pc.get("shortened_flagged", 0)); m["PshortCases"] = fmt(Pc.get("shortened_cases", 0))
     cst = Pc.get("cost", {})
     if cst:

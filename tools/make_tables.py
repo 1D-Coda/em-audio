@@ -176,10 +176,22 @@ def main_results():
              r"stock-FFmpeg processing}} \\")
     r.append(f"Exact propagation of constructed interval evidence & {C['n_clips']} & --- & "
              f"{C['exact_interval_recovery']} \\\\")
-    for k in sorted(D["per_transformation"]):
-        v = D["per_transformation"][k]
-        r.append(f"{esc(k)} & {v['n']} & {v['baseline_promotions']} "
-                 f"({100*v['baseline_promotion_rate']:.1f}\\%) & {v['em_promotions']} \\\\")
+    r.append(r"\multicolumn{4}{l}{\footnotesize Promotion counts are whole output / any "
+             r"interval.} \\")
+
+    def corpus_rows(per):
+        for k in sorted(per):
+            v = per[k]
+            r.append(f"{esc(k)} & {v['n']} & {v['baseline_promotions']} / "
+                     f"{v.get('baseline_either_promotions', v['baseline_promotions'])} & "
+                     f"{v['em_promotions']} / {v.get('em_interval_promotions', v['em_promotions'])} \\\\")
+    corpus_rows(D["per_transformation"])
+    qf = ROOT / "results" / "machine_readable" / "Q_partialspoof_matrix.json"
+    if qf.exists():
+        r.append(r"\addlinespace")
+        r.append(r"\multicolumn{4}{l}{\textit{Q\quad PartialSpoof v1.2, third-party "
+                 r"mixed-origin speech}} \\")
+        corpus_rows(json.loads(qf.read_text())["per_transformation"])
     r.append(r"\addlinespace")
     r.append(r"\multicolumn{4}{l}{\textit{H\quad Two-language differential oracle}} \\")
     r.append(f"Frozen cases & {H['cases']:,} & --- & {H['disagreements']} disagreements \\\\")

@@ -19,7 +19,7 @@ Over the mixed-origin corpus and the eight transformations of Experiment D:
 """
 from __future__ import annotations
 
-import json, statistics, sys, time
+import json, statistics, subprocess, sys, time
 from typing import Dict
 
 from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
@@ -33,6 +33,7 @@ from em_audio.manifest_schema import (dependency_declaration, em_assertion, inte
 import em_audio.operators as O
 
 FS = 16000
+JS_LIMIT = 2400          # cases sent to the JavaScript verifier
 CORPUS = ROOT / "corpus"
 
 
@@ -84,6 +85,17 @@ def main() -> int:
                         "gap_cases", "gap_flagged", "narrowed_cases", "narrowed_passed",
                         "shortened_cases", "shortened_flagged")}
     bytes_plain, bytes_decl, verify_ms = [], [], []
+    js_cases, py_verdicts = [], {}
+
+    def keep(case_id, assertion, srcs_, decoded=None):
+        # The first JS_CLIPS clips also go to the separately written JavaScript
+        # verifier, which recomputes every output sample by brute force.
+        v = verify(assertion, srcs_, decoded)["verdict"]
+        if len(js_cases) < JS_LIMIT:
+            js_cases.append({"id": case_id, "assertion": assertion, "sources": srcs_,
+                             "decoded": decoded})
+            py_verdicts[case_id] = v
+        return v
     for rec in index:
         n = rec["n_samples"]
         tl = timeline_of(rec)
@@ -100,14 +112,16 @@ def main() -> int:
             honest = assertion_for(model, ivs, "declared", n_src)
             bytes_decl.append(len(json.dumps(honest).encode()))
             t1 = time.perf_counter()
-            c["honest_declared_ok"] += verify(honest, srcs)["consistent"]
+            c["honest_declared_ok"] += keep(f"{rec['id']}:{name}:honest", honest, srcs) == "CONSISTENT"
             verify_ms.append((time.perf_counter() - t1) * 1000.0)
             sm = strict_profile(model, n_src)
-            c["honest_strict_ok"] += verify(assertion_for(sm, em_intervals(sm, tls), "strict", n_src),
-                                            srcs)["consistent"]
+            c["honest_strict_ok"] += keep(f"{rec['id']}:{name}:strict",
+                                          assertion_for(sm, em_intervals(sm, tls), "strict", n_src),
+                                          srcs) == "CONSISTENT"
             # Boundary-only claims under the honest declaration.
             spans = span_evidence(model, tls, "boundary")
-            v = verify(assertion_for(model, spans, "declared", n_src), srcs)
+            v = {"verdict": keep(f"{rec['id']}:{name}:baseline",
+                                 assertion_for(model, spans, "declared", n_src), srcs)}
             src_truth = aggregate([iv.ev for iv in em_intervals(model, tls, footprint_aware=False)]).P
             if promotes(src_truth, aggregate([s.ev for s in spans]).P):
                 c["baseline_promoting"] += 1
@@ -120,7 +134,7 @@ def main() -> int:
             if mixed:
                 c["tamper_promote_cases"] += 1
                 mixed[0]["provenance"], mixed[0]["state"] = ["C"], "CAPTURED"
-                c["tamper_promote_flagged"] += verify(a, srcs)["verdict"] == "PROMOTION"
+                c["tamper_promote_flagged"] += keep(f"{rec['id']}:{name}:tamper", a, srcs) == "PROMOTION"
             a = assertion_for(model, ivs, "declared", n_src)
             multi = [i for i in a["intervals"] if len(i["lineage"]) > 1]
             if multi:
@@ -132,14 +146,15 @@ def main() -> int:
                     and all(p.out_end < model.n_out for p in model.pieces[:-1]):
                 c["gap_cases"] += 1
                 a["dependencyDeclaration"]["pieces"].pop()
-                c["gap_flagged"] += verify(a, srcs)["verdict"] == "COVERAGE_FAILURE"
+                c["gap_flagged"] += keep(f"{rec['id']}:{name}:gap", a, srcs) == "COVERAGE_FAILURE"
             # A declaration shortened consistently, map and length together,
             # over unchanged audio: caught only by a consumer that decodes.
             if model.n_out > 200:
                 short = conform_to_decoded(model, model.n_out - 100, n_src)
                 c["shortened_cases"] += 1
-                c["shortened_flagged"] += verify(assertion_for(short, em_intervals(short, tls), "declared",
-                                                              n_src), srcs, model.n_out)["verdict"] == "LENGTH_MISMATCH"
+                c["shortened_flagged"] += keep(f"{rec['id']}:{name}:short",
+                                               assertion_for(short, em_intervals(short, tls), "declared",
+                                                             n_src), srcs, model.n_out) == "LENGTH_MISMATCH"
             # The limit: a producer that under-declares and stays consistent with it.
             if any(p.footprint for p in model.pieces):
                 narrow = DerivedOutput(model.n_out, [MapPiece(p.out_start, p.out_end, p.src, p.src_start,
@@ -148,11 +163,23 @@ def main() -> int:
                 c["narrowed_cases"] += 1
                 c["narrowed_passed"] += verify(assertion_for(narrow, em_intervals(narrow, tls), "declared",
                                                              n_src), srcs)["consistent"]
+    # The independent JavaScript verifier on the retained cases.
+    cases = ROOT / "results" / "consumer_js_cases.jsonl"
+    cases.write_text("".join(json.dumps(x) + "\n" for x in js_cases), newline="\n")
+    out = subprocess.run(["node", str(ROOT / "oracle_js" / "verify.js"), str(cases)],
+                         capture_output=True, text=True, check=True).stdout
+    js = {r["id"]: r["verdict"] for r in map(json.loads, out.splitlines())}
+    cases.unlink()
+    disagree = sorted(k for k in py_verdicts if js.get(k) != py_verdicts[k])
+    c["js_cases"] = len(py_verdicts)
+    c["js_disagreements"] = len(disagree)
+    import collections
+    js_mix = dict(collections.Counter(py_verdicts.values()))
     cost = {"median_assertion_bytes_without_declaration": int(statistics.median(bytes_plain)),
             "median_assertion_bytes_with_declaration": int(statistics.median(bytes_decl)),
             "median_verify_ms": round(statistics.median(verify_ms), 3),
             "max_verify_ms": round(max(verify_ms), 3)}
-    emit("Q_partialspoof_consumer" if ps else "P_consumer_verification", dict(c, cost=cost, n_clips=len(index), transformations=sorted(jobs),
+    emit("Q_partialspoof_consumer" if ps else "P_consumer_verification", dict(c, cost=cost, js_verdict_mix=js_mix, n_clips=len(index), transformations=sorted(jobs),
                                          runtime_s=round(time.time() - t0, 3)))
     for k, v in c.items():
         print(f"  {k:28s} {v}")
@@ -161,7 +188,8 @@ def main() -> int:
           and c["tamper_promote_flagged"] == c["tamper_promote_cases"]
           and c["tamper_lineage_flagged"] == c["tamper_lineage_cases"]
           and c["gap_flagged"] == c["gap_cases"]
-          and c["shortened_flagged"] == c["shortened_cases"])
+          and c["shortened_flagged"] == c["shortened_cases"]
+          and c["js_disagreements"] == 0)
     return 0 if ok else 1
 
 

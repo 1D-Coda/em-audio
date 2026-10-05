@@ -234,8 +234,8 @@ neighbouring output region without appearing in the nominal range &
 The declared kernel footprint enlarges $D_y$; over-approximation is safe by
 Proposition~\PropFootprint{} (footprint monotonicity) &
 An under-declared footprint, a conformance failure of that implementation;
-the holdout challenge finds one for the encoder and the stretcher, which a
-strict profile gives whole-asset dependency \\
+the holdout challenge finds one for the encoder and the stretcher; the strict
+profile gives every measured declaration whole-asset dependency \\
 \addlinespace
 Strips the manifest and redistributes &
 State becomes \textsc{unverified} &
@@ -401,11 +401,14 @@ asserted per interval by the experiment.
 git clone https://github.com/1D-Coda/em-audio \bs
   && cd em-audio \bs
   && git checkout \Rtag{} \bs
+  && python3 tools/fetch_partialspoof.py \bs
   && ./run_all.sh
 \end{alltt}
 
 \path{run_all.sh} fetches the checksum-pinned corpus, generates the test
-signing credential, runs the named regression tests and experiments A--Q (Q only when the PartialSpoof subset has been fetched),
+signing credential, runs the named regression tests and experiments A--Q, and prints every step it
+skipped; Experiment~Q runs only when the PartialSpoof subset has been fetched,
+which the second command does once (it streams 2~GB and keeps about 70~MB),
 regenerates every table, macro and figure from the machine-readable results,
 writes \path{results/PREFLIGHT.txt}, and exits non-zero if any conformance
 check fails. The preflight report is the single source of every number in the
@@ -544,7 +547,7 @@ showed none. With the gain estimated from each input, normalisation reached
 input, through the gain, which the contract treats as a control dependency
 rather than represented content. A finite challenge can refute a declaration
 and cannot establish one; no exceedance here is not containment at every input.
-Under the strict profile, which gives the encoder and the stretcher whole-asset
+Under the strict profile, which gives every measured declaration whole-asset
 dependency and fits each emitted map to the decoded output length,
 \KtwoStrictProbes{} probes of any content operator fell outside. The promotion
 demonstrations, one per failing operator, are stored under

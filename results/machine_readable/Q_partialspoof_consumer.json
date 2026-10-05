@@ -3,10 +3,10 @@
  "baseline_promoting": 4006,
  "baseline_promoting_flagged": 4006,
  "cost": {
-  "max_verify_ms": 44.542,
-  "median_assertion_bytes_with_declaration": 3014,
+  "max_verify_ms": 32.675,
+  "median_assertion_bytes_with_declaration": 3147,
   "median_assertion_bytes_without_declaration": 2684,
-  "median_verify_ms": 0.206
+  "median_verify_ms": 0.214
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -26,11 +26,20 @@
  "gap_flagged": 4202,
  "honest_declared_ok": 4800,
  "honest_strict_ok": 4800,
+ "js_cases": 2400,
+ "js_disagreements": 0,
+ "js_verdict_mix": {
+  "CONSISTENT": 881,
+  "COVERAGE_FAILURE": 385,
+  "INCONSISTENT": 42,
+  "LENGTH_MISMATCH": 439,
+  "PROMOTION": 653
+ },
  "n_clips": 600,
  "narrowed_cases": 2400,
  "narrowed_passed": 2400,
  "outputs": 4800,
- "runtime_s": 16.74,
+ "runtime_s": 90.707,
  "shortened_cases": 4800,
  "shortened_flagged": 4800,
  "tamper_lineage_cases": 3000,

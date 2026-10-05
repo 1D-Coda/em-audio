@@ -138,11 +138,14 @@ step "K2 footprint holdout challenge (prespecified, reports exceedances)"
 step "P  consumer verification against the declared map"
 ( cd "$ROOT"/experiments && $PY consumer_verification.py ) || note
 
+step "P2 consumer workflow through signed files"
+( cd "$ROOT"/experiments && $PY signed_consumer.py ) || note
+
 step "Q  third-party mixed-origin speech (PartialSpoof v1.2 subset)"
 if [ -f "$ROOT/corpus/partialspoof/partialspoof_subset.json" ]; then
   ( cd "$ROOT"/experiments && $PY transform_matrix.py --partialspoof && $PY consumer_verification.py --partialspoof ) || note
 else
-  echo "PartialSpoof subset absent; fetch it with: $PY tools/fetch_partialspoof.py (streams 2 GB once, keeps 70 MB)"
+  echo "SKIPPED Q: PartialSpoof subset absent; fetch it with: $PY tools/fetch_partialspoof.py (streams 2 GB once, keeps 70 MB)"
 fi
 
 step "E  provenance-loss behaviour"

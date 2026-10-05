@@ -105,6 +105,14 @@ def assertion_states(assertion: Dict[str, object]) -> List[str]:
 DECLARATION_VERSION = "1.0"
 
 
+def _footprint_table_digest() -> Dict[str, str]:
+    import hashlib
+    from pathlib import Path
+    src = Path(__file__).with_name("operators.py")
+    data = src.read_bytes().replace(b"\r\n", b"\n")
+    return {"module": "em_audio/operators.py", "sha256": hashlib.sha256(data).hexdigest()}
+
+
 def footprint_basis(label: str) -> str:
     """What a piece's footprint rests on: analytical, measured or whole-asset."""
     from .interval_map import MEASURED_FOOTPRINT_LABELS
@@ -129,6 +137,9 @@ def dependency_declaration(model, profile: str, source_samples: Dict[str, int],
         # The processing build the footprints were calibrated on; a measured
         # footprint means nothing without it.
         "build": build,
+        # Which footprint table the declaration was computed from: the digest of
+        # the operator module that holds the declared footprints and margins.
+        "footprintTable": _footprint_table_digest(),
         "outputSampleCount": model.n_out,
         "sources": {s: {"sampleCount": int(n)} for s, n in sorted(source_samples.items())},
         "pieces": [{"output": {"start": p.out_start, "end": p.out_end},
