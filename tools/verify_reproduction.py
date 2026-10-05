@@ -60,6 +60,9 @@ DETERMINISTIC = {
     # Which content operators exceed a declaration under the holdout, and how
     # often: a build-dependent finding like K's, so compared the same way.
     "K2_footprint_holdout": ["content_operators_exceeding"],
+    "P_consumer_verification": ["outputs", "honest_declared_ok", "honest_strict_ok",
+                                "baseline_promoting_flagged", "tamper_promote_flagged",
+                                "tamper_lineage_flagged", "gap_flagged", "narrowed_passed"],
     "K_support_containment": ["total_probes", "total_affected_output_samples",
                               "per_operator"],
     "L_scope_battery": ["enlargement_cases", "monotone", "violations",

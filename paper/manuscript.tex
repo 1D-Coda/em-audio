@@ -36,7 +36,7 @@
 % Reference-list spacing. The default leaves the last two entries alone on a
 % page; this keeps them with the list without touching any entry.
 \setlength{\bibsep}{0pt plus 0.1ex}
-\renewcommand{\bibfont}{\small}
+\renewcommand{\bibfont}{\footnotesize\linespread{0.97}\selectfont}
 % Fourteen floats at the class defaults spend about a page on the white space
 % around them alone. These are the class values less a few points each, which
 % keeps floats clearly separated from the text without the excess space.
@@ -63,8 +63,7 @@ Promotion Across Derived Audio Transformations}
 
 \begin{abstract}
 Derived audio can keep its waveform while strengthening what it says about
-its origin. Under a boundary-only inheritance policy, a constructed reference and not any
-named product, a clip assembled from captured and generated material,
+its origin. Under a constructed boundary-only inheritance policy, a clip assembled from captured and generated material,
 trimmed and re-encoded, emerges described as captured-only. We specify an operator contract for derived audio:
 over the complete required source set, provenance unions, same-channel support
 minimises, applicability intersects and lineage unions, and an unverified source
@@ -79,11 +78,11 @@ failures and \Dem{} promotions, whereas boundary-only inheritance promoted in
 \Dbase{} of \Druns{} FFmpeg runs. Decoded essence was identical before and after signing in \Ftotal{}
 round-trips; bookkeeping cost \Gratio{}$\times$ the baseline. An independent reproduction on
 other hardware and FFmpeg major version returned every
-conformance, promotion and oracle outcome unchanged and found two
-build-specific declarations its build does not satisfy. A holdout
+conformance, promotion and oracle outcome unchanged and found one
+footprint and one mapping margin its build does not satisfy. A holdout
 challenge exceeded the measured encoder and stretcher declarations on the
-reference build; a strict profile giving those two whole-asset dependency had
-\KtwoStrictProbes{} exceedances and \DstrictPromo{} promotions. The algebra holds by proof, the audio instantiation only where
+reference build. A strict profile gives those two whole-asset dependency, safe by
+construction, and had \DstrictPromo{} promotions. The algebra holds by proof, the audio instantiation only where
 the declared map contains the real dependencies. The
 contract binds only operators that implement it; it does not detect deepfakes,
 and a valid signature proves only that an assertion was signed.
@@ -186,7 +185,7 @@ declare, not because the method is limited to it.
   present its non-amplification property as an instance of a known
   meet-semilattice construction (Section~\ref{sec:model}). We instantiate it
   over sample-exact half-open intervals for eight representation operators,
-  each with a declared conservative kernel footprint. A footprint-monotonicity
+  each with a declared kernel footprint, analytical or measured. A footprint-monotonicity
   result shows that over-approximating the required source set is always safe
   (Section~\ref{sec:audio}, Proposition~\ref{prop:footprint}).
 \item \textbf{A signed transport, and an ablation of the rule.}
@@ -737,8 +736,9 @@ they bound different quantities: Section~\ref{sec:res-corpus} measures
 temporal mapping deviation, which informs the margin, and
 Section~\ref{sec:res-containment} tests whether the \emph{declared}
 footprint contains the measured source influence. For two operators the
-measured reach exceeds the analytical support and is contained only by the
-declaration as a whole, which is why the declaration, not either component, is
+measured reach exceeds the analytical support and, at the probes of
+Section~\ref{sec:res-containment}, is contained only by the declaration as a
+whole, which is why the declaration, not either component, is
 what an implementation uses. An implementation on a build for which the two quantities have not been
 validated has no
 declaration to use, and the contract leaves three courses: refuse the
@@ -783,8 +783,10 @@ Section~\ref{sec:results} counts and, among those, the \Kops{} single-source
 configurations Section~\ref{sec:res-containment} probes. By
 Proposition~\ref{prop:footprint} erring large only weakens the emitted claim;
 erring small is a conformance failure. These
-values hold for one FFmpeg build and are not portable: on the build used in the independent reproduction of
-Section~\ref{sec:res-independent}, the MP3 row is under-declared. Section~\ref{sec:limits} states the normalisation row's
+values hold for one FFmpeg build and are not portable. The MP3 and time-stretch
+rows are measured, and the holdout of Section~\ref{sec:res-holdout} exceeds both
+on the reference build; on the build of Section~\ref{sec:res-independent} the
+MP3 row is also under-declared for Experiment~K's probes. Section~\ref{sec:limits} states the normalisation row's
 representational reading and its tested alternative.}
 \label{tab:operators}
 \small
@@ -952,7 +954,8 @@ That enumeration carries one channel over one scope, which is what the audio
 instantiation uses, so it cannot reach the applicability cases of~(iii). A
 separate synthetic battery covers those: over \LscopeScopes{} scopes, chosen so
 that pairs are disjoint, nested and partially overlapping, it enumerates
-\LscopeCases{} source-set enlargements and checks each against
+\LscopeCases{} source-set enlargements, skipping \LscopeSkipped{} that no
+valid source set realises, and checks each against
 Proposition~\ref{prop:footprint}, with \LscopeViolations{} violations.
 
 An earlier version of requirement~(iv) withheld a
@@ -1060,10 +1063,12 @@ complete-source policy produced \Cem{} promotions and \CemLineage{} omissions.
 Across \Dtransforms{} transformations and \Druns{} runs
 (Figure~\ref{fig:corpus}; Table~\ref{tab:main}), boundary-only inheritance
 promoted on \Dbase{} runs and complete-source propagation on \Dem{}, with
-\DemLineage{} lineage omissions. Under the strict profile it promoted on
-\DstrictPromo{} runs with \DstrictLineage{} lineage omissions; \DfallbackOutputs{}
-outputs needed the whole-asset tail, \DfallbackSamples{} samples in all, because
-FFmpeg emitted more output than the model predicted. Two transformations produced \emph{no}
+\DemLineage{} lineage omissions. Those claims cover the modelled output length;
+in \DfallbackOutputs{} outputs FFmpeg emitted more, \DfallbackSamples{} samples in
+all, and the declared profile makes no claim for them. Fitted to the decoded
+length, with whole-asset dependency on that tail, complete-source propagation
+under the strict profile promoted on \DstrictPromo{} runs with \DstrictLineage{}
+lineage omissions. Two transformations produced \emph{no}
 baseline promotion, and we report that as readily as the rest: overlay declares
 the generated source as a separate top-level ingredient, so a boundary-only
 reading still sees both, and retained-run selection happened to retain runs whose
@@ -1199,8 +1204,8 @@ beginning \KsilenceReach{} source samples before a retained run's start, well
 beyond the margin declared at the time. That is an under-declaration, the one
 direction Proposition~\ref{prop:footprint} does not forgive; the band was
 raised to \KsilenceFp{}, above the measured reach, and the operator now
-contains with a margin of \KsilenceMargin{}. The bands are tight, which
-matters because a larger one would be equally safe and more dilutive: resampling reached \KresampleReach{} against \KresampleFp{}, MP3
+contains with a margin of \KsilenceMargin{}. At these probes the bands are tight, which matters because a larger band
+dilutes more: resampling reached \KresampleReach{} against \KresampleFp{}, MP3
 \KmpThreeReach{} against \KmpThreeFp{}, and time stretching \KstretchReach{}
 against \KstretchFp{}.
 
@@ -1241,8 +1246,12 @@ encoder re-allocate bits and the stretcher's correlation search re-align
 globally. That is a dependency of the output on the source sample, and a change
 of operating mode is no ground for excluding it. These two declarations
 therefore characterise the tested operating points on the build that produced
-them. Under the strict profile, \KtwoStrictProbes{} probes of any
-content operator fell outside. An exceedance is a real promotion when the
+them. Under the strict profile \KtwoStrictProbes{} probes of any content operator
+fell outside, which for the encoder and the stretcher follows from whole-asset
+dependency and Proposition~\ref{prop:footprint}; estimated-gain normalisation
+stays outside in \KtwoNormCtrlExceed{} probes, a control dependency the profile
+does not count. Per-operator detail is in Supplementary
+Note~\NoteHoldout{}. An exceedance is a real promotion when the
 source it misses carries weaker evidence. On the worst failing MP3 probe,
 labelling source sample \KtwoDemoMpSrc{} generated and every other sample
 captured, the declared map emits \textsc{\KtwoDemoMpDeclared} for output sample
@@ -1366,8 +1375,8 @@ should be kept apart here. Boundary-only inheritance is specific and wrong on
 known counterexamples. The measured local footprints are specific and safe only
 where their containment holds, which the holdout of
 Section~\ref{sec:res-holdout} refutes for the encoder and the stretcher. The
-strict profile is safe on every probe and run tested and pays for it: median
-dilution is \IstrictMpPct{}\% for MP3 and \IstrictStPct{}\% for time stretching,
+strict profile is safe for those two operators by construction and pays for
+it: median dilution is \IstrictMpPct{}\% for MP3 and \IstrictStPct{}\% for time stretching,
 against \IstrictFlacPct{}\% for lossless transcoding, whose footprint is
 analytical.
 
@@ -1410,6 +1419,27 @@ is exact.}
 \input{../results/tables/dilution_table}
 \end{table}
 
+\subsection{Consumer verification}
+\label{sec:res-consumer}
+
+A consumer holds the derived asset's assertion and, through the ingredient
+graph, each source's own interval evidence. With the dependency declaration of
+Section~\ref{sec:discussion}, the verifier (\path{em_audio/consumer.py}) rebuilds
+the map, checks that it covers the output exactly and recomputes every
+interval's record. Over the \Pout{} corpus outputs of Experiment~D, honest
+assertions verified in \PhonestDecl{} of \Pout{} under the declared profile and
+\PhonestStrict{} under the strict profile. Boundary-only claims under the same
+declaration were flagged in \PbaseFlagged{} of the \PbasePromo{} promoting runs,
+and in \PbaseLocal{} further outputs whose whole-asset claim does not promote but
+some interval does: overlay and retained-run selection, which Experiment~D
+counts as clean, promote locally. One interval promoted after the fact was
+flagged in \PtamperFlagged{} of \PtamperCases{} cases, one dropped lineage entry
+in \PlinFlagged{} of \PlinCases{}, and a declaration missing its last piece in
+\PgapFlagged{} of \PgapCases{}. A producer that declares zero footprints and
+computes its claims to match passed in \PnarrowPassed{} of \PnarrowCases{}: the
+check establishes consistency with the signed declaration, not that the
+declaration describes the processing, which only calibration can test.
+
 \subsection{Two-language differential}
 \label{sec:res-oracle}
 
@@ -1444,29 +1474,20 @@ part grows linearly in emitted evidence intervals at \GperInterval{}~B and
 therefore scales with how often ancestry changes along the timeline, not with
 duration. It also scales with how far the codec smears that ancestry: the
 assertion is \FassertionWav{}~B in \texttt{wav} and \FassertionFlac{} in
-\texttt{flac} against \FassertionMpThree{} in \texttt{mp3}, whose footprint
-splits it into more intervals. An implementation that wants a ceiling on the count may coarsen the
+\texttt{flac} against \FassertionMpThree{} in \texttt{mp3}, whose footprint adds cuts at each source boundary shifted by $\pm$ the
+footprint. An implementation that wants a ceiling on the count may coarsen the
 partition, merging adjacent intervals and emitting the meet over the merged
 range: each sample then carries the union of the merged required source sets,
 which by Proposition~\ref{prop:footprint} can only weaken its claim, at the
 dilution cost of Section~\ref{sec:res-dilution}. The byte figure is deterministic and reproduces exactly; the
 microsecond figure is wall clock on one interpreter and one machine.
 
-Across the environments measured here the ratio was steadier than the
-milliseconds, and the mechanism is structural: both arms are timed in the same process on the same
-machine, so thermal state, clock frequency or competing load moves them
-together and cancels in the quotient. Re-running the benchmark as
-\MstabRepeats{} independent processes gives the absolute cost a coefficient of
-variation of \MstabAbsPct{}\% against \MstabRatioPct{}\% for the ratio, with
-the per-process rows and their load averages in Supplementary
-Note~\NoteRawRows{}; across sittings on this machine the absolute figure has
-moved by about a third while the ratio stayed inside its band. On a quiet machine with little common mode to cancel the quotient can carry
-slightly more scatter than either arm, and we have observed both cases.
-Cancelling variation within a machine is not cancelling the difference between
-two, so the cross-machine question is settled by measurement in
-Section~\ref{sec:res-independent}: the absolute figure differs by
-\IRabsGap{}\% and the ratio by \IRratioGap{}\%. The milliseconds are
-order-of-magnitude evidence that the bookkeeping is cheap, not reproducible
+Both arms are timed in the same process, so load and clock changes move them
+together. Over \MstabRepeats{} independent processes the absolute cost varied by
+\MstabAbsPct{}\% and the ratio by \MstabRatioPct{}\% (Supplementary
+Note~\NoteRawRows{}); between machines the absolute figure differed by
+\IRabsGap{}\% and the ratio by \IRratioGap{}\% (Section~\ref{sec:res-independent}).
+The milliseconds show that the bookkeeping is cheap; they are not reproducible
 constants.
 
 \begin{table}[t]
@@ -1646,8 +1667,10 @@ calibration tool is what transfers to a new one.
 \label{sec:discussion}
 
 \paragraph{What is established} A complete-source rule can be implemented over
-media time against stock FFmpeg, eliminates promotion relative to the declared
-map on every fixture and corpus clip tested, travels in an existing signed
+media time against stock FFmpeg. With the declared map it promoted on no
+fixture or corpus clip tested, but that map is unsound on the holdout; with the
+strict profile it promoted on none and is sound by Proposition~\ref{prop:footprint}.
+It travels in an existing signed
 standard without altering the audio, and costs a fraction of a percent of the
 processing it accompanies. The declared map is a separate claim: analytical for
 the linear operators, refuted by the holdout for the two adaptive ones, which
@@ -1660,9 +1683,7 @@ constructed reference policy.
 \paragraph{Relation to the standard and to adjacent work} The layer addressed
 here is the reduction over a vocabulary that already preserves what the problem
 needs, and it requires no specification change
-(Section~\ref{sec:transport}). It has not been put to the C2PA working group
-and no endorsement is claimed; standardisation of the reduction, rather than of
-this label, would be the useful outcome. Detectors, watermarks and chunk-localised binding \citep{ono2026merklespeech}
+(Section~\ref{sec:transport}).  No C2PA endorsement is claimed. Detectors, watermarks and chunk-localised binding \citep{ono2026merklespeech}
 answer different questions and compose with the contract, which is most useful
 where detectors are weakest, on short interior edits in genuine recordings, and
 useless on media that arrive with no evidence; on the specification's security
@@ -1682,15 +1703,12 @@ ingredient graph carries each component's manifest, both returning
 byte-equivalent through the official tool (Sections~\ref{sec:res-transport},
 \ref{sec:res-composition}); a consumer walking that graph can detect
 \emph{invented} ancestry, an atom the emitted claim asserts and no named source
-holds, which is the second half of Proposition~\ref{prop:union}. Detecting
-promotion is the harder direction, and v1 does not support it. The assertion
-records the operator that produced the output and its parameters, not the
-chain. Where a derivation composed several operators, the required source set
-therefore cannot be recovered from it. A claim stronger than the meet over whole
-sources is also what a legitimate trim produces
-(Table~\ref{tab:boundary}). Carrying the map, or the
-operator chain that determines it, would supply it and is the schema change
-we would make first. No consumer check reaches an operator that misdeclares
+holds, which is the second half of Proposition~\ref{prop:union}. The required source set, and with it promotion, can be checked
+only if the assertion carries the map. We therefore added a versioned dependency
+declaration to the assertion: output length, each piece's source range,
+footprint and its basis (analytical, measured or whole-asset), the profile and
+the processing build. Section~\ref{sec:res-consumer} shows that a consumer reading
+only JSON recomputes every claim from it. No consumer check reaches an operator that misdeclares
 its own operation or footprint. The effect of such misdeclaration is the dependency miss
 Section~\ref{sec:res-independent} measures at \IRmpOutside{} output samples, and no consumer can tell it from a build mismatch. That operator is the dishonest signer of
 Section~\ref{sec:threat} rather than the negligent one addressed here.
@@ -1700,7 +1718,10 @@ a library beside the processing step, whose caller already knows the parameters
 that fix the interval map, so nothing touches the signal path. An interval
 labelled \textsc{mixed} is a statement about the declared sources, not about the
 audio, and a manifest without an evidence assertion says only that its producer
-did not implement the contract.
+did not implement the contract. An examiner reporting an interval should state its
+footprint basis and build from the declaration: an analytical or whole-asset
+basis carries the guarantee, a measured basis only at the operating points its
+calibration tested.
 
 \section{Limitations}
 \label{sec:limits}
@@ -1719,14 +1740,11 @@ the second implementation of Section~\ref{sec:res-oracle} already consumes
 across a process boundary.
 
 \paragraph{One validator, not an interoperability result} Every round-trip is
-produced and checked by the official \texttt{c2patool} under a locally
-generated credential and trust anchor, so \emph{trusted} here means trusted
-under that anchor. A second API, \texttt{c2pa-python}, also recovered the assertion on every
-asset, but it binds the same Rust core, which rules out a CLI-specific artefact
-and nothing further. No independently implemented consumer has read the
-assertion, so semantic interoperability is not established; the assertion is
-designed to degrade safely, an unaware consumer being left with the standard
-ingredient graph, but that is an intention, not a tested outcome.
+produced and checked by the official \texttt{c2patool} under a locally generated
+trust anchor, so \emph{trusted} means trusted under that anchor. A second API,
+\texttt{c2pa-python}, also recovered the assertion, but it binds the same Rust
+core. No independently implemented consumer has read the assertion, so semantic
+interoperability is not established.
 
 \paragraph{Corpus} \Cclips{} clips from one read-speech corpus and one formant
 synthesiser at \CcorpusFs{}~Hz is a mechanism corpus, not a balanced design
@@ -1752,9 +1770,9 @@ exhaustive sweep. Adaptive operators also re-decide when the input changes
 enough. The declared footprints therefore characterise dependency around the tested
 operating points, not a universal support radius. Where no local radius can be
 supplied, whole-asset dependency remains safe at the dilution cost of
-Section~\ref{sec:res-dilution}. Two of the declarations shipped here sit below
-the tool's recommended margin while containing their reach, and are marked as
-such rather than quietly raised.
+Section~\ref{sec:res-dilution}. Two of the declarations sit below the tool's recommended margin at the
+Experiment~K probes and are marked as such; the MP3 and time-stretch ones do not
+contain the holdout reach.
 
 \paragraph{Content and control dependency} Peak normalisation is where the two
 diverge completely: each output sample represents one source sample, and the
@@ -1770,12 +1788,11 @@ pays dilution without gaining promotion safety.
 \paragraph{Replay, identity and truth} A microphone recording a loudspeaker
 playing synthetic speech produces audio that is genuinely captured at the
 sensor layer; every capture-provenance system has this limitation, and the
-contract would propagate a captured claim, correct at the layer it models. The
-remedy is layering, with capture mechanism, generation ancestry and
-speaker identity as separate channels; version~1 stays at the digital-asset and
-source-lineage level and detects no re-recording. Identity is not provenance,
-and neither is truth: a captured recording can contain a lie, and the contract
-says nothing about semantic content.
+contract would propagate a captured claim, correct at the layer it models.
+Version~1 stays at the digital-asset and source-lineage level and detects no
+re-recording; capture mechanism, generation ancestry and speaker identity would
+need separate channels. A captured recording can also contain a lie, and the
+contract says nothing about semantic content.
 
 \paragraph{From a machine-readable claim to an examiner's reading} The
 motivation drawn from \citet{andersen2025toolbias} is a human-factors result:
@@ -1796,8 +1813,7 @@ lineage the union, and an unverified source interval is absorbing. The algebra
 is not new. This work provides the executable temporal contract, the
 kernel-footprint treatment that makes it implementable against FFmpeg, and a
 signed transport inside an existing standard. Its measurements show that the
-rule eliminates promotion relative to the declared map on every fixture and
-clip tested. The rule leaves decoded WAV, FLAC and MP3 audio untouched and costs a fraction of a percent of the processing it
+rule promoted on no fixture or clip tested. The rule leaves decoded WAV, FLAC and MP3 audio untouched and costs a fraction of a percent of the processing it
 accompanies. An independent reproduction returned those results unchanged and
 found two build-specific declarations that do not transfer, which locates the
 part of this work that has to be re-measured before it is reused. Non-promotion
@@ -1807,8 +1823,8 @@ linear operators and, for the encoder and the stretcher, only at the operating
 points tested: a holdout challenge on the reference build exceeds both, and on
 a failing probe the declared map promotes. A strict profile that gives them
 whole-asset dependency and fits every map to the decoded output had no
-exceedance and no promotion, at the price of diluting every sample those two
-operators produce. The contract cannot tell
+exceedance and no promotion, at the price of diluting essentially all output of those two
+operators. The contract cannot tell
 you whether speech is synthetic or truthful, and a valid signature proves only
 that an assertion was signed.
 

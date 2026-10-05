@@ -36,7 +36,7 @@ def load(n):
 # Added in the revision after the independent reproductions had run. Their
 # results cannot contain these, so they are left out of every count quoted for
 # those runs and nowhere else.
-ADDED_AFTER_REPRODUCTIONS_FILES = {"K2_footprint_holdout"}
+ADDED_AFTER_REPRODUCTIONS_FILES = {"K2_footprint_holdout", "P_consumer_verification"}
 ADDED_AFTER_REPRODUCTIONS_FIELDS = {
     "length_change_samples", "outside_or_unmapped_strict", "alignment_offset_samples",
     "probes_with_length_change", "total_outside_or_unmapped_strict",
@@ -294,6 +294,7 @@ SUPPLEMENT_NOTES = {
     "NoteRepro": "Reproduction",
     "NoteIndependent": "Independent reproduction",
     "NoteRawRows": "Raw rows behind two summary figures",
+    "NoteHoldout": "Holdout challenge",
     "NoteFeasibility": "Feasibility log",
 }
 
@@ -570,6 +571,16 @@ def main() -> int:
     Dm = load("D_transform_matrix")["per_transformation"]
     m["DbasePromo"] = fmt(sum(v["baseline_promotions"] for v in Dm.values()))
     m["DemPromo"] = fmt(sum(v["em_promotions"] for v in Dm.values()))
+    Pc = load("P_consumer_verification")
+    for k_json, k_mac in (("outputs", "Pout"), ("honest_declared_ok", "PhonestDecl"),
+                          ("honest_strict_ok", "PhonestStrict"), ("baseline_promoting", "PbasePromo"),
+                          ("baseline_promoting_flagged", "PbaseFlagged"),
+                          ("baseline_clean_flagged", "PbaseLocal"),
+                          ("tamper_promote_cases", "PtamperCases"), ("tamper_promote_flagged", "PtamperFlagged"),
+                          ("tamper_lineage_cases", "PlinCases"), ("tamper_lineage_flagged", "PlinFlagged"),
+                          ("gap_cases", "PgapCases"), ("gap_flagged", "PgapFlagged"),
+                          ("narrowed_cases", "PnarrowCases"), ("narrowed_passed", "PnarrowPassed")):
+        m[k_mac] = fmt(Pc[k_json])
     m["DstrictPromo"] = fmt(sum(v.get("strict_promotions", 0) for v in Dm.values()))
     m["DstrictLineage"] = fmt(sum(v.get("strict_lineage_omissions", 0) for v in Dm.values()))
     m["DfallbackOutputs"] = fmt(sum(v.get("outputs_with_fallback", 0) for v in Dm.values()))
@@ -589,6 +600,7 @@ def main() -> int:
     from _common import CAPTURE_SUPPORT as _CS
     L = load("L_scope_battery")
     m["LscopeCases"] = fmt(L["enlargement_cases"])
+    m["LscopeSkipped"] = fmt(L.get("unconstructible_skipped", 0))
     m["LscopeScopes"] = fmt(L["distinct_scopes"])
     m["LscopeViolations"] = fmt(L["violations"])
     m["LscopeFailBad"] = fmt(L["violations_under_superseded_rule"])
@@ -632,8 +644,8 @@ def main() -> int:
     m["IwholeMinMedianPct"] = f"{math.floor(10000*min(pt_i[k]['whole_asset_median_dilution_fraction'] for k in corpus_tf))/100:.2f}"
     m["IwholeOverlayPct"] = f"{100*pt_i['overlay_generated']['whole_asset_median_dilution_fraction']:.2f}"
     if "strict_median_dilution_fraction" in pt_i["transcode_mp3"]:
-        m["IstrictMpPct"] = f"{100*pt_i['transcode_mp3']['strict_median_dilution_fraction']:.2f}"
-        m["IstrictStPct"] = f"{100*pt_i['time_stretch_1.10']['strict_median_dilution_fraction']:.2f}"
+        m["IstrictMpPct"] = f"{math.floor(10000*pt_i['transcode_mp3']['strict_median_dilution_fraction'])/100:.2f}"
+        m["IstrictStPct"] = f"{math.floor(10000*pt_i['time_stretch_1.10']['strict_median_dilution_fraction'])/100:.2f}"
         m["IstrictFlacPct"] = f"{100*pt_i['transcode_flac']['strict_median_dilution_fraction']:.2f}"
     m["IwholePromoted"] = fmt(sum(v["whole_asset_promoted_samples"] for v in pt_i.values()))
     m["IemMaxMedianPct"] = f"{100*max(v['median_dilution_fraction'] for v in pt_i.values()):.2f}"

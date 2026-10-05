@@ -96,3 +96,49 @@ def interval_from_json(d: Dict[str, object]) -> Evidence:
 
 def assertion_states(assertion: Dict[str, object]) -> List[str]:
     return [i["state"] for i in assertion["intervals"]]
+
+
+# ---------------------------------------------------------------------------
+# Dependency declaration: what a consumer needs to recompute the claims
+# ---------------------------------------------------------------------------
+
+DECLARATION_VERSION = "1.0"
+
+
+def footprint_basis(label: str) -> str:
+    """What a piece's footprint rests on: analytical, measured or whole-asset."""
+    from .interval_map import MEASURED_FOOTPRINT_LABELS
+    if label.startswith(("strict:", "fallback:")):
+        return "whole-asset"
+    return "measured" if label.startswith(MEASURED_FOOTPRINT_LABELS) else "analytical"
+
+
+def dependency_declaration(model, profile: str, source_samples: Dict[str, int],
+                           build: Optional[str] = None) -> Dict[str, object]:
+    """The map the producer used, in a form a consumer can rebuild exactly.
+
+    Without it an assertion records only the last operator and its parameters,
+    and the required source set of a derived interval cannot be recovered. With
+    it a consumer can recompute every interval's record from the ingredients'
+    evidence; agreement then shows consistency with this signed declaration, not
+    that the declaration describes the processing truthfully.
+    """
+    return {
+        "version": DECLARATION_VERSION,
+        "profile": profile,
+        # The processing build the footprints were calibrated on; a measured
+        # footprint means nothing without it.
+        "build": build,
+        "outputSampleCount": model.n_out,
+        "sources": {s: {"sampleCount": int(n)} for s, n in sorted(source_samples.items())},
+        "pieces": [{"output": {"start": p.out_start, "end": p.out_end},
+                    "source": p.src,
+                    "sourceRange": {"start": p.src_start, "end": p.src_end},
+                    "footprint": p.footprint, "basis": footprint_basis(p.label),
+                    "label": p.label}
+                   for p in model.pieces],
+    }
+
+
+def with_declaration(assertion: Dict[str, object], declaration: Dict[str, object]) -> Dict[str, object]:
+    return dict(assertion, dependencyDeclaration=declaration)

@@ -319,6 +319,17 @@ a low value. Temporal ranges follow the C2PA \texttt{npt} convention with
 inclusive start and exclusive end; sample-exact bounds are carried alongside
 because \texttt{npt} strings are lossy at sample resolution.
 
+\paragraph{Dependency declaration} Schema~1.0 assertions may carry an optional
+\texttt{dependencyDeclaration} object: \texttt{version}, \texttt{profile}
+(\texttt{declared} or \texttt{strict}), \texttt{build} (the processing build the
+footprints were calibrated on), \texttt{outputSampleCount}, \texttt{sources}
+(each with its \texttt{sampleCount}) and \texttt{pieces}, each with its
+\texttt{output} and \texttt{sourceRange} spans, \texttt{footprint},
+\texttt{basis} (\texttt{analytical}, \texttt{measured} or
+\texttt{whole-asset}) and \texttt{label}. A consumer rebuilds the map from it and
+recomputes the intervals (\path{em_audio/consumer.py}); assertions without it
+remain valid and are reported as unverifiable.
+
 \section{Composition manifest wiring}
 \label{s:composition}
 

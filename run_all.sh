@@ -135,6 +135,9 @@ step "K  kernel-support containment (impulse probe)"
 step "K2 footprint holdout challenge (prespecified, reports exceedances)"
 ( cd "$ROOT"/experiments && $PY footprint_holdout.py ) || note
 
+step "P  consumer verification against the declared map"
+( cd "$ROOT"/experiments && $PY consumer_verification.py ) || note
+
 step "E  provenance-loss behaviour"
 ( cd "$ROOT"/experiments && $PY manifest_stripping.py ) || note
 
