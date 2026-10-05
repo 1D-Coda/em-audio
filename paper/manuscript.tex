@@ -118,9 +118,8 @@ rule, is the \emph{reduction}: the aggregate evidence state a derived interval
 should emit when the component histories it represents disagree. The
 coalition's July 2026 guidance on identifying synthetic content develops the
 vocabulary for declaring AI involvement and localising it to regions
-\citep{c2pa2026synthetic}; that is guidance on how to \emph{represent} what
-happened to part of an asset, and it is complementary to what this paper
-supplies, the rule for what a derived interval may \emph{claim} once its parts
+\citep{c2pa2026synthetic}, which is how to \emph{represent} what happened to
+part of an asset, not what a derived interval may \emph{claim} once its parts
 disagree.
 
 Consider five consecutive source intervals of a
@@ -156,11 +155,9 @@ An earlier instantiation of that requirement exists for spatial data, where
 derived terrain geometry can overstate the evidence of the source arc it
 replaces \citep{urias2026emtrf}. This work asks whether the requirement is
 usable in a temporal medium with a real signed transport and real processing
-software, and what it costs. What is inherited and what is new, row by row, is
-Supplementary Note~\NoteTransfer{}, and no earlier result is reused: the algebra transfers, and the temporal
-interval maps, the kernel-footprint problem, the validations against
-third-party processing, signal transparency and the signed transport are not
-part of the spatial work.
+software, and what it costs. Only the algebra transfers; no earlier result is
+reused, and Supplementary Note~\NoteTransfer{} lists the inheritance row by
+row.
 
 
 The algebra, a meet over
@@ -963,13 +960,9 @@ enlargement that raised a channel from unavailable to a value. The
 monotonicity check had the same blind spot, comparing a channel only when it
 was present on both sides. Both are fixed and the battery runs in the pipeline.
 
-During development the suite failed on the overlay operator,
-where the implementation evaluated overlapping map pieces independently and
-emitted a captured claim and a generated claim over the same output interval
-instead of one mixed claim; that was a defect in our own code, fixed by making the
-output partition global across pieces. Passing checks are limited evidence;
-these regressions, and the mutation tests that reject an inexact reduction,
-show that the suite is sensitive to these particular defects.
+Passing checks are limited evidence. The superseded rule above, and the
+mutation tests that reject an inexact reduction, show that the suite detects
+these particular defects.
 
 \subsection{Adversarial timelines}
 \label{sec:res-adversarial}
@@ -1171,12 +1164,10 @@ holds when the probe position lies inside the declared required-source range of
 every output sample whose value it changed, on 16-bit PCM at a threshold of one
 least significant bit.
 
-Two properties of the probe had to be got right, and getting them wrong first
-showed why: against silence a probe sees no spread for the adaptive
-operators, so their declarations pass without being tested, and an earlier fixed-amplitude impulse, roughly two hundred times the
-carrier in the low-level context, replaced an adaptive operator's input rather
-than perturbing it, so both the lossy encoder and the stretcher re-decided
-globally. The impulse is now a fixed multiple of each context's peak. The
+The carriers are non-silent, because against silence an adaptive operator shows
+no spread and its declaration passes untested, and the impulse is a fixed
+multiple of each context's peak, so that it perturbs the input rather than
+replacing it. The
 \Kcontexts{} contexts, all generated arithmetically
 (\texttt{experiments/support\_containment.py}), are a steady low-frequency
 tone; the same tone at one part in a hundred, where a lossy encoder allocates
@@ -1193,19 +1184,15 @@ Across \Kprobes{} probes, \Kaffected{} output samples were influenced and
 \Koutside{} fell outside the declared support (Table~\ref{tab:containment};
 Figure~\ref{fig:containment});
 every context produced influence for every operator, so no row passes
-vacuously. A shorter probe passes trivially for the
-large-footprint operators because a declared footprint of \KstretchFp{} samples
-spans a whole short source; lengthening it made the test able to fail, and it
-did. Retained-run selection failed: a frame-granular selector emitted a frame
+vacuously, and the source is long enough that a declared footprint of
+\KstretchFp{} samples does not span it. Retained-run selection first failed: a
+frame-granular selector emitted a frame
 beginning \KsilenceReach{} source samples before a retained run's start, well
 beyond the margin declared at the time. That is an under-declaration, the one
 direction Proposition~\ref{prop:footprint} does not forgive; the band was
 raised to \KsilenceFp{}, above the measured reach, and the operator now
-contains with a margin of \KsilenceMargin{}. We report this rather than
-quietly shipping the corrected number because it shows the declarations are
-measured rather than asserted. The bands are also reasonably
-tight, which matters because a larger one would be equally safe and more
-dilutive: resampling reached \KresampleReach{} against \KresampleFp{}, MP3
+contains with a margin of \KsilenceMargin{}. The bands are tight, which
+matters because a larger one would be equally safe and more dilutive: resampling reached \KresampleReach{} against \KresampleFp{}, MP3
 \KmpThreeReach{} against \KmpThreeFp{}, and time stretching \KstretchReach{}
 against \KstretchFp{}.
 
@@ -1320,8 +1307,8 @@ whose claim is weaker than over the nominal map. (A) Through a composition chain
 with the operator each step adds; the shaded band runs from median to maximum
 over clips and is not an uncertainty interval. Normalisation adds nothing: its
 content footprint is zero. (B) Each transformation alone over \IclipsPerTf{}
-clips: circles are medians, bars reach the maximum, open circles are exact
-zeros. (C) One depth-three chain at three durations with the boundary count
+clips: circles are medians, bars reach the maximum, $\times$ is the
+whole-asset comparator's median. (C) One depth-three chain at three durations with the boundary count
 fixed, on logarithmic axes. Dilution weakens a claim and never strengthens one.}
 \label{fig:dilution}
 \end{figure}
@@ -1336,21 +1323,12 @@ value, than the record computed over the nominal represented content. It
 measures conservatism added relative to the nominal map, not a comparison with a
 known true codec dependency.
 
-Measuring this caught a second defect in our own implementation, reported for
-the same reason as the first. Footprint widening was originally applied at the
-granularity of the emitted interval partition, so an interval whose widened
-range touched a neighbouring ancestry took the weakened claim over its
-\emph{entire} extent, and a single resampling reported a dilution fraction of
-one: safe, and uselessly conservative. The fix refines the output partition at
-the pull-backs of each source boundary shifted by $\pm$ the footprint, confining
-dilution to footprint-wide bands at ancestry boundaries. The two-language
-differential had not caught this because its fixtures used source intervals
-narrower than every footprint, a geometry in which the coarse and exact
-treatments coincide; the oracle corpus now includes a wide-interval battery,
-and the fixed implementation agrees with the per-sample oracle on all
-\Hcases{} cases.
+The implementation widens footprints at the pull-backs of each source boundary
+shifted by $\pm$ the footprint, so dilution is confined to footprint-wide bands
+at ancestry boundaries; the per-sample oracle agrees with it on all \Hcases{}
+cases, including a battery of source intervals wider than every footprint.
 
-After the fix (Table~\ref{tab:dilution}; Figure~\ref{fig:dilution}), \IzeroTf{} of \ItfCount{}
+In Table~\ref{tab:dilution} and Figure~\ref{fig:dilution}, \IzeroTf{} of \ItfCount{}
 transformations dilute nothing, lossless transcoding among them, and overlay
 because its nominal required-source set already contains every covering
 source. The remainder
@@ -1579,26 +1557,13 @@ Yes: reproduced exactly \\
 \subsection{Independent reproduction}
 \label{sec:res-independent}
 
-D.~A.~Balderrama-Alvarez (Universidad de Sonora) ran the package for release
-tag~\IRtag{} twice on his own machine (Table~\ref{tab:runs}). He is not an author, took no part in designing the contract
-or the experiments, and received the package without any result files. The comparison criteria
-were already fixed in code (Section~\ref{sec:limits}); his runs show
-independence of execution, not of implementation.
-The first run was incomplete because two dependencies were absent from the
-package's instructions, since fixed; the second, reported here, produced the
-same values for the two findings below, which rules out run-to-run variation
-on his hardware. The package he was
-given, tag~\IRtag{}, is earlier than the released \Rtag{}; neither finding's
-value changed between the two, which we checked rather than assumed, and what
-did change is the size of the conformance suite, as recorded below. His raw
-outputs are released unmodified in \texttt{results/independent/}.
-
-\path{tools/verify_reproduction.py} returned \texttt{REPRODUCTION
-INCOMPLETE} with the \IRdet{} differences reported below, and
-\texttt{run\_all.sh} ended in \texttt{RUN FAILED} for two packaging defects
-that touch no reported number (Supplementary Note~\NoteRepro{}). Both are printed because Section~\ref{sec:limits} makes that tool the arbiter
-precisely so its verdict cannot be adjusted after the fact.
-
+D.~A.~Balderrama-Alvarez (Universidad de Sonora), who is not an author and took
+no part in the design, ran the package for tag~\IRtag{} on his own Linux
+machine from a package without result files (Table~\ref{tab:runs}). The
+comparison criteria were fixed in code beforehand (Section~\ref{sec:limits}).
+This is independence of execution, not of implementation. His raw outputs are
+released unmodified in \texttt{results/independent/}, and the packaging history
+of the run is in Supplementary Note~\NoteRepro{}.
 
 \begin{table}[tbp]
 \centering
@@ -1631,131 +1596,50 @@ D.~A.~Balderrama-Alvarez & \XBWinOs{} & \XBWinFfmpeg{} &
 \end{table}
 
 \paragraph{What reproduced} Of the \IRfiles{} result files carrying a
-deterministic claim, \IRclean{} reproduced with no deterministic difference,
-across an operating system, processor architecture, Python version and FFmpeg
-major version that share nothing with the reference machine. Every headline
-outcome is among them, including the \LscopeFailBad{} cases the superseded
-rule failed, and Table~\ref{tab:boundary} reports them row by row.
-Decoded-essence identity before and after signing held for all \Ftotal{}
-round-trips; the digests differ between machines, as a different FFmpeg decodes
-to different bytes, and the claim is identity within a machine.
+deterministic claim, \IRclean{} reproduced exactly on an operating system,
+processor architecture, Python version and FFmpeg major version that share
+nothing with the reference machine. Every conformance, promotion and oracle
+outcome is among them, including the \LscopeFailBad{} cases the superseded rule
+failed (Table~\ref{tab:boundary}), and decoded-essence identity before and after
+signing held for all \Ftotal{} round-trips.
 
-\paragraph{What did not, and why it is a result} \IRdet{} deterministic
-differences remain, in \IRdiffFiles{} files. \IRdetSuite{} of them are the size
-fields of Experiment~A and are not a failing check: his package's suite had
-\IRachecks{} checks and every one passed, and the released suite has
-\Achecks{} because the structural checks were added after his run; the later
-Windows run of tag~\XBWinTag{} reproduces the \XBWinChecks{} exactly, and every
-deterministic output of that tag is identical to that of the evaluated release,
-\Rtag{}. The
-remaining \IRdetBuild{} fall in two files and trace to the same cause, the one
-Section~\ref{sec:limits} names in advance: the kernel footprints of
-Table~\ref{tab:operators} are declarations calibrated against one FFmpeg build,
-and his is a different one.
+\paragraph{What did not} \IRdet{} deterministic differences remain.
+\IRdetSuite{} are the size of a conformance suite that grew after his run; the
+other \IRdetBuild{} trace to two declarations his FFmpeg build does not satisfy.
+For the MP3 encoder the reach on his build is \IRmpReach{} against a declared
+\IRmpDeclared{}, and \IRmpOutside{} output samples fall outside the declared
+support, all in the \IRmpContext{} context. That removes the guarantee for those
+samples; whether it promotes depends on whether the omitted source's evidence is
+weaker than that of the sources the map includes. For retained-run selection,
+the mapping deviation rises from \IRsilDevRef{} to \IRsilDev{} samples against a
+margin of \IRsilGuard{}, a systematic offset (median \IRsilMedian{}), while its
+containment arm found no sample outside the declared support. Of the
+\IRopsNonzero{} operators with a non-zero footprint, \IRopsAgree{}, all but MP3,
+reproduced their reach exactly.
 
-\IRopsAgree{} of the \IRopsNonzero{} operators that declare a non-zero footprint
-reproduced their measured reach exactly across the two builds; the remaining
-\IRopsZero{} declare no footprint and measure no reach on either machine, so
-their agreement carries no information. The supplement gives the per-operator
-comparison in full.
-
-For the MP3 encoder, the declared footprint of \IRmpDeclared{} source samples
-contained Experiment~K's probes on the reference build, where their
-measured reach was \IRmpReachRef{}, though not the holdout of
-Section~\ref{sec:res-holdout}. On his build the reach is \IRmpReach{}, exceeding the
-declaration by \IRmpExcess{}, and \IRmpOutside{} output samples fall outside
-the declared support, all in the \IRmpContext{} probe context. This is a failure of one declared number, not of
-Proposition~\ref{prop:footprint}, which covers enlargement and not
-under-sizing, and its consequence is exactly the failure this paper is about: a
-source's genuine influence reaches samples the assertion does not attribute to
-it, which removes the guarantee for those samples. Whether it promotes depends
-on the omitted source: a dependency miss changes the claim only when that
-source's evidence is weaker than the sources the map does include. An over-declared footprint costs dilution; an
-under-declared one costs the guarantee, and a reader on an untested FFmpeg
-build should assume the same until the calibration says otherwise.
-
-For retained-run selection, the deviation between the modelled temporal mapping and
-the one FFmpeg performs rises from \IRsilDevRef{} samples on the reference
-build to \IRsilDev{} on his, against a declared margin of \IRsilGuard{}. The
-median deviation is \IRsilMedian{}, a systematic offset rather than an outlier,
-and \texttt{aselect} retains \IRsilLen{} samples on his build where the
-reference retains \IRsilLenRef{}. His containment arm for this operator nonetheless
-reported no sample outside the declared support: mapping and support are two
-quantities validated by two experiments, and only the first failed.
-
-\paragraph{Two builds, one version number} Two later runs on the released
-package separate the version number from the environment around it
-(Table~\ref{tab:runs}). The Guerra Flores run is the first by a third party to
-reproduce every deterministic output of the package it ran; the Windows run's
-\XBWinDetDiffs{} differences all lie in the MP3 kernel measurements and the
-time-stretch model deviation, on which the two builds also disagree,
-\XBRefStretchDev{} against \XBWinStretchDev{} samples, both inside the
-\XBStretchGuard{}-sample margin.
-
-What that supports is narrower than it may look. The version number is
-\XBMacFfmpeg{} in three of the four rows and the reach takes two values, so
-pinning a version is not a substitute for re-calibrating; machine and operator
-do not move it, since the two runs that agree share neither. Operating system,
-architecture and build differ together, so we claim only that the number is
-not fixed by the version, and these runs were made to test the package rather
-than as an experiment. The declaration of \IRmpDeclared{} samples contained
-every measurement in this group, with \XBMacOutside{} and \XBWinOutside{}
-probes outside.
-
-We report the two findings on the Linux build as findings rather than as
-reproduction failures, and we do not re-declare the numbers to make them pass:
-widening them until his build conforms would produce a table adequate for two
-builds and tested against neither. What the reproduction establishes is the
-scope of Table~\ref{tab:operators}: a calibration for a stated configuration,
-for which the re-calibration of Section~\ref{sec:limits} is a prerequisite and
-the two-pass tool that performs it is the artefact that transfers.
-
-That outcome is consistent with the broader forensic-tool literature without
-validating anything here: \citet{nordvik2022exfat} showed that a shared
-specification does not guarantee consistent interpretation across
-implementations, while \citet{kuelper2026testdriven} showed that forensic
-outputs can drift substantially across software versions. Our own runs add a
-narrower observation: matching FFmpeg version strings do not guarantee
-identical calibrated behaviour across builds. The contract is portable because
-it is a proof; the calibrated constants are not, and are not assumed to be.
-
-\paragraph{Cost across environments} His bookkeeping cost is \IRabs{}~ms
-per audio minute against \IRabsRef{} on the reference machine, a difference of
-\IRabsGap{}\%; the ratio to the baseline is \IRratio{} against \IRratioRef{}, a
-difference of \IRratioGap{}\%. Within his sitting, across \MstabRepeats{} processes,
-the absolute figure has a coefficient of variation of \IRabsCv{}\% against
-\IRratioCv{}\% for the ratio, the shape Section~\ref{sec:res-overhead}
-predicts: the quotient helps in proportion to the common-mode variation there
-is to cancel. This is one pair of machines, so it shows the ratio surviving a
-change of hardware once rather than bounding how far it can move.
+Two later runs of the released package, on macOS and Windows, show that the
+version string does not fix the calibration: three of the four rows of
+Table~\ref{tab:runs} report FFmpeg~\XBMacFfmpeg{}, and the MP3 reach takes two
+values among them. \citet{nordvik2022exfat} found the same for file-system
+implementations sharing one specification, and \citet{kuelper2026testdriven}
+found forensic outputs drifting across software versions. We report the two
+Linux findings as findings and do not widen the declarations to pass them: a
+footprint table is a calibration for a stated build, and the two-pass
+calibration tool is what transfers to a new one.
 
 \section{Discussion}
 \label{sec:discussion}
 
-\paragraph{What is established} That a complete-source rule is implementable
-over media time against real processing software; that it eliminates promotion
-relative to the declared map on every fixture and corpus clip tested, where a
-boundary-only policy does not, and that the declared map is itself a separate
-claim, which the holdout refutes for the two adaptive operators; that it can be carried in an existing signed standard without
-altering the audio; and that its cost is a fraction of a percent of the
-processing it accompanies. An independent run on unrelated hardware returned
-the headline contract and corpus outcomes unchanged; of its \IRdet{}
-deterministic differences, \IRdetSuite{} are the size of a suite that grew
-after the run and \IRdetBuild{} trace to declarations his
-FFmpeg build does not satisfy
-(Section~\ref{sec:res-independent}). Independent execution shows those counts
-are not artefacts of the reference machine; that they are properties of the contract follows from Propositions~\ref{prop:union}
-and~\ref{prop:footprint} and Theorem~\ref{thm:composition}. Table~\ref{tab:boundary} states in one place what transfers:
-everything derived from the requirements, and nothing derived from a
-particular build, a boundary that runs through Table~\ref{tab:operators}.
-
-\paragraph{What is not} No claim is made that any deployed system promotes
-provenance; the baseline is a constructed reference policy and the fixture
-rates are a mechanism stress rate. Nor is the algebra new: the non-amplification
-property is a meet in a semilattice, familiar from provenance semirings
-\citep{green2007provenance} and information-flow models
-\citep{denning1976lattice,goguen1982noninterference}, and can equally be read as
-a ``no write up'' discipline for evidential authority.
+\paragraph{What is established} A complete-source rule can be implemented over
+media time against stock FFmpeg, eliminates promotion relative to the declared
+map on every fixture and corpus clip tested, travels in an existing signed
+standard without altering the audio, and costs a fraction of a percent of the
+processing it accompanies. The declared map is a separate claim: analytical for
+the linear operators, refuted by the holdout for the two adaptive ones.
+Table~\ref{tab:boundary} separates what transfers, everything derived from the
+requirements, from what does not, everything calibrated on a particular build.
+No claim is made that any deployed system promotes provenance; the baseline is a
+constructed reference policy.
 
 \paragraph{Relation to the standard and to adjacent work} The layer addressed
 here is the reduction over a vocabulary that already preserves what the problem
@@ -1790,7 +1674,7 @@ cannot be recovered from it, and a claim stronger than the meet over whole
 sources is also what a legitimate trim produces
 (Table~\ref{tab:boundary}). Carrying the map, or the
 operator chain that determines it, would supply it and is the schema change
-we would make first. The omission surfaced when we tried the check. No consumer check reaches an operator that misdeclares
+we would make first. No consumer check reaches an operator that misdeclares
 its own operation or footprint, whose effect is the dependency miss
 Section~\ref{sec:res-independent} measures at \IRmpOutside{} output samples and which no consumer can tell from a build mismatch: the dishonest signer of
 Section~\ref{sec:threat} rather than the negligent one addressed here.
@@ -1817,32 +1701,16 @@ an expectation and not a result.
 
 \paragraph{Independence} The oracle and the evidence policies are
 author-written; the differential tests transcription and interval-arithmetic
-error, not author independence. Two components are outside our control by
-design: all processing is stock FFmpeg and all signing the official
-\texttt{c2patool}. Three runs by two other people are reported in
-Section~\ref{sec:res-independent}; none is independent of the design of the
-experiments, only of their execution. One reproduced every deterministic output
-exactly on a build matching the reference, which shows the pipeline
-deterministic rather than differing in ways we find convenient to explain; the
-other two, on differing builds, found the declarations that do not transfer. A
-fourth person reported two portability defects on Windows without completing a
-run, which improved the software and is not a reproduction. A third-party
-reimplementation remains outstanding and is the stronger check. What it would
-run against is the \Hcases{} frozen cases of
-\path{fixtures/oracle_cases.jsonl}, not the enumeration's \Acases{} operator
-cases, which are generated against our own objects and cannot leave the
-language; the second implementation of Section~\ref{sec:res-oracle} already
-consumes that file across a process boundary. Disagreement would be the more
-informative outcome, since it would locate an ambiguity in the
-specification.
-
-\paragraph{What an independent reproduction has to compare} The criteria were
-fixed in \path{tools/verify_reproduction.py} and shipped before any third
-party ran it: deterministic outputs are held to exact equality and any
-difference exits non-zero, environment-dependent outputs are reported without
-failing. Fixing the comparison in code stops the criteria being adjusted once a
-result is in hand. The membership of each class and the protocol a further
-reproduction should follow are Supplementary Note~\NoteRepro{}.
+error, not author independence. All processing is stock FFmpeg and all signing
+the official \texttt{c2patool}. The third-party runs of
+Section~\ref{sec:res-independent} are independent in execution only, and their
+comparison criteria were fixed in \path{tools/verify_reproduction.py} before
+anyone ran it: deterministic outputs must match exactly, environment-dependent
+ones are reported (Supplementary Note~\NoteRepro{}). A third-party
+reimplementation remains outstanding and is the stronger check; it would run
+against the \Hcases{} frozen cases of \path{fixtures/oracle_cases.jsonl}, which
+the second implementation of Section~\ref{sec:res-oracle} already consumes
+across a process boundary.
 
 \paragraph{One validator, not an interoperability result} Every round-trip is
 produced and checked by the official \texttt{c2patool} under a locally
@@ -1856,18 +1724,12 @@ ingredient graph, but that is an intention, not a tested outcome.
 
 \paragraph{Corpus} \Cclips{} clips from one read-speech corpus and one formant
 synthesiser at \CcorpusFs{}~Hz is a mechanism corpus, not a balanced design
-over speakers, languages, conditions, codecs or editing styles. It supports
-the claim that the mechanism is real and the rule works on realistic audio,
-not any rate claim about audio in general. The propagation rule is independent
-of acoustic content, since the contract never reads the audio; the footprint
-declarations are not, because adaptive and lossy operators depend on the signal
-(Section~\ref{sec:res-containment}), which is why they hold only at the tested
-configurations and operating points. The axes that can change the outcome are
-therefore operator and codec configuration, signal context for adaptive
-operators, and ancestry geometry. Production material at other rates, channel
-counts and codecs would further validate the footprint layer; it is not a
-requirement of the contract, and more codec configurations are the direction
-Section~\ref{sec:res-independent} shows to be load-bearing.
+over speakers, languages, conditions, codecs or editing styles, and supports
+no rate claim about audio in general. The propagation rule never reads the
+audio; the footprint declarations of adaptive operators depend on the signal.
+Codec configuration, signal context and ancestry geometry are therefore the
+axes that can change the outcome, and more codec configurations are the
+direction Section~\ref{sec:res-independent} shows to matter.
 
 \paragraph{Footprints are declarations} The kernel footprints hold for the
 exact configurations used here, and the measured ones only at the tested
@@ -1903,7 +1765,7 @@ pays dilution without gaining promotion safety.
 playing synthetic speech produces audio that is genuinely captured at the
 sensor layer; every capture-provenance system has this limitation, and the
 contract would propagate a captured claim, correct at the layer it models. The
-honest response is layering, with capture mechanism, generation ancestry and
+remedy is layering, with capture mechanism, generation ancestry and
 speaker identity as separate channels; version~1 stays at the digital-asset and
 source-lineage level and detects no re-recording. Identity is not provenance,
 and neither is truth: a captured recording can contain a lie, and the contract

@@ -468,6 +468,31 @@ Experiment~K and in the time-stretch model deviation, on which the two builds
 also disagree, \XBRefStretchDev{} against \XBWinStretchDev{} samples, both
 inside the \XBStretchGuard{}-sample margin.
 
+\paragraph{Run history} His first run was incomplete because two dependencies
+were missing from the package instructions, since fixed; the second, reported in
+the manuscript, gave the same values for both findings. The package he ran,
+tag~\IRtag{}, predates the evaluated release \Rtag{}; neither finding's value
+changed between them, which we checked. \path{tools/verify_reproduction.py}
+returned \texttt{REPRODUCTION INCOMPLETE} with \IRdet{} differences, and
+\texttt{run\_all.sh} ended in \texttt{RUN FAILED} on two packaging defects that
+touch no reported number. His suite had \IRachecks{} checks, all passing; the
+released suite has \Achecks{} because structural checks were added after his
+run, and the Windows run of tag~\XBWinTag{} reproduces the \XBWinChecks{} exactly.
+On his build \texttt{aselect} retains \IRsilLen{} samples where the reference
+retains \IRsilLenRef{}. The Windows build's time-stretch model deviation is
+\XBWinStretchDev{} samples against \XBRefStretchDev{} on the reference, both inside
+the \XBStretchGuard{}-sample margin, and the declaration of \IRmpDeclared{}
+samples contained every macOS and Windows measurement (\XBMacOutside{} and
+\XBWinOutside{} probes outside).
+
+\paragraph{Cost on his machine} His bookkeeping cost is \IRabs{}~ms per audio
+minute against \IRabsRef{} on the reference machine, a difference of
+\IRabsGap{}\%; the ratio to the baseline is \IRratio{} against \IRratioRef{}, a
+difference of \IRratioGap{}\%. Across \MstabRepeats{} processes in his sitting the
+absolute figure varied by \IRabsCv{}\% and the ratio by \IRratioCv{}\%. One pair of
+machines shows the ratio surviving one change of hardware; it does not bound how
+far it can move.
+
 Table~\ref{tab:independent} gives the containment result per operator on both
 machines rather than only the operator that differs, so the selection made in
 the main text can be checked. \IRopsAgree{} of the \IRopsNonzero{} operators
