@@ -173,6 +173,12 @@ an instance, prove the footprint-monotonicity result the temporal
 instantiation relies on, and locate the contribution in what is executable and
 measured.
 
+The contract reads decoded samples, not file formats, so it applies to any
+format FFmpeg decodes. Lossless formats such as WAV, AIFF and FLAC reproduce
+each sample exactly and take a zero footprint; MP3 appears often in what
+follows because, as a lossy and adaptive encoder, it is the hardest case to
+declare, not because the method is limited to it.
+
 \paragraph{Contributions} Each is traceable to a completed experiment.
 
 \begin{enumerate}
