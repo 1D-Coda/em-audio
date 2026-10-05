@@ -323,6 +323,9 @@ MANUSCRIPT_LABELS = {
     "PropUnion": "prop:union",
     "ThmComposition": "thm:composition",
     "TabOperators": "tab:operators",
+    "SecOverhead": "sec:res-overhead",
+    "SecIndependent": "sec:res-independent",
+    "SecHoldout": "sec:res-holdout",
 }
 
 
@@ -427,6 +430,7 @@ def main() -> int:
     m["Etampered"] = fmt(E["state_tally"]["asset_modified_after_signing"].get("INVALID", 0))
     m["Ereenc"] = fmt(E["state_tally"]["reencoded_without_manifest"].get("UNVERIFIED", 0))
     m["Evalid"] = fmt(E["state_tally"]["valid_manifest"].get("MIXED", 0))
+    m["EvalidDerived"] = fmt(E["state_tally"]["valid_derived_manifest"].get("MIXED", 0))
     m["Ederived"] = fmt(E["state_tally"]["valid_derived_manifest"].get("MIXED", 0))
     # F
     pc = F["per_container"]

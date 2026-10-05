@@ -76,7 +76,7 @@ Across \Achecks{} contract checks, \Btimelines{} adversarial timelines,
 differential-oracle cases, complete-source propagation produced \Afailed{}
 failures and \Dem{} promotions, whereas boundary-only inheritance promoted in
 \Dbase{} of \Druns{} stock-FFmpeg transformation runs. Decoded essence was identical before and after signing in \Ftotal{}
-round-trips, at \Gratio{}$\times$ the bookkeeping baseline. An independent reproduction on
+round-trips; bookkeeping cost \Gratio{}$\times$ the baseline. An independent reproduction on
 other hardware and FFmpeg major version returned every
 conformance, promotion and oracle outcome unchanged and found two
 build-specific declarations its build does not satisfy, and a holdout
@@ -191,7 +191,8 @@ measured.
   \texttt{componentOf} ingredients (Sections~\ref{sec:transport},
   \ref{sec:res-transport}, \ref{sec:res-composition}); and a policy ablation
   showing that complete-source aggregation and declared kernel footprints are
-  each necessary and neither sufficient (Section~\ref{sec:res-ablation}).
+  such that dropping either one fails within the tested policy family
+  (Section~\ref{sec:res-ablation}).
 \item \textbf{Evidence that it holds, and what it costs.} An executable
   conformance suite of \Achecks{} checks over every source word of length up to
   \Amaxlen{} over $\{\C,\G,\bot\}$ with \Afailed{} failures, and a two-language
@@ -393,7 +394,7 @@ What a derived asset may claim about material it represents \\
 
 Source attribution from the signal, such as identifying a recording
 microphone \citep{qamhan2023microphone}, infers origin from the audio, where
-this work reads no audio at all. A contract is worth nothing unless its
+this work reads no audio at all. A contract is useful only if its
 implementation can be checked, which is why the conformance suite of
 Section~\ref{sec:res-conformance} is written against the requirements rather
 than against our code.
@@ -544,8 +545,9 @@ to an empty scope under~(iii) would carry a number applicable nowhere.
   state $\bot$, every numeric channel on the output is unavailable.
 \item[(v) Lineage] $L_y = \bigcup_{x \in \Dy} L_x$, identifying the complete
   required source set. The record is carried per evidence-homogeneous interval,
-  so $L_y$ names the assets required by \emph{that} interval and the interval's
-  own bounds carry the placement.
+  so $L_y$ names the assets required by \emph{that} interval; it does not
+  record where in those assets the interval's sources lie, which only the
+  mapping that produced it determines.
 \end{description}
 
 Requirements~(iv) and~(iv$'$) are where this model is strictly stronger than
@@ -793,8 +795,9 @@ footprints. It is a \textbf{constructed reference policy}, not a description
 of any shipping product, and no claim is made here about what any named tool
 does. Its motivation is the specification text: a derived asset's relationship
 to its input is \texttt{parentOf}, ``a derived asset or asset rendition of this
-ingredient'' \citep[Table~10, \S18.16.3]{c2pa24}, and the minimal way to
-inherit from a parent over a retained region is to read its endpoints. Since
+ingredient'' \citep[Table~10, \S18.16.3]{c2pa24}; reading a parent's
+endpoints over a retained region is the baseline we define, an assumption of
+this paper rather than a reading the specification prescribes. Since
 the specification does not define the reduction, every implementation that
 derives an asset supplies one, deliberately or by default, and endpoint
 inheritance is one such rule. The
@@ -1082,22 +1085,16 @@ here, and support containment in Section~\ref{sec:res-containment}.
 \centering
 \includegraphics[width=0.82\linewidth]{fig4_corpus.pdf}
 \caption{Promotion by transformation over \Cclips{} mixed-origin clips
-processed entirely by stock FFmpeg, \DtotalRuns{} transformation runs in all.
-Each row is a pair of marks: a filled circle for the boundary-only reference
-policy and an open diamond for complete-source propagation, with counts written
-directly rather than read off the axis. Boundary-only promoted in
-\DbasePromo{} of \DtotalRuns{} runs and complete-source in \DemPromo{}.
-Generated-source overlay and retained-run selection produce no baseline promotion
-either, for the structural reasons given in Section~\ref{sec:res-corpus}, and
-are marked as such rather than left to look like missing rows. (B) The mechanism
-behind panel A, measured in the same runs: the mean number of evidence intervals
-each policy emits per output. Boundary-only inheritance emits one interval for
-most transformations, a single claim spanning the whole output, while
-complete-source propagation emits three to five. The promotion in panel A is a
-consequence of that collapse, since an interval that no longer exists cannot
-carry the evidence that would have contradicted the endpoints. The baseline is a
-constructed reference policy, not the behaviour of any named deployed product,
-and these are counts over a frozen corpus rather than a prevalence estimate.}
+processed by stock FFmpeg, \DtotalRuns{} runs in all. (A) Filled circle:
+boundary-only reference policy; open diamond: complete-source propagation.
+Boundary-only promoted in \DbasePromo{} of \DtotalRuns{} runs and complete-source
+in \DemPromo{}. Overlay and retained-run selection produce no baseline promotion
+in this corpus (Section~\ref{sec:res-corpus}). (B) Mean evidence intervals
+emitted per output. A single interval can carry a correct whole-output
+\textsc{mixed} claim; the baseline promotes because it reads that claim from the
+endpoints rather than from every source the interval requires. The baseline is
+a constructed policy, not a named product, and these are counts over a frozen
+corpus, not a prevalence estimate.}
 \label{fig:corpus}
 \end{figure}
 
@@ -1122,7 +1119,8 @@ same point, every essence hash agreeing and no signed-file hash, each
 signature carrying its own timestamp.
 
 Under the five provenance-loss conditions over \Eclips{} clips, a valid
-manifest yielded \textsc{mixed} in \Evalid{} cases, a removed manifest yielded \textsc{unverified} in
+manifest yielded \textsc{mixed} in \Evalid{} cases, a valid derived manifest
+in \EvalidDerived{}, a removed manifest yielded \textsc{unverified} in
 \Estripped{} cases, an asset modified after signing yielded \textsc{invalid} in
 \Etampered{}, and re-encoding without manifest preservation yielded
 \textsc{unverified} in \Ereenc{}. No condition other than a valid manifest ever
@@ -1166,8 +1164,8 @@ every output sample whose value it changed, on 16-bit PCM at a threshold of one
 least significant bit.
 
 Two properties of the probe had to be got right, and getting them wrong first
-showed why: against silence every operator appears to map one sample to one
-sample, and an earlier fixed-amplitude impulse, roughly two hundred times the
+showed why: against silence a probe sees no spread for the adaptive
+operators, so their declarations pass without being tested, and an earlier fixed-amplitude impulse, roughly two hundred times the
 carrier in the low-level context, replaced an adaptive operator's input rather
 than perturbing it, so both the lossy encoder and the stretcher re-decided
 globally. The impulse is now a fixed multiple of each context's peak. The
@@ -1187,7 +1185,7 @@ Across \Kprobes{} probes, \Kaffected{} output samples were influenced and
 \Koutside{} fell outside the declared support (Table~\ref{tab:containment};
 Figure~\ref{fig:containment});
 every context produced influence for every operator, so no row passes
-vacuously. That zero was not free. A shorter probe passes trivially for the
+vacuously. A shorter probe passes trivially for the
 large-footprint operators because a declared footprint of \KstretchFp{} samples
 spans a whole short source; lengthening it made the test able to fail, and it
 did. Retained-run selection failed: a frame-granular selector emitted a frame
@@ -1358,14 +1356,19 @@ three orders of magnitude smaller: the fraction shrinks with duration, the
 absolute band does not.
 
 The whole-asset comparator, one claim over the output computed from every source
-interval of the asset, promotes nowhere (\IwholePromoted{} promoted samples) and
-dilutes every sample of every corpus transformation (median
-\IwholeMinMedianPct{}\%; \IwholeOverlayPct{}\% for overlay, whose nominal map is
-already partly mixed), against a median of at most \IemMaxMedianPct{}\% under
-the declared footprints. That difference is what the local footprints buy: the
-same non-promotion with the interval structure kept. It is also the cost of the
-strict profile for the two adaptive operators of
-Section~\ref{sec:res-holdout}.
+interval of the asset, promotes nowhere (\IwholePromoted{} promoted samples). Its median dilution is
+\IwholeMinMedianPct{}\% on every corpus transformation except overlay, whose
+nominal map is already partly mixed (\IwholeOverlayPct{}\%), against a median of
+at most \IemMaxMedianPct{}\% under the declared footprints; dilution is counted
+on provenance and support, so a sample whose nominal record already equals the
+whole-asset record is not diluted, which is what lowers overlay. Three policies
+should be kept apart here. Boundary-only inheritance is specific and wrong on
+known counterexamples. The measured local footprints are specific and safe only
+where their containment holds, which the holdout of
+Section~\ref{sec:res-holdout} refutes for the encoder and the stretcher. The
+strict profile, local maps where they are analytical and whole-asset dependency
+elsewhere, is safe by construction and pays the comparator's dilution on every
+interval those two operators touch.
 
 Composition is where conservatism bites. Along the chain trim, resample 16 to
 8~kHz, transcode to MP3, normalise, time stretch by 1.10, deliberately
@@ -1436,7 +1439,7 @@ unrounded medians, and \GffmpegPct{}\% of the FFmpeg time it accompanies
 which the EM assertion was \Gassertion{}~B; the fixed per-asset component
 (certificate chain, COSE structure, hard binding) dominates, and the variable
 part grows linearly in emitted evidence intervals at \GperInterval{}~B and
-\GperIntervalUs{}~$\mu$s per interval, measured up to \GmaxIntervals{} with no departure from linearity. Cost
+\GperIntervalUs{}~$\mu$s per interval, approximately linear over the measured range up to \GmaxIntervals{}. Cost
 therefore scales with how often ancestry changes along the timeline, not with
 duration. It also scales with how far the codec smears that ancestry: the
 assertion is \FassertionWav{}~B in \texttt{wav} and \FassertionFlac{} in
@@ -1448,8 +1451,8 @@ which by Proposition~\ref{prop:footprint} can only weaken its claim, at the
 dilution cost of Section~\ref{sec:res-dilution}. The byte figure is deterministic and reproduces exactly; the
 microsecond figure is wall clock on one interpreter and one machine.
 
-Of these figures the ratio travels and the milliseconds do not, and the
-mechanism is structural: both arms are timed in the same process on the same
+Across the environments measured here the ratio was steadier than the
+milliseconds, and the mechanism is structural: both arms are timed in the same process on the same
 machine, so thermal state, clock frequency or competing load moves them
 together and cancels in the quotient. Re-running the benchmark as
 \MstabRepeats{} independent processes gives the absolute cost a coefficient of
@@ -1559,7 +1562,7 @@ pair of machines \\
 \addlinespace
 Conservatism cost &
 Per-sample dilution against constructed exact ground truth &
-Dilution against the true, unknowable dependencies of a third-party codec &
+Dilution against dependencies of a third-party codec not established by these experiments &
 Yes: reproduced exactly \\
 \bottomrule
 \end{tabular}
@@ -1652,14 +1655,17 @@ their agreement carries no information. The supplement gives the per-operator
 comparison in full.
 
 For the MP3 encoder, the declared footprint of \IRmpDeclared{} source samples
-was adequate on the reference build, where the measured reach was
-\IRmpReachRef{}. On his build the reach is \IRmpReach{}, exceeding the
+contained Experiment~K's probes on the reference build, where their
+measured reach was \IRmpReachRef{}, though not the holdout of
+Section~\ref{sec:res-holdout}. On his build the reach is \IRmpReach{}, exceeding the
 declaration by \IRmpExcess{}, and \IRmpOutside{} output samples fall outside
 the declared support, all in the \IRmpContext{} probe context. This is a failure of one declared number, not of
 Proposition~\ref{prop:footprint}, which covers enlargement and not
 under-sizing, and its consequence is exactly the failure this paper is about: a
 source's genuine influence reaches samples the assertion does not attribute to
-it, which is promotion. An over-declared footprint costs dilution; an
+it, which removes the guarantee for those samples. Whether it promotes depends
+on the omitted source: a dependency miss changes the claim only when that
+source's evidence is weaker than the sources the map does include. An over-declared footprint costs dilution; an
 under-declared one costs the guarantee, and a reader on an untested FFmpeg
 build should assume the same until the calibration says otherwise.
 
@@ -1708,7 +1714,7 @@ narrower observation: matching FFmpeg version strings do not guarantee
 identical calibrated behaviour across builds. The contract is portable because
 it is a proof; the calibrated constants are not, and are not assumed to be.
 
-\paragraph{Cost, and which figure travels} His bookkeeping cost is \IRabs{}~ms
+\paragraph{Cost across environments} His bookkeeping cost is \IRabs{}~ms
 per audio minute against \IRabsRef{} on the reference machine, a difference of
 \IRabsGap{}\%; the ratio to the baseline is \IRratio{} against \IRratioRef{}, a
 difference of \IRratioGap{}\%. Within his sitting, across \MstabRepeats{} processes,
@@ -1723,8 +1729,9 @@ change of hardware once rather than bounding how far it can move.
 
 \paragraph{What is established} That a complete-source rule is implementable
 over media time against real processing software; that it eliminates promotion
-on every fixture and corpus clip tested, where a minimal boundary-only policy
-does not; that it can be carried in an existing signed standard without
+relative to the declared map on every fixture and corpus clip tested, where a
+boundary-only policy does not, and that the declared map is itself a separate
+claim, which the holdout refutes for the two adaptive operators; that it can be carried in an existing signed standard without
 altering the audio; and that its cost is a fraction of a percent of the
 processing it accompanies. An independent run on unrelated hardware returned
 the headline contract and corpus outcomes unchanged; of its \IRdet{}
@@ -1779,7 +1786,7 @@ sources is also what a legitimate trim produces
 (Table~\ref{tab:boundary}). Carrying the map, or the
 operator chain that determines it, would supply it and is the schema change
 we would make first. The omission surfaced when we tried the check. No consumer check reaches an operator that misdeclares
-its own operation or footprint, whose effect is the promotion
+its own operation or footprint, whose effect is the dependency miss
 Section~\ref{sec:res-independent} measures at \IRmpOutside{} output samples and which no consumer can tell from a build mismatch: the dishonest signer of
 Section~\ref{sec:threat} rather than the negligent one addressed here.
 

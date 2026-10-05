@@ -330,7 +330,7 @@ def raw_evidence_tables():
             continue
         worst = max(o["probes"], key=lambda r: r["reach_source_samples"])
         crows.append(
-            f"{o['operator'].replace('_', ' ')} & {len(o['probes'])} & "
+            f"{PRETTY.get(o['operator'], o['operator'].replace('_', ' '))} & {len(o['probes'])} & "
             f"{o['measured_reach_source_samples']:,} & "
             f"{worst['context'].replace('_', ' ')} & {worst['source_position']:,} & "
             f"{o['declared_footprint_samples']:,} \\\\".replace(",", "\\,"))
@@ -356,7 +356,7 @@ def independent_table():
         a, b = K[op], H[op]
         mark = "" if a["max_measured_reach_source_samples"] == b["max_measured_reach_source_samples"] else "$^{\\dagger}$"
         rows.append(
-            f"{op.replace('_', ' ')}{mark} & {a['declared_footprint_samples']:,} & "
+            f"{PRETTY.get(op, op.replace('_', ' '))}{mark} & {a['declared_footprint_samples']:,} & "
             f"{a['max_measured_reach_source_samples']:,} & "
             f"{b['max_measured_reach_source_samples']:,} & "
             f"{a['total_outside_declared_support']:,} & "

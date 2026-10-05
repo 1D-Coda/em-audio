@@ -182,8 +182,11 @@ novelty claim rather than to support it, and targeted the three statements this
 work depends on: that a derived segment must not carry provenance stronger than
 its weakest required source; that per-operator kernel support is declared and
 calibrated rather than assumed; and that the resulting interval evidence is
-carried in a signed C2PA manifest over temporal regions. No prior work stating
-any of the three was found. The searches did return the established algebraic
+carried in a signed C2PA manifest over temporal regions. Within the searched
+sources, no prior system was found that combines conservative evidence
+reduction, explicit temporal dependency declarations and a signed C2PA audio
+transport; the first statement on its own is the meet-semilattice reading of
+the cited lattice literature and of the spatial predecessor. The searches did return the established algebraic
 material the paper takes as given, which is the outcome the claim predicts: the
 meet-semilattice construction and the restriction of semiring provenance to
 monotone queries are prior art and are cited as such. Two 2026 preprints are the
@@ -345,8 +348,9 @@ Speech Dataset. That dataset states ``This dataset is in the public domain in
 the US (and most likely other countries as well)'' and consists of LibriVox
 recordings by Linda Johnson of non-fiction texts published between 1884 and
 1964, all public domain. The \texttt{lessac} voices were considered and
-rejected: their Blizzard 2013 training data carries a restrictive licence. No
-voice of any identified living person is cloned.
+rejected: their Blizzard 2013 training data carries a restrictive licence. The
+arm uses that pretrained voice as distributed; no voice is trained or adapted
+here, and no other speaker's recordings are used.
 
 \begingroup
 % Line breaking inside a digest is fine, a page break inside one is not, so
@@ -418,7 +422,7 @@ is that signing leaves it unchanged.
 
 The \emph{environment-dependent} outputs are those that should be expected to
 differ, and whose difference is not a defect: wall-clock timings and their
-interquartile ranges, the absolute cost figures of Section~7.10 of the
+interquartile ranges, the absolute cost figures of Section~\SecOverhead{} of the
 manuscript, and the bytes of a freshly signed file, which differ because signing
 incorporates a timestamp. A reproduction reporting identical timings would be
 the surprising result, not a reassuring one.
@@ -431,7 +435,7 @@ whichever it turns out to be.
 \section{Independent reproduction: environment and per-operator detail}
 \label{s:independent}
 
-The run reported in Section~7.11 of the manuscript was performed by
+The run reported in Section~\SecIndependent{} of the manuscript was performed by
 D.~A.~Balderrama-Alvarez (Universidad de Sonora, ORCID 0009-0002-5180-0406),
 who is not an author. His environment, as his own preflight report records it:
 a \IRcpu{} with \IRcores{} logical processors and \IRmem{}~GiB, \IRos{} on
@@ -448,7 +452,7 @@ operators whose declarations his build does not satisfy. His unmodified outputs,
 the classified comparison his run produced are released in
 \path{results/independent/}.
 
-Two later runs on the released package are summarised in Section~7.11 of the
+Two later runs on the released package are summarised in Section~\SecIndependent{} of the
 manuscript; their environments are as follows. B.~C.~Guerra Flores ran it on
 an \XBMacCpu{} under \XBMacOs{}, with FFmpeg~\XBMacFfmpeg{} from the same
 package manager as the reference machine on different hardware, and with a
@@ -514,11 +518,10 @@ These are those rows. Neither table is typed: both are emitted by
 
 \begin{table}[htbp]
 \centering
-\caption{The benchmark of Section~7.10 as nine independent processes. The
+\caption{The benchmark of Section~\SecOverhead{} as nine independent processes. The
 coefficient of variation is the sample standard deviation over the mean, in
 percent, with Bessel's correction. The absolute columns move with machine state;
-under the within-machine variation measured here, the ratio is markedly more
-stable than either of them.}
+the last row gives each column's coefficient of variation.}
 \input{../results/tables/benchmark_rows}
 \end{table}
 

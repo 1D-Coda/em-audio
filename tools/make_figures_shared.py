@@ -81,11 +81,11 @@ def fig_corpus():
             ax.text(b + 3.0, i, f"{bn:,}/{n:,}", fontsize=7.2, va="center",
                     color=S.BASE)
         else:
-            # A structural zero: the baseline cannot promote here either, and
-            # the reason belongs on the row rather than in the caption alone.
+            # A zero in this corpus, which depends on where its retained
+            # boundaries fall; it is not a property of the operator.
             ax.scatter([b], [i], s=36, marker=S.M_BASE, facecolor="white",
                        edgecolor=S.BASE, linewidth=1.2, zorder=4)
-            ax.text(4.0, i, f"{bn}/{n:,}, a structural zero", fontsize=7.0,
+            ax.text(4.0, i, f"{bn}/{n:,} in this corpus", fontsize=7.0,
                     va="center", color="#777777")
         ax.scatter([e], [i], s=36, marker=S.M_EM, facecolor="white",
                    edgecolor=S.EM, linewidth=1.2, zorder=5)
@@ -94,7 +94,7 @@ def fig_corpus():
     ax.set_yticklabels([S.label_of(k) for k in rows], fontsize=7.8)
     ax.set_xlabel("clips with promotion (%)")
     ax.set_xlim(-6, 128)
-    ax.set_ylim(-1.35, len(rows) - 0.30)
+    ax.set_ylim(-0.7, len(rows) - 0.30)
     ax.set_xticks([0, 25, 50, 75, 100])
     ax.grid(axis="x", linestyle=":", zorder=0)
     ax.set_axisbelow(True)
@@ -115,9 +115,6 @@ def fig_corpus():
     ax.set_title(f"Boundary-only promoted in {tot_b:,} of {tot_runs:,} "
                  f"transformation runs; complete-source in {tot_e:,}",
                  fontsize=8.6, loc="left", pad=26)
-    ax.text(0.5, -1.15, "open marks are exact zeros, drawn so that a zero reads "
-            "as a result rather than as missing data", fontsize=6.9,
-            color="#666666", va="center")
     S.panel_tag(ax, "A", dx=-0.055)
 
     # Panel B: the mechanism behind panel A, from the same run
@@ -140,18 +137,18 @@ def fig_corpus():
     ax.set_axisbelow(True)
     S.panel_tag(ax, "B", dx=-0.055)
     tr2 = ax.get_xaxis_transform()          # x in data, y in axes fraction
-    ax.annotate("one claim over\nthe whole output", xy=(min(bi), 1.005),
+    ax.annotate("one claim, read from\nthe endpoints only", xy=(min(bi), 1.005),
                 xytext=(min(bi), 1.115), xycoords=tr2, textcoords=tr2,
                 fontsize=6.9, color=S.BASE, ha="center", linespacing=1.3,
                 annotation_clip=False,
                 arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
-    ax.annotate("the intervals that carry\nthe contradicting evidence",
+    ax.annotate("one claim per interval,\nfrom every required source",
                 xy=(max(ei), 1.005), xytext=(max(ei), 1.115),
                 xycoords=tr2, textcoords=tr2, fontsize=6.9, color=S.EM,
                 ha="center", linespacing=1.3, annotation_clip=False,
                 arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
-    ax.set_title("Why it happens: the baseline discards the intervals that "
-                 "would have contradicted it", fontsize=8.4, loc="left", pad=44)
+    ax.set_title("Interval structure: one interval is not itself the error; "
+                 "reading it from the endpoints is", fontsize=8.4, loc="left", pad=44)
 
     save(fig, "fig4_corpus")
 
@@ -395,16 +392,17 @@ def fig_dilution():
         else:
             S.zero_marker(ax, 0, i, colour=S.MEASURED, marker=S.M_MEASURED,
                           size=22)
+        # Whole-asset comparator: safe, and dilutes almost everything.
+        ax.scatter([100 * v["whole_asset_median_dilution_fraction"]], [i], s=22,
+                   marker="x", color=S.BASE, linewidth=1.0, zorder=4)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([S.label_of(k) for k, _ in rows], fontsize=7.0)
-    ax.set_xlabel("output samples diluted (%)")
-    ax.set_xlim(-3, 62)
+    ax.set_xlabel("output samples diluted (%)\n"
+                  "dot median, bar maximum, \u00d7 whole-asset median", fontsize=7.4)
+    ax.set_xlim(-3, 106)
     ax.grid(axis="x", linestyle=":")
     ax.set_axisbelow(True)
     S.panel_tag(ax, "B", dx=-0.30)
-    ax.text(0.98, 0.06, "dot: median   bar: maximum\nopen: exact zero",
-            transform=ax.transAxes, fontsize=6.8, ha="right", va="bottom",
-            color="#555555", linespacing=1.4)
 
     # Panel A: dilution through composition depth, the headline of this figure
     ax = axd["depth"]
@@ -428,6 +426,9 @@ def fig_dilution():
     ax.set_axisbelow(True)
     S.panel_tag(ax, "A", dx=-0.055)
     ax.set_xlim(0.75, 5.62)
+    ax.text(0.01, 0.97, "declared-map simulation at 8 kHz; adaptive stages "
+            "not validated", transform=ax.transAxes, fontsize=6.9,
+            ha="left", va="top", color="#555555")
     ax.annotate("maximum", xy=(d[-1], mx[-1]), xytext=(7, 3),
                 textcoords="offset points", fontsize=6.9, ha="left",
                 color="#777777")
