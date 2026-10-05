@@ -20,7 +20,8 @@ from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from em_audio import ffmpeg_ops as F
 from em_audio.essence import decoded_pcm, essence_hash
 from em_audio.evidence import Evidence, aggregate, claim_of, promotes
-from em_audio.interval_map import SourceInterval, Timeline, em_intervals, span_evidence
+from em_audio.interval_map import (SourceInterval, Timeline, conform_to_decoded, em_intervals,
+                                   span_evidence, strict_profile)
 from em_audio.manifest_schema import em_assertion
 import em_audio.manifest_schema as M
 import em_audio.operators as O
@@ -104,15 +105,17 @@ def main() -> int:
                 "predicted_vs_actual_abs_dev": [], "runtime_ms": [],
                 "em_assertion_bytes": [], "em_intervals": 0, "baseline_intervals": 0,
                 "container": ext,
+                "strict_promotions": 0, "strict_lineage_omissions": 0,
+                "fallback_samples": 0, "outputs_with_fallback": 0,
             })
             st["n"] += 1
 
-            actual = None
-            if ext == "wav":
-                actual = frames(dst)
-            elif ci < DETERMINISM_SUBSET:
-                actual = len(decoded_pcm(dst)) // 2       # mono s16le
-            if actual is not None:
+            # Every output's decoded length, so the emitted map can be fitted to
+            # the samples that actually exist (conform_to_decoded).
+            actual = frames(dst) if ext == "wav" else len(decoded_pcm(dst)) // 2
+            # The reported mapping deviation keeps its original population:
+            # every PCM output and the determinism subset of compressed ones.
+            if ext == "wav" or ci < DETERMINISM_SUBSET:
                 st["predicted_vs_actual_abs_dev"].append(abs(actual - model.n_out))
 
             ivs = em_intervals(model, tls, footprint_aware=True)
@@ -129,6 +132,16 @@ def main() -> int:
                     if s["start"] < pc.src_end and s["end"] > pc.src_start:
                         rep_atoms.add(s["kind"]); rep_lineage.add(s["lineage"])
             truth = claim_of(rep_atoms)
+
+            n_src = {"clip": n, "tone": n_tone}
+            conf = conform_to_decoded(model, actual, n_src)
+            st["fallback_samples"] += conf.params["fallback_samples"]
+            st["outputs_with_fallback"] += conf.params["fallback_samples"] > 0
+            e_st = aggregate([iv.ev for iv in em_intervals(strict_profile(conf, n_src), tls)])
+            if promotes(truth, e_st.P):
+                st["strict_promotions"] += 1
+            if not frozenset(rep_lineage) <= e_st.L:
+                st["strict_lineage_omissions"] += 1
 
             e_em = aggregate([iv.ev for iv in ivs])
             e_bs = aggregate([iv.ev for iv in spans])
@@ -170,6 +183,10 @@ def main() -> int:
             "em_promotion_rate": round(st["em_promotions"] / st["n"], 6),
             "baseline_lineage_omissions": st["baseline_lineage_omissions"],
             "em_lineage_omissions": st["em_lineage_omissions"],
+            "strict_promotions": st["strict_promotions"],
+            "strict_lineage_omissions": st["strict_lineage_omissions"],
+            "fallback_samples": st["fallback_samples"],
+            "outputs_with_fallback": st["outputs_with_fallback"],
             "mean_em_intervals": round(st["em_intervals"] / st["n"], 3),
             "mean_baseline_intervals": round(st["baseline_intervals"] / st["n"], 3),
             "model_vs_ffmpeg_max_abs_sample_dev": (max(devs) if devs else None),
@@ -207,6 +224,7 @@ def main() -> int:
         print(f"  {k:20s} base {v['baseline_promotions']:4d}/{v['n']}  EM {v['em_promotions']}  "
               f"model_dev {v['model_vs_ffmpeg_max_abs_sample_dev']}")
     fail = det_mismatch or any(v["em_promotions"] or v["em_lineage_omissions"]
+                               or v["strict_promotions"] or v["strict_lineage_omissions"]
                                or not v["guard_band_covers_deviation"]
                                for v in summary.values())
     return 1 if fail else 0

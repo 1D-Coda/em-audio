@@ -38,6 +38,9 @@ from _common import emit, env, ROOT                 # noqa: E402
 import support_containment as K                            # noqa: E402
 import em_audio.operators as O                             # noqa: E402
 import em_audio.ffmpeg_ops as F                            # noqa: E402
+from em_audio.evidence import Evidence, claim_of, label_of  # noqa: E402
+from em_audio.interval_map import (SourceInterval, Timeline, conform_to_decoded,  # noqa: E402
+                                   em_intervals, strict_profile)
 from em_audio import fsutil as _fsutil                      # noqa: E402
 
 N, FS = K.N, K.FS
@@ -69,6 +72,37 @@ def _cases():
     ]
 
 
+def _demonstrate(model, row) -> Dict[str, object]:
+    """What an exceedance does to a claim, on the worst failing probe.
+
+    Source sample k, whose influence the declaration misses, is labelled
+    generated and every other sample captured. The record emitted for the first
+    output sample outside the declaration is compared with the record under the
+    strict profile and with the true dependency, which includes k.
+    """
+    k, o = row["k"], row["first_outside"]
+    cap = Evidence(P=claim_of(["C"]), S={"capture": 0.9}, A={"capture": frozenset({"v1"})},
+                   L=frozenset({"captured"}))
+    gen = Evidence(P=claim_of(["G"]), S={"capture": 0.05}, A={"capture": frozenset({"v1"})},
+                   L=frozenset({"generated"}))
+    ivs = [SourceInterval("s", k, k + 1, gen)]
+    if k > 0:
+        ivs.insert(0, SourceInterval("s", 0, k, cap))
+    if k + 1 < N:
+        ivs.append(SourceInterval("s", k + 1, N, cap))
+    tls = {"s": Timeline("s", ivs)}
+    conf = conform_to_decoded(model, row["emitted_length"], {"s": N})
+
+    def at(m):
+        return next(iv.ev for iv in em_intervals(m, tls) if iv.out_start <= o < iv.out_end)
+    declared, strict = at(conf), at(strict_profile(conf, {"s": N}))
+    return {"source_sample": k, "output_sample": o, "context": row["context"],
+            "amplitude": row["amplitude"], "true_claim": "MIXED",
+            "declared_map_claim": label_of(declared.P),
+            "strict_profile_claim": label_of(strict.P),
+            "declared_map_promotes": label_of(declared.P) != "MIXED"}
+
+
 def main() -> int:
     if WORK.exists():
         _fsutil.rmtree(WORK)
@@ -91,6 +125,10 @@ def main() -> int:
                                      "reach": r["max_measured_reach_source_samples"],
                                      "outside": r["outside_declared_support"],
                                      "outside_or_unmapped_strict": r["outside_or_unmapped_strict"],
+                                     "outside_conformed_map": r["outside_conformed_map"],
+                                     "outside_strict_profile": r["outside_strict_profile"],
+                                     "emitted_length": r["emitted_length"],
+                                     "first_outside": r["first_outside_conformed_sample"],
                                      "affected": r["affected_output_samples"]})
             decl = model.pieces[0].footprint
             bad = [r for r in rows if r["outside_or_unmapped_strict"]]
@@ -101,12 +139,19 @@ def main() -> int:
                 "max_measured_reach_source_samples": max(r["reach"] for r in rows),
                 "probes_exceeding_declaration": len(bad),
                 "total_outside_or_unmapped_strict": sum(r["outside_or_unmapped_strict"] for r in rows),
+                "probes_outside_strict_profile": sum(1 for r in rows if r["outside_strict_profile"]),
+                "total_outside_strict_profile": sum(r["outside_strict_profile"] for r in rows),
                 "exceeding_contexts": sorted({r["context"] for r in bad}),
                 "exceeding_amplitudes": sorted({r["amplitude"] for r in bad}),
                 "exceeds_only_on_holdout_contexts": bool(bad) and all(
                     r["context"] in HOLDOUT_CONTEXTS for r in bad),
                 "per_probe": rows,
             }
+            if bad and kind == "content":
+                worst = max((r for r in bad if r["first_outside"] is not None),
+                            key=lambda r: r["reach"], default=None)
+                if worst is not None:
+                    results[name]["promotion_demonstration"] = _demonstrate(model, worst)
             verdict = (f"EXCEEDED in {len(bad)} of {len(rows)} probes" if bad
                        else "no exceedance observed")
             print(f"  {name:26s} {kind:8s} decl {decl:5d}  max reach "

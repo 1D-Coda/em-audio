@@ -34,6 +34,7 @@ from _common import ROOT, emit                                        # noqa: E4
 from em_audio import ffmpeg_ops as F
 from em_audio import fsutil as _fsutil
 import em_audio.operators as O
+from em_audio.interval_map import conform_to_decoded, strict_profile
 
 WORK = ROOT / "corpus" / "support"
 FS = 16_000
@@ -210,7 +211,52 @@ def probe(name: str, run, model, k: int, wd: Path, ctx: str = "tone") -> Dict[st
             # Interior alignment: where the model puts source sample k in the
             # output against where the difference actually peaks. A correct
             # length says nothing about alignment; this measures it.
-            "alignment_offset_samples": _alignment_offset(model, k, a, b, n)}
+            "alignment_offset_samples": _alignment_offset(model, k, a, b, n),
+            # The map an implementation would emit: conformed to the length the
+            # perturbed run actually decoded to, with whole-asset dependency on
+            # any tail the model does not cover. Every influenced sample of that
+            # output is checked, including a tail the unperturbed run lacks.
+            **_conformed_outcome(model, k, a, b)}
+
+
+def _conformed_outcome(model, k: int, a, b) -> Dict[str, int]:
+    n_emit = len(b)
+    common = min(len(a), len(b))
+    affected = [i for i in range(common) if a[i] != b[i]] + list(range(common, n_emit))
+    conf = conform_to_decoded(model, n_emit, {"s": N})
+    strict = strict_profile(conf, {"s": N})
+    return {"emitted_length": n_emit,
+            "fallback_samples": conf.params["fallback_samples"],
+            "outside_conformed_map": _outside_under(conf, affected, k),
+            "outside_strict_profile": _outside_under(strict, affected, k),
+            "first_outside_conformed_sample": _first_outside(conf, affected, k)}
+
+
+def _first_outside(model, affected, k: int):
+    for o in affected:
+        if _outside_under(model, [o], k):
+            return o
+    return None
+
+
+def _outside_under(model, affected, k: int) -> int:
+    """Affected output samples whose declared source ranges all miss sample k.
+
+    Every covering piece contributes, so an output sample several pieces cover
+    is contained when any of them reaches k; a sample no piece covers counts as
+    outside, since no declaration was made for it.
+    """
+    bad = 0
+    for o in affected:
+        ok = False
+        for p in model.pieces:
+            if p.out_start <= o < p.out_end:
+                lo, hi = p.source_range(o, o + 1, with_footprint=True)
+                if lo <= k < hi:
+                    ok = True
+                    break
+        bad += not ok
+    return bad
 
 
 def _alignment_offset(model, k: int, a, b, n: int):
@@ -292,6 +338,9 @@ def main() -> int:
             "declared_footprint_samples": model.pieces[0].footprint,
             "probes_with_length_change": sum(1 for r in rows if r["length_change_samples"]),
             "total_outside_or_unmapped_strict": sum(r["outside_or_unmapped_strict"] for r in rows),
+            "total_outside_conformed_map": sum(r["outside_conformed_map"] for r in rows),
+            "total_outside_strict_profile": sum(r["outside_strict_profile"] for r in rows),
+            "total_fallback_samples": sum(r["fallback_samples"] for r in rows),
             "max_abs_alignment_offset_samples": max(
                 [abs(r["alignment_offset_samples"]) for r in rows
                  if r["alignment_offset_samples"] is not None] or [None]),

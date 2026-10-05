@@ -40,7 +40,13 @@ ADDED_AFTER_REPRODUCTIONS_FILES = {"K2_footprint_holdout"}
 ADDED_AFTER_REPRODUCTIONS_FIELDS = {
     "length_change_samples", "outside_or_unmapped_strict", "alignment_offset_samples",
     "probes_with_length_change", "total_outside_or_unmapped_strict",
-    "max_abs_alignment_offset_samples"}
+    "max_abs_alignment_offset_samples",
+    # Output coverage and the strict profile, added with the revision.
+    "emitted_length", "fallback_samples", "outside_conformed_map",
+    "outside_strict_profile", "first_outside_conformed_sample",
+    "total_outside_conformed_map", "total_outside_strict_profile", "total_fallback_samples",
+    "strict_promotions", "strict_lineage_omissions", "outputs_with_fallback",
+    "strict_median_dilution_fraction", "strict_max_dilution_fraction"}
 
 
 def fmt(x):
@@ -522,6 +528,10 @@ def main() -> int:
     m["KoutsideTotal"] = fmt(sum(v["total_outside_declared_support"] for v in po.values()))
     # Strict outcome and interior alignment, reported beside the original.
     m["KstrictTotal"] = fmt(sum(v.get("total_outside_or_unmapped_strict", 0) for v in po.values()))
+    # Output coverage and the strict profile.
+    m["KconfTotal"] = fmt(sum(v.get("total_outside_conformed_map", 0) for v in po.values()))
+    m["KstrictProfileTotal"] = fmt(sum(v.get("total_outside_strict_profile", 0) for v in po.values()))
+    m["KfallbackTotal"] = fmt(sum(v.get("total_fallback_samples", 0) for v in po.values()))
     m["KunmappedTotal"] = fmt(sum(v["output_samples_beyond_modelled_extent"] for v in po.values()))
     m["KalignSelection"] = fmt(po["silence_removal"].get("max_abs_alignment_offset_samples") or 0)
     m["KalignStretch"] = fmt(po["time_stretch_1.10"].get("max_abs_alignment_offset_samples") or 0)
@@ -548,9 +558,22 @@ def main() -> int:
     m["KtwoNormCtrlExceed"] = fmt(q["normalize_estimated_gain"]["probes_exceeding_declaration"])
     m["KtwoNormCtrlReach"] = fmt(q["normalize_estimated_gain"]["max_measured_reach_source_samples"])
     m["KtwoContentExceeding"] = fmt(len(K2["content_operators_exceeding"]))
+    content = [v for v in q.values() if v["dependency_kind"] == "content"]
+    m["KtwoStrictProbes"] = fmt(sum(v.get("probes_outside_strict_profile", 0) for v in content))
+    for key, nm in (("Mp", "transcode_mp3"), ("St", "time_stretch_1.10")):
+        demo = q[nm].get("promotion_demonstration")
+        if demo:
+            m[f"KtwoDemo{key}Declared"] = demo["declared_map_claim"].lower()
+            m[f"KtwoDemo{key}Strict"] = demo["strict_profile_claim"].lower()
+            m[f"KtwoDemo{key}Src"] = fmt(demo["source_sample"])
+            m[f"KtwoDemo{key}Out"] = fmt(demo["output_sample"])
     Dm = load("D_transform_matrix")["per_transformation"]
     m["DbasePromo"] = fmt(sum(v["baseline_promotions"] for v in Dm.values()))
     m["DemPromo"] = fmt(sum(v["em_promotions"] for v in Dm.values()))
+    m["DstrictPromo"] = fmt(sum(v.get("strict_promotions", 0) for v in Dm.values()))
+    m["DstrictLineage"] = fmt(sum(v.get("strict_lineage_omissions", 0) for v in Dm.values()))
+    m["DfallbackOutputs"] = fmt(sum(v.get("outputs_with_fallback", 0) for v in Dm.values()))
+    m["DfallbackSamples"] = fmt(sum(v.get("fallback_samples", 0) for v in Dm.values()))
     m["DtotalRuns"] = fmt(load("D_transform_matrix")["n_clips"] * len(Dm))
     m["KmpThreeReach"] = fmt(po["transcode_mp3"]["max_measured_reach_source_samples"])
     m["KstretchReach"] = fmt(po["time_stretch_1.10"]["max_measured_reach_source_samples"])
@@ -608,6 +631,10 @@ def main() -> int:
     # Floored, not rounded: 99.995% must not print as 100.00%.
     m["IwholeMinMedianPct"] = f"{math.floor(10000*min(pt_i[k]['whole_asset_median_dilution_fraction'] for k in corpus_tf))/100:.2f}"
     m["IwholeOverlayPct"] = f"{100*pt_i['overlay_generated']['whole_asset_median_dilution_fraction']:.2f}"
+    if "strict_median_dilution_fraction" in pt_i["transcode_mp3"]:
+        m["IstrictMpPct"] = f"{100*pt_i['transcode_mp3']['strict_median_dilution_fraction']:.2f}"
+        m["IstrictStPct"] = f"{100*pt_i['time_stretch_1.10']['strict_median_dilution_fraction']:.2f}"
+        m["IstrictFlacPct"] = f"{100*pt_i['transcode_flac']['strict_median_dilution_fraction']:.2f}"
     m["IwholePromoted"] = fmt(sum(v["whole_asset_promoted_samples"] for v in pt_i.values()))
     m["IemMaxMedianPct"] = f"{100*max(v['median_dilution_fraction'] for v in pt_i.values()):.2f}"
     cd = I["composition_chain"]

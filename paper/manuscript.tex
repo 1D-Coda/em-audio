@@ -36,6 +36,7 @@
 % Reference-list spacing. The default leaves the last two entries alone on a
 % page; this keeps them with the list without touching any entry.
 \setlength{\bibsep}{0pt plus 0.1ex}
+\renewcommand{\bibfont}{\small}
 % Fourteen floats at the class defaults spend about a page on the white space
 % around them alone. These are the class values less a few points each, which
 % keeps floats clearly separated from the text without the excess space.
@@ -64,7 +65,7 @@ Promotion Across Derived Audio Transformations}
 Derived audio can keep its waveform while strengthening what it says about
 its origin. Under a boundary-only inheritance policy, a constructed reference and not any
 named product, a clip assembled from captured and generated material,
-trimmed, resampled and re-encoded, emerges described as captured-only. We specify an operator contract for derived audio:
+trimmed and re-encoded, emerges described as captured-only. We specify an operator contract for derived audio:
 over the complete required source set, provenance unions, same-channel support
 minimises, applicability intersects and lineage unions, and an unverified source
 interval is absorbing. The algebra is a known meet-semilattice
@@ -75,16 +76,16 @@ Across \Achecks{} contract checks, \Btimelines{} adversarial timelines,
 \Cclips{} mixed-origin clips transformed by stock FFmpeg and \Hcases{}
 differential-oracle cases, complete-source propagation produced \Afailed{}
 failures and \Dem{} promotions, whereas boundary-only inheritance promoted in
-\Dbase{} of \Druns{} stock-FFmpeg transformation runs. Decoded essence was identical before and after signing in \Ftotal{}
+\Dbase{} of \Druns{} FFmpeg runs. Decoded essence was identical before and after signing in \Ftotal{}
 round-trips; bookkeeping cost \Gratio{}$\times$ the baseline. An independent reproduction on
 other hardware and FFmpeg major version returned every
 conformance, promotion and oracle outcome unchanged and found two
 build-specific declarations its build does not satisfy. A holdout
 challenge exceeded the measured encoder and stretcher declarations on the
-reference build. The algebra holds by proof, the audio instantiation only where
+reference build; a strict profile giving those two whole-asset dependency had
+\KtwoStrictProbes{} exceedances and \DstrictPromo{} promotions. The algebra holds by proof, the audio instantiation only where
 the declared map contains the real dependencies. The
-contract constrains what a derived representation may claim about its sources,
-and binds only an operator that implements it; it does not detect deepfakes,
+contract binds only operators that implement it; it does not detect deepfakes,
 and a valid signature proves only that an assertion was signed.
 \end{abstract}
 
@@ -757,9 +758,11 @@ operator re-decides when its input changes. The \emph{fallback} is whole-asset
 dependency, which needs no measurement and gives up local specificity. The lossy
 encoder and the overlap-add stretcher are adaptive, and a prespecified holdout
 challenge finds inputs on which both exceed their measured declarations on the
-reference build itself (Section~\ref{sec:res-holdout}); a strict deployment
-treats them with whole-asset dependency, at the cost
-Section~\ref{sec:res-dilution} measures. The contract prevents promotion when
+reference build itself (Section~\ref{sec:res-holdout}). The \emph{strict
+profile} evaluated alongside the declared footprints keeps the analytical ones,
+gives these two operators whole-asset dependency, and fits every emitted map to
+the length the processing actually decoded: the map must cover that output
+exactly, and any tail the model does not predict takes whole-asset dependency. The contract prevents promotion when
 the declared map contains the relevant source dependencies; the probes measure
 that condition at stated operating points and do not certify a universal support
 radius for an adaptive operator.
@@ -1057,7 +1060,10 @@ complete-source policy produced \Cem{} promotions and \CemLineage{} omissions.
 Across \Dtransforms{} transformations and \Druns{} runs
 (Figure~\ref{fig:corpus}; Table~\ref{tab:main}), boundary-only inheritance
 promoted on \Dbase{} runs and complete-source propagation on \Dem{}, with
-\DemLineage{} lineage omissions. Two transformations produced \emph{no}
+\DemLineage{} lineage omissions. Under the strict profile it promoted on
+\DstrictPromo{} runs with \DstrictLineage{} lineage omissions; \DfallbackOutputs{}
+outputs needed the whole-asset tail, \DfallbackSamples{} samples in all, because
+FFmpeg emitted more output than the model predicted. Two transformations produced \emph{no}
 baseline promotion, and we report that as readily as the rest: overlay declares
 the generated source as a separate top-level ingredient, so a boundary-only
 reading still sees both, and retained-run selection happened to retain runs whose
@@ -1198,12 +1204,12 @@ matters because a larger one would be equally safe and more dilutive: resampling
 \KmpThreeReach{} against \KmpThreeFp{}, and time stretching \KstretchReach{}
 against \KstretchFp{}.
 
-That outcome accepts an influenced output sample beyond the model's extent by
-checking it against the last piece's whole declared range. Counted strictly, as
-a sample the emitted map does not cover, \KunmappedTotal{} such samples appear,
-in retained-run selection and time stretching, so the strict outcome is
-\KstrictTotal{} rather than \KoutsideTotal{}: an extent shortfall of the mapping,
-not a support exceedance. Interior alignment, the offset between where the model
+Under the model's own extent, \KunmappedTotal{} influenced samples, in
+retained-run selection and time stretching, lay beyond the map: output the
+operator emitted and the model did not predict. With the map fitted to the
+decoded length, those samples take whole-asset dependency (\KfallbackTotal{}
+tail samples over all probes) and \KconfTotal{} influenced samples fall outside
+it; under the strict profile, \KstrictProfileTotal{}. Interior alignment, the offset between where the model
 places a probed source sample and where its influence peaks, reached
 \KalignSelection{} samples for retained-run selection and \KalignStretch{} for
 time stretching, inside their declared margins, and \KalignResample{} for
@@ -1235,8 +1241,14 @@ encoder re-allocate bits and the stretcher's correlation search re-align
 globally. That is a dependency of the output on the source sample, and a change
 of operating mode is no ground for excluding it. These two declarations
 therefore characterise the tested operating points on the build that produced
-them, and a strict deployment uses whole-asset dependency for these operators
-(Section~\ref{sec:audio}), whose cost Section~\ref{sec:res-dilution} reports.
+them. Under the strict profile, \KtwoStrictProbes{} probes of any
+content operator fell outside. An exceedance is a real promotion when the
+source it misses carries weaker evidence. On the worst failing MP3 probe,
+labelling source sample \KtwoDemoMpSrc{} generated and every other sample
+captured, the declared map emits \textsc{\KtwoDemoMpDeclared} for output sample
+\KtwoDemoMpOut{}, whose true claim is \textsc{mixed}; the strict profile emits
+\textsc{\KtwoDemoMpStrict}. The worst time-stretch probe gives the same outcome
+at output sample \KtwoDemoStOut{}.
 
 Normalisation was run in two modes. With a fixed gain no exceedance occurred.
 With the gain estimated from each input, as peak normalisation does,
@@ -1354,9 +1366,10 @@ should be kept apart here. Boundary-only inheritance is specific and wrong on
 known counterexamples. The measured local footprints are specific and safe only
 where their containment holds, which the holdout of
 Section~\ref{sec:res-holdout} refutes for the encoder and the stretcher. The
-strict profile, local maps where they are analytical and whole-asset dependency
-elsewhere, is safe by construction and pays the comparator's dilution on every
-interval those two operators touch.
+strict profile is safe on every probe and run tested and pays for it: median
+dilution is \IstrictMpPct{}\% for MP3 and \IstrictStPct{}\% for time stretching,
+against \IstrictFlacPct{}\% for lossless transcoding, whose footprint is
+analytical.
 
 Composition is where conservatism bites. Along the chain trim, resample 16 to
 8~kHz, transcode to MP3, normalise, time stretch by 1.10, deliberately
@@ -1637,7 +1650,8 @@ media time against stock FFmpeg, eliminates promotion relative to the declared
 map on every fixture and corpus clip tested, travels in an existing signed
 standard without altering the audio, and costs a fraction of a percent of the
 processing it accompanies. The declared map is a separate claim: analytical for
-the linear operators, refuted by the holdout for the two adaptive ones.
+the linear operators, refuted by the holdout for the two adaptive ones, which
+the strict profile replaces by whole-asset dependency.
 Table~\ref{tab:boundary} separates what transfers, everything derived from the
 requirements, from what does not, everything calibrated on a particular build.
 No claim is made that any deployed system promotes provenance; the baseline is a
@@ -1682,21 +1696,11 @@ Section~\ref{sec:res-independent} measures at \IRmpOutside{} output samples, and
 Section~\ref{sec:threat} rather than the negligent one addressed here.
 
 \paragraph{Deployment, and what a reader may conclude} The contract deploys as
-a library beside the processing step, whose caller already knows the
-parameters that fix the interval map and footprint, so nothing touches the
-signal path; interoperation is demonstrated with the official
-\texttt{c2patool} only. For whoever reads the output, an interval labelled
-\textsc{mixed} is a statement about the declared sources and not about the
-audio, and an asset carrying a valid manifest without an evidence assertion
-says only that its producer did not implement the contract. Absence is not a
-finding.
-
-\paragraph{Extension} Nothing in Section~\ref{sec:model} refers to audio;
-another medium costs its interval algebra and footprint table, which we have
-not built. Spatial extents make the union of Proposition~\ref{prop:union} run
-over regions, and geometric warps are the two-dimensional form of the
-position-dependent footprint that time stretching already previews, which is
-an expectation and not a result.
+a library beside the processing step, whose caller already knows the parameters
+that fix the interval map, so nothing touches the signal path. An interval
+labelled \textsc{mixed} is a statement about the declared sources, not about the
+audio, and a manifest without an evidence assertion says only that its producer
+did not implement the contract.
 
 \section{Limitations}
 \label{sec:limits}
@@ -1800,8 +1804,11 @@ part of this work that has to be re-measured before it is reused. Non-promotion
 is proved from the requirements; the audio instantiation delivers it where the
 declared map contains the real dependencies, which holds analytically for the
 linear operators and, for the encoder and the stretcher, only at the operating
-points tested: a holdout challenge on the reference build exceeds both, and a
-strict deployment gives them whole-asset dependency. The contract cannot tell
+points tested: a holdout challenge on the reference build exceeds both, and on
+a failing probe the declared map promotes. A strict profile that gives them
+whole-asset dependency and fits every map to the decoded output had no
+exceedance and no promotion, at the price of diluting every sample those two
+operators produce. The contract cannot tell
 you whether speech is synthetic or truthful, and a valid signature proves only
 that an assertion was signed.
 

@@ -294,3 +294,105 @@ def span_evidence(out: DerivedOutput, timelines: Dict[str, Timeline], policy: st
         ev = boundary_aggregate(evs) if boundary else aggregate(evs)
         res.append(OutputInterval(p.out_start, p.out_end, ev, (pi,)))
     return res
+
+
+# ---------------------------------------------------------------------------
+# Output coverage and the strict deployment profile
+# ---------------------------------------------------------------------------
+
+#: Map pieces whose footprint rests on measurement rather than on the algorithm.
+#: The holdout challenge (Experiment K2) refutes both declarations on the
+#: reference build, so the strict profile does not use them.
+MEASURED_FOOTPRINT_LABELS = ("transcode:mp3", "time_stretch")
+
+
+def _whole_asset_piece(oa: int, ob: int, src: str, n_src: int, label: str) -> MapPiece:
+    """Output ``[oa,ob)`` depends on every sample of ``src``.
+
+    The nominal range is the whole asset and the footprint is the asset length,
+    so every output sample's widened range covers the asset whatever the rate.
+    """
+    return MapPiece(oa, ob, src, 0, n_src, n_src, label)
+
+
+def check_coverage(out: DerivedOutput, n: int) -> None:
+    """Raise unless the pieces cover ``[0, n)`` with no gap and nothing beyond.
+
+    Pieces may overlap, as in a mix, where an output sample represents several
+    sources; a gap is an output sample no declaration covers, and a piece past
+    ``n`` declares output that does not exist.
+    """
+    if n < 0:
+        raise ValueError(f"negative output length {n}")
+    spans = sorted((p.out_start, p.out_end) for p in out.pieces)
+    if n == 0:
+        if spans:
+            raise ValueError("pieces declared for an empty output")
+        return
+    if not spans or spans[0][0] != 0:
+        raise ValueError("output coverage does not start at 0")
+    reach = 0
+    for a, b in spans:
+        if b > n:
+            raise ValueError(f"piece [{a},{b}) extends past the output length {n}")
+        if a > reach:
+            raise ValueError(f"output samples [{reach},{a}) are not covered")
+        reach = max(reach, b)
+    if reach != n:
+        raise ValueError(f"output samples [{reach},{n}) are not covered")
+
+
+def conform_to_decoded(out: DerivedOutput, n_decoded: int,
+                       n_src: Dict[str, int]) -> DerivedOutput:
+    """Fit a modelled map to the output length the processing actually produced.
+
+    Pieces are clipped at ``n_decoded``. Output samples the model does not cover,
+    a tail the operator emitted beyond the modelled extent, take whole-asset
+    dependency on every source the output draws on: a declaration that is safe
+    without any knowledge of where those samples came from. The result covers
+    ``[0, n_decoded)`` exactly, which ``check_coverage`` verifies.
+    """
+    pieces: List[MapPiece] = []
+    for p in out.pieces:
+        if p.out_start >= n_decoded:
+            continue
+        if p.out_end <= n_decoded:
+            pieces.append(p)
+            continue
+        # Clip, keeping the piece's own rate so the retained part maps as before.
+        keep = n_decoded - p.out_start
+        pieces.append(MapPiece(p.out_start, n_decoded, p.src, p.src_start,
+                               p.src_start + keep * p.rate, p.footprint, p.label))
+    srcs = sorted({p.src for p in out.pieces})
+    covered = sorted((p.out_start, p.out_end) for p in pieces)
+    gaps, reach = [], 0
+    for a, b in covered:
+        if a > reach:
+            gaps.append((reach, a))
+        reach = max(reach, b)
+    if reach < n_decoded:
+        gaps.append((reach, n_decoded))
+    fallback = 0
+    for a, b in gaps:
+        fallback += b - a
+        for s in srcs:
+            pieces.append(_whole_asset_piece(a, b, s, n_src[s], "fallback:whole-asset"))
+    res = DerivedOutput(n_decoded, pieces, out.operator,
+                        dict(out.params, modelled_n_out=out.n_out,
+                             decoded_n_out=n_decoded, fallback_samples=fallback))
+    check_coverage(res, n_decoded)
+    return res
+
+
+def strict_profile(out: DerivedOutput, n_src: Dict[str, int]) -> DerivedOutput:
+    """Replace every measured footprint by whole-asset dependency.
+
+    Analytical footprints, those that follow from the algorithm and its pinned
+    configuration, are kept. A measured footprint can be refuted by a probe and
+    cannot be established by one, so the strict profile does not rely on it.
+    """
+    pieces = [(_whole_asset_piece(p.out_start, p.out_end, p.src, n_src[p.src],
+                                  f"strict:{p.label}")
+               if p.label.startswith(MEASURED_FOOTPRINT_LABELS) else p)
+              for p in out.pieces]
+    return DerivedOutput(out.n_out, pieces, out.operator, dict(out.params, profile="strict"))

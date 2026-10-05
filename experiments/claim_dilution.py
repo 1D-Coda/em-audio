@@ -27,7 +27,7 @@ from typing import Dict, List, Tuple
 
 from _common import CAPTURE_SUPPORT, CHANNEL, ROOT, SCOPE, emit  # noqa: E402
 from em_audio.evidence import Evidence, _Bot, aggregate, claim_of, leq_claim
-from em_audio.interval_map import SourceInterval, Timeline, em_intervals
+from em_audio.interval_map import SourceInterval, Timeline, em_intervals, strict_profile
 import em_audio.operators as O
 
 CORPUS = ROOT / "corpus"
@@ -55,9 +55,14 @@ def strictly_weaker(fp_ev: Evidence, ref_ev: Evidence) -> bool:
     return False
 
 
-def diluted_samples(model, tls) -> Tuple[int, int]:
-    """(weakened output samples, total output samples) for one derived output."""
-    fp = em_intervals(model, tls, footprint_aware=True)
+def diluted_samples(model, tls, emitted=None) -> Tuple[int, int]:
+    """(weakened output samples, total output samples) for one derived output.
+
+    ``emitted`` is the map whose record is compared with the nominal one; it
+    defaults to ``model`` with its declared footprints, and the strict profile
+    passes its own map here.
+    """
+    fp = em_intervals(emitted or model, tls, footprint_aware=True)
     ref = em_intervals(model, tls, footprint_aware=False)
     edges = sorted({iv.out_start for iv in fp} | {iv.out_end for iv in fp}
                    | {iv.out_start for iv in ref} | {iv.out_end for iv in ref})
@@ -130,7 +135,7 @@ def main() -> int:
 
     per_tf: Dict[str, Dict[str, object]] = {}
     for name, mk in jobs.items():
-        fracs, wa_fracs, wa_promoted = [], [], 0
+        fracs, wa_fracs, wa_promoted, st_fracs = [], [], 0, []
         for rec in index:
             n = rec["n_samples"]
             tls = {"clip": timeline_of(rec), "tone": tone_tl}
@@ -138,6 +143,9 @@ def main() -> int:
                 if mk == "OVERLAY" else mk(n)
             weak, total = diluted_samples(model, tls)
             fracs.append(weak / total if total else 0.0)
+            sm = strict_profile(model, {"clip": n, "tone": n_tone})
+            sw, stot = diluted_samples(model, tls, emitted=sm)
+            st_fracs.append(sw / stot if stot else 0.0)
             w, tot, pr = whole_asset(model, tls)
             wa_fracs.append(w / tot if tot else 0.0)
             wa_promoted += pr
@@ -147,6 +155,10 @@ def main() -> int:
             "mean_dilution_fraction": round(statistics.fmean(fracs), 6),
             "max_dilution_fraction": round(max(fracs), 6),
             "clips_with_any_dilution": sum(1 for f in fracs if f > 0),
+            # The strict profile: analytical footprints kept, measured ones
+            # replaced by whole-asset dependency.
+            "strict_median_dilution_fraction": round(statistics.median(st_fracs), 6),
+            "strict_max_dilution_fraction": round(max(st_fracs), 6),
             # The coarse safe comparator on the same clips.
             "whole_asset_median_dilution_fraction": round(statistics.median(wa_fracs), 6),
             "whole_asset_max_dilution_fraction": round(max(wa_fracs), 6),
