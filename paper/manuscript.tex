@@ -724,8 +724,7 @@ across frames, so the encoder is stateful in a way no window-and-delay
 argument captures. The declared \MpThreeDeclared{} is therefore a
 \emph{measured} declaration for this frozen configuration, containing a reach of
 \KmpThreeReach{} at the operating points probed in
-Section~\ref{sec:res-containment}; it is not a bound, and the holdout challenge
-of Section~\ref{sec:res-holdout} finds inputs on which this encoder exceeds it. For overlap-add time stretching the footprint covers the analysis window
+Section~\ref{sec:res-containment}, and not a bound. For overlap-add time stretching the footprint covers the analysis window
 scaled by the tempo factor; for a frame-granular selector it covers the
 difference between the exact retained-sample model and the implementation's
 frame-aligned cuts. Two experiments check these numbers against software we do not control, and
@@ -1108,7 +1107,10 @@ trusted state under the declared local anchor for \Ftrusted{} assets, with
 the validator for \Fassertion{} assets. After derivation with stock FFmpeg,
 re-signing with the parent as an ingredient, and re-validation, \Fderived{}
 derived assets validated and \Fparent{} recorded the \texttt{parentOf}
-relationship.
+relationship. AIFF holds the same 16-bit PCM as WAV and would take a zero
+footprint, but the \texttt{c2patool} release used here refuses to embed a
+manifest in it, so an AIFF asset would need a sidecar manifest, which this
+evaluation does not test.
 
 Signal transparency holds exactly. Decoded essence was identical before
 signing, after signing with the complete-source assertion and after signing
@@ -1571,14 +1573,11 @@ Yes: reproduced exactly \\
 \subsection{Independent reproduction}
 \label{sec:res-independent}
 
-The classification of outputs was fixed in code and shipped before any third
-party ran it (Section~\ref{sec:limits}), so what follows is a protocol
-executed rather than a comparison arranged after the fact.
-
 D.~A.~Balderrama-Alvarez (Universidad de Sonora) ran the package for release
 tag~\IRtag{} twice on his own machine (Table~\ref{tab:runs}). He is not an author, took no part in designing the contract
-or the experiments, and received the package without any result files: this is
-independence of execution, not of implementation (Section~\ref{sec:limits}).
+or the experiments, and received the package without any result files. The comparison criteria
+were already fixed in code (Section~\ref{sec:limits}); his runs show
+independence of execution, not of implementation.
 The first run was incomplete because two dependencies were absent from the
 package's instructions, since fixed; the second, reported here, produced the
 same values for the two findings below, which rules out run-to-run variation
@@ -1864,11 +1863,9 @@ counts and codecs would further validate the footprint layer; it is not a
 requirement of the contract, and more codec configurations are the direction
 Section~\ref{sec:res-independent} shows to be load-bearing.
 
-\paragraph{Footprints are declarations} The kernel footprints are declarations
-for the exact configurations used here: analytical for the linear operators,
-measured for the two adaptive ones, and the holdout challenge of
-Section~\ref{sec:res-holdout} finds inputs on which the measured ones are
-exceeded on their own build. A different FFmpeg build, resampler setting, codec
+\paragraph{Footprints are declarations} The kernel footprints hold for the
+exact configurations used here, and the measured ones only at the tested
+operating points (Section~\ref{sec:res-holdout}). A different FFmpeg build, resampler setting, codec
 or tempo factor requires re-declaration and re-testing, and
 Proposition~\ref{prop:footprint} guarantees only that erring large is safe.
 Re-declaration needs two passes, one per quantity of
@@ -1923,10 +1920,10 @@ that principle has an exact form: provenance is the union over the complete
 required source set, support the minimum, applicability the intersection,
 lineage the union, and an unverified source interval is absorbing. The algebra
 is not new. This work provides the executable temporal contract, the
-kernel-footprint treatment that makes it implementable against real codecs, a
+kernel-footprint treatment that makes it implementable against FFmpeg, a
 signed transport inside an existing standard, and measurements showing that the
-rule eliminates promotion on every fixture and clip tested, leaves the decoded
-audio untouched and costs a fraction of a percent of the processing it
+rule eliminates promotion relative to the declared map on every fixture and
+clip tested, leaves decoded WAV, FLAC and MP3 audio untouched and costs a fraction of a percent of the processing it
 accompanies. An independent reproduction returned those results unchanged and
 found two build-specific declarations that do not transfer, which locates the
 part of this work that has to be re-measured before it is reused. Non-promotion
@@ -1934,9 +1931,9 @@ is proved from the requirements; the audio instantiation delivers it where the
 declared map contains the real dependencies, which holds analytically for the
 linear operators and, for the encoder and the stretcher, only at the operating
 points tested: a holdout challenge on the reference build exceeds both, and a
-strict deployment gives them whole-asset dependency. It does not
-detect deepfakes, does not establish that speech is truthful, and a valid
-signature proves only that an assertion was signed.
+strict deployment gives them whole-asset dependency. The contract cannot tell
+you whether speech is synthetic or truthful, and a valid signature proves only
+that an assertion was signed.
 
 \section*{Data availability}
 
