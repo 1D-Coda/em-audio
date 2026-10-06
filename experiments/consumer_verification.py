@@ -58,8 +58,12 @@ def assertion_for(model, ivs, profile, n_src):
 
 def main() -> int:
     t0 = time.time()
+    pe = "--partialedit" in sys.argv
     ps = "--partialspoof" in sys.argv
-    if ps:
+    if pe:
+        from transform_matrix import partialedit_index
+        index = partialedit_index()
+    elif ps:
         from transform_matrix import partialspoof_index
         index = partialspoof_index()
     else:
@@ -179,7 +183,7 @@ def main() -> int:
             "median_assertion_bytes_with_declaration": int(statistics.median(bytes_decl)),
             "median_verify_ms": round(statistics.median(verify_ms), 3),
             "max_verify_ms": round(max(verify_ms), 3)}
-    emit("Q_partialspoof_consumer" if ps else "P_consumer_verification", dict(c, cost=cost, js_verdict_mix=js_mix, n_clips=len(index), transformations=sorted(jobs),
+    emit("R_partialedit_consumer" if pe else "Q_partialspoof_consumer" if ps else "P_consumer_verification", dict(c, cost=cost, js_verdict_mix=js_mix, n_clips=len(index), transformations=sorted(jobs),
                                          runtime_s=round(time.time() - t0, 3)))
     for k, v in c.items():
         print(f"  {k:28s} {v}")

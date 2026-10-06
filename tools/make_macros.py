@@ -38,6 +38,7 @@ def load(n):
 # those runs and nowhere else.
 ADDED_AFTER_REPRODUCTIONS_FILES = {"K2_footprint_holdout", "P_consumer_verification",
                                    "Q_partialspoof_matrix", "Q_partialspoof_consumer",
+                                   "R_partialedit_matrix", "R_partialedit_consumer",
                                    "P2_signed_consumer"}
 ADDED_AFTER_REPRODUCTIONS_FIELDS = {
     "length_change_samples", "outside_or_unmapped_strict", "alignment_offset_samples",
@@ -639,6 +640,32 @@ def main() -> int:
         m["PbytesPlain"] = fmt(cst["median_assertion_bytes_without_declaration"])
         m["PbytesDecl"] = fmt(cst["median_assertion_bytes_with_declaration"])
         m["PverifyMs"] = f"{cst['median_verify_ms']:.2f}"
+    Rp = MR / "R_partialedit_matrix.json"
+    if Rp.exists():
+        R = json.loads(Rp.read_text()); Rt = R["per_transformation"]
+        Rc = load("R_partialedit_consumer")
+        def _r(k):
+            return sum(v.get(k, 0) for v in Rt.values())
+        m["Rclips"] = fmt(R["n_clips"]); m["Rruns"] = fmt(_r("n"))
+        m["Rbase"] = fmt(_r("baseline_promotions")); m["Reither"] = fmt(_r("baseline_either_promotions"))
+        m["RemInterval"] = fmt(_r("em_interval_promotions")); m["Rem"] = fmt(_r("em_promotions"))
+        m["RemLineage"] = fmt(_r("em_lineage_omissions")); m["Rstrict"] = fmt(_r("strict_promotions"))
+        m["RstrictVerified"] = fmt(_r("strict_verified_on_decoded_length"))
+        m["RfallbackOutputs"] = fmt(_r("outputs_with_fallback"))
+        m["RmarginExceeded"] = fmt(sum(1 for v in Rt.values() if not v["guard_band_covers_deviation"]))
+        m["RconsFlagged"] = fmt(Rc["baseline_promoting_flagged"]); m["RconsPromo"] = fmt(Rc["baseline_promoting"])
+        m["RjsDis"] = fmt(Rc.get("js_disagreements", 0)); m["RjsCases"] = fmt(Rc.get("js_cases", 0))
+        s = R.get("structure", {})
+        if s:
+            mi = s["median_intervals_per_utterance"]
+            m["RmedIntervals"] = fmt(mi) if isinstance(mi, int) else f"{mi:g}"
+            m["RmedDur"] = f"{s['median_duration_s']:.2f}"
+            m["RgenPct"] = f"{100*s['median_generated_fraction']:.1f}"
+        sub = ROOT / "corpus" / "partialedit" / "partialedit_subset.json"
+        if sub.exists():
+            S = json.loads(sub.read_text())
+            m["RfilesTotal"] = fmt(S["e1_files"]); m["RperSpk"] = fmt(S["per_speaker"])
+            m["Rspeakers"] = fmt(S["speakers"])
     m["DstrictPromo"] = fmt(sum(v.get("strict_promotions", 0) for v in Dm.values()))
     m["DstrictLineage"] = fmt(sum(v.get("strict_lineage_omissions", 0) for v in Dm.values()))
     m["DfallbackOutputs"] = fmt(sum(v.get("outputs_with_fallback", 0) for v in Dm.values()))

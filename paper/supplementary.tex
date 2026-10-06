@@ -402,13 +402,15 @@ git clone https://github.com/1D-Coda/em-audio \bs
   && cd em-audio \bs
   && git checkout \Rtag{} \bs
   && python3 tools/fetch_partialspoof.py \bs
+  && python3 tools/fetch_partialedit.py \bs
   && ./run_all.sh
 \end{alltt}
 
 \path{run_all.sh} fetches the checksum-pinned corpus, generates the test
-signing credential, runs the named regression tests and experiments A--Q, and prints every step it
-skipped; Experiment~Q runs only when the PartialSpoof subset has been fetched,
-which the second command does once (it streams 2~GB and keeps about 70~MB),
+signing credential, runs the named regression tests and experiments A--R, and prints every step it
+skipped; Experiments~Q and~R run only when the PartialSpoof and PartialEdit
+subsets have been fetched, which the two fetch commands do once (each keeps about
+70~MB),
 regenerates every table, macro and figure from the machine-readable results,
 writes \path{results/PREFLIGHT.txt}, and exits non-zero if any conformance
 check fails. The preflight report is the single source of every number in the

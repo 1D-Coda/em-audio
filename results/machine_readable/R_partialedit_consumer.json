@@ -1,0 +1,59 @@
+{
+ "baseline_clean_flagged": 847,
+ "baseline_promoting": 3710,
+ "baseline_promoting_flagged": 3710,
+ "cost": {
+  "max_verify_ms": 0.827,
+  "median_assertion_bytes_with_declaration": 2641,
+  "median_assertion_bytes_without_declaration": 2133,
+  "median_verify_ms": 0.162
+ },
+ "environment": {
+  "c2patool": "c2patool 0.27.2",
+  "cpu_count_logical": "14",
+  "cpu_model": "Apple M3 Max",
+  "espeak_ng": "eSpeak NG text-to-speech: 1.52.0  Data at: /opt/homebrew/Cellar/espeak-ng/1.52.0/share/espeak-ng-data",
+  "ffmpeg": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "machine": "arm64",
+  "memory_bytes": "38654705664",
+  "node": "v26.7.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.15"
+ },
+ "experiment": "R_partialedit_consumer",
+ "gap_cases": 4200,
+ "gap_flagged": 4200,
+ "honest_declared_ok": 4800,
+ "honest_strict_ok": 4800,
+ "js_cases": 2400,
+ "js_disagreements": 0,
+ "js_verdict_mix": {
+  "CONSISTENT": 876,
+  "COVERAGE_FAILURE": 383,
+  "INCONSISTENT": 21,
+  "LENGTH_MISMATCH": 437,
+  "PROMOTION": 683
+ },
+ "n_clips": 600,
+ "narrowed_cases": 2400,
+ "narrowed_passed": 2400,
+ "outputs": 4800,
+ "runtime_s": 98.125,
+ "shortened_cases": 4800,
+ "shortened_flagged": 4800,
+ "tamper_lineage_cases": 3000,
+ "tamper_lineage_flagged": 3000,
+ "tamper_promote_cases": 2878,
+ "tamper_promote_flagged": 2878,
+ "transformations": [
+  "normalize",
+  "overlay_generated",
+  "resample_16_8",
+  "silence_removal",
+  "time_stretch_1.10",
+  "transcode_flac",
+  "transcode_mp3",
+  "trim_10_90"
+ ]
+}

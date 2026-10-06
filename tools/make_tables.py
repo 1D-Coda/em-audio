@@ -192,6 +192,12 @@ def main_results():
         r.append(r"\multicolumn{4}{l}{\textit{Q\quad PartialSpoof v1.2, third-party "
                  r"mixed-origin speech}} \\")
         corpus_rows(json.loads(qf.read_text())["per_transformation"])
+    rf = ROOT / "results" / "machine_readable" / "R_partialedit_matrix.json"
+    if rf.exists():
+        r.append(r"\addlinespace")
+        r.append(r"\multicolumn{4}{l}{\textit{R\quad PartialEdit v1.1, neural speech editing "
+                 r"of genuine recordings}} \\")
+        corpus_rows(json.loads(rf.read_text())["per_transformation"])
     r.append(r"\addlinespace")
     r.append(r"\multicolumn{4}{l}{\textit{H\quad Two-language differential oracle}} \\")
     r.append(f"Frozen cases & {H['cases']:,} & --- & {H['disagreements']} disagreements \\\\")

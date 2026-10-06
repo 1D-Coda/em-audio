@@ -41,3 +41,4 @@ dist/
 *.fls
 *.fdb_latexmk
 corpus/partialspoof/
+corpus/partialedit/

@@ -36,6 +36,20 @@ captured audio with a redistributable licence.
 | Access date | 2026-10-05 |
 | Login wall | None. Fetch is scripted in `tools/fetch_partialspoof.py`; the audio is not redistributed here. |
 
+## Neural speech editing (Experiment R)
+
+| Field | Value |
+|---|---|
+| Corpus | PartialEdit v1.1, subset E1 (VoiceCraft edits of VCTK recordings) |
+| Record | https://zenodo.org/records/18829689, doi:10.5281/zenodo.18829689 |
+| Licence | Creative Commons Attribution 4.0 International (CC BY 4.0), as stated on the record |
+| Underlying recordings | CSTR VCTK Corpus 0.92, doi:10.7488/ds/2645, CC BY 4.0 |
+| Use | 600 E1 files: in archive order, the first 20 of each speaker until 600 are taken; edited-region timestamps from `PartialEdit_E1E2.csv` |
+| Integrity | Published MD5 of `PartialEdit_E1E2.csv` verified; the E1 stream stops once the subset is complete, so each kept file is recorded with its SHA-256 and archive member name in `corpus/partialedit/partialedit_subset.json` |
+| Citation | Zhang, Tian, Zhang, Duan (2025), Interspeech 2025, 5353-5357, doi:10.21437/Interspeech.2025-942 |
+| Access date | 2026-10-06 |
+| Login wall | None. Fetch is scripted in `tools/fetch_partialedit.py`; the audio is not redistributed here. |
+
 ## Generated-speech source
 
 | Field | Value |

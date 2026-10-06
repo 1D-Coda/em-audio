@@ -74,9 +74,10 @@ transport, a consumer verifier and the evaluation. The guarantee is conditional:
 non-promotion holds where the declared dependency map contains the real
 dependencies. Complete-source propagation failed none of \Achecks{} contract checks
 and promoted in no interval over \Btimelines{} adversarial timelines, \Cclips{}
-mixed-origin clips and \Qclips{} third-party PartialSpoof utterances processed by
-stock FFmpeg, whereas boundary-only inheritance promoted in \Deither{} of
-\Druns{} and \Qeither{} of \Qruns{} runs. A holdout challenge showed that the
+mixed-origin clips and \Qclips{} PartialSpoof and \Rclips{} PartialEdit
+third-party utterances processed by stock FFmpeg, whereas boundary-only
+inheritance promoted in \Deither{}, \Qeither{} and \Reither{} of \Druns{} runs
+respectively. A holdout challenge showed that the
 measured MP3 and time-stretch declarations are not universal. A strict profile
 assigns whole-asset dependency to measured declarations; it is safe by
 construction, promoted nowhere, and dilutes those operators' claims almost
@@ -153,9 +154,9 @@ the processing dependencies that decide which sources count are fixed by the
 build, so a conservative reduction rule and validated dependency declarations
 are both needed.
 
-An earlier instantiation of that requirement exists for spatial data, where
-derived terrain geometry can overstate the evidence of the source arc it
-replaces \citep{urias2026emtrf}. This work asks whether the requirement is
+An earlier instantiation of that requirement exists for spatial data, released
+as open software, where derived terrain geometry can overstate the evidence of
+the source arc it replaces \citep{urias2026emtrf}. This work asks whether the requirement is
 usable in a temporal medium with a real signed transport and real processing
 software, and what it costs. Only the algebra transfers; no earlier result is
 reused, and Supplementary Note~\NoteTransfer{} lists the inheritance row by
@@ -1151,7 +1152,7 @@ counts over frozen corpora, not prevalence estimates.}
 \label{fig:corpus}
 \end{figure}
 
-\subsection{Third-party mixed-origin speech}
+\subsection{Third-party mixed-origin speech: PartialSpoof and PartialEdit}
 \label{sec:res-partialspoof}
 
 Our corpus places its own generated segments, so its ground truth is ours as
@@ -1190,6 +1191,26 @@ whole-asset dependency. The time-stretch mapping deviation reached
 \QstretchDev{} samples, inside its margin; overlay, whose margin is declared
 zero, deviated by \QoverlayDev{} samples on one output, a mapping finding on
 third-party audio that the fitted map covers.
+
+PartialEdit \citep{zhang2025partialedit,zhang2026partialeditdata} tests a newer
+generation of generator against the same rule: one to three words of a genuine
+VCTK recording \citep{yamagishi2019vctk} are replaced by neural speech editing, a
+codec language model in its E1 subset, and the edited regions are published as
+timestamps. We took \Rclips{} of its \RfilesTotal{} E1 files, the first \RperSpk{}
+of each of \Rspeakers{} speakers in archive order, so that the download stops once
+the subset is complete; \path{tools/fetch_partialedit.py} verifies the label file's
+checksum and records each kept file's SHA-256. Edited regions are generated and
+the rest captured. The files have a median of \RmedIntervals{} intervals and last a median
+\RmedDur{}~s, of which a median \RgenPct{}\% is edited. Over \Rruns{} runs
+boundary-only inheritance promoted on \Rbase{} at whole-output level and \Reither{}
+at interval level; complete-source propagation promoted on \Rem{} (\RemInterval{}
+by interval) with \RemLineage{} lineage omissions, and \Rstrict{} under the strict
+profile, whose assertions verified against the decoded length in
+\RstrictVerified{} of \Rruns{}. The JavaScript verifier agreed with the Python one on
+all \RjsCases{} cases it was given (\RjsDis{} disagreements). Three corpora from
+different groups and generator generations, our formant-synthesis splices, the
+2019 spoofing systems and neural word editing, thus give the same outcome for the
+contract.
 
 \subsection{Signed transport, derivation and provenance loss}
 \label{sec:res-transport}
@@ -1919,7 +1940,10 @@ text-to-speech voice trained on the public-domain LJ Speech corpus, fetched and
 checksum-verified rather than committed, and pink noise generated locally,
 seeded per clip. Experiment~Q uses \Qclips{} utterances of the PartialSpoof
 v1.2 development set \citep{zhang2021partialspoofdata}, licensed CC~BY~4.0,
-fetched and checksum-verified by script rather than redistributed. No new human participants were recruited; existing public
+fetched and checksum-verified by script rather than redistributed, and
+Experiment~R \Rclips{} files of the PartialEdit v1.1 E1 subset
+\citep{zhang2026partialeditdata}, CC~BY~4.0, built on the VCTK corpus
+\citep{yamagishi2019vctk}, fetched the same way. No new human participants were recruited; existing public
 speech data were used, and no proprietary or login-walled data. The robustness arm uses a pretrained
 voice as distributed and trains or adapts none. Licences, versions, URLs, access dates, digests and redistribution clauses are
 recorded in \texttt{DATA\_LICENSES.md}.

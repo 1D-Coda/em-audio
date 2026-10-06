@@ -105,11 +105,41 @@ def partialspoof_index():
     return recs
 
 
+def partialedit_index():
+    """PartialEdit E1 files as corpus records: each edited region is generated,
+    the genuine VCTK speech around it captured, both from the dataset's own
+    timestamps rounded to the nearest sample."""
+    sub = json.loads((CORPUS / "partialedit" / "partialedit_subset.json").read_text())
+    recs = []
+    for i, (uid, u) in enumerate(sorted(sub["utterances"].items())):
+        path = CORPUS / "partialedit" / "wav" / f"{uid}.wav"
+        n = frames(path)
+        cuts, pos = [], 0
+        for a, b in sorted(u["regions"]):
+            s, e = max(pos, min(n, round(a * FS))), min(n, round(b * FS))
+            if s > pos:
+                cuts.append(["C", pos, s])
+            if e > s:
+                cuts.append(["G", s, e])
+                pos = e
+        if pos < n:
+            cuts.append(["C", pos, n])
+        gt = [{"kind": k, "start": s, "end": e, "lineage": f"urn:partialedit:{uid}:{j}"}
+              for j, (k, s, e) in enumerate(cuts) if e > s]
+        recs.append({"id": i, "uid": uid, "path": str(path.relative_to(ROOT)),
+                     "n_samples": n, "ground_truth": gt})
+    return recs
+
+
 def main() -> int:
     global WORK
     t0 = time.time()
-    ps = "--partialspoof" in sys.argv
-    if ps:
+    pe = "--partialedit" in sys.argv
+    ps = "--partialspoof" in sys.argv or pe
+    if pe:
+        index = partialedit_index()
+        WORK = CORPUS / "partialedit" / "transformed"
+    elif ps:
         index = partialspoof_index()
         WORK = CORPUS / "partialspoof" / "transformed"
     else:
@@ -302,8 +332,9 @@ def main() -> int:
         "runtime_s": round(time.time() - t0, 3),
     }
     if ps:
-        payload["corpus"] = ("PartialSpoof v1.2 development subset (Zhang et al.; CC BY 4.0); "
-                             "ground truth from the dataset's own timestamps")
+        payload["corpus"] = ("PartialEdit v1.1 E1 subset (Zhang et al.; CC BY 4.0)" if pe else
+                             "PartialSpoof v1.2 development subset (Zhang et al.; CC BY 4.0)") + \
+            "; ground truth from the dataset's own timestamps"
         payload["mixed_utterances"] = sum(1 for r in index if len({g["kind"] for g in r["ground_truth"]}) > 1)
         segs = [len(r["ground_truth"]) for r in index]
         gen = [sum(g["end"] - g["start"] for g in r["ground_truth"] if g["kind"] == "G") / r["n_samples"]
@@ -312,10 +343,11 @@ def main() -> int:
             "median_intervals_per_utterance": statistics.median(segs), "max_intervals": max(segs),
             "median_duration_s": round(statistics.median(r["n_samples"] for r in index) / FS, 3),
             "median_generated_fraction": round(statistics.median(gen), 4),
-            "boundary_source": "dataset timestamps rounded to the nearest sample; non-speech spans "
-                               "labelled from the 10 ms segment labels"}
+            "boundary_source": ("edited-region timestamps rounded to the nearest sample" if pe else
+                                "dataset timestamps rounded to the nearest sample; non-speech spans "
+                                "labelled from the 10 ms segment labels")}
         payload["utterance_ids"] = [r["uid"] for r in index]
-        emit("Q_partialspoof_matrix", payload)
+        emit("R_partialedit_matrix" if pe else "Q_partialspoof_matrix", payload)
     else:
         emit("D_transform_matrix", payload)
         (ROOT / "results" / "machine_readable" / "D_essence_hashes.json").write_text(

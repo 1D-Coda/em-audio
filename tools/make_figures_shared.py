@@ -125,7 +125,11 @@ def fig_corpus():
     corpora = [("ours", per)]
     if Qf.exists():
         corpora.append(("PartialSpoof", json.loads(Qf.read_text())["per_transformation"]))
-    off = {0: -0.17, 1: 0.17}
+    Rf = MR / "R_partialedit_matrix.json"
+    if Rf.exists():
+        corpora.append(("PartialEdit", json.loads(Rf.read_text())["per_transformation"]))
+    off = {0: -0.24, 1: 0.0, 2: 0.24} if len(corpora) == 3 else {0: -0.17, 1: 0.17}
+    shapes = [S.M_BASE, "s", "^"]
     for ci, (lab, pt) in enumerate(corpora):
         for i, key in enumerate(rows):
             v = pt.get(key)
@@ -136,9 +140,9 @@ def fig_corpus():
             y = i + off[ci]
             ax.plot([w, a], [y, y], color=S.MARGIN, linewidth=2.4,
                     solid_capstyle="round", zorder=1)
-            ax.scatter([w], [y], s=26, marker=S.M_BASE if ci == 0 else "s",
+            ax.scatter([w], [y], s=24, marker=shapes[ci],
                        color=S.BASE, zorder=4)
-            ax.scatter([a], [y], s=26, marker=S.M_BASE if ci == 0 else "s",
+            ax.scatter([a], [y], s=24, marker=shapes[ci],
                        facecolor="white", edgecolor=S.BASE, linewidth=1.1, zorder=5)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([S.label_of(k) for k in rows], fontsize=7.4)
@@ -149,8 +153,8 @@ def fig_corpus():
     ax.grid(axis="x", linestyle=":", zorder=0)
     ax.set_axisbelow(True)
     S.panel_tag(ax, "B", dx=-0.055)
-    names = " and ".join(f"{'circles' if i == 0 else 'squares'} {lab}"
-                         for i, (lab, _) in enumerate(corpora))
+    names = ", ".join(f"{['circles', 'squares', 'triangles'][i]} {lab}"
+                      for i, (lab, _) in enumerate(corpora))
     ax.set_title(f"Whole-output versus interval-level promotion ({names})",
                  fontsize=8.4, loc="left", pad=8)
 

@@ -148,6 +148,13 @@ else
   echo "SKIPPED Q: PartialSpoof subset absent; fetch it with: $PY tools/fetch_partialspoof.py (streams 2 GB once, keeps 70 MB)"
 fi
 
+step "R  neural speech editing (PartialEdit v1.1 E1 subset)"
+if [ -f "$ROOT/corpus/partialedit/partialedit_subset.json" ]; then
+  ( cd "$ROOT"/experiments && $PY transform_matrix.py --partialedit && $PY consumer_verification.py --partialedit ) || note
+else
+  echo "SKIPPED R: PartialEdit subset absent; fetch it with: $PY tools/fetch_partialedit.py (streams 3.4 GB once, keeps about 60 MB)"
+fi
+
 step "E  provenance-loss behaviour"
 ( cd "$ROOT"/experiments && $PY manifest_stripping.py ) || note
 
