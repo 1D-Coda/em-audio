@@ -146,8 +146,8 @@ def main_results():
     r = []
     r.append(r"\multicolumn{4}{l}{\textit{A\quad Exhaustive finite-state conformance}} \\")
     r.append(f"Source words over $\\{{C,G,\\bot\\}}$, length $\\le 8$ & {A['words_enumerated']:,} & "
-             f"--- & --- \\\\")
-    r.append(f"Operator cases & {A['operator_cases']:,} & --- & --- \\\\")
+             f"n/a & n/a \\\\")
+    r.append(f"Operator cases & {A['operator_cases']:,} & n/a & n/a \\\\")
     # These rows are not a boundary-only versus complete-source comparison, so
     # they span every column after the label rather than placing a value under a
     # comparison header where a reader would misread it as that policy's result.
@@ -168,13 +168,13 @@ def main_results():
     r.append(f"Lineage omissions (depth 1) & {B['per_depth']['1']['timelines']:,} & "
              f"{B['per_depth']['1']['baseline_lineage_omissions']:,} & "
              f"{B['per_depth']['1']['em_lineage_omissions']} \\\\")
-    r.append(f"Unverified $\\to$ verified (depth 1) & --- & "
+    r.append(f"Unverified $\\to$ verified (depth 1) & n/a & "
              f"{B['per_depth']['1']['baseline_unverified_to_verified']:,} & "
              f"{B['per_depth']['1']['em_unverified_to_verified']} \\\\")
     r.append(r"\addlinespace")
     r.append(r"\multicolumn{4}{l}{\textit{C--D\quad Mixed-origin audio corpus, "
              r"stock-FFmpeg processing}} \\")
-    r.append(f"Exact propagation of constructed interval evidence & {C['n_clips']} & --- & "
+    r.append(f"Exact propagation of constructed interval evidence & {C['n_clips']} & n/a & "
              f"{C['exact_interval_recovery']} \\\\")
     r.append(r"\multicolumn{4}{l}{\footnotesize Promotion counts are whole output / any "
              r"interval.} \\")
@@ -200,7 +200,7 @@ def main_results():
         corpus_rows(json.loads(rf.read_text())["per_transformation"])
     r.append(r"\addlinespace")
     r.append(r"\multicolumn{4}{l}{\textit{H\quad Two-language differential oracle}} \\")
-    r.append(f"Frozen cases & {H['cases']:,} & --- & {H['disagreements']} disagreements \\\\")
+    r.append(f"Frozen cases & {H['cases']:,} & n/a & {H['disagreements']} disagreements \\\\")
     write("main_results", "\n".join(r), colspec="lrrr",
           header="Check & Cases & Boundary-only & Complete-source")
 
@@ -262,7 +262,7 @@ def containment_table():
         rows.append(f"{label} & {v['declared_footprint_samples']:,} & "
                     f"{v['max_measured_reach_source_samples']:,} & "
                     f"{v['total_affected_output_samples']:,} & "
-                    f"{'---' if marg is None else format(marg, ',')} & "
+                    f"{'n/a' if marg is None else format(marg, ',')} & "
                     f"{v['total_outside_declared_support']} \\\\".replace(",", "\\,"))
     write("containment_table", "\n".join(rows), colspec="lrrrrr",
           header=("Operator & Declared & Measured reach & Influenced samples & "
@@ -281,10 +281,10 @@ def dilution_table():
     for c in I["composition_chain"]:
         rows.append(f"composition depth {c['depth']} & {c['clips']} & "
                     f"{100*c['median_dilution_fraction']:.2f}\\% & "
-                    f"{100*c['max_dilution_fraction']:.2f}\\% & --- \\\\")
+                    f"{100*c['max_dilution_fraction']:.2f}\\% & n/a \\\\")
     for r in I["long_asset_chain"]:
         rows.append(f"same depth-3 chain, {r['asset_seconds']}\\,s asset & 1 & "
-                    f"{100*r['dilution_fraction']:.2f}\\% & --- & --- \\\\")
+                    f"{100*r['dilution_fraction']:.2f}\\% & n/a & n/a \\\\")
     write("dilution_table", "\n".join(rows), colspec="lrrrr",
           header=("Transformation & Clips & Median dilution & Max dilution & "
                   "Clips affected"))
@@ -299,9 +299,9 @@ def overhead_table():
         f"{em['q1']/mins:.3f}--{em['q3']/mins:.3f} ms / audio-minute \\\\",
         f"Boundary-only bookkeeping & {G['baseline_ms_per_audio_minute']:.3f} ms / audio-minute & "
         f"{bs['q1']/mins:.3f}--{bs['q3']/mins:.3f} ms / audio-minute \\\\",
-        f"EM $/$ boundary-only ratio & {G['em_over_baseline_ratio']:.2f}$\\times$ & --- \\\\",
+        f"EM $/$ boundary-only ratio & {G['em_over_baseline_ratio']:.2f}$\\times$ & n/a \\\\",
         f"EM as a fraction of FFmpeg time (propagation and assertion construction only) & "
-        f"{100*G['em_over_ffmpeg_fraction']:.3f}\\% & --- \\\\",
+        f"{100*G['em_over_ffmpeg_fraction']:.3f}\\% & n/a \\\\",
         f"C2PA signing & {G['sign_ms']['median']:.1f} ms / asset & "
         f"{G['sign_ms']['q1']:.1f}--{G['sign_ms']['q3']:.1f} ms \\\\",
         f"C2PA validation & {G['validate_ms']['median']:.1f} ms / asset & "
@@ -314,14 +314,14 @@ def overhead_table():
     sc = G["assertion_scaling"]
     per = (sc[-1]["assertion_bytes"] - sc[0]["assertion_bytes"]) / \
           (sc[-1]["emitted_intervals"] - sc[0]["emitted_intervals"])
-    r.append(f"EM assertion marginal cost & {per:.0f} B / evidence interval & --- \\\\")
+    r.append(f"EM assertion marginal cost & {per:.0f} B / evidence interval & n/a \\\\")
     P = load("P_consumer_verification").get("cost")
     if P:
         r.append(f"Assertion, Experiment~D outputs, without declaration & "
-                 f"{P['median_assertion_bytes_without_declaration']:,} B & --- \\\\")
+                 f"{P['median_assertion_bytes_without_declaration']:,} B & n/a \\\\")
         r.append(f"Same, with dependency declaration & "
-                 f"{P['median_assertion_bytes_with_declaration']:,} B & --- \\\\")
-        r.append(f"Consumer recomputation & {P['median_verify_ms']:.2f} ms / output & --- \\\\")
+                 f"{P['median_assertion_bytes_with_declaration']:,} B & n/a \\\\")
+        r.append(f"Consumer recomputation & {P['median_verify_ms']:.2f} ms / output & n/a \\\\")
     write("overhead_table", "\n".join(r), colspec="p{0.42\\linewidth}p{0.26\\linewidth}p{0.24\\linewidth}",
           header="Quantity & Median & IQR")
 
