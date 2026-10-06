@@ -403,10 +403,15 @@ def fig_dilution():
         # Whole-asset comparator: safe, and dilutes almost everything.
         ax.scatter([100 * v["whole_asset_median_dilution_fraction"]], [i], s=22,
                    marker="x", color=S.BASE, linewidth=1.0, zorder=4)
+        # Strict profile, drawn only where it differs from the declared one.
+        if "strict_median_dilution_fraction" in v and \
+                abs(v["strict_median_dilution_fraction"] - v["median_dilution_fraction"]) > 1e-9:
+            ax.scatter([100 * v["strict_median_dilution_fraction"]], [i + 0.22], s=30,
+                       marker="v", color=S.MEASURED, zorder=5)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels([S.label_of(k) for k, _ in rows], fontsize=7.0)
     ax.set_xlabel("output samples diluted (%)\n"
-                  "dot median, bar maximum, \u00d7 whole-asset median", fontsize=7.4)
+                  "dot median, bar maximum, \u25bc strict-profile median, \u00d7 whole-asset median", fontsize=7.4)
     ax.set_xlim(-3, 106)
     ax.grid(axis="x", linestyle=":")
     ax.set_axisbelow(True)

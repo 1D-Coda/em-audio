@@ -300,20 +300,28 @@ def overhead_table():
         f"Boundary-only bookkeeping & {G['baseline_ms_per_audio_minute']:.3f} ms / audio-minute & "
         f"{bs['q1']/mins:.3f}--{bs['q3']/mins:.3f} ms / audio-minute \\\\",
         f"EM $/$ boundary-only ratio & {G['em_over_baseline_ratio']:.2f}$\\times$ & --- \\\\",
-        f"EM as a fraction of FFmpeg time & {100*G['em_over_ffmpeg_fraction']:.3f}\\% & --- \\\\",
+        f"EM as a fraction of FFmpeg time (propagation and assertion construction only) & "
+        f"{100*G['em_over_ffmpeg_fraction']:.3f}\\% & --- \\\\",
         f"C2PA signing & {G['sign_ms']['median']:.1f} ms / asset & "
         f"{G['sign_ms']['q1']:.1f}--{G['sign_ms']['q3']:.1f} \\\\",
         f"C2PA validation & {G['validate_ms']['median']:.1f} ms / asset & "
         f"{G['validate_ms']['q1']:.1f}--{G['validate_ms']['q3']:.1f} \\\\",
         f"Manifest size overhead & {G['median_manifest_overhead_bytes_per_asset']:,} B / asset & "
         f"{int(G['manifest_overhead_bytes']['q1']):,}--{int(G['manifest_overhead_bytes']['q3']):,} \\\\",
-        f"EM assertion & {G['median_em_assertion_bytes_per_asset']:,} B / asset & "
+        f"EM assertion, evidence only (this cohort) & {G['median_em_assertion_bytes_per_asset']:,} B / asset & "
         f"{int(G['em_assertion_bytes']['q1']):,}--{int(G['em_assertion_bytes']['q3']):,} \\\\",
     ]
     sc = G["assertion_scaling"]
     per = (sc[-1]["assertion_bytes"] - sc[0]["assertion_bytes"]) / \
           (sc[-1]["emitted_intervals"] - sc[0]["emitted_intervals"])
     r.append(f"EM assertion marginal cost & {per:.0f} B / evidence interval & --- \\\\")
+    P = load("P_consumer_verification").get("cost")
+    if P:
+        r.append(f"Assertion, Experiment~D outputs, without declaration & "
+                 f"{P['median_assertion_bytes_without_declaration']:,} B & --- \\\\")
+        r.append(f"Same, with dependency declaration & "
+                 f"{P['median_assertion_bytes_with_declaration']:,} B & --- \\\\")
+        r.append(f"Consumer recomputation & {P['median_verify_ms']:.2f} ms / output & --- \\\\")
     write("overhead_table", "\n".join(r), colspec="lll",
           header="Quantity & Median & IQR")
 

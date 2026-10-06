@@ -1197,7 +1197,8 @@ generation of generator against the same rule: one to three words of a genuine
 VCTK recording \citep{yamagishi2019vctk} are replaced by neural speech editing, a
 codec language model in its E1 subset, and the edited regions are published as
 timestamps. We took \Rclips{} of its \RfilesTotal{} E1 files, the first \RperSpk{}
-of each of \Rspeakers{} speakers in archive order, so that the download stops once
+of each speaker, taking speakers in the order the archive presents them until
+\Rspeakers{} are complete, so that the download stops once
 the subset is complete; \path{tools/fetch_partialedit.py} verifies the label file's
 checksum and records each kept file's SHA-256. Edited regions are generated and
 the rest captured. The files have a median of \RmedIntervals{} intervals and last a median
@@ -1433,8 +1434,9 @@ whose claim is weaker than over the nominal map. (A) Through a composition chain
 with the operator each step adds; the shaded band runs from median to maximum
 over clips and is not an uncertainty interval. Normalisation adds nothing: its
 content footprint is zero. (B) Each transformation alone over \IclipsPerTf{}
-clips: circles are medians, bars reach the maximum, $\times$ is the
-whole-asset comparator's median. (C) One depth-three chain at three durations with the boundary count
+clips: circles are medians under the declared profile, bars reach the maximum,
+$\blacktriangledown$ marks the strict-profile median where it differs, and $\times$
+the whole-asset comparator's median. (C) One depth-three chain at three durations with the boundary count
 fixed, on logarithmic axes. Dilution weakens a claim and never strengthens one.}
 \label{fig:dilution}
 \end{figure}
@@ -1550,7 +1552,8 @@ in \PlinFlagged{} of \PlinCases{}, and a declaration missing its last piece in
 \PgapFlagged{} of \PgapCases{}. A producer that declares zero footprints and
 computes its claims to match passed in \PnarrowPassed{} of \PnarrowCases{}: the
 check establishes consistency with the signed declaration, not that the
-declaration describes the processing, which only calibration can test.
+declaration describes the processing, which needs other evidence: calibration
+probes, analysis of the algorithm, or an execution record.
 
 The consumer must also take the output length from the audio rather than from
 the declaration. Given the decoded length of every Experiment~D output, it
@@ -1560,7 +1563,8 @@ assertions, whose maps are fitted. A declaration shortened consistently, map and
 length together, over unchanged audio was rejected in \PshortFlagged{} of
 \PshortCases{} cases.
 
-Two further checks remove the remaining reliance on our own code and on JSON. A
+Two further checks reduce reliance on shared implementation code and test the
+complete signed workflow. A
 separately written JavaScript verifier (\path{oracle_js/verify.js}), which imports
 nothing from the Python package and recomputes every output sample by brute force,
 returned the same verdict as the Python verifier on all \PjsCases{} cases it was
@@ -1572,7 +1576,10 @@ The verifier read the assertion from the derived asset's manifest, the source
 evidence from the ingredient's manifest and the length by decoding. Both versions
 validated as signed in all \PtwoWrongValid{} cases; the honest one verified in
 \PtwoHonest{} and the promoted one was flagged in \PtwoWrongFlagged{}, which is the
-difference between a valid signature and a consistent claim.
+difference between a valid signature and a consistent claim. End-to-end signed
+verification is thus demonstrated on \PtwoClips{} trim derivations; the larger
+evaluations above, over every transformation and both profiles, ran on the
+assertions as JSON.
 
 The declaration raises the median assertion in this cohort, the corpus outputs of
 Experiment~D, from \PbytesPlain{} to \PbytesDecl{}~B, and recomputation took a
@@ -1677,9 +1684,9 @@ Any population rate or named product &
 Yes: \BbaseOne{} against \BemAll{}, exactly \\
 \addlinespace
 Mechanism, realistic audio &
-\Cclips{} constructed and \Qclips{} PartialSpoof clips, stock FFmpeg &
+\Cclips{} constructed, \Qclips{} PartialSpoof and \Rclips{} PartialEdit clips, stock FFmpeg &
 Balanced coverage of speakers, codecs or edits &
-Yes for our corpus; PartialSpoof added later \\
+Yes for our corpus; the other two added later \\
 \addlinespace
 Interval-model fidelity &
 Predicted versus decoded sample counts, against declared margins &
@@ -1698,7 +1705,7 @@ C2PA security; perceptual or cross-decoder equivalence &
 Yes on both machines \\
 \addlinespace
 Consumer verification &
-Recomputation from the declaration on both corpora, against decoded length;
+Recomputation from the declaration on three corpora, against decoded length;
 JavaScript verifier; signed workflow &
 That the declaration describes the processing; a non-C2PA consumer &
 Not yet: added later \\
@@ -1793,10 +1800,14 @@ calibration tool is what transfers to a new one.
 \label{sec:discussion}
 
 \paragraph{What is established} A complete-source rule can be implemented over
-media time against stock FFmpeg, on our corpus and on third-party PartialSpoof
-speech. With the declared map it promoted on no
-fixture or corpus clip tested, but that map is unsound on the holdout; with the
-strict profile it promoted on none and is sound by Proposition~\ref{prop:footprint}.
+media time against stock FFmpeg, on our corpus and on two third-party corpora.
+Three results should be kept apart. Under the declared profile the claims conform
+to the declaration on every fixture and clip, which is algebraic conformance
+relative to that declaration, not validation against the real dependencies. The
+holdout shows that those declarations can miss real dependencies, and that the
+miss produces promotion. The strict profile replaces every measured declaration
+by whole-asset dependency and promoted on none, which follows from
+Proposition~\ref{prop:footprint}.
 It travels in an existing signed
 standard without altering the audio, and costs a fraction of a percent of the
 processing it accompanies. The declared map is a separate claim: analytical for
@@ -1917,8 +1928,8 @@ fixture, corpus clip or PartialSpoof utterance tested. The rule leaves decoded W
 accompanies. Earlier independent runs reproduced the conformance, promotion and
 oracle outcomes of their release and found one footprint and one mapping margin
 that do not transfer to another build; the strict profile, the consumer verifier
-and the PartialSpoof experiment were added after them and have not been rerun
-independently. Non-promotion
+and the PartialSpoof and PartialEdit experiments were added after them and have
+not been rerun independently. Non-promotion
 is proved from the requirements; the audio instantiation delivers it where the
 declared map contains the real dependencies, which holds analytically for the
 linear operators and, for the encoder and the stretcher, only at the operating
