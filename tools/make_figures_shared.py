@@ -12,6 +12,7 @@ fails rather than being drawn from a remembered one.
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -395,24 +396,34 @@ def fig_dilution():
             ax.scatter([med], [i], s=26, marker=S.M_MEASURED, color=S.MEASURED,
                        zorder=4)
             if mx < 3:            # too small to read off the axis
-                ax.text(mx + 1.6, i, f"{med:.2f}% median", fontsize=6.8,
+                ax.text(mx + 1.6, i, f"{med:.2f}% median", fontsize=7.2,
                         va="center", color="#555555")
         else:
             S.zero_marker(ax, 0, i, colour=S.MEASURED, marker=S.M_MEASURED,
                           size=22)
-        # Whole-asset comparator: safe, and dilutes almost everything.
-        ax.scatter([100 * v["whole_asset_median_dilution_fraction"]], [i], s=22,
-                   marker="x", color=S.BASE, linewidth=1.0, zorder=4)
-        # Strict profile, drawn only where it differs from the declared one.
-        if "strict_median_dilution_fraction" in v and \
-                abs(v["strict_median_dilution_fraction"] - v["median_dilution_fraction"]) > 1e-9:
-            ax.scatter([100 * v["strict_median_dilution_fraction"]], [i + 0.22], s=30,
-                       marker="v", color=S.MEASURED, zorder=5)
     ax.set_yticks(range(len(rows)))
-    ax.set_yticklabels([S.label_of(k) for k, _ in rows], fontsize=7.0)
-    ax.set_xlabel("output samples diluted (%)\n"
-                  "dot median, bar maximum, \u25bc strict-profile median, \u00d7 whole-asset median", fontsize=7.4)
-    ax.set_xlim(-3, 106)
+    ax.set_yticklabels([S.label_of(k) for k, _ in rows], fontsize=7.4)
+    ax.set_xlabel("declared profile: dot median, bar maximum (% of output samples diluted)",
+                  fontsize=7.4)
+    ax.set_xlim(-3, 62)
+    # The strict profile and the whole-asset comparator sit near 100% for the
+    # operators that matter, where markers overlap, so their medians are
+    # printed as two aligned columns beside the plot instead.
+    col = ax.get_yaxis_transform()
+    def pct(x):
+        # Two decimals, never printing 100.00 for a value below 1.
+        r = round(100 * x, 2)
+        return f"{99.99 if (r >= 100 and x < 1) else r:.2f}"
+    for x, head in ((1.05, "strict\n(%)"), (1.30, "whole asset\n(%)")):
+        ax.text(x, len(rows) - 0.35, head, transform=col, fontsize=7.4, ha="left",
+                va="bottom", fontweight="bold", clip_on=False, linespacing=1.1)
+    for i, (key, v) in enumerate(rows):
+        sv = v.get("strict_median_dilution_fraction", v["median_dilution_fraction"])
+        wv = v["whole_asset_median_dilution_fraction"]
+        ax.text(1.05, i, pct(sv), transform=col, fontsize=7.4, ha="left",
+                va="center", clip_on=False)
+        ax.text(1.30, i, pct(wv), transform=col, fontsize=7.4, ha="left",
+                va="center", clip_on=False)
     ax.grid(axis="x", linestyle=":")
     ax.set_axisbelow(True)
     S.panel_tag(ax, "B", dx=-0.30)
@@ -440,21 +451,25 @@ def fig_dilution():
     S.panel_tag(ax, "A", dx=-0.055)
     ax.set_xlim(0.75, 5.62)
     ax.text(0.01, 0.97, "declared-map simulation at 8 kHz; adaptive stages "
-            "not validated", transform=ax.transAxes, fontsize=6.9,
+            "not validated", transform=ax.transAxes, fontsize=7.2,
             ha="left", va="top", color="#555555")
     ax.annotate("maximum", xy=(d[-1], mx[-1]), xytext=(7, 3),
-                textcoords="offset points", fontsize=6.9, ha="left",
+                textcoords="offset points", fontsize=7.4, ha="left",
                 color="#777777")
     ax.annotate("median", xy=(d[-1], med[-1]), xytext=(7, -4),
-                textcoords="offset points", fontsize=6.9, ha="left",
+                textcoords="offset points", fontsize=7.4, ha="left",
                 color="#222222")
+    k = 2 if len(d) > 3 else 1
+    ax.text((d[k] + d[k + 1]) / 2 if k + 1 < len(d) else d[k],
+            (med[k] + mx[k]) / 2, "median\u2013maximum range", fontsize=7.2,
+            ha="center", va="center", color="#555555")
     flat = [i for i in range(1, len(d))
             if abs(med[i] - med[i - 1]) < 1e-9 and med[i] > 0]
     if flat:
         i = flat[0]
         ax.annotate("normalisation adds\nnone; its declared\nfootprint is zero",
                     xy=(d[i], med[i]), xytext=(4.35, 21),
-                    fontsize=6.6, ha="left", va="center", color="#444444",
+                    fontsize=7.2, ha="left", va="center", color="#444444",
                     linespacing=1.3,
                     arrowprops=dict(arrowstyle="-", color="#999999", lw=0.6))
 

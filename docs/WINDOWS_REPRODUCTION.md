@@ -46,12 +46,12 @@ declaration. The container reproduces the same class of result on its own build.
 
 ## One double click
 
-`Reproducir_en_Windows.cmd` at the top of the package. Finder's equivalent on
+`Reproduce_on_Windows.cmd` at the top of the package. Finder's equivalent on
 Windows: double click it and a Terminal opens. It lists what is missing, asks
 before installing anything, installs it with winget, downloads c2patool, builds
 a virtual environment, runs the pipeline and leaves one zip to send back.
 
-`Reproducir_en_Windows.cmd -Check` stops after the dependency check and runs no
+`Reproduce_on_Windows.cmd -Check` stops after the dependency check and runs no
 experiments. Run that first.
 
 What continuous integration has established about it: on a runner whose PATH was
@@ -78,7 +78,8 @@ is missing.
 ### If nothing seems to happen, read this first
 
 Windows ships App Execution Aliases named `python` and `python3`. They sit on
-PATH, they are not interpreters, and running one prints
+PATH, they are not interpreters, and running one prints a message like this
+one, verbatim from a Spanish-locale Windows install:
 
     no se encontro Python; ejecutar sin argumentos para instalar desde el
     Microsoft Store

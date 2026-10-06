@@ -18,7 +18,7 @@
  "experiment": "P2_signed_consumer",
  "honest_valid": 20,
  "honest_verified": 20,
- "runtime_s": 5.5,
+ "runtime_s": 5.0,
  "wrong_flagged": 20,
  "wrong_valid": 20
 }

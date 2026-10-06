@@ -303,13 +303,13 @@ def overhead_table():
         f"EM as a fraction of FFmpeg time (propagation and assertion construction only) & "
         f"{100*G['em_over_ffmpeg_fraction']:.3f}\\% & --- \\\\",
         f"C2PA signing & {G['sign_ms']['median']:.1f} ms / asset & "
-        f"{G['sign_ms']['q1']:.1f}--{G['sign_ms']['q3']:.1f} \\\\",
+        f"{G['sign_ms']['q1']:.1f}--{G['sign_ms']['q3']:.1f} ms \\\\",
         f"C2PA validation & {G['validate_ms']['median']:.1f} ms / asset & "
-        f"{G['validate_ms']['q1']:.1f}--{G['validate_ms']['q3']:.1f} \\\\",
+        f"{G['validate_ms']['q1']:.1f}--{G['validate_ms']['q3']:.1f} ms \\\\",
         f"Manifest size overhead & {G['median_manifest_overhead_bytes_per_asset']:,} B / asset & "
-        f"{int(G['manifest_overhead_bytes']['q1']):,}--{int(G['manifest_overhead_bytes']['q3']):,} \\\\",
+        f"{int(G['manifest_overhead_bytes']['q1']):,}--{int(G['manifest_overhead_bytes']['q3']):,} B \\\\",
         f"EM assertion, evidence only (this cohort) & {G['median_em_assertion_bytes_per_asset']:,} B / asset & "
-        f"{int(G['em_assertion_bytes']['q1']):,}--{int(G['em_assertion_bytes']['q3']):,} \\\\",
+        f"{int(G['em_assertion_bytes']['q1']):,}--{int(G['em_assertion_bytes']['q3']):,} B \\\\",
     ]
     sc = G["assertion_scaling"]
     per = (sc[-1]["assertion_bytes"] - sc[0]["assertion_bytes"]) / \

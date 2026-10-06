@@ -9,7 +9,7 @@ set "HERE=%~dp0"
 powershell -NoProfile -ExecutionPolicy Bypass -File "%HERE%reproduce_windows_full.ps1" %*
 if errorlevel 1 (
   echo.
-  echo El procedimiento termino con error. Manda run_all_output.txt si existe.
+  echo The procedure ended with an error. Send run_all_output.txt if it exists.
   pause
 )
 endlocal

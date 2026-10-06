@@ -3,7 +3,7 @@
  "baseline_promoting": 3710,
  "baseline_promoting_flagged": 3710,
  "cost": {
-  "max_verify_ms": 0.827,
+  "max_verify_ms": 0.824,
   "median_assertion_bytes_with_declaration": 2641,
   "median_assertion_bytes_without_declaration": 2133,
   "median_verify_ms": 0.162
@@ -39,7 +39,7 @@
  "narrowed_cases": 2400,
  "narrowed_passed": 2400,
  "outputs": 4800,
- "runtime_s": 98.125,
+ "runtime_s": 97.728,
  "shortened_cases": 4800,
  "shortened_flagged": 4800,
  "tamper_lineage_cases": 3000,

@@ -1,82 +1,84 @@
-EM-Audio: validación independiente en Windows
-==============================================
+EM-Audio: independent validation on Windows
+===========================================
 
-Gracias por hacer esto. Son unos 25 a 40 minutos de máquina y casi nada de tu
-tiempo.
+Thank you for doing this. It takes about 25 to 40 minutes of machine time and
+almost none of yours.
 
 
-QUÉ NECESITAS
+WHAT YOU NEED
 -------------
 
-Docker Desktop, de docker.com. Ábrelo una vez y espera a que diga "Running".
+Docker Desktop, from docker.com. Open it once and wait until it says "Running".
 
-Nada más. No necesitas Python, ni Git, ni FFmpeg, ni Node. Todo eso va dentro
-del contenedor, en versiones fijas, y el código que se va a correr viene dentro
-de este mismo ZIP.
-
-
-QUÉ HACER
----------
-
-1. Extrae este ZIP donde quieras.
-2. Doble clic en   CHECK_ONLY.cmd
-   Revisa tu máquina y no corre nada. Tarda segundos.
-3. Si sale bien, doble clic en   RUN_EM_AUDIO_VALIDATION.cmd
-4. Cuando termine, mándame   SEND_THIS_BACK.zip
+That is all. You do not need Python, Git, FFmpeg or Node. All of that is inside
+the container, at pinned versions, and the code that runs comes inside this
+same ZIP.
 
 
-CÓMO LEER EL RESULTADO
+WHAT TO DO
+----------
+
+1. Extract this ZIP anywhere you like.
+2. Double-click   CHECK_ONLY.cmd
+   It checks your machine and runs nothing. It takes seconds.
+3. If that goes well, double-click   RUN_EM_AUDIO_VALIDATION.cmd
+4. When it finishes, send me   SEND_THIS_BACK.zip
+
+
+HOW TO READ THE RESULT
 ----------------------
 
-Dos de los códigos son éxito. Esto importa:
+Two of the codes are success. This matters:
 
-   0   todo pasó y las declaraciones se sostuvieron en tu máquina
-   3   todo pasó, y una declaración de footprint NO se sostiene en tu FFmpeg
-   1   falló otra cosa, y eso sí es un defecto que quiero ver
-  10   falta Docker o no está corriendo; no se intentó nada científico
+   0   everything passed and the claims held on your machine
+   3   everything passed, and one footprint claim does NOT hold on your FFmpeg
+   1   something else failed, and that is a defect I want to see
+  10   Docker is missing or not running; nothing scientific was attempted
 
-EL 3 NO ES UN FALLO TUYO. Es el resultado central del paper medido otra vez.
+A 3 IS NOT YOUR FAULT. It is the central result of the paper, measured again.
 
-El paper sostiene que esos números dependen del build de FFmpeg y que hay que
-recalibrarlos para cada uno. Una reproducción independiente en FFmpeg 8.0.1 ya
-midió el codificador MP3 alcanzando 4,317 muestras contra 2,304 declaradas, y
-eso está publicado como hallazgo, sin ensanchar la declaración para que pasara.
+The paper holds that those numbers depend on the FFmpeg build and must be
+recalibrated for each one. An independent reproduction on FFmpeg 8.0.1 already
+measured the MP3 encoder reaching 4,317 samples against 2,304 claimed, and that
+is published as a finding. The claim was not widened to make it pass.
 
-Si tu máquina da 3, confirma esa tesis. Si da 0, también es información.
-
-
-QUÉ MANDARME
-------------
-
-Solo   SEND_THIS_BACK.zip
-
-Trae tus resultados, el reporte de tu máquina y los dos logs. Se arma solo.
-
-Mándalo salga como salga. Una corrida que falla y se reporta vale más que una
-que se acomodó para pasar: la reproducción anterior salió con error y encontró
-dos defectos reales que ahora están publicados.
+If your machine gives 3, it confirms that thesis. If it gives 0, that is also
+information.
 
 
-SI ALGO SE ATORA
-----------------
+WHAT TO SEND ME
+---------------
 
-"Docker no está corriendo": abre Docker Desktop y espera al icono de la ballena.
+Only   SEND_THIS_BACK.zip
 
-Si Windows pide activar virtualización o el backend WSL2, el script te lo dice
-antes de empezar, no a los treinta minutos.
+It holds your results, your machine report and the two logs. It is built
+automatically.
 
-Si PowerShell se queja de scripts, los .cmd ya lo resuelven solos; no tienes que
-escribir ningún comando.
-
-Cualquier otra cosa: mándame la ventana tal cual, sin arreglarla. Un error
-reportado me sirve más que uno rodeado.
+Send it however it turns out. A run that fails and is reported is worth more
+than one that was adjusted to pass. The previous reproduction ended with an
+error and found two real defects that are now published.
 
 
-UNA ADVERTENCIA HONESTA
+IF SOMETHING GETS STUCK
 -----------------------
 
-Estos scripts de Windows nunca se han ejecutado en una máquina Windows real con
-Docker Desktop. La lógica que corre dentro del contenedor sí está probada, y el
-paquete se verifica en integración continua, pero el envoltorio de Windows no.
+"Docker is not running": open Docker Desktop and wait for the whale icon.
 
-Si truena, es culpa del envoltorio y no tuya. Avísame.
+If Windows asks you to enable virtualization or the WSL2 backend, the script
+tells you before it starts, not thirty minutes in.
+
+If PowerShell complains about scripts, the .cmd files already handle that. You
+do not have to type any command.
+
+Anything else: send me the window as it is, without fixing it. A reported error
+helps me more than one that was worked around.
+
+
+AN HONEST WARNING
+-----------------
+
+These Windows scripts have never run on a real Windows machine with Docker
+Desktop. The logic that runs inside the container is tested, and the package
+is checked in continuous integration, but the Windows wrapper is not.
+
+If it breaks, that is the wrapper's fault and not yours. Let me know.

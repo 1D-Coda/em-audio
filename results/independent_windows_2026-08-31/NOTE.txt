@@ -1,0 +1,64 @@
+Independent reproduction of EM-Audio on Windows 11
+Date: 31 August 2026
+Reproducer: Daniel
+
+Summary
+-------
+
+The main run produced every result except C2. The failure was not
+experimental: tools/fetch_voice.sh called "python3" literally, which on this
+Windows installation is the Microsoft Store alias rather than the installed
+Python interpreter.
+
+After the model was downloaded with the working interpreter, C2 was run on its
+own:
+
+  neural: n=50, exact=50, baseline promotions=50, EM promotions=0
+  noisy:  n=50, exact=50, baseline promotions=0,  EM promotions=0
+
+The regenerated preflight reports 30 tests passed and 0 failed.
+
+The comparison with reference v1.0.2 reports 69 differences flagged as
+deterministic. All of them fall in two groups:
+
+  - 2 time_stretch_1.10 deviation measurements.
+  - 66 internal transcode_mp3 measurements and 1 derived total.
+
+The reference was produced on macOS/ARM and this run on Windows/Intel. The
+decisive results did not change:
+
+  - maximum MP3 reach: reference 1555, Windows 1541;
+  - minimum margin inside the declared reach: reference 749, Windows 763;
+  - samples outside the declared support: 0 in both runs;
+  - incorrect EM promotions: 0;
+  - two-language oracle disagreements: 0/10860;
+  - preflight conformance tests: 30/30.
+
+The run therefore reproduces the substantive conclusions, although not every
+value that depends on the codec implementation matches bit for bit.
+
+Package contents
+----------------
+
+run_all_output.txt
+  Original log of the main run. It keeps the C2 failure.
+
+manual_completion_log.txt
+  Log of the manual model download, the C2 pass, the preflight and the final
+  verification.
+
+verify_output.txt
+  Comparison against results/reference of v1.0.2.
+
+PREFLIGHT.txt
+  Final report regenerated after C2 was completed.
+
+machine_readable/
+  The 22 files produced by the reproduction.
+
+Portability defect observed
+---------------------------
+
+tools/fetch_voice.sh should use the interpreter resolved by run_all.sh (PY)
+instead of calling "python3" directly. This leftover call causes the failure on
+ordinary Windows installations where python3 is the Microsoft Store alias.

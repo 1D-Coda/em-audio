@@ -149,13 +149,11 @@ def main() -> int:
     # One package for every platform. Splitting it by operating system meant a
     # validator could receive the wrong one, and the two entry points are a few
     # kilobytes: shipping both costs nothing and removes a way to get it wrong.
-    kitdir = ROOT / "release_kits" / "reproduction_es"
-    if (kitdir / "LEEME.txt").exists():
-        shutil.copy2(kitdir / "LEEME.txt", stage / "LEEME.txt")
+    kitdir = ROOT / "release_kits" / "package"
     if (kitdir / "README_FIRST.txt").exists():
         shutil.copy2(kitdir / "README_FIRST.txt", stage / "README_FIRST.txt")
-    for entry in ("Reproducir_en_Windows.cmd", "reproduce_windows_full.ps1",
-                  "Reproducir_en_Mac.command"):
+    for entry in ("Reproduce_on_Windows.cmd", "reproduce_windows_full.ps1",
+                  "Reproduce_on_Mac.command"):
         src = ROOT / "tools" / entry
         if src.exists():
             dst = stage / entry

@@ -21,7 +21,7 @@ Downloads, in a folder repeating the archive name, has already cost a run.
 WINDOWS: double click
 ---------------------
 
-    Reproducir_en_Windows.cmd
+    Reproduce_on_Windows.cmd
 
 It lists what is missing and ASKS before installing anything. It installs what
 is needed with winget, including Git, since run_all.sh needs bash and Windows
@@ -30,13 +30,13 @@ everything; and leaves one zip named after the machine.
 
 To check without running the experiments, from PowerShell:
 
-    .\Reproducir_en_Windows.cmd -Check
+    .\Reproduce_on_Windows.cmd -Check
 
 
 macOS: double click
 -------------------
 
-    Reproducir_en_Mac.command
+    Reproduce_on_Mac.command
 
 If Finder refuses to open it, right-click and choose Open. It offers to install
 what is missing with Homebrew, after asking, and does the rest as above.

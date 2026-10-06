@@ -1,6 +1,8 @@
 \documentclass[preprint,3p,11pt,authoryear]{elsarticle}
 
 \usepackage{amsmath,amssymb,amsthm}
+\usepackage{array}
+\newcolumntype{R}[1]{>{\raggedright\arraybackslash}p{#1\linewidth}}
 
 % Float placement. The two-row figures run to about 5.5 inches once scaled to
 % the text width, and with their captions they exceed the default \topfraction
@@ -70,9 +72,9 @@ required source set, provenance unions, same-channel support minimises,
 applicability intersects and lineage unions, and an unverified source interval is
 absorbing. The algebra is a known meet-semilattice construction; new are its
 executable temporal instantiation with declared kernel footprints, a signed C2PA
-transport, a consumer verifier and the evaluation. The guarantee is conditional:
-non-promotion holds where the declared dependency map contains the real
-dependencies. Complete-source propagation failed none of \Achecks{} contract checks
+transport, a consumer verifier and the evaluation. The contract prevents
+promotion relative to the declared dependency map; whether that map matches the
+actual processing needs separate justification. Complete-source propagation failed none of \Achecks{} contract checks
 and promoted in no interval over \Btimelines{} adversarial timelines, \Cclips{}
 mixed-origin clips and \Qclips{} PartialSpoof and \Rclips{} PartialEdit
 third-party utterances processed by stock FFmpeg, whereas boundary-only
@@ -225,6 +227,14 @@ is the hardest case to declare, not because the method is limited to it.
   metric, the share of output whose claim the footprints weaken. It is priced in samples per ancestry boundary rather than in fractions of
   the asset, and compared with a whole-asset claim (Section~\ref{sec:res-dilution}).
 \end{enumerate}
+
+\paragraph{Scope of the guarantee} The contract prevents evidence promotion
+relative to the declared dependency map. Whether that map corresponds to the
+actual processing needs separate justification, which analysis of the algorithm
+gives for some operators and calibration probes give only at the operating points
+they tested. The strict profile applies whole-asset fallback to every measured
+dependency, within the paper's content-dependency model, where an operator's
+control dependencies are not counted.
 
 The contract does not infer authenticity from acoustic features; it prevents a
 provenance-aware chain from promoting a mixed or unverified source interval
@@ -1434,9 +1444,9 @@ whose claim is weaker than over the nominal map. (A) Through a composition chain
 with the operator each step adds; the shaded band runs from median to maximum
 over clips and is not an uncertainty interval. Normalisation adds nothing: its
 content footprint is zero. (B) Each transformation alone over \IclipsPerTf{}
-clips: circles are medians under the declared profile, bars reach the maximum,
-$\blacktriangledown$ marks the strict-profile median where it differs, and $\times$
-the whole-asset comparator's median. (C) One depth-three chain at three durations with the boundary count
+clips: circles are medians under the declared profile and bars reach the maximum;
+the two columns give the strict-profile median and the whole-asset comparator's
+median, both near 100\% for the measured operators. (C) One depth-three chain at three durations with the boundary count
 fixed, on logarithmic axes. Dilution weakens a claim and never strengthens one.}
 \label{fig:dilution}
 \end{figure}
@@ -1639,7 +1649,7 @@ Note~\NoteRawRows{}); between machines the absolute figure differed by
 The milliseconds show that the bookkeeping is cheap; they are not reproducible
 constants.
 
-\begin{table}[t]
+\begin{table}[!tp]
 \centering
 \caption{Main results. Deterministic fixture rates characterise the frozen
 fixture family and are a mechanism stress rate, not a population prevalence
@@ -1649,7 +1659,7 @@ estimate.}
 \input{../results/tables/main_results}
 \end{table}
 
-\begin{table}[t]
+\begin{table}[!tp]
 \centering
 \caption{Cost, as medians over \Greps{} repetitions on one machine. These are
 measurements of a Python reference implementation, not language-independent
@@ -1668,9 +1678,9 @@ it. Evidence from one row is
 never used to authorise a claim in another.}
 \label{tab:boundary}
 \footnotesize
-\begin{tabular}{p{0.15\linewidth}p{0.26\linewidth}p{0.24\linewidth}p{0.22\linewidth}}
+\begin{tabular}{R{0.15}R{0.26}R{0.23}R{0.23}}
 \toprule
-Claim class & Evidence used here & Not established by it & Transfers? \\
+Claim class & Evidence used here & Not established by it & Independent reproduction \\
 \midrule
 Operator conformance &
 Propositions~\ref{prop:union}, \ref{prop:footprint}, Theorem~\ref{thm:composition};
@@ -1678,17 +1688,17 @@ enumeration; scope battery; two-language differential &
 That any deployed system conforms &
 Yes: \IRafailed{} failures; current suite reproduced on Windows \\
 \addlinespace
-Mechanism, constructed fixtures &
+Constructed fixtures &
 \Btimelines{} adversarial timelines with a control arm &
 Any population rate or named product &
 Yes: \BbaseOne{} against \BemAll{}, exactly \\
 \addlinespace
-Mechanism, realistic audio &
+Realistic audio &
 \Cclips{} constructed, \Qclips{} PartialSpoof and \Rclips{} PartialEdit clips, stock FFmpeg &
 Balanced coverage of speakers, codecs or edits &
 Yes for our corpus; the other two added later \\
 \addlinespace
-Interval-model fidelity &
+Interval-map fidelity &
 Predicted versus decoded sample counts, against declared margins &
 Containment; margins on other builds &
 \textbf{No}: selection deviation \IRsilDev{} against a \IRsilGuard{} margin \\
@@ -1699,12 +1709,12 @@ challenge &
 Containment at untested inputs or builds &
 \textbf{No}: MP3 reach \IRmpReach{} against \IRmpDeclared{} \\
 \addlinespace
-Signed transport and transparency &
+Signed transport &
 \Ftotal{} round-trips over \Fcontainerlist{}; decoded-PCM identity &
 C2PA security; perceptual or cross-decoder equivalence &
 Yes on both machines \\
 \addlinespace
-Consumer verification &
+Consumer check &
 Recomputation from the declaration on three corpora, against decoded length;
 JavaScript verifier; signed workflow &
 That the declaration describes the processing; a non-C2PA consumer &
@@ -1921,25 +1931,21 @@ that principle has an exact form: provenance is the union over the complete
 required source set, support the minimum, applicability the intersection,
 lineage the union, and an unverified source interval is absorbing. The algebra
 is not new. This work provides the executable temporal contract, the
-kernel-footprint treatment that makes it implementable against FFmpeg, and a
-signed transport inside an existing standard. Its measurements show that the
-rule, with the complete-source policy and the strict profile, promoted on no
-fixture, corpus clip or PartialSpoof utterance tested. The rule leaves decoded WAV, FLAC and MP3 audio untouched and costs a fraction of a percent of the processing it
-accompanies. Earlier independent runs reproduced the conformance, promotion and
+kernel-footprint treatment that makes it implementable against FFmpeg, a signed
+transport inside an existing standard, and a consumer that recomputes every claim.
+Complete-source propagation promoted in no interval on our corpus or on the two
+third-party corpora, leaves decoded WAV, FLAC and MP3 audio untouched, and costs a
+fraction of a percent of the processing it accompanies.
+
+The guarantee is relative to the declared dependency map. The holdout challenge
+shows that the measured declarations for the encoder and the stretcher can miss
+real dependencies, and a miss produces promotion; the strict profile removes the
+dependence on them at the price of diluting essentially all output of those
+operators. Earlier independent runs reproduced the conformance, promotion and
 oracle outcomes of their release and found one footprint and one mapping margin
-that do not transfer to another build; the strict profile, the consumer verifier
-and the PartialSpoof and PartialEdit experiments were added after them and have
-not been rerun independently. Non-promotion
-is proved from the requirements; the audio instantiation delivers it where the
-declared map contains the real dependencies, which holds analytically for the
-linear operators and, for the encoder and the stretcher, only at the operating
-points tested: a holdout challenge on the reference build exceeds both, and on
-a failing probe the declared map promotes. The strict profile, which gives every
-measured declaration whole-asset dependency and fits every map to the decoded
-output, had no exceedance and no promotion, at the price of diluting essentially
-all output of those operators. The contract cannot tell
-you whether speech is synthetic or truthful, and a valid signature proves only
-that an assertion was signed.
+that do not transfer to another build; the experiments added since have not been
+rerun independently. The contract cannot tell you whether speech is synthetic or
+truthful, and a valid signature proves only that an assertion was signed.
 
 \section*{Data availability}
 

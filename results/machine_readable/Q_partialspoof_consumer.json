@@ -3,10 +3,10 @@
  "baseline_promoting": 4006,
  "baseline_promoting_flagged": 4006,
  "cost": {
-  "max_verify_ms": 32.675,
+  "max_verify_ms": 23.341,
   "median_assertion_bytes_with_declaration": 3147,
   "median_assertion_bytes_without_declaration": 2684,
-  "median_verify_ms": 0.214
+  "median_verify_ms": 0.212
  },
  "environment": {
   "c2patool": "c2patool 0.27.2",
@@ -39,7 +39,7 @@
  "narrowed_cases": 2400,
  "narrowed_passed": 2400,
  "outputs": 4800,
- "runtime_s": 90.707,
+ "runtime_s": 90.12,
  "shortened_cases": 4800,
  "shortened_flagged": 4800,
  "tamper_lineage_cases": 3000,
