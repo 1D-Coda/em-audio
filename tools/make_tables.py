@@ -322,7 +322,7 @@ def overhead_table():
         r.append(f"Same, with dependency declaration & "
                  f"{P['median_assertion_bytes_with_declaration']:,} B & --- \\\\")
         r.append(f"Consumer recomputation & {P['median_verify_ms']:.2f} ms / output & --- \\\\")
-    write("overhead_table", "\n".join(r), colspec="lll",
+    write("overhead_table", "\n".join(r), colspec="p{0.42\\linewidth}p{0.26\\linewidth}p{0.24\\linewidth}",
           header="Quantity & Median & IQR")
 
 
