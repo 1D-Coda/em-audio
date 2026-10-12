@@ -33,78 +33,12 @@ Across Derived Audio Transformations}}
 \section{Transfer memo: what is prior work and what is new}
 \label{s:transfer}
 
-Written before any code was produced. Every row in the first column is prior
-work and is cited rather than claimed.
-
-\begin{longtable}{p{\dimexpr0.333\linewidth-2\tabcolsep\relax}%
-                  p{\dimexpr0.333\linewidth-2\tabcolsep\relax}%
-                  p{\dimexpr0.333\linewidth-2\tabcolsep\relax}}
-\caption{Transfer memo, written before any code was produced: what carries
-over from prior work unchanged, what carries over modified, and what does
-not carry over.}\label{tab:transfer}\\
-\toprule
-Transfers unchanged (prior work) & Transfers with modification (new here) &
-Does not transfer \\
-\midrule
-\endfirsthead
-\toprule
-Transfers unchanged (prior work) & Transfers with modification (new here) &
-Does not transfer \\
-\midrule
-\endhead
-Evidence record $(P,S,A,L)$: provenance set, typed support channels,
-applicability scope, complete-source lineage &
-The domain of $D_y$ becomes a \emph{temporal} required-source set over half-open
-sample intervals &
-Polyline simplification in every form; there is no geometric tolerance in audio
-\\
-\addlinespace
-Provenance as a set of ancestry atoms, mixed produced only by union &
-Alphabet changes from measured/interpolated to captured/generated; the
-measurand is different even though the algebra is identical &
-Terrain support profiles, directional ray classifiers, roughness proxies \\
-\addlinespace
-Same-channel meet by minimum &
-Unchanged as an operation; the channel is capture-support &
-Contour extraction rules and closed-ring anchoring \\
-\addlinespace
-Absence of verified evidence is absorbing and is not an atom &
-Strengthened: a $\bot$ element also makes every numeric channel unavailable
-over the represented span (requirement iv$'$) &
-Every spatial result, table and figure \\
-\addlinespace
-Applicability intersection and lineage union &
-Unchanged &
-The spatial simplification operator itself \\
-\addlinespace
-Non-promotion in the spatial setting &
-Restated modality-independently and, following the novelty search of Note~S2, presented as
-an \emph{instance} of a known meet-semilattice construction rather than as a
-new theorem &
-Any prior source-code audit and its counterexample \\
-\addlinespace
-Conformance-test philosophy: exhaustive enumeration, deterministic adversarial
-fixtures, a separately implemented oracle, frozen expectations, explicit non-prevalence
-language &
-Reused as a method template; all results are new &
-Any prior third-party generalizer audit \\
-\addlinespace
-n/a &
-\textbf{New, not part of the spatial work:} the kernel-footprint rule with declared
-per-operator implementation margins and measured model-versus-implementation
-deviation, challenged on held-out inputs;
-footprint monotonicity; signal transparency on decoded PCM; a signed C2PA
-transport with temporal regions of interest; the unverified state as an
-operational outcome of a real validator &
-n/a \\
-\bottomrule
-\end{longtable}
+Every element in the first column is prior work and is cited rather than
+claimed; every reported number in this paper is new.
 
 \begin{table}[htbp]
 \centering
-\caption{Relation to the spatial predecessor, cited in the manuscript.
-Inherited elements are prior work and are cited, not claimed; every reported
-number in this paper is new.}
+\caption{Relation to the spatial predecessor, cited in the manuscript.}
 \label{tab:inherited}
 \small
 \begin{tabular}{p{0.46\linewidth}p{0.46\linewidth}}
@@ -112,27 +46,28 @@ number in this paper is new.}
 Inherited from the spatial work & New in this work \\
 \midrule
 Evidence record $(P,S,A,L)$; provenance as an atom set with mixed by union &
-Temporal required-source sets over half-open sample intervals \\
+Temporal required-source sets over half-open sample intervals; the
+captured/generated alphabet and the capture-support channel \\
 \addlinespace
 Same-channel meet by minimum; scope intersection; lineage union &
-The captured/generated alphabet and the capture-support channel \\
-\addlinespace
-Absorbing unverified state &
 Requirement (iv): a channel not applicable to \emph{every} required source is
 withheld, not computed from the rest \\
 \addlinespace
-& Requirement (iv$'$): a $\bot$ source also withholds every numeric channel \\
+Absorbing unverified state &
+Requirement (iv$'$): a $\bot$ source also withholds every numeric channel \\
 \addlinespace
 Non-promotion in the spatial setting &
-Kernel footprints with declared source-support bounds; temporal mapping
-validated per clip against stock FFmpeg and source-support containment tested
-separately by differential influence probes and challenged on held-out
-inputs; footprint monotonicity (Proposition~\PropFootprint{}) \\
+Restated without reference to a modality, as an instance of a known
+meet-semilattice construction; kernel footprints with declared source-support
+bounds, validated against stock FFmpeg, tested by differential influence probes
+and challenged on held-out inputs; footprint monotonicity
+(Proposition~\PropFootprint{}) \\
 \addlinespace
-Conformance-test methodology (exhaustive enumeration, frozen fixtures,
-separately implemented oracle) &
+Conformance-test method (exhaustive enumeration, frozen fixtures, separately
+implemented oracle) &
 Signal transparency on decoded PCM; signed C2PA transport with temporal
-regions; the claim-dilution cost metric \\
+regions; the claim-dilution metric; the strict profile and the consumer
+verifier \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -194,8 +129,8 @@ closest adjacent work, one on anonymous provenance for verifiably edited audio
 and one a security analysis of C2PA and its implementations; both were already
 cited before the re-run, and neither defines an inheritance rule over media
 time. C2PA itself records multiple sources as ingredients but specifies no rule
-constraining what a derived asset may claim relative to them, which is what
-this work supplies. Nothing found in the re-run changed a claim in this paper
+constraining what a derived asset may claim relative to them; this work
+supplies that rule. Nothing found in the re-run changed a claim in this paper
 or added a reference; a search that surfaces only works already cited is the
 result we report, not evidence that none was sought. A later journal-context
 search conducted during target-journal preparation added four FSI:DI papers on
@@ -333,22 +268,14 @@ remain valid and are reported as unverifiable.
 \section{Composition manifest wiring}
 \label{s:composition}
 
-Two implementation notes for the C2PA-native composition fixtures
-(manuscript Section~\SecComposition{}), recorded so a replicating
-reader does not lose time on them. First, the official tool resolves
-\texttt{ResourceRef} identifiers relative to the directory of the
-manifest-definition file, so an ingredient's stored \path{manifest_data.c2pa}
-must be referenced by a path relative to that directory; an absolute path is
-reported as \texttt{resource not found} even when the file exists. Second, a
-\texttt{c2pa.placed} action must carry a hashed-URI reference to its
-\texttt{componentOf} ingredient assertion (C2PA 2.4 \S18.16.3); writing the
-reference by hand is impossible before signing, and the supported route is to
-give the action an \texttt{ingredientIds} parameter naming the ingredient's
-\texttt{instance\_id}, which the claim generator resolves to the hashed URI at
-signing time. A frozen composition manifest with both \texttt{componentOf}
-ingredients, both resolved \texttt{c2pa.placed} references, both source
+The C2PA-native composition fixtures of manuscript Section~\SecComposition{}
+record each source as a \texttt{componentOf} ingredient carrying its full
+manifest, with a \texttt{c2pa.placed} action whose hashed-URI reference the
+claim generator resolves at signing time. A frozen composition manifest with
+both ingredients, both resolved \texttt{c2pa.placed} references, both source
 \texttt{digitalSourceType} values and the EM aggregate is committed at
-\path{fixtures/expected/manifest_composition_componentOf.json}.
+\path{fixtures/expected/manifest_composition_componentOf.json}. Wiring pitfalls
+are listed in \path{docs/C2PA_TROUBLESHOOTING.md}.
 
 \section{Robustness-arm materials}
 \label{s:robustness}
@@ -549,7 +476,8 @@ showed none. With the gain estimated from each input, normalisation reached
 \KtwoNormCtrlReach{} source samples in \KtwoNormCtrlExceed{} probes: the whole
 input, through the gain, which the contract treats as a control dependency
 rather than represented content. A finite challenge can refute a declaration
-and cannot establish one; no exceedance here is not containment at every input.
+and cannot establish one, so the absence of an exceedance here does not show
+containment at every input.
 Under the strict profile, which gives every measured declaration whole-asset
 dependency and fits each emitted map to the decoded output length,
 \KtwoStrictProbes{} probes of any content operator fell outside. The promotion
@@ -558,9 +486,8 @@ demonstrations, one per failing operator, are stored under
 
 \section{Raw rows behind two summary figures}
 
-A coefficient of variation and a maximum measured reach are both summaries, and
-a summary that ships without the rows it summarises has to be taken on trust.
-These are those rows. Neither table is typed: both are emitted by
+Tables~\ref{tab:benchrows} and~\ref{tab:calrows} report the process-level timing measurements and the
+per-operator calibration summaries. Both are emitted by
 \path{tools/make_tables.py} from the same result files the main text reads.
 
 \begin{table}[htbp]
@@ -569,6 +496,7 @@ These are those rows. Neither table is typed: both are emitted by
 coefficient of variation is the sample standard deviation over the mean, in
 percent, with Bessel's correction. The absolute columns move with machine state;
 the last row gives each column's coefficient of variation.}
+\label{tab:benchrows}
 \input{../results/tables/benchmark_rows}
 \end{table}
 
@@ -581,20 +509,8 @@ this table gives the worst case for each operator,
 which is the value the declaration has to cover. The \Kops{} rows are the
 single-source configurations: concatenation assembles the corpus rather than
 transforming it, and overlay takes several sources at once.}
+\label{tab:calrows}
 \input{../results/tables/calibration_rows}
 \end{table}
-
-\section{Feasibility log}
-\label{s:feasibility}
-
-Two pitfalls in the signed-transport layer are recorded so that a replicating
-reader does not lose time on them. First, the signing key must be supplied to
-the official tool in PKCS\#8 form and as PEM \emph{content}, not as a path; a
-SEC1 key or a path produces a decoder error that does not name the cause.
-Second, a hand-written \texttt{c2pa.opened} action without an
-\texttt{ingredients} parameter is rejected with
-\texttt{assertion.action.ingredientMismatch}, because the specification requires
-that action to carry a hashed-URI reference to the \texttt{parentOf} ingredient
-assertion; the correct move is to let the claim generator insert it.
 
 \end{document}

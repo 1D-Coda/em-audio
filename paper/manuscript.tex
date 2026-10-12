@@ -346,8 +346,8 @@ the evidential meaning an examiner sees.
 
 \paragraph{What is missing} Table~\ref{tab:related} places these lines side by side.
 No row provides an operator-level complete-source rule instantiated over media
-time and carried in a signed transport; that combination is what this work
-contributes, and the matrix behind the table, with search dates and query
+time and carried in a signed transport. This work contributes that combination;
+the matrix behind the table, with search dates and query
 strings, is Supplementary Note~\NoteNovelty{}.
 
 \begin{table}[t]
@@ -439,9 +439,8 @@ analyses \citep{golaszewski2026c2pa} and are assumed away here precisely so that
 the residual semantic question is isolated.
 
 \paragraph{Required behaviour when evidence is absent or invalid} The state is
-\textsc{unverified} or \textsc{invalid}. It is never automatically ``fake'' and
-never automatically ``captured''. An asset can lose its manifest for entirely
-benign reasons, and nothing in this work licenses reading a missing manifest as
+\textsc{unverified} or \textsc{invalid}, and the contract reads it as neither
+``fake'' nor ``captured''. An asset can lose its manifest for benign reasons, and nothing in this work licenses reading a missing manifest as
 evidence of intent.
 
 \paragraph{Malicious signer} Cryptographic validity proves that an assertion
@@ -559,7 +558,7 @@ to an empty scope under~(iii) would carry a number applicable nowhere.
   $\Dy^{\mu} = \Dy$ is required, not merely $\Dy^{\mu} \neq \emptyset$. A
   channel unreported by some required source, or not applicable to it at all,
   is unavailable and is not computed from the remaining sources. The second
-  half is what makes Proposition~\ref{prop:footprint} hold for channels:
+  half makes Proposition~\ref{prop:footprint} hold for channels:
   without it, enlarging $\Dy$ by a source that declares an otherwise
   inapplicable channel would raise that channel from unavailable to a value.
 \item[(iv$'$) Unverified absorption for channels] if any required source is in
@@ -624,7 +623,7 @@ lineage composes by union of the per-operator source maps.
 
 Theorem~\ref{thm:composition} is the standard consequence of combining in a
 meet-semilattice. The next proposition is not specific to time, since its proof
-uses only inclusion, union, minimum and intersection, but it is what makes the
+uses only inclusion, union, minimum and intersection, but it makes the
 temporal instantiation implementable against real processing software: more
 possible source dependencies may weaken an output claim and can never
 strengthen it, so erring towards a larger footprint errs safely.
@@ -682,8 +681,8 @@ to signed 16-bit little-endian PCM at the asset's own rate and channel count,
 and it must be identical whether the EM assertion or the baseline assertion is
 attached. Whole-file hashes are unusable here because embedding a manifest
 changes the file by construction (Section~\ref{sec:res-transport}). Equality
-of this canonical 16-bit rendering is what is established, not equality of every
-higher-precision decoded representation.
+of this canonical 16-bit rendering is established; equality of higher-precision
+decoded representations is not tested.
 
 \section{Audio instantiation}
 \label{sec:audio}
@@ -962,7 +961,7 @@ under study.
 We report promotion counts and rates, lineage omissions, unverified-to-verified
 promotions, support promotions, conformance failures, decoded-essence
 mismatches, manifest validation outcomes, model-versus-implementation sample
-deviations, runtime and metadata size. We deliberately do not report accuracy,
+deviations, runtime and metadata size. We do not report accuracy,
 precision, recall, $F_1$ or AUC: no classifier is evaluated. Timing is
 reported as medians with interquartile ranges over \Greps{} repetitions on a
 single machine, an \Vcpu{} with \Vcores{} logical cores and \Vram{}~GiB,
@@ -993,8 +992,8 @@ and the closed-form oracle together evaluated \Achecks{} checks with
 suites together: \Tpass{} of \Ttotal{}, with \Tfail{} failures
 (Table~\ref{tab:main}).
 
-That enumeration carries one channel over one scope, which is what the audio
-instantiation uses, so it cannot reach the applicability cases of~(iii). A
+That enumeration carries one channel over one scope, as the audio
+instantiation does, so it cannot reach the applicability cases of~(iii). A
 separate synthetic battery covers those: over \LscopeScopes{} scopes, chosen so
 that pairs are disjoint, nested and partially overlapping, it enumerates
 \LscopeCases{} source-set enlargements, skipping \LscopeSkipped{} that no
@@ -1484,7 +1483,7 @@ at least \IwholeMinMedianPct{}\% on every corpus transformation except overlay, 
 nominal map is already partly mixed (\IwholeOverlayPct{}\%), against a median of
 at most \IemMaxMedianPct{}\% under the declared footprints; dilution is counted
 on provenance and support, so a sample whose nominal record already equals the
-whole-asset record is not diluted, which is what lowers overlay. A worked case
+whole-asset record is not diluted; this lowers overlay's value. A worked case
 shows why the other values approach 100\%. In a clip of captured, generated and
 captured intervals, the nominal record of a captured sample is captured with the
 captured support value, and of a generated sample generated with the lower
@@ -1502,7 +1501,7 @@ it: median dilution is \IstrictMpPct{}\% for MP3, \IstrictStPct{}\% for time str
 against \IstrictFlacPct{}\% for lossless transcoding, whose footprint is
 analytical.
 
-Composition is where conservatism bites. Along the chain trim, resample 16 to
+Dilution grows with composition. Along the chain trim, resample 16 to
 8~kHz, transcode to MP3, normalise, time stretch by 1.10, deliberately
 front-loading a rate change so that the large bands are scaled by it, median
 dilution reaches \IchainDeep{}\% by depth~\IchainDepth{} with a worst case of
@@ -1519,8 +1518,8 @@ the corpus mean length, \IlongThirtyPct{}\% at 30~s and
 divides the fraction by ten, as fixed-width bands predict when the number of
 boundaries is held fixed, which it is here and would not be for an arbitrary
 chain. Dilution therefore dominates only where a deep chain of large-footprint
-operators meets a short asset with many ancestry boundaries, which is what this
-measurement deliberately constructs; the quantity a deployment should carry is
+operators meets a short asset with many ancestry boundaries, the case this measurement
+constructs; the quantity a deployment should carry is
 the band radius of Table~\ref{tab:operators}, not a percentage measured on
 \CmeanDurS{}-second clips. This is the price of declaring conservative bounds
 instead of knowing exact codec dependencies, and it can be bought back without
@@ -1670,7 +1669,7 @@ constants.}
 
 \begin{table}[tbp]
 \centering
-\caption{Claim--evidence boundary and what transfers. Each row names a class of
+\caption{Claim--evidence boundary. Each row names a class of
 claim, the evidence used for it, what that evidence does not establish, and whether
 the independent reproduction of Section~\ref{sec:res-independent} reproduced
 it. Evidence from one row is
@@ -1807,8 +1806,8 @@ values among them. \citet{nordvik2022exfat} found the same for file-system
 implementations sharing one specification, and \citet{kuelper2026testdriven}
 found forensic outputs drifting across software versions. We report the two
 Linux findings as findings and do not widen the declarations to pass them: a
-footprint table is a calibration for a stated build, and the two-pass
-calibration tool is what transfers to a new one.
+footprint table is a calibration for a stated build, and a new build needs the
+two-pass calibration tool run again.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -1821,30 +1820,24 @@ relative to that declaration, not validation against the real dependencies. The
 holdout shows that those declarations can miss real dependencies, and that the
 miss produces promotion. The strict profile replaces every measured declaration
 by whole-asset dependency and promoted on none, which follows from
-Proposition~\ref{prop:footprint}.
-It travels in an existing signed
-standard without altering the audio, and costs a fraction of a percent of the
-processing it accompanies. The declared map is a separate claim: analytical for
-the linear operators, refuted by the holdout for the two adaptive ones, which
-the strict profile replaces by whole-asset dependency.
-Table~\ref{tab:boundary} separates what transfers, everything derived from the
-requirements, from what does not, everything calibrated on a particular build.
-No claim is made that any deployed system promotes provenance; the baseline is a
-constructed reference policy.
+Proposition~\ref{prop:footprint}. The contract travels in an existing signed
+standard without altering the audio and costs a fraction of a percent of the
+processing it accompanies. Table~\ref{tab:boundary} lists which results rest on
+the requirements and which on a calibration of one build.
 
 \paragraph{Relation to the standard and to adjacent work} The layer addressed
 here is the reduction over a vocabulary that already preserves what the problem
 needs, and it requires no specification change
-(Section~\ref{sec:transport}).  No C2PA endorsement is claimed. Detectors, watermarks and chunk-localised binding \citep{ono2026merklespeech}
-answer different questions and compose with the contract, which is most useful
-where detectors are weakest, on short interior edits in genuine recordings, and
-useless on media that arrive with no evidence; on the specification's security
-we cite a public analysis \citep{golaszewski2026c2pa} rather than assert.
+(Section~\ref{sec:transport}). Detectors, watermarks and chunk-localised
+bindings \citep{ono2026merklespeech} provide complementary evidence; this
+contract controls how recorded source evidence propagates through derivation.
+Without source evidence, the contract cannot establish captured or generated
+provenance. For the security of the specification itself we refer to a public
+analysis \citep{golaszewski2026c2pa}.
 
 \paragraph{What a consumer can check} Promotion can be checked only if the
-assertion carries the map, which is why the schema now carries a dependency
-declaration: output length, each piece's source range, footprint and basis, the
-profile, the build and the footprint table's digest. With it a consumer
+assertion carries the map, so the schema carries a dependency declaration
+(Supplementary Note~\NoteSchema{}). With it a consumer
 recomputes every claim from the declaration (Section~\ref{sec:res-consumer}),
 demonstrated end to end through signed files on \PtwoClips{} trims. No
 consumer check reaches a declaration that misstates the operation or its
@@ -1852,7 +1845,7 @@ footprint, whether through a stale calibration, a different build or intent; the
 dependency miss of Section~\ref{sec:res-independent} is of that kind, and the
 assertion alone cannot tell these causes apart.
 
-\paragraph{Deployment, and what a reader may conclude} The contract deploys as
+\paragraph{Deployment and reading} The contract deploys as
 a library beside the processing step, whose caller already knows the parameters
 that fix the interval map, so nothing touches the signal path. An interval
 labelled \textsc{mixed} is a statement about the declared sources, not about the
@@ -1881,10 +1874,10 @@ trust anchor, so \emph{trusted} means trusted under that anchor. A second API,
 core. No consumer implemented by a third party has read the assertion, so semantic
 interoperability is not established.
 
-\paragraph{Corpus} \Cclips{} clips from one read-speech corpus and one formant
-synthesiser at \CcorpusFs{}~Hz is a mechanism corpus, not a balanced design
-over speakers, languages, conditions, codecs or editing styles, and supports
-no rate claim about audio in general. The propagation rule never reads the
+\paragraph{Corpus} The constructed corpus and the two third-party subsets test
+the mechanism across selected ancestry patterns; they do not provide balanced
+coverage of speakers, languages, recording conditions or editing methods, and
+support no rate claim about audio in general. The propagation rule never reads the
 audio; the footprint declarations of adaptive operators depend on the signal.
 Codec configuration, signal context and ancestry geometry are therefore the
 axes that can change the outcome, and more codec configurations are the
@@ -1899,17 +1892,14 @@ when a declaration fails to contain its measured reach; until then the strict
 profile applies. Proposition~\ref{prop:footprint} guarantees only that erring large
 is safe.
 
-\paragraph{Content and control dependency} Peak normalisation is where the two
-diverge completely: each output sample represents one source sample, and the
-gain that scales it depends on the whole signal, which the holdout challenge
-measures directly. The contract labels origin by represented content, so the
-footprint is zero and the gain is a control dependency outside the label. That is
-a semantic choice the measurement cannot justify, and the same choice governs the
-encoder's bit allocation and the stretcher's alignment search. A deployment that
-counts control dependencies gives such operators whole-asset dependency. Excluding
-the gain cannot launder provenance, because it changes no sample's represented
-source; the maximally conservative reading is implemented and tested, and pays
-dilution without gaining promotion safety.
+\paragraph{Content and control dependency} The contract tracks
+represented-content ancestry rather than all computational dependencies. In peak
+normalisation each output sample represents one source sample, while the gain
+that scales it depends on the whole signal, as the holdout challenge measures;
+input-dependent gain, encoder bit allocation and stretch alignment therefore fall
+outside this model. A deployment requiring all computational dependencies can
+assign whole-asset dependency to these operators, at the cost of local
+specificity.
 
 \paragraph{Replay, identity and truth} A microphone recording a loudspeaker
 playing synthetic speech produces audio that is genuinely captured at the
@@ -2006,10 +1996,7 @@ public, commercial, or not-for-profit sectors.
 
 \section*{Declaration of competing interest}
 
-The author declares no competing financial or personal interests. No commercial
-product is evaluated or compared; named forensic products appear only in findings
-reported in the cited literature, and no claim is made that any of them
-implements the constructed reference policy or promotes provenance.
+The author declares no competing financial or personal interests.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
 
@@ -2024,18 +2011,14 @@ publication.
 \section*{Acknowledgements}
 
 We thank Daniel A. Balderrama-Alvarez (Universidad de Sonora, ORCID
-0009-0002-5180-0406) for the reproductions reported in
-Section~\ref{sec:res-independent}, for reporting their failures without
-adjusting them, and for the portability defects his Windows~11 runs found;
-Miguel Arroyo
-(Nagoya Industries Promotion Corporation, ORCID 0009-0008-8423-8345) for
-testing the reproduction software on Windows~11 and reporting two further
-defects, both fixed in the archived release; and Brenda Cecilia Guerra Flores (ORCID 0009-0000-8932-683X) for the
-reproduction reported in Section~\ref{sec:res-independent}, the first by a
-third party to return every deterministic output unchanged, on hardware and
-tool versions she chose. None of them had any part in the design of the
-contract, the experiments or the classification of outputs, and none is an
-author.
+0009-0002-5180-0406) for the Linux and Windows reproductions of
+Section~\ref{sec:res-independent} and the portability defects they found;
+Miguel Arroyo (Nagoya Industries Promotion Corporation, ORCID
+0009-0008-8423-8345) for testing the reproduction software on Windows~11 and
+reporting two defects; and Brenda Cecilia Guerra Flores (ORCID
+0009-0000-8932-683X) for the macOS reproduction of
+Section~\ref{sec:res-independent}. None of them took part in the design of the
+contract or the experiments.
 
 \bibliographystyle{elsarticle-harv}
 \bibliography{refs}

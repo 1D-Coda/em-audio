@@ -300,7 +300,6 @@ SUPPLEMENT_NOTES = {
     "NoteIndependent": "Independent reproduction",
     "NoteRawRows": "Raw rows behind two summary figures",
     "NoteHoldout": "Holdout challenge",
-    "NoteFeasibility": "Feasibility log",
 }
 
 
