@@ -520,6 +520,10 @@ def main() -> int:
     po = K["per_operator"]
     m["KresampleMargin"] = fmt(po["resample_16_8"]["min_margin_inside_declared_range"])
     m["KresampleFp"] = fmt(po["resample_16_8"]["declared_footprint_samples"])
+    import em_audio.operators as _O
+    m["KresampleKernel"] = fmt(_O._fp_resample(16000, 8000))
+    m["KresampleGuard"] = fmt(_O.GUARD_BAND["resample"])
+    m["KtwoResReach"] = fmt(load("K2_footprint_holdout")["per_operator"]["resample_16_8"]["max_measured_reach_source_samples"])
     m["KmpThreeMargin"] = fmt(po["transcode_mp3"]["min_margin_inside_declared_range"])
     m["KmpThreeFp"] = fmt(po["transcode_mp3"]["declared_footprint_samples"])
     m["KstretchMargin"] = fmt(po["time_stretch_1.10"]["min_margin_inside_declared_range"])

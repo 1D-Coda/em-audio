@@ -529,9 +529,11 @@ The contract governs the representational reading, and the kernel footprint
 reconciles the two where signal processing makes them bleed together: a
 resampling filter makes neighbouring content influence $y$, and since that
 influence cannot be distinguished from representation at the contract's level
-of abstraction, the footprint conservatively enlarges $\Dy$ to cover it. The
-one v1 operator for which the two readings diverge completely is amplitude
-normalisation (Section~\ref{sec:limits}). Write
+of abstraction, the footprint conservatively enlarges $\Dy$ to cover it. Amplitude
+normalisation is the clearest case where the two readings diverge: each output
+sample represents one source sample, while the gain depends on the whole signal.
+Encoder bit allocation and stretch alignment are further control dependencies
+of the same kind (Section~\ref{sec:limits}). Write
 $\Dy^{\mu} = \{x \in \Dy : \mu \in A_x\}$ for the sources that declare channel
 $\mu$ applicable. The contract requires:
 
@@ -550,9 +552,9 @@ to an empty scope under~(iii) would carry a number applicable nowhere.
   $A_y(\mu) = \bigcap_{x \in \Dy^{\mu}} A_x(\mu)$, and an empty intersection
   makes the channel unavailable. A \emph{conforming} operator may emit any
   $A_y'(\mu) \subseteq A_y(\mu)$, never a broader one; conformance is the
-  containment, the equality names the canonical reduction the reference
-  implementation emits, and statements quantifying over conforming operators,
-  Theorem~\ref{thm:composition} in particular, are read in that sense.
+  containment, and the equality names the canonical reduction the reference
+  implementation emits. Theorem~\ref{thm:composition} states separately what
+  holds for conforming and for canonical operators.
 \item[(iv) No partial subsets] a channel is available on the output only if
   every required source declares it applicable \emph{and} supplies a value:
   $\Dy^{\mu} = \Dy$ is required, not merely $\Dy^{\mu} \neq \emptyset$. A
@@ -602,9 +604,17 @@ enlarge a set.
 
 \begin{theorem}[Closure under composition]
 \label{thm:composition}
-A finite composition of operators each satisfying~(i)--(v), including~(iv$'$),
-satisfies the same requirements, and the composed claim is no stronger than the
-meet over the union of all ancestral required source sets.
+Let a finite chain of operators each satisfy~(i)--(v), including~(iv$'$).
+\begin{enumerate}
+\item[(a)] The composed claim is no stronger than the meet over the union of all
+  ancestral required source sets, the composed lineage is their union, every
+  available composed channel value is bounded above by every applicable
+  ancestor, and every composed scope is contained in the intersection of the
+  ancestral scopes.
+\item[(b)] If every operator in the chain emits the canonical reduction, the
+  composition equals the canonical reduction over the union of the ancestral
+  sets.
+\end{enumerate}
 \end{theorem}
 \begin{proof}
 Associativity and commutativity of $\sqcap$ make the composed provenance the
@@ -618,7 +628,15 @@ step emits exactly the minimum over its inputs, each input is itself the minimum
 over its own ancestors, and a minimum of minima over sets whose union is the ancestral
 set is the minimum over the whole set; the final value therefore equals that
 minimum, not merely bounded by it. Repeated intersection cannot broaden a scope, and
-lineage composes by union of the per-operator source maps.
+lineage composes by union of the per-operator source maps; this gives~(a). For~(b),
+canonical operators never narrow a scope below the intersection, so a channel
+is available after the chain exactly when it is available over the ancestral
+union, and the minima and intersections above become equalities. Part~(b) does
+not extend to operators that narrow a scope as~(iii) permits: an operator that
+narrows a channel's scope to $\emptyset$ makes it unavailable to every later
+step, while the canonical reduction over the original ancestor would keep it.
+That outcome is conservative and satisfies~(a), but it is not the flattened
+canonical reduction.
 \end{proof}
 
 Theorem~\ref{thm:composition} is the standard consequence of combining in a
@@ -741,7 +759,13 @@ because their dependency structure needs modelling of its own; generative
 editing differs more basically, since it may introduce new ancestry.
 
 For a polyphase resampler the radius
-follows from the pinned filter length and rate ratio. At \CcorpusFs{}~Hz \texttt{libmp3lame} emits
+follows from the pinned filter length and rate ratio: \KresampleKernel{} source
+samples here, which contains the largest reach measured in Experiment~K
+(\KresampleReach{}) and in the holdout (\KtwoResReach{}). The declared \KresampleFp{}
+adds a \KresampleGuard{}-sample margin chosen for frame alignment rather than
+measured; it only enlarges
+the footprint, so by Proposition~\ref{prop:footprint} it cannot weaken the
+guarantee, and containment rests on the analytical radius alone. At \CcorpusFs{}~Hz \texttt{libmp3lame} emits
 MPEG-2 LSF frames of \MpThreeGuard{} samples; the radius takes the larger
 MPEG-1 long window, \MpThreeWindow{}, plus the encoder delay, giving
 \MpThreeKernel{}, and one frame of alignment guard. That derivation is necessary but not sufficient: the pinned
@@ -942,9 +966,9 @@ synthesis from phrases written for this study. No speaker is identified and no
 voice is cloned. Segment durations are matched so that the generated region is
 a modest interior interval. 
 
-Because the evidence algebra reads no acoustic feature, the result cannot in
-principle depend on signal character. A robustness arm demonstrates that
-rather than leaving it to argument. It rebuilds \CtwoNeuralN{} clips with a neural TTS
+Given the same dependency map and source records, evidence reduction is
+independent of waveform content; adaptive processing can nevertheless change the
+dependencies the map must contain. A robustness arm tests the first part. It rebuilds \CtwoNeuralN{} clips with a neural TTS
 (Piper, a VITS-architecture engine with a voice trained on the public-domain
 LJSpeech corpus). It also overlays \CtwoNoiseN{} clips with locally generated pink
 noise over the whole clip, mixed at a volume setting of $-18$~dB; this
@@ -1353,9 +1377,10 @@ its declaration in \KtwoMpExceed{} of \KtwoProbesPerOp{} probes, all on the
 low-level carrier at the largest amplitude, reaching \KtwoMpReach{} source
 samples; time stretching exceeded in \KtwoStExceed{}, on the low-level carrier
 and on the held-out speech-like voice, at every amplitude from \KtwoStMinAmp{}
-upward, reaching \KtwoStReach{}. A large impulse on a quiet carrier makes the
-encoder re-allocate bits and the stretcher's correlation search re-align
-globally. That is a dependency of the output on the source sample, and a change
+upward, reaching \KtwoStReach{}. These long-range changes, largest for a large impulse on a quiet carrier, are
+consistent with adaptive bit allocation in the encoder and with the stretcher's
+correlation search re-aligning; the probes do not isolate either mechanism. Either
+way the change is a dependency of the output on the source sample, and a change
 of operating mode is no ground for excluding it. These two declarations
 therefore characterise the tested operating points on the build that produced
 them. Under the strict profile \KtwoStrictProbes{} probes of any content operator
@@ -1547,9 +1572,11 @@ A consumer holds the derived asset's assertion and, through the ingredient
 graph, each source's own interval evidence. With the dependency declaration of
 Supplementary Note~\NoteSchema{}, the verifier (\path{em_audio/consumer.py}) rebuilds
 the map, checks that it covers the output exactly and recomputes every
-interval's record. Over the \Pout{} corpus outputs of Experiment~D, honest
-assertions verified in \PhonestDecl{} of \Pout{} under the declared profile and
-\PhonestStrict{} under the strict profile. Boundary-only claims under the same
+interval's record. Three checks are reported separately. For declaration
+consistency, over the \Pout{} corpus outputs of Experiment~D, honest assertions
+verified in \PhonestDecl{} of \Pout{} under the declared profile and
+\PhonestStrict{} under the strict profile; the decoded-length check and the
+signed workflow follow below. Boundary-only claims under the same
 declaration were flagged in \PbaseFlagged{} of the \PbasePromo{} promoting runs,
 and in \PbaseLocal{} further outputs whose whole-output claim does not promote:
 \DoverlayInterval{} of them are the interval-level provenance promotions of
@@ -1565,8 +1592,9 @@ probes, analysis of the algorithm, or an execution record.
 
 The consumer must also take the output length from the audio rather than from
 the declaration. Given the decoded length of every Experiment~D output, it
-rejected \DdeclRejected{} declared-profile assertions whose modelled length differs
-from the decoded one, \DfallbackOutputs{} longer and \DshorterOut{} shorter, and verified \DstrictVerified{} of \Druns{} strict-profile
+rejected \DdeclRejected{} declared-profile assertions whose modelled output length
+differs from the decoded one: in \DfallbackOutputs{} the decoded output is longer
+than modelled and in \DshorterOut{} it is shorter. It verified \DstrictVerified{} of \Druns{} strict-profile
 assertions, whose maps are fitted. A declaration shortened consistently, map and
 length together, over unchanged audio was rejected in \PshortFlagged{} of
 \PshortCases{} cases.
@@ -1821,9 +1849,11 @@ holdout shows that those declarations can miss real dependencies, and that the
 miss produces promotion. The strict profile replaces every measured declaration
 by whole-asset dependency and promoted on none, which follows from
 Proposition~\ref{prop:footprint}. The contract travels in an existing signed
-standard without altering the audio and costs a fraction of a percent of the
-processing it accompanies. Table~\ref{tab:boundary} lists which results rest on
-the requirements and which on a calibration of one build.
+standard without altering the audio, and its evidence bookkeeping costs a
+fraction of a percent of the processing it accompanies. The algebraic results
+are independent of processing build; implementation conformance and calibrated
+footprints require verification on the evaluated configuration
+(Table~\ref{tab:boundary}).
 
 \paragraph{Relation to the standard and to adjacent work} The layer addressed
 here is the reduction over a vocabulary that already preserves what the problem
@@ -1929,8 +1959,8 @@ is not new. This work provides the executable temporal contract, the
 kernel-footprint treatment that makes it implementable against FFmpeg, a signed
 transport inside an existing standard, and a consumer that recomputes every claim.
 Complete-source propagation promoted in no interval on our corpus or on the two
-third-party corpora, leaves decoded WAV, FLAC and MP3 audio untouched, and costs a
-fraction of a percent of the processing it accompanies.
+third-party corpora, leaves decoded WAV, FLAC and MP3 audio untouched, and its evidence bookkeeping
+costs a fraction of a percent of the processing it accompanies.
 
 The guarantee is relative to the declared dependency map. The holdout challenge
 shows that the measured declarations for the encoder and the stretcher can miss
@@ -1979,9 +2009,7 @@ The repository ships a frozen copy of the released results in
 \texttt{tools/verify\_reproduction.py} runs from a downloaded archive, and a
 container image and continuous verification that re-measure the declarations
 on further builds, author-run evidence not reported here. The evaluated state is release tag \Rtag{}, archived in Zenodo as
-\href{https://doi.org/10.5281/zenodo.23310554}{\mbox{doi:10.5281/zenodo.23310554}}, where the tag and the archive hold the same files;
-the commit hash in \texttt{results/PREFLIGHT.txt} is necessarily the parent of
-the commit that stores the report, and the report says so.
+\href{https://doi.org/10.5281/zenodo.23310554}{\mbox{doi:10.5281/zenodo.23310554}}, where the tag and the archive hold the same files.
 
 \section*{CRediT authorship contribution statement}
 

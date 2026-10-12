@@ -261,9 +261,31 @@ footprints were calibrated on), \texttt{outputSampleCount}, \texttt{sources}
 (each with its \texttt{sampleCount}) and \texttt{pieces}, each with its
 \texttt{output} and \texttt{sourceRange} spans, \texttt{footprint},
 \texttt{basis} (\texttt{analytical}, \texttt{measured} or
-\texttt{whole-asset}) and \texttt{label}. A consumer rebuilds the map from it and
+\texttt{whole-asset}) and \texttt{label}, and \texttt{footprintTable}, the
+module path and SHA-256 digest of the footprint table the declaration was
+computed from. A consumer rebuilds the map from it and
 recomputes the intervals (\path{em_audio/consumer.py}); assertions without it
 remain valid and are reported as unverifiable.
+For the trim above, under the strict profile, the declaration is:
+
+\begingroup\small
+\begin{verbatim}
+"dependencyDeclaration": {
+  "version": "1.0", "profile": "strict", "build": "ffmpeg 9.0.1",
+  "footprintTable": { "module": "em_audio/operators.py",
+                      "sha256": "f712c107...f26c2f40" },
+  "outputSampleCount": 38400,
+  "sources": { "clip": { "sampleCount": 48000 } },
+  "pieces": [ { "output": { "start": 0, "end": 38400 }, "source": "clip",
+                "sourceRange": { "start": 4800, "end": 43200 },
+                "footprint": 0, "basis": "analytical", "label": "trim" } ]
+}
+\end{verbatim}
+\endgroup
+
+The \texttt{schema} identifier is the repository path of the schema document,
+fixed inside every signed fixture; the document as evaluated is archived with the
+release cited in the manuscript's Code availability statement.
 
 \section{Composition manifest wiring}
 \label{s:composition}
