@@ -778,8 +778,7 @@ Section~\ref{sec:res-containment} tests whether the \emph{declared}
 footprint contains the measured source influence. For two operators the
 measured reach exceeds the analytical support and, at the probes of
 Section~\ref{sec:res-containment}, is contained only by the declaration as a
-whole, which is why the declaration, not either component, is
-what an implementation uses. An implementation on a build for which the two quantities have not been
+whole, so an implementation uses the declaration rather than either component. An implementation on a build for which the two quantities have not been
 validated has no
 declaration to use, and the contract leaves three courses: refuse the
 operation, mark the interval unverified, which Section~\ref{sec:model} makes absorbing, or widen to
@@ -1138,9 +1137,8 @@ side.
 \centering
 \includegraphics[width=0.88\linewidth]{fig3_promotion.pdf}
 \caption{Boundary-only versus complete-source inheritance on \Btimelines{}
-deterministic timelines. (A) Promotion does not grow with composition depth,
-because the loss is established at the first derivation and no downstream
-operator can recover evidence already discarded. (B) Control arm with anomaly
+deterministic timelines. (A) Promotion by composition depth, constant after
+the first derivation. (B) Control arm with anomaly
 positions uniform over all positions, measured against the closed form
 $\binom{n-2}{k}/\binom{n}{k}$, on an axis truncated to 80--100\% to expose
 prediction error. (C) Each operator applied alone, in the fixture family's own resampling and
@@ -1289,8 +1287,7 @@ propagation promoted on \Qem{} at either level (\QemInterval{} by interval), wit
 \QemLineage{} lineage omissions and \Qstrict{} promotions under the strict profile. The consumer verifier of
 Section~\ref{sec:res-consumer} accepted all \QconsHonest{} honest strict-profile
 assertions and flagged \QconsFlagged{} of the \QconsPromo{} promoting runs, and
-\QconsLocal{} further outputs with another evidence-contract violation, a support
-value or lineage the sources do not give; checked against the decoded
+\QconsLocal{} further outputs with other evidence-contract violations; checked against the decoded
 length, \QstrictVerified{} of \Qruns{} strict-profile assertions verified. FFmpeg emitted more output
 than modelled in \QfallbackOutputs{} outputs, which the fitted map covered with
 whole-asset dependency. The time-stretch mapping deviation reached
@@ -1771,7 +1768,7 @@ of the run is in Supplementary Note~\NoteIndependent{}.
 reach} is the measured kernel reach in source samples against a declared
 footprint of \IRmpDeclared{}. The reference and two of the runs use
 FFmpeg~\Vffmpeg{}; the reference and Windows builds of that one version do
-not agree, which is why the declaration is stated per build. Full
+not agree, so the declaration is stated per build. Full
 environments and per-operator detail are Supplementary
 Note~\NoteIndependent{}.}
 \label{tab:runs}
@@ -1844,8 +1841,8 @@ holdout shows that those declarations can miss real dependencies, and that the
 miss produces promotion. The strict profile replaces every measured declaration
 by whole-asset dependency and promoted on none, which follows from
 Proposition~\ref{prop:footprint}. The contract travels in an existing signed
-standard without altering the audio, and its evidence bookkeeping costs a
-fraction of a percent of the processing it accompanies. The algebraic results
+standard without altering the audio, at the bookkeeping cost reported in
+Section~\ref{sec:res-overhead}. The algebraic results
 are independent of processing build; implementation conformance and calibrated
 footprints require verification on the evaluated configuration
 (Table~\ref{tab:boundary}).
@@ -1977,8 +1974,8 @@ dependence on them at the price of diluting essentially all output of those
 operators. Earlier independent runs reproduced the conformance, promotion and
 oracle outcomes of their release and found one footprint and one mapping margin
 that do not transfer to another build; the experiments added since have not been
-rerun independently. The contract cannot tell you whether speech is synthetic or
-truthful, and a valid signature proves only that an assertion was signed.
+rerun independently. Whether speech is synthetic or truthful is outside what the
+contract can establish, and a signature attests only to who signed an assertion.
 
 \section*{Data availability}
 
