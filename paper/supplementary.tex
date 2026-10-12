@@ -266,14 +266,18 @@ module path and SHA-256 digest of the footprint table the declaration was
 computed from. A consumer rebuilds the map from it and
 recomputes the intervals (\path{em_audio/consumer.py}); assertions without it
 remain valid and are reported as unverifiable.
-For the trim above, under the strict profile, the declaration is:
+For the trim above, under the strict profile, the declaration is as follows; the
+digest and build string are the exact values of the evaluated release.
 
-\begingroup\small
+\begingroup\footnotesize
 \begin{verbatim}
 "dependencyDeclaration": {
-  "version": "1.0", "profile": "strict", "build": "ffmpeg 9.0.1",
-  "footprintTable": { "module": "em_audio/operators.py",
-                      "sha256": "f712c107...f26c2f40" },
+  "version": "1.0", "profile": "strict",
+  "build": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "footprintTable": {
+    "module": "em_audio/operators.py",
+    "sha256":
+      "f712c10710234527e1a10a06e40943cdce2bda64dae205259b1faa33f26c2f40" },
   "outputSampleCount": 38400,
   "sources": { "clip": { "sampleCount": 48000 } },
   "pieces": [ { "output": { "start": 0, "end": 38400 }, "source": "clip",
@@ -283,9 +287,18 @@ For the trim above, under the strict profile, the declaration is:
 \end{verbatim}
 \endgroup
 
-The \texttt{schema} identifier is the repository path of the schema document,
-fixed inside every signed fixture; the document as evaluated is archived with the
-release cited in the manuscript's Code availability statement.
+\texttt{"clip"} is a local name for a source within the declaration. The
+consumer binds it to the source's own evidence through the derived asset's
+\texttt{parentOf} ingredient, whose stored manifest carries the source's
+interval assertion. A composition would bind each name to one
+\texttt{componentOf} ingredient in the same way; the signed workflow evaluated
+here covers the single-source case only.
+
+The \texttt{schema} value is an identifier, not an immutable reference: it is the
+string stored in every signed fixture and is left unchanged so those signatures
+remain valid. The authoritative schema for the evaluated results is the copy of
+\path{docs/em-audio-schema-1.0.md} archived with release \Rtag{} (the Zenodo
+record cited in the manuscript's Code availability statement).
 
 \section{Composition manifest wiring}
 \label{s:composition}

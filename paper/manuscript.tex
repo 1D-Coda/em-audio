@@ -551,19 +551,20 @@ $\mu$ applicable. The contract requires:
 \item[(i) Provenance] $P_y = \bigsqcap_{x \in \Dy} P_x$, that is, the exact
   union of the required source provenance sets, with $\bot$ absorbing and with
   no invented ancestry.
-\item[(ii) Support] if $P_y \neq \bot$, $\Dy^{\mu} \neq \emptyset$,
-  $A_y(\mu) \neq \emptyset$ and every member of $\Dy^{\mu}$ supplies a value,
+\item[(ii) Support] if $P_y \neq \bot$, $\Dy^{\mu} \neq \emptyset$, the
+  emitted scope $A_y(\mu)$ of~(iii) is non-empty and every member of
+  $\Dy^{\mu}$ supplies a value,
   then $S_y(\mu) = \min_{x \in \Dy^{\mu}} S_x(\mu)$; otherwise the channel is
   \emph{unavailable}; without the applicability condition a channel narrowed
 to an empty scope under~(iii) would carry a number applicable nowhere.
   Requirement~(iv) strengthens the condition $\Dy^{\mu} \neq \emptyset$
   stated here to $\Dy^{\mu} = \Dy$.
 \item[(iii) Applicability] the \emph{canonical} scope is
-  $A_y(\mu) = \bigcap_{x \in \Dy^{\mu}} A_x(\mu)$, and an empty intersection
-  makes the channel unavailable. A \emph{conforming} operator may emit any
-  $A_y'(\mu) \subseteq A_y(\mu)$, never a broader one; conformance is the
-  containment, and the equality names the canonical reduction the reference
-  implementation emits. Theorem~\ref{thm:composition} states separately what
+  $A_y^{\mathrm{can}}(\mu) = \bigcap_{x \in \Dy^{\mu}} A_x(\mu)$, and the
+  emitted scope must satisfy $A_y(\mu) \subseteq A_y^{\mathrm{can}}(\mu)$, never
+  a broader one; an empty emitted scope makes the channel unavailable.
+  Conformance is the containment; the canonical reduction, which the reference
+  implementation emits, takes $A_y(\mu) = A_y^{\mathrm{can}}(\mu)$. Theorem~\ref{thm:composition} states separately what
   holds for conforming and for canonical operators.
 \item[(iv) No partial subsets] a channel is available on the output only if
   every required source declares it applicable \emph{and} supplies a value:
