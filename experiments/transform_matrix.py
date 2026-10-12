@@ -347,6 +347,11 @@ def main() -> int:
                                 "dataset timestamps rounded to the nearest sample; non-speech spans "
                                 "labelled from the 10 ms segment labels")}
         payload["utterance_ids"] = [r["uid"] for r in index]
+        sub = json.loads((CORPUS / ("partialedit/partialedit_subset.json" if pe else
+                                    "partialspoof/partialspoof_subset.json")).read_text())
+        payload["selection"] = {k: sub[k] for k in ("spoofed_dev_utterances", "selection_step",
+                                                    "e1_files", "per_speaker", "speakers")
+                                if k in sub}
         emit("R_partialedit_matrix" if pe else "Q_partialspoof_matrix", payload)
     else:
         emit("D_transform_matrix", payload)

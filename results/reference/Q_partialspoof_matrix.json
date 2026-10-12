@@ -239,6 +239,10 @@
  },
  "processing_path": "stock ffmpeg CLI only; no project code in the signal path",
  "runtime_s": 382.586,
+ "selection": {
+  "selection_step": 26,
+  "spoofed_dev_utterances": 15847
+ },
  "structure": {
   "boundary_source": "dataset timestamps rounded to the nearest sample; non-speech spans labelled from the 10 ms segment labels",
   "max_intervals": 29,

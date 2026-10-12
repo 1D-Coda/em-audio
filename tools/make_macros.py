@@ -615,8 +615,7 @@ def main() -> int:
             m["QgenPct"] = f"{100*s['median_generated_fraction']:.1f}"
         m["QconsFlagged"] = fmt(Qc["baseline_promoting_flagged"]); m["QconsPromo"] = fmt(Qc["baseline_promoting"])
         m["QconsLocal"] = fmt(Qc["baseline_clean_flagged"]); m["QconsHonest"] = fmt(Qc["honest_strict_ok"])
-        sub = json.loads((ROOT / "corpus" / "partialspoof" / "partialspoof_subset.json").read_text()) \
-            if (ROOT / "corpus" / "partialspoof" / "partialspoof_subset.json").exists() else None
+        sub = Q.get("selection")
         if sub:
             m["QspoofedDev"] = fmt(sub["spoofed_dev_utterances"]); m["Qstep"] = fmt(sub["selection_step"])
     def _tot(D, k):
@@ -665,9 +664,8 @@ def main() -> int:
             m["RmedIntervals"] = fmt(mi) if isinstance(mi, int) else f"{mi:g}"
             m["RmedDur"] = f"{s['median_duration_s']:.2f}"
             m["RgenPct"] = f"{100*s['median_generated_fraction']:.1f}"
-        sub = ROOT / "corpus" / "partialedit" / "partialedit_subset.json"
-        if sub.exists():
-            S = json.loads(sub.read_text())
+        S = R.get("selection")
+        if S:
             m["RfilesTotal"] = fmt(S["e1_files"]); m["RperSpk"] = fmt(S["per_speaker"])
             m["Rspeakers"] = fmt(S["speakers"])
     m["DstrictPromo"] = fmt(sum(v.get("strict_promotions", 0) for v in Dm.values()))

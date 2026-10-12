@@ -239,6 +239,11 @@
  },
  "processing_path": "stock ffmpeg CLI only; no project code in the signal path",
  "runtime_s": 380.386,
+ "selection": {
+  "e1_files": 42471,
+  "per_speaker": 20,
+  "speakers": 30
+ },
  "structure": {
   "boundary_source": "edited-region timestamps rounded to the nearest sample",
   "max_intervals": 5,
