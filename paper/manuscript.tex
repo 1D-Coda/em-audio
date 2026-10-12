@@ -65,27 +65,26 @@ Promotion Across Derived Audio Transformations}
 
 \begin{abstract}
 Derived audio can keep its waveform while strengthening what it says about
-its origin. Under a constructed boundary-only inheritance policy, a clip assembled
-from captured and generated material, trimmed and re-encoded, emerges described as
-captured-only. We specify an operator contract for derived audio: over the complete
+its origin. Under a constructed boundary-only inheritance policy, a trimmed and re-encoded
+clip of captured and generated material emerges described as captured-only. We specify an operator contract for derived audio: over the complete
 required source set, provenance unions, same-channel support minimises,
 applicability intersects and lineage unions, and an unverified source interval is
 absorbing. The algebra is a known meet-semilattice construction; new are its
 executable temporal instantiation with declared kernel footprints, a signed C2PA
-transport, a consumer verifier and the evaluation. The contract prevents
-promotion relative to the declared dependency map; whether that map matches the
+transport, a consumer verifier and their evaluation. The contract prevents
+promotion relative to the declared dependency map; whether that map matches
 actual processing needs separate justification. Complete-source propagation failed none of \Achecks{} contract checks
 and promoted in no interval over \Btimelines{} adversarial timelines, \Cclips{}
 mixed-origin clips and \Qclips{} PartialSpoof and \Rclips{} PartialEdit
-third-party utterances processed by stock FFmpeg; on the three audio sets, boundary-only
+third-party utterances processed by stock FFmpeg, where boundary-only
 inheritance promoted in \Deither{}, \Qeither{} and \Reither{} of \Druns{} runs. A holdout challenge showed that the
 measured MP3 and time-stretch declarations are not universal. A strict profile
-assigns whole-asset dependency to measured declarations; it is safe by
-construction, promoted nowhere, and dilutes those operators' claims almost
-entirely. A consumer recomputed every claim from the signed declaration and
-flagged each tampered assertion. Signing left decoded audio unchanged. Independent
-runs on other hardware reproduced the conformance, promotion and oracle outcomes of
-an earlier release. The contract
+assigns whole-asset dependency to measured declarations: safe by construction,
+it promoted nowhere and dilutes those operators' claims almost entirely. Consumer tests checked assertion consistency against the declarations;
+an end-to-end signed workflow accepted all \PtwoHonest{} honest trim derivations
+and rejected all \PtwoWrongFlagged{} promoted variants; signing left decoded audio unchanged. Independent
+runs reproduced the conformance, promotion and oracle outcomes of an
+earlier release. The contract
 does not detect deepfakes, and a valid signature proves only that an assertion
 was signed.
 \end{abstract}
