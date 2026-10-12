@@ -498,20 +498,21 @@ implementation or the serialisation.
 
 \subsection{The claim order and its meet}
 
-Write $\widehat{\mathcal{C}} = \{\bot\} \cup (2^{\{\C,\G\}} \setminus
-\emptyset)$ for the set of provenance claims, ordered by
+A derived interval cannot claim a more exclusive origin than its sources:
+combining captured and generated ancestry yields mixed ancestry, and missing
+verified evidence yields unverified. Formally, write
+$\widehat{\mathcal{C}} = \{\bot\} \cup (2^{\{\C,\G\}} \setminus \emptyset)$ for
+the set of provenance claims, ordered by
 \begin{equation}
 q_1 \sqsubseteq q_2 \iff q_1 = \bot \ \text{ or }\ (q_2 \neq \bot \ \text{and}\
 q_1 \supseteq q_2),
 \label{eq:order}
 \end{equation}
 read ``$q_1$ is no stronger than $q_2$'': a larger atom set is a weaker
-claim and $\bot$, which asserts nothing, is the bottom element. It is a policy
-order: it governs permission to make an exclusive-origin claim, and is not an
-ordering of truth, credibility or forensic reliability; a known mixture is not
-the same as uncertainty about origin, and neither captured nor generated means
-true or false speech. This is a
-partial order under which two claims always have a greatest lower bound but
+claim and $\bot$, which asserts nothing, is the bottom element. This order
+controls origin claims; it does not rank truthfulness or forensic reliability.
+
+The relation is a partial order under which two claims always have a greatest lower bound but
 need not have an upper bound ($\{\C\}$ and $\{\G\}$ have none), so the
 structure is a meet-semilattice rather than a lattice, with meet
 \begin{equation}
@@ -531,19 +532,12 @@ combination with an absorbing element, as in provenance semirings
 \subsection{The complete-source operator}
 
 Let a representation operator $T$ produce output element $y$ from the
-\emph{complete required source set} $\Dy = \{x_1, \dots, x_k\}$. Two notions of
-dependency diverge for some operators. The \emph{representational} dependency
-of $y$ is the source content $y$ stands for; the \emph{computational}
-dependency is the set of source samples that numerically influence its value.
-The contract governs the representational reading, and the kernel footprint
-reconciles the two where signal processing makes them bleed together: a
-resampling filter makes neighbouring content influence $y$, and since that
-influence cannot be distinguished from representation at the contract's level
-of abstraction, the footprint conservatively enlarges $\Dy$ to cover it. Amplitude
-normalisation is the clearest case where the two readings diverge: each output
-sample represents one source sample, while the gain depends on the whole signal.
-Encoder bit allocation and stretch alignment are further control dependencies
-of the same kind (Section~\ref{sec:limits}). Write
+\emph{complete required source set} $\Dy = \{x_1, \dots, x_k\}$, the content
+that $y$ represents. Filtering can spread that content across neighbouring
+samples, so the kernel footprint enlarges $\Dy$ conservatively to cover them.
+Control dependencies are treated separately: amplitude normalisation, for
+example, represents each source sample locally even when its gain is estimated
+from the whole signal (Section~\ref{sec:limits}). Write
 $\Dy^{\mu} = \{x \in \Dy : \mu \in A_x\}$ for the sources that declare channel
 $\mu$ applicable. The contract requires:
 
@@ -551,14 +545,12 @@ $\mu$ applicable. The contract requires:
 \item[(i) Provenance] $P_y = \bigsqcap_{x \in \Dy} P_x$, that is, the exact
   union of the required source provenance sets, with $\bot$ absorbing and with
   no invented ancestry.
-\item[(ii) Support] if $P_y \neq \bot$, $\Dy^{\mu} \neq \emptyset$, the
-  emitted scope $A_y(\mu)$ of~(iii) is non-empty and every member of
-  $\Dy^{\mu}$ supplies a value,
-  then $S_y(\mu) = \min_{x \in \Dy^{\mu}} S_x(\mu)$; otherwise the channel is
-  \emph{unavailable}; without the applicability condition a channel narrowed
-to an empty scope under~(iii) would carry a number applicable nowhere.
-  Requirement~(iv) strengthens the condition $\Dy^{\mu} \neq \emptyset$
-  stated here to $\Dy^{\mu} = \Dy$.
+\item[(ii) Support] a channel is available only when no required source is
+  unverified, every required source supplies an applicable value
+  ($\Dy^{\mu} = \Dy$, requirement~(iv)) and the emitted scope $A_y(\mu)$
+  of~(iii) is non-empty. Its value is then the minimum of the source values,
+  $S_y(\mu) = \min_{x \in \Dy} S_x(\mu)$; otherwise the channel is
+  \emph{unavailable}.
 \item[(iii) Applicability] the \emph{canonical} scope is
   $A_y^{\mathrm{can}}(\mu) = \bigcap_{x \in \Dy^{\mu}} A_x(\mu)$, and the
   emitted scope must satisfy $A_y(\mu) \subseteq A_y^{\mathrm{can}}(\mu)$, never
@@ -695,14 +687,10 @@ output position with no required source is therefore not covered by the
 proposition, and the implementation marks it unverified.
 \end{proof}
 
-Proposition~\ref{prop:footprint} is the practical result of this section: an
-implementation does not need the exact dependency set of a filtered operator,
-because a \emph{conservative over-approximation} is always safe and only
-under-approximation can promote. That converts knowing which input samples
-every output sample depends on inside a third-party codec into a tractable
-requirement: declare a set that contains the true one. An analytical radius can
-establish that; a probe can only test it, and Section~\ref{sec:audio} says which
-of the two each operator's declaration rests on.
+An exact dependency map is therefore unnecessary: a justified
+over-approximation is sufficient. Analytical bounds can establish containment;
+finite probes can only test it, and Section~\ref{sec:audio} says which of the
+two each operator's declaration rests on.
 
 \paragraph{Signal transparency (P8)} The contract must not change the audio.
 The canonical essence of an asset is the SHA-256 of its decoded stream rendered
@@ -725,27 +713,21 @@ of it'' \citep[\S18.2.2.3]{c2pa24}. A source timeline is a gapless ordered
 partition of an asset into evidence-homogeneous intervals.
 
 \paragraph{The v1 support channel} Version~1 carries one typed channel,
-\texttt{capture-support}, applicable over the single scope
-\texttt{digital-asset}: the degree to which an interval's own record supports a
-capture claim, on $\mathcal{S}$. It is not a detector output and is not
-calibrated against any acoustic measurement: what this instantiation
-demonstrates is that a typed channel aggregates by minimum, absorbs, intersects
-its scope and survives the transport, not that its numbers carry forensic
-meaning. The corpus and transport experiments assign \CaptSupport{} to
-captured-derived and \GenSupport{} to generated-derived intervals, so a mixed
-interval aggregates to \GenSupport{}; the enumeration sweeps a grid of values,
-and the universal statement over $[0,1]$ comes from the proof. One scope cannot
-exhibit disjoint or overlapping scopes, nor a channel applicable to one source
-and not another, the case Proposition~\ref{prop:footprint} turns on; a
-synthetic battery over \LscopeScopes{} scopes covers those
-(Section~\ref{sec:res-conformance}).
+\texttt{capture-support}, over the single scope \texttt{digital-asset}. The
+experiments assign \CaptSupport{} to captured-derived and \GenSupport{} to
+generated-derived intervals. These are synthetic test values, not calibrated
+forensic confidence, and the channel is not a detector output. The enumeration
+tests a finite grid of values; the proof covers the domain $[0,1]$. A separate
+battery over \LscopeScopes{} scopes tests the applicability cases this
+single-scope instantiation cannot reach (Section~\ref{sec:res-conformance}).
 
 An operator emits a set of \emph{map pieces} (Figure~\ref{fig:architecture}): output range $[o_a, o_b)$
 represents source range $[s_a, s_b)$ on a named asset, with a footprint radius
 in source samples. Where pieces overlap, as in a mix, the required source set of
-an output interval is the union over every covering piece. The emitted output
-partition is the pull-back of every source evidence boundary across every piece,
-which gives each emitted interval a stable complete required source set.
+an output interval is the union over every covering piece. Source evidence
+boundaries are mapped back onto the output timeline (their pull-back), and
+splitting the output at these points gives intervals whose required source sets
+are constant.
 
 \begin{figure}[tbp]
 \centering
@@ -859,7 +841,7 @@ values hold for one FFmpeg build and are not portable. The MP3 and time-stretch
 rows are measured, and the holdout of Section~\ref{sec:res-holdout} exceeds both
 on the reference build; on the build of Section~\ref{sec:res-independent} the
 MP3 row is also under-declared for Experiment~K's probes. Section~\ref{sec:limits} states the normalisation row's
-representational reading and its tested alternative.}
+represented-content reading and its tested alternative.}
 \label{tab:operators}
 \small
 \input{../results/tables/operator_table}
@@ -987,9 +969,9 @@ is a volume setting, not a measured signal-to-noise ratio.
 
 Concatenation and every subsequent transformation are performed by
 \textbf{stock FFmpeg through its command line, with no project code in the
-signal path}: the artefact that does or does not exhibit promotion is produced
-by software the author does not control, and only the evidence policies are
-under study.
+signal path}. Stock FFmpeg produces the transformed audio. Author-written
+evidence policies construct the associated claims, whose consistency is
+evaluated against the declared dependency maps.
 
 \subsection{Metrics}
 
@@ -1326,11 +1308,11 @@ holds when the probe position lies inside the declared required-source range of
 every output sample whose value it changed, on 16-bit PCM at a threshold of one
 least significant bit.
 
-Two design choices keep the probe honest about adaptive operators. The impulse
-sits on a non-silent carrier: on silence an encoder or stretcher spreads nothing,
-and its declaration would pass without being tested. The impulse is also scaled
-to each context's peak, so it nudges the operator's input instead of replacing
-it. The
+Two design choices matter for adaptive operators. The impulse sits on a
+non-silent carrier: non-silent carriers exercise adaptive processing under
+structured inputs, and silence-only probes would not establish containment
+across those operating conditions. The impulse is also scaled to each context's
+peak, so it nudges the operator's input instead of replacing it. The
 \Kcontexts{} contexts, all generated arithmetically
 (\texttt{experiments/support\_containment.py}), are a steady low-frequency
 tone; the same tone at one part in a hundred, where a lossy encoder allocates
@@ -1476,15 +1458,13 @@ as a fixture in the repository.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.84\linewidth]{fig6_dilution.pdf}
-\caption{What the declared footprints cost, as the fraction of output samples
-whose claim is weaker than over the nominal map. (A) Through a composition chain,
-with the operator each step adds; the shaded band runs from median to maximum
-over clips and is not an uncertainty interval. Normalisation adds nothing: its
-content footprint is zero. (B) Each transformation alone over \IclipsPerTf{}
-clips: circles are medians under the declared profile and bars reach the maximum;
-the two columns give the strict-profile median and the whole-asset comparator's
-median, both near 100\% for the measured operators. (C) The trim--normalise--MP3 chain at three durations with the boundary count
-fixed, on logarithmic axes. Dilution weakens a claim and never strengthens one.}
+\caption{Claim dilution under declared footprints. (A) Median and maximum
+dilution across a five-stage chain; shading is the median--maximum range, not
+uncertainty. This panel is a declared-map simulation; its adaptive stages at
+8~kHz were not validated. (B) Per-transformation medians and maxima over
+\IclipsPerTf{} clips, with the strict-profile and whole-asset medians alongside.
+(C) Dilution at three durations with the boundary count fixed, on logarithmic
+axes.}
 \label{fig:dilution}
 \end{figure}
 
@@ -1615,11 +1595,10 @@ assertions, whose maps are fitted. A declaration shortened consistently, map and
 length together, over unchanged audio was rejected in \PshortFlagged{} of
 \PshortCases{} cases.
 
-Two further checks reduce reliance on shared implementation code and test the
-complete signed workflow. A
-separately written JavaScript verifier (\path{oracle_js/verify.js}), which imports
-nothing from the Python package and recomputes every output sample by brute force,
-returned the same verdict as the Python verifier on all \PjsCases{} cases it was
+A separate JavaScript verifier tested agreement without importing the Python
+implementation, and a signed workflow tested the complete chain. The JavaScript
+verifier (\path{oracle_js/verify.js}) recomputes every output sample by brute
+force and returned the same verdict as the Python verifier on all \PjsCases{} cases it was
 given, spanning every verdict class, with \PjsDis{} disagreements. And over
 \PtwoClips{} clips the whole workflow ran through signed files: a source signed with
 its own interval assertion, a trim by stock FFmpeg signed twice with the source as
@@ -1643,32 +1622,25 @@ signing, validation and consumer verification are not included in it.
 \subsection{Two-language differential}
 \label{sec:res-oracle}
 
-The Python reference implementation works with interval algebra over pulled-back
-source boundaries; the Node.js oracle evaluates evidence per output sample by
-brute force and run-length-encodes the result, with no interval algebra at all.
-The frozen corpus spans footprints wider than every source interval and
-footprints far narrower, the regime added after the dilution experiment
-(Section~\ref{sec:res-dilution}). It is stored as
-\path{fixtures/oracle_cases.jsonl}, one case per line carrying the interval
-model and the source evidence in a form that names neither implementation,
-and the oracle reads it as a separate process. On \Hcases{} cases the two agreed
-on interval structure, provenance state, lineage set and channel availability
-with \Hdis{} disagreements, and the maximum absolute difference in any support
-value was \Hdelta{}. Both implementations are author-written, so this is a
-differential test against transcription and interval-arithmetic error, not
-evidence of independence from the author (Section~\ref{sec:limits}).
+The Python implementation propagates intervals; the separately written
+JavaScript oracle evaluates each output sample on its own and run-length-encodes
+the result. On all \Hcases{} frozen cases they agreed on interval structure,
+provenance, lineage and channel availability, with \Hdis{} disagreements and a
+maximum support-value difference of \Hdelta{}. The cases are stored in
+\path{fixtures/oracle_cases.jsonl}, in a form that names neither
+implementation, and include footprints both wider and narrower than the source
+intervals. Both implementations are author-written, so the test guards against
+transcription and interval-arithmetic error, not against a shared
+misunderstanding (Section~\ref{sec:limits}).
 
 \subsection{Cost}
 \label{sec:res-overhead}
 
-Complete-source bookkeeping cost a median \Gem{}~ms per audio-minute against
-\Gbase{}~ms for boundary-only, a ratio of \Gratio{}$\times$ computed from the
-unrounded medians, and \GffmpegPct{}\% of the FFmpeg time it accompanies
-(Table~\ref{tab:overhead}). Signing took a median
-\Gsign{}~ms per asset (IQR \GsignQa{}--\GsignQb{}) and validation \Gval{}~ms
-(IQR \GvalQa{}--\GvalQb{}). Manifest overhead was \Gmanifest{}~B per asset, of
-which the EM assertion was \Gassertion{}~B; the fixed per-asset component
-(certificate chain, COSE structure, hard binding) dominates, and the variable
+Evidence bookkeeping took a median \Gem{}~ms per audio-minute, against
+\Gbase{}~ms for boundary-only (a ratio of \Gratio{}$\times$), or \GffmpegPct{}\% of
+the FFmpeg time it accompanies; Table~\ref{tab:overhead} reports signing,
+validation and storage separately. Of the manifest, a fixed per-asset part
+(certificate chain, COSE structure, hard binding) dominates; the variable
 part grows linearly in emitted evidence intervals at \GperInterval{}~B and
 \GperIntervalUs{}~$\mu$s per interval, approximately linear over the measured range up to \GmaxIntervals{}. Cost
 therefore scales with how often ancestry changes along the timeline, not with
@@ -1817,7 +1789,7 @@ D.~A.~Balderrama-Alvarez & \XBWinOs{} & \XBWinFfmpeg{} &
 \end{tabular}
 \end{table}
 
-\paragraph{What reproduced} Of the \IRfiles{} result files carrying a
+\paragraph{Reproduced outcomes} Of the \IRfiles{} result files carrying a
 deterministic claim, \IRclean{} reproduced exactly on an operating system,
 processor architecture, Python version and FFmpeg major version that share
 nothing with the reference machine. Every conformance, promotion and oracle
@@ -1825,7 +1797,7 @@ outcome is among them, including the \LscopeFailBad{} cases the superseded rule
 failed (Section~\ref{sec:res-conformance}), and decoded-essence identity before and after
 signing held for all \Ftotal{} round-trips.
 
-\paragraph{What did not} \IRdet{} deterministic differences remain.
+\paragraph{Differences on the Linux build} \IRdet{} deterministic differences remain.
 \IRdetSuite{} are the size of a conformance suite that grew after his run; the
 other \IRdetBuild{} trace to two declarations his FFmpeg build does not satisfy.
 For the MP3 encoder the reach on his build is \IRmpReach{} against a declared

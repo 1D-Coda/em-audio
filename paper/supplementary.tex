@@ -267,7 +267,8 @@ computed from. A consumer rebuilds the map from it and
 recomputes the intervals (\path{em_audio/consumer.py}); assertions without it
 remain valid and are reported as unverifiable.
 For the trim above, under the strict profile, the declaration is as follows; the
-digest and build string are the exact values of the evaluated release.
+digest and the recorded FFmpeg version header are the exact values of the
+evaluated release.
 
 \begingroup\footnotesize
 \begin{verbatim}
@@ -286,6 +287,13 @@ digest and build string are the exact values of the evaluated release.
 }
 \end{verbatim}
 \endgroup
+
+The \texttt{build} field records only the first line of \texttt{ffmpeg
+-version}. That header does not distinguish builds that share a version number,
+which the independent runs show can differ, and the verifier does not compare
+it: exact build identity is not enforced in this release. A deployment that
+needs it should record the executable's digest and the output of
+\texttt{ffmpeg -buildconf} alongside the declaration.
 
 \texttt{"clip"} is a local name for a source within the declaration. The
 consumer binds it to the source's own evidence through the derived asset's
