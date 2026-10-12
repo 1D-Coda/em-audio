@@ -337,6 +337,7 @@ MANUSCRIPT_LABELS = {
     "ThmComposition": "thm:composition",
     "TabOperators": "tab:operators",
     "SecOverhead": "sec:res-overhead",
+    "SecComposition": "sec:res-composition",
     "SecIndependent": "sec:res-independent",
     "SecHoldout": "sec:res-holdout",
 }

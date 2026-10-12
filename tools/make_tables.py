@@ -283,7 +283,7 @@ def dilution_table():
                     f"{100*c['median_dilution_fraction']:.2f}\\% & "
                     f"{100*c['max_dilution_fraction']:.2f}\\% & n/a \\\\")
     for r in I["long_asset_chain"]:
-        rows.append(f"same depth-3 chain, {r['asset_seconds']}\\,s asset & 1 & "
+        rows.append(f"trim--normalise--MP3 chain, {r['asset_seconds']}\\,s asset & 1 & "
                     f"{100*r['dilution_fraction']:.2f}\\% & n/a & n/a \\\\")
     write("dilution_table", "\n".join(rows), colspec="lrrrr",
           header=("Transformation & Clips & Median dilution & Max dilution & "
@@ -307,9 +307,9 @@ def overhead_table():
         f"C2PA validation & {G['validate_ms']['median']:.1f} ms / asset & "
         f"{G['validate_ms']['q1']:.1f}--{G['validate_ms']['q3']:.1f} ms \\\\",
         f"Manifest size overhead & {G['median_manifest_overhead_bytes_per_asset']:,} B / asset & "
-        f"{int(G['manifest_overhead_bytes']['q1']):,}--{int(G['manifest_overhead_bytes']['q3']):,} B \\\\",
+        f"{int(G['manifest_overhead_bytes']['q1']):,}--{round(G['manifest_overhead_bytes']['q3']):,} B \\\\",
         f"EM assertion, evidence only (this cohort) & {G['median_em_assertion_bytes_per_asset']:,} B / asset & "
-        f"{int(G['em_assertion_bytes']['q1']):,}--{int(G['em_assertion_bytes']['q3']):,} B \\\\",
+        f"{int(G['em_assertion_bytes']['q1']):,}--{round(G['em_assertion_bytes']['q3']):,} B \\\\",
     ]
     sc = G["assertion_scaling"]
     per = (sc[-1]["assertion_bytes"] - sc[0]["assertion_bytes"]) / \

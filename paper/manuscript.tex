@@ -77,9 +77,8 @@ promotion relative to the declared dependency map; whether that map matches the
 actual processing needs separate justification. Complete-source propagation failed none of \Achecks{} contract checks
 and promoted in no interval over \Btimelines{} adversarial timelines, \Cclips{}
 mixed-origin clips and \Qclips{} PartialSpoof and \Rclips{} PartialEdit
-third-party utterances processed by stock FFmpeg, whereas boundary-only
-inheritance promoted in \Deither{}, \Qeither{} and \Reither{} of \Druns{} runs
-respectively. A holdout challenge showed that the
+third-party utterances processed by stock FFmpeg; on the three audio sets, boundary-only
+inheritance promoted in \Deither{}, \Qeither{} and \Reither{} of \Druns{} runs. A holdout challenge showed that the
 measured MP3 and time-stretch declarations are not universal. A strict profile
 assigns whole-asset dependency to measured declarations; it is safe by
 construction, promoted nowhere, and dilutes those operators' claims almost
@@ -132,8 +131,8 @@ labelled captured-only; the decoded audio is bit-identical either way
 (Figure~\ref{fig:counterexample}). An examiner reading that claim is being told
 something stronger than the sources support, by a chain in which no signature
 was forged, and wherever a disclosure obligation is discharged by reading a
-manifest rather than inspecting a signal the result is not a missed detection
-but a confident wrong answer with a valid signature attached.
+manifest rather than inspecting a signal the result is a confident wrong answer with a valid
+signature attached.
 
 We call this \emph{provenance promotion}: a derived representation acquiring an
 evidential claim its complete source material does not support, without any
@@ -213,7 +212,8 @@ is the hardest case to declare, not because the method is limited to it.
   \ref{sec:res-oracle}). \Cclips{} mixed-origin clips are processed entirely by
   stock FFmpeg, which validates the interval mapping against software we do not
   control (Section~\ref{sec:res-corpus}), and \Qclips{} PartialSpoof utterances
-  carry third-party ground truth (Section~\ref{sec:res-partialspoof}). A
+  and \Rclips{} PartialEdit files carry third-party ground truth
+  (Section~\ref{sec:res-partialspoof}). A
   consumer verifier recomputes every claim from a signed dependency declaration
   (Section~\ref{sec:res-consumer}). Agreement on output length says
   nothing about how far a dependency reaches, so differential influence probes
@@ -949,7 +949,7 @@ principle depend on signal character. A robustness arm demonstrates that
 rather than leaving it to argument. It rebuilds \CtwoNeuralN{} clips with a neural TTS
 (Piper, a VITS-architecture engine with a voice trained on the public-domain
 LJSpeech corpus). It also overlays \CtwoNoiseN{} clips with locally generated pink
-noise over every ancestry boundary, mixed at a volume setting of $-18$~dB; this
+noise over the whole clip, mixed at a volume setting of $-18$~dB; this
 is a volume setting, not a measured signal-to-noise ratio.
 
 Concatenation and every subsequent transformation are performed by
@@ -979,7 +979,7 @@ Every number in this manuscript is emitted by code into
 generator script, and used in the text through that macro; no result is typed by
 hand. Every figure is rendered from the same files. \texttt{run\_all.sh} exits
 non-zero if any conformance check fails. Generative-AI tools were used as
-programming and review assistants, under the declaration at the end of this
+programming assistants and to improve language clarity, under the declaration at the end of this
 paper.
 
 \section{Results}
@@ -1028,7 +1028,7 @@ support promotion. Boundary-only inheritance omitted required lineage on
 \BbaseLineageOne{} timelines at depth~1 and reported \BbaseUnverOne{}
 unverified spans as verified.
 
-The rate does not rise with depth, and that is the finding: the loss is
+The rate is constant in depth: the loss is
 established at the first derivation and is irreversible, because once the
 interior evidence is discarded no downstream operator can recover it
 (Figure~\ref{fig:promotion}A). Across the \BopCount{} operator configurations
@@ -1061,7 +1061,7 @@ on a frozen fixture family and are not real-world prevalence.}
 \label{sec:res-ablation}
 
 The baseline combines two shortcuts, and removing them one at a time over
-\ABcases{} timelines per arm gives an unambiguous answer
+\ABcases{} timelines per arm separates their effects
 (Table~\ref{tab:ablation}). In the \emph{interior} arm the anomaly lies inside
 the nominal represented range, so only the inheritance axis can see it: both
 boundary-only policies promoted on every timeline (\BZeroInterior{} and
@@ -1123,7 +1123,8 @@ because the generated source is a separate top-level ingredient, yet in
 \DoverlayInterval{} of its outputs the clip's own interval claims captured-only
 over samples whose sources include generated speech. Retained-run selection
 produced no promotion at either level in this corpus (\DselInterval{}), because
-the retained runs' boundaries fell inside the generated region. A correct
+each retained run lay within a single evidence class, so its endpoints and its
+interior agree. A correct
 whole-output label can thus hide incorrect local claims, and the interval-level
 count is the endpoint the contract is written for.
 
@@ -1153,11 +1154,11 @@ transformation processed by stock FFmpeg, \DtotalRuns{} runs in all. (A) Whole-o
 claim: filled circle, boundary-only reference policy; open diamond,
 complete-source propagation. Boundary-only promoted in \DbasePromo{} runs and
 complete-source in \DemPromo{}. (B) The same boundary-only runs scored per
-interval, on our corpus (circles) and on PartialSpoof (squares,
-Section~\ref{sec:res-partialspoof}); filled marks count whole-output promotion,
+interval, on our corpus (circles), PartialSpoof (squares) and PartialEdit
+(triangles, Section~\ref{sec:res-partialspoof}); filled marks count whole-output promotion,
 open marks promotion in any interval. Overlay's whole-output claim is correct
 while one of its intervals promotes. Complete-source propagation promoted in no
-interval on either corpus. The baseline is a constructed policy, and these are
+interval on any of the three corpora. The baseline is a constructed policy, and these are
 counts over frozen corpora, not prevalence estimates.}
 \label{fig:corpus}
 \end{figure}
@@ -1251,8 +1252,7 @@ manifest yielded \textsc{mixed} in \Evalid{} cases, a valid derived manifest
 in \EvalidDerived{}, a removed manifest yielded \textsc{unverified} in
 \Estripped{} cases, an asset modified after signing yielded \textsc{invalid} in
 \Etampered{}, and re-encoding without manifest preservation yielded
-\textsc{unverified} in \Ereenc{}. No condition other than a valid manifest ever
-yielded \textsc{captured}, and there were \Eviol{} violations of the
+\textsc{unverified} in \Ereenc{}. No condition yielded \textsc{captured}, and there were \Eviol{} violations of the
 classification requirement. We do not claim that stripping is detected as
 malicious intent; the result is that the classification degrades in the
 conservative direction.
@@ -1311,8 +1311,8 @@ Across \Kprobes{} probes, \Kaffected{} output samples were influenced and
 \Koutside{} fell outside the declared support (Table~\ref{tab:containment};
 Figure~\ref{fig:containment});
 every context produced influence for every operator, so no row passes
-vacuously, and the source is long enough that a declared footprint of
-\KstretchFp{} samples does not span it. Retained-run selection first failed: a
+vacuously, and the source is long enough that the largest
+declared footprint does not span it. Retained-run selection first failed: a
 frame-granular selector emitted a frame
 beginning \KsilenceReach{} source samples before a retained run's start, well
 beyond the margin declared at the time. That is an under-declaration, the one
@@ -1401,7 +1401,7 @@ dependency, measured in Section~\ref{sec:res-holdout}.}
 \subsection{C2PA-native heterogeneous composition}
 \label{sec:res-composition}
 
-The strongest form of the standards argument is executable. For \Jfixtures{}
+The standards argument can be tested directly. For \Jfixtures{}
 fixtures, a captured source and a generated source are each signed with their
 own \texttt{digitalSourceType}, and stock FFmpeg concatenates them. The
 composition is signed with both sources as \texttt{componentOf} ingredients
@@ -1446,7 +1446,7 @@ over clips and is not an uncertainty interval. Normalisation adds nothing: its
 content footprint is zero. (B) Each transformation alone over \IclipsPerTf{}
 clips: circles are medians under the declared profile and bars reach the maximum;
 the two columns give the strict-profile median and the whole-asset comparator's
-median, both near 100\% for the measured operators. (C) One depth-three chain at three durations with the boundary count
+median, both near 100\% for the measured operators. (C) The trim--normalise--MP3 chain at three durations with the boundary count
 fixed, on logarithmic axes. Dilution weakens a claim and never strengthens one.}
 \label{fig:dilution}
 \end{figure}
@@ -1515,7 +1515,7 @@ model of how declared footprints compound: its MP3 and stretch stages run at
 not show that those declarations contain the chained audio's dependency.
 Holding a routine three-operator chain fixed (trim,
 normalise, MP3) and varying only duration, dilution is \IlongShortPct{}\% at
-the corpus median length, \IlongThirtyPct{}\% at 30~s and
+the corpus mean length, \IlongThirtyPct{}\% at 30~s and
 \IlongThreeHundredPct{}\% at five minutes: each tenfold increase in duration
 divides the fraction by ten, as fixed-width bands predict when the number of
 boundaries is held fixed, which it is here and would not be for an arbitrary
@@ -1547,7 +1547,7 @@ is exact.}
 
 A consumer holds the derived asset's assertion and, through the ingredient
 graph, each source's own interval evidence. With the dependency declaration of
-Section~\ref{sec:discussion}, the verifier (\path{em_audio/consumer.py}) rebuilds
+Supplementary Note~\NoteSchema{}, the verifier (\path{em_audio/consumer.py}) rebuilds
 the map, checks that it covers the output exactly and recomputes every
 interval's record. Over the \Pout{} corpus outputs of Experiment~D, honest
 assertions verified in \PhonestDecl{} of \Pout{} under the declared profile and
@@ -1645,7 +1645,7 @@ Both arms are timed in the same process, so load and clock changes move them
 together. Over \MstabRepeats{} independent processes the absolute cost varied by
 \MstabAbsPct{}\% and the ratio by \MstabRatioPct{}\% (Supplementary
 Note~\NoteRawRows{}); between machines the absolute figure differed by
-\IRabsGap{}\% and the ratio by \IRratioGap{}\% (Section~\ref{sec:res-independent}).
+\IRabsGap{}\% and the ratio by \IRratioGap{}\% (Supplementary Note~\NoteIndependent{}).
 The milliseconds show that the bookkeeping is cheap; they are not reproducible
 constants.
 
@@ -1686,7 +1686,7 @@ Operator conformance &
 Propositions~\ref{prop:union}, \ref{prop:footprint}, Theorem~\ref{thm:composition};
 enumeration; scope battery; two-language differential &
 That any deployed system conforms &
-Yes: \IRafailed{} failures; current suite reproduced on Windows \\
+Yes: \IRafailed{} failures; the \XBWinChecks{}-check suite of \XBWinTag{} reproduced on Windows \\
 \addlinespace
 Constructed fixtures &
 \Btimelines{} adversarial timelines with a control arm &
@@ -1739,17 +1739,17 @@ Yes, exactly \\
 D.~A.~Balderrama-Alvarez (Universidad de Sonora), who is not an author and took
 no part in the design, ran the package for tag~\IRtag{} on his own Linux
 machine from a package without result files (Table~\ref{tab:runs}). The
-comparison criteria were fixed in code beforehand (Section~\ref{sec:limits}).
+comparison criteria were fixed in code beforehand (Supplementary Note~\NoteRepro{}).
 This is independence of execution, not of implementation. His raw outputs are
 released unmodified in \texttt{results/independent/}, and the packaging history
-of the run is in Supplementary Note~\NoteRepro{}.
+of the run is in Supplementary Note~\NoteIndependent{}.
 
 \begin{table}[tbp]
 \centering
 \caption{The reference machine and the three third-party runs. \emph{MP3
 reach} is the measured kernel reach in source samples against a declared
 footprint of \IRmpDeclared{}. The reference and two of the runs use
-FFmpeg~\Vffmpeg{}; those two are different builds of that one version and do
+FFmpeg~\Vffmpeg{}; the reference and Windows builds of that one version do
 not agree, which is why the declaration is stated per build. Full
 environments and per-operator detail are Supplementary
 Note~\NoteIndependent{}.}
@@ -1779,7 +1779,7 @@ deterministic claim, \IRclean{} reproduced exactly on an operating system,
 processor architecture, Python version and FFmpeg major version that share
 nothing with the reference machine. Every conformance, promotion and oracle
 outcome is among them, including the \LscopeFailBad{} cases the superseded rule
-failed (Table~\ref{tab:boundary}), and decoded-essence identity before and after
+failed (Section~\ref{sec:res-conformance}), and decoded-essence identity before and after
 signing held for all \Ftotal{} round-trips.
 
 \paragraph{What did not} \IRdet{} deterministic differences remain.
@@ -1796,8 +1796,13 @@ containment arm found no sample outside the declared support. Of the
 \IRopsNonzero{} operators with a non-zero footprint, \IRopsAgree{}, all but MP3,
 reproduced their reach exactly.
 
-Two later runs of the released package, on macOS and Windows, show that the
-version string does not fix the calibration: three of the four rows of
+Two later runs, on macOS (an earlier release with a \XBMacChecks{}-check suite)
+and on Windows (tag~\XBWinTag{}), show that the version string does not fix the
+calibration. The macOS run reproduced every deterministic output; the Windows
+run's \XBWinDetDiffs{} differences all lie in the MP3 kernel measurements and the
+time-stretch deviation (\XBWinStretchDev{} against \XBRefStretchDev{} samples), and
+the declarations still contained every measurement (\XBWinOutside{} probes
+outside). Three of the four rows of
 Table~\ref{tab:runs} report FFmpeg~\XBMacFfmpeg{}, and the MP3 reach takes two
 values among them. \citet{nordvik2022exfat} found the same for file-system
 implementations sharing one specification, and \citet{kuelper2026testdriven}
@@ -1841,7 +1846,8 @@ we cite a public analysis \citep{golaszewski2026c2pa} rather than assert.
 assertion carries the map, which is why the schema now carries a dependency
 declaration: output length, each piece's source range, footprint and basis, the
 profile, the build and the footprint table's digest. With it a consumer
-recomputes every claim through signed files (Section~\ref{sec:res-consumer}). No
+recomputes every claim from the declaration (Section~\ref{sec:res-consumer}),
+demonstrated end to end through signed files on \PtwoClips{} trims. No
 consumer check reaches a declaration that misstates the operation or its
 footprint, whether through a stale calibration, a different build or intent; the
 dependency miss of Section~\ref{sec:res-independent} is of that kind, and the
@@ -1873,7 +1879,7 @@ third-party reimplementation remains outstanding; it would run against the
 produced and checked by the official \texttt{c2patool} under a locally generated
 trust anchor, so \emph{trusted} means trusted under that anchor. A second API,
 \texttt{c2pa-python}, also recovered the assertion, but it binds the same Rust
-core. No independently implemented consumer has read the assertion, so semantic
+core. No consumer implemented by a third party has read the assertion, so semantic
 interoperability is not established.
 
 \paragraph{Corpus} \Cclips{} clips from one read-speech corpus and one formant
