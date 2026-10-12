@@ -474,11 +474,15 @@ to a value in the lifted domain
 \label{eq:supportdomain}
 \end{equation}
 $A_x$ records the scope over which each channel is declared applicable, and
-$L_x$ is lineage. A channel can be \emph{unavailable}, written $\bot_{\mu}$,
-and must then count as weaker than any numeric value it could have carried,
-otherwise ``no emitted channel value is greater'' would be silent about a
-channel that disappears entirely; $\preceq$ on $\mathcal{S}$ is the usual order
-on $[0,1]$ extended with $\bot_{\mu}$ as least element.
+$L_x$ is lineage. In the corpus, for example, an interval of LibriSpeech speech
+carries $P=\{\C\}$, a high capture-support value applicable to the digital
+asset, and the identifier of its source recording as lineage; an interval of
+synthesised speech carries $P=\{\G\}$ and a low value. A channel can also be
+\emph{unavailable}, written $\bot_{\mu}$. We order it below every numeric value,
+so that a channel which disappears counts as a weakening; otherwise the rule
+``no emitted value is greater'' would say nothing about it. Formally, $\preceq$
+on $\mathcal{S}$ is the usual order on $[0,1]$ with $\bot_{\mu}$ added as least
+element.
 
 Provenance is a set of ancestry atoms drawn from $\{\C, \G\}$, for
 captured-derived and generated-derived sources. Mixed ancestry is $\{\C,\G\}$
@@ -953,13 +957,13 @@ Experiment~B freezes \Btimelines{} timelines of \Bintervals{} source intervals
 each, generated from a fixed seed, in which the majority of intervals are
 captured and one to four \emph{non-boundary} intervals are replaced by generated
 or unverified evidence. Each is pushed through composition chains of depth $1$
-to \Bdepths{} and, separately, through each operator alone. Because the
-anomalies are deliberately placed away from the boundaries, the baseline's
-failure rate on this family is high by construction. To make that explicit,
-the experiment includes a control arm in which anomaly positions are drawn uniformly
-over all positions, for which the baseline's promotion probability has the
-closed form $\binom{n-2}{k}/\binom{n}{k}$ for $k$ anomalies of a single type
-over $n$ positions.
+to \Bdepths{} and, separately, through each operator alone. The anomalies sit away from the boundaries on purpose, so a policy that reads
+only the boundaries will miss them almost every time; this family measures the
+mechanism, not how often it occurs. A control arm places the anomalies uniformly
+at random instead. There the baseline promotes exactly when no anomaly lands on
+either end, which happens with probability $\binom{n-2}{k}/\binom{n}{k}$ for $k$
+anomalies of one type among $n$ positions, so the measured rate can be checked
+against a closed form.
 
 \subsection{Mixed-origin audio corpus}
 \label{sec:corpus}
@@ -1321,10 +1325,11 @@ holds when the probe position lies inside the declared required-source range of
 every output sample whose value it changed, on 16-bit PCM at a threshold of one
 least significant bit.
 
-The carriers are non-silent, because against silence an adaptive operator shows
-no spread and its declaration passes untested, and the impulse is a fixed
-multiple of each context's peak, so that it perturbs the input rather than
-replacing it. The
+Two design choices keep the probe honest about adaptive operators. The impulse
+sits on a non-silent carrier: on silence an encoder or stretcher spreads nothing,
+and its declaration would pass without being tested. The impulse is also scaled
+to each context's peak, so it nudges the operator's input instead of replacing
+it. The
 \Kcontexts{} contexts, all generated arithmetically
 (\texttt{experiments/support\_containment.py}), are a steady low-frequency
 tone; the same tone at one part in a hundred, where a lossy encoder allocates
@@ -1629,11 +1634,10 @@ assertions as JSON.
 
 The declaration raises the median assertion in this cohort, the corpus outputs of
 Experiment~D, from \PbytesPlain{} to \PbytesDecl{}~B, and recomputation took a
-median \PverifyMs{}~ms per output. The \Gassertion{}~B of
-Section~\ref{sec:res-overhead} is the evidence-only assertion of the overhead
-benchmark's cohort, and the bookkeeping percentage there covers interval
-propagation and assertion construction, not decoding, signing, validation or
-consumer verification, which that section times separately where it times them.
+median \PverifyMs{}~ms per output. These figures come from a different cohort than Section~\ref{sec:res-overhead},
+whose \Gassertion{}~B is an evidence-only assertion. The bookkeeping percentage
+reported there covers propagating intervals and building the assertion; decoding,
+signing, validation and consumer verification are not included in it.
 
 \subsection{Two-language differential}
 \label{sec:res-oracle}
