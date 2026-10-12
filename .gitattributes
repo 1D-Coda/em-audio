@@ -33,3 +33,6 @@
 *.onnx  binary
 *.pem   -text
 *.key   -text
+
+# The manuscript and supplement are submitted to the journal, not archived.
+paper/ export-ignore

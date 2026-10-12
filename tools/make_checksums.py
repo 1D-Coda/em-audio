@@ -98,6 +98,9 @@ def main() -> int:
     for rel in sorted(files):
         if rel in SKIP or Path(rel).name in SKIP:
             continue
+        # paper/ is export-ignored: the archive does not contain it.
+        if rel.startswith("paper/"):
+            continue
         p = ROOT / rel
         if not p.is_file():
             continue
