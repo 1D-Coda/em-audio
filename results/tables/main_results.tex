@@ -2,20 +2,20 @@
 \toprule
 Check & Cases & Boundary-only & Complete-source \\
 \midrule
-\multicolumn{4}{l}{\textit{A\quad Exhaustive finite-state conformance}} \\
+\multicolumn{4}{l}{\textit{Exhaustive finite-state conformance}} \\
 Source words over $\{C,G,\bot\}$, length $\le 8$ & 9,840 & n/a & n/a \\
 Operator cases & 98,385 & n/a & n/a \\
 Contract checks & \multicolumn{3}{l}{984,213 checks, 0 failed} \\
 Named regression tests & \multicolumn{3}{l}{49 tests, 49 passed, 0 failed} \\
 \addlinespace
-\multicolumn{4}{l}{\textit{B\quad Deterministic adversarial timelines (10\,000 frozen fixtures, 64 intervals)}} \\
+\multicolumn{4}{l}{\textit{Deterministic adversarial timelines (10\,000 frozen fixtures, 64 intervals)}} \\
 Chain depth 1 & 10,000 & 9,455 (94.5\%) & 0 \\
 Chain depth 3 & 10,000 & 9,455 (94.5\%) & 0 \\
 Chain depth 5 & 10,000 & 9,455 (94.5\%) & 0 \\
 Lineage omissions (depth 1) & 10,000 & 10,000 & 0 \\
 Unverified $\to$ verified (depth 1) & n/a & 7,222 & 0 \\
 \addlinespace
-\multicolumn{4}{l}{\textit{C--D\quad Mixed-origin audio corpus, stock-FFmpeg processing}} \\
+\multicolumn{4}{l}{\textit{Mixed-origin audio corpus, stock-FFmpeg processing}} \\
 Exact propagation of constructed interval evidence & 600 & n/a & 600 \\
 \multicolumn{4}{l}{\footnotesize Promotion counts are whole output / any interval.} \\
 amplitude normalisation & 600 & 600 / 600 & 0 / 0 \\
@@ -27,7 +27,7 @@ transcode to FLAC & 600 & 600 / 600 & 0 / 0 \\
 transcode to MP3 & 600 & 600 / 600 & 0 / 0 \\
 trim to the middle 80\% & 600 & 600 / 600 & 0 / 0 \\
 \addlinespace
-\multicolumn{4}{l}{\textit{Q\quad PartialSpoof v1.2, third-party mixed-origin speech}} \\
+\multicolumn{4}{l}{\textit{PartialSpoof v1.2, third-party mixed-origin speech}} \\
 amplitude normalisation & 600 & 594 / 594 & 0 / 0 \\
 overlay a generated source & 600 & 541 / 598 & 0 / 0 \\
 resample 16 to 8 kHz & 600 & 594 / 594 & 0 / 0 \\
@@ -37,7 +37,7 @@ transcode to FLAC & 600 & 594 / 594 & 0 / 0 \\
 transcode to MP3 & 600 & 594 / 594 & 0 / 0 \\
 trim to the middle 80\% & 600 & 326 / 326 & 0 / 0 \\
 \addlinespace
-\multicolumn{4}{l}{\textit{R\quad PartialEdit v1.1, neural speech editing of genuine recordings}} \\
+\multicolumn{4}{l}{\textit{PartialEdit v1.1, neural speech editing of genuine recordings}} \\
 amplitude normalisation & 600 & 599 / 599 & 0 / 0 \\
 overlay a generated source & 600 & 0 / 600 & 0 / 0 \\
 resample 16 to 8 kHz & 600 & 599 / 599 & 0 / 0 \\
@@ -47,7 +47,7 @@ transcode to FLAC & 600 & 599 / 599 & 0 / 0 \\
 transcode to MP3 & 600 & 599 / 599 & 0 / 0 \\
 trim to the middle 80\% & 600 & 527 / 527 & 0 / 0 \\
 \addlinespace
-\multicolumn{4}{l}{\textit{H\quad Two-language differential oracle}} \\
+\multicolumn{4}{l}{\textit{Two-language differential oracle}} \\
 Frozen cases & 10,860 & n/a & 0 disagreements \\
 \bottomrule
 \end{tabular}

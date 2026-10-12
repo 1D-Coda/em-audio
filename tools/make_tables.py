@@ -144,7 +144,7 @@ def main_results():
                      load("H_oracle_differential"))
     T = _regression_counts()
     r = []
-    r.append(r"\multicolumn{4}{l}{\textit{A\quad Exhaustive finite-state conformance}} \\")
+    r.append(r"\multicolumn{4}{l}{\textit{Exhaustive finite-state conformance}} \\")
     r.append(f"Source words over $\\{{C,G,\\bot\\}}$, length $\\le 8$ & {A['words_enumerated']:,} & "
              f"n/a & n/a \\\\")
     r.append(f"Operator cases & {A['operator_cases']:,} & n/a & n/a \\\\")
@@ -158,7 +158,7 @@ def main_results():
              f"\\multicolumn{{3}}{{l}}{{{T['total']} tests, {T['passed']} passed, "
              f"{T['failed']} failed}} \\\\")
     r.append(r"\addlinespace")
-    r.append(r"\multicolumn{4}{l}{\textit{B\quad Deterministic adversarial timelines "
+    r.append(r"\multicolumn{4}{l}{\textit{Deterministic adversarial timelines "
              r"(10\,000 frozen fixtures, 64 intervals)}} \\")
     for d in ("1", "3", "5"):
         v = B["per_depth"][d]
@@ -172,7 +172,7 @@ def main_results():
              f"{B['per_depth']['1']['baseline_unverified_to_verified']:,} & "
              f"{B['per_depth']['1']['em_unverified_to_verified']} \\\\")
     r.append(r"\addlinespace")
-    r.append(r"\multicolumn{4}{l}{\textit{C--D\quad Mixed-origin audio corpus, "
+    r.append(r"\multicolumn{4}{l}{\textit{Mixed-origin audio corpus, "
              r"stock-FFmpeg processing}} \\")
     r.append(f"Exact propagation of constructed interval evidence & {C['n_clips']} & n/a & "
              f"{C['exact_interval_recovery']} \\\\")
@@ -189,17 +189,17 @@ def main_results():
     qf = ROOT / "results" / "machine_readable" / "Q_partialspoof_matrix.json"
     if qf.exists():
         r.append(r"\addlinespace")
-        r.append(r"\multicolumn{4}{l}{\textit{Q\quad PartialSpoof v1.2, third-party "
+        r.append(r"\multicolumn{4}{l}{\textit{PartialSpoof v1.2, third-party "
                  r"mixed-origin speech}} \\")
         corpus_rows(json.loads(qf.read_text())["per_transformation"])
     rf = ROOT / "results" / "machine_readable" / "R_partialedit_matrix.json"
     if rf.exists():
         r.append(r"\addlinespace")
-        r.append(r"\multicolumn{4}{l}{\textit{R\quad PartialEdit v1.1, neural speech editing "
+        r.append(r"\multicolumn{4}{l}{\textit{PartialEdit v1.1, neural speech editing "
                  r"of genuine recordings}} \\")
         corpus_rows(json.loads(rf.read_text())["per_transformation"])
     r.append(r"\addlinespace")
-    r.append(r"\multicolumn{4}{l}{\textit{H\quad Two-language differential oracle}} \\")
+    r.append(r"\multicolumn{4}{l}{\textit{Two-language differential oracle}} \\")
     r.append(f"Frozen cases & {H['cases']:,} & n/a & {H['disagreements']} disagreements \\\\")
     write("main_results", "\n".join(r), colspec="lrrr",
           header="Check & Cases & Boundary-only & Complete-source")
@@ -317,7 +317,7 @@ def overhead_table():
     r.append(f"EM assertion marginal cost & {per:.0f} B / evidence interval & n/a \\\\")
     P = load("P_consumer_verification").get("cost")
     if P:
-        r.append(f"Assertion, Experiment~D outputs, without declaration & "
+        r.append(f"Assertion, corpus outputs, without declaration & "
                  f"{P['median_assertion_bytes_without_declaration']:,} B & n/a \\\\")
         r.append(f"Same, with dependency declaration & "
                  f"{P['median_assertion_bytes_with_declaration']:,} B & n/a \\\\")

@@ -438,7 +438,7 @@ operators whose declarations his build does not satisfy. His unmodified outputs,
 the classified comparison his run produced are released in
 \path{results/independent/}.
 
-Two later runs on the released package are summarised in Section~\SecIndependent{} of the
+Two later runs on earlier released packages are summarised in Section~\SecIndependent{} of the
 manuscript; their environments are as follows. B.~C.~Guerra Flores ran it on
 an \XBMacCpu{} under \XBMacOs{}, with FFmpeg~\XBMacFfmpeg{} from the same
 package manager as the reference machine on different hardware, and with a
@@ -450,7 +450,7 @@ D.~A.~Balderrama-Alvarez ran the released package, tag~\XBWinTag{}, as a
 single unattended pass on \XBWinOs{} with FFmpeg~\XBWinFfmpeg{}, a different
 build of the same FFmpeg version. His verifier reported \XBWinDetDiffs{}
 deterministic differences, all of them in the MP3 kernel measurements of
-Experiment~K and in the time-stretch model deviation, on which the two builds
+the containment probes and in the time-stretch model deviation, on which the two builds
 also disagree, \XBRefStretchDev{} against \XBWinStretchDev{} samples, both
 inside the \XBStretchGuard{}-sample margin.
 
@@ -507,7 +507,7 @@ The holdout challenge probes each operator \KtwoProbesPerOp{} times: \KtwoContex
 signal contexts, \KtwoHoldoutContexts{} of them (white noise and a speech-like
 voice) unused while the declarations were set, \KtwoAmps{} impulse amplitudes
 from \KtwoAmpMin{} to \KtwoAmpMax{}, and \KtwoPositions{} probe positions
-disjoint from Experiment~K's, all fixed before the run. Its outputs are in
+disjoint from those of the containment probes, all fixed before the run. Its outputs are in
 \path{results/machine_readable/K2_footprint_holdout.json}, one row per probe.
 
 The MP3 encoder exceeded its declaration in \KtwoMpExceed{} probes, with a reach

@@ -753,7 +753,7 @@ editing differs more basically, since it may introduce new ancestry.
 
 For a polyphase resampler the radius
 follows from the pinned filter length and rate ratio: \KresampleKernel{} source
-samples here, which contains the largest reach measured in Experiment~K
+samples here, which contains the largest reach measured by the probes of Section~\ref{sec:res-containment}
 (\KresampleReach{}) and in the holdout (\KtwoResReach{}). The declared \KresampleFp{}
 adds a \KresampleGuard{}-sample margin chosen for frame alignment rather than
 measured; it only enlarges
@@ -839,8 +839,8 @@ Proposition~\ref{prop:footprint} erring large only weakens the emitted claim;
 erring small is a conformance failure. These
 values hold for one FFmpeg build and are not portable. The MP3 and time-stretch
 rows are measured, and the holdout of Section~\ref{sec:res-holdout} exceeds both
-on the reference build; on the build of Section~\ref{sec:res-independent} the
-MP3 row is also under-declared for Experiment~K's probes. Section~\ref{sec:limits} states the normalisation row's
+on the reference build; on the Linux build of Section~\ref{sec:res-independent} the
+MP3 row is also under-declared at the probes of Section~\ref{sec:res-containment}. Section~\ref{sec:limits} states the normalisation row's
 represented-content reading and its tested alternative.}
 \label{tab:operators}
 \small
@@ -1368,7 +1368,7 @@ positions disjoint from those above. This gives \KtwoProbesPerOp{} probes per op
 
 Resampling, retained-run selection and fixed-gain normalisation showed no
 exceedance, and resampling's reach stayed at \KtwoResampleReach{} against its
-analytical \KresampleFp{}. The two adaptive operators did not hold. MP3 exceeded
+declared \KresampleFp{}. The two adaptive operators did not hold. MP3 exceeded
 its declaration in \KtwoMpExceed{} of \KtwoProbesPerOp{} probes, all on the
 low-level carrier at the largest amplitude, reaching \KtwoMpReach{} source
 samples; time stretching exceeded in \KtwoStExceed{}, on the low-level carrier
@@ -1569,7 +1569,7 @@ graph, each source's own interval evidence. With the dependency declaration of
 Supplementary Note~\NoteSchema{}, the verifier (\path{em_audio/consumer.py}) rebuilds
 the map, checks that it covers the output exactly and recomputes every
 interval's record. Three checks are reported separately. For declaration
-consistency, over the \Pout{} corpus outputs of Experiment~D, honest assertions
+consistency, over the \Pout{} corpus outputs of Section~\ref{sec:res-corpus}, honest assertions
 verified in \PhonestDecl{} of \Pout{} under the declared profile and
 \PhonestStrict{} under the strict profile; the decoded-length check and the
 signed workflow follow below. Boundary-only claims under the same
@@ -1587,7 +1587,7 @@ declaration describes the processing, which needs other evidence: calibration
 probes, analysis of the algorithm, or an execution record.
 
 The consumer must also take the output length from the audio rather than from
-the declaration. Given the decoded length of every Experiment~D output, it
+the declaration. Given the decoded length of every corpus output, it
 rejected \DdeclRejected{} declared-profile assertions whose modelled output length
 differs from the decoded one: in \DfallbackOutputs{} the decoded output is longer
 than modelled and in \DshorterOut{} it is shorter. It verified \DstrictVerified{} of \Druns{} strict-profile
@@ -1613,7 +1613,7 @@ evaluations above, over every transformation and both profiles, ran on the
 assertions as JSON.
 
 The declaration raises the median assertion in this cohort, the corpus outputs of
-Experiment~D, from \PbytesPlain{} to \PbytesDecl{}~B, and recomputation took a
+Section~\ref{sec:res-corpus}, from \PbytesPlain{} to \PbytesDecl{}~B, and recomputation took a
 median \PverifyMs{}~ms per output. These figures come from a different cohort than Section~\ref{sec:res-overhead},
 whose \Gassertion{}~B is an evidence-only assertion. The bookkeeping percentage
 reported there covers propagating intervals and building the assertion; decoding,
@@ -1688,7 +1688,7 @@ constants.}
 \centering
 \caption{Claim--evidence boundary. Each row names a class of
 claim, the evidence used for it, what that evidence does not establish, and whether
-the independent reproduction of Section~\ref{sec:res-independent} reproduced
+the independent reproductions of Section~\ref{sec:res-independent} reproduced
 it. Evidence from one row is
 never used to authorise a claim in another.}
 \label{tab:boundary}
@@ -1727,7 +1727,7 @@ Containment at untested inputs or builds &
 Signed transport &
 \Ftotal{} round-trips over \Fcontainerlist{}; decoded-PCM identity &
 C2PA security; perceptual or cross-decoder equivalence &
-Yes on both machines \\
+Yes on all three external machines \\
 \addlinespace
 Consumer check &
 Recomputation from the declaration on three corpora, against decoded length;
@@ -1811,7 +1811,7 @@ containment arm found no sample outside the declared support. Of the
 \IRopsNonzero{} operators with a non-zero footprint, \IRopsAgree{}, all but MP3,
 reproduced their reach exactly.
 
-Two later runs, on macOS (an earlier release with a \XBMacChecks{}-check suite)
+Two later runs, on macOS (an earlier release with an \XBMacChecks{}-check suite)
 and on Windows (tag~\XBWinTag{}), show that the version string does not fix the
 calibration. The macOS run reproduced every deterministic output; the Windows
 run's \XBWinDetDiffs{} differences all lie in the MP3 kernel measurements and the
@@ -1982,10 +1982,10 @@ CC~BY~4.0, fetched by a checksum-pinned script, and from locally generated
 eSpeak~NG output. The robustness arm also uses a Piper neural
 text-to-speech voice trained on the public-domain LJ Speech corpus, fetched and
 checksum-verified rather than committed, and pink noise generated locally,
-seeded per clip. Experiment~Q uses \Qclips{} utterances of the PartialSpoof
+seeded per clip. The experiment of Section~\ref{sec:res-partialspoof} uses \Qclips{} utterances of the PartialSpoof
 v1.2 development set \citep{zhang2021partialspoofdata}, licensed CC~BY~4.0,
 fetched and checksum-verified by script rather than redistributed, and
-Experiment~R \Rclips{} files of the PartialEdit v1.1 E1 subset
+\Rclips{} files of the PartialEdit v1.1 E1 subset
 \citep{zhang2026partialeditdata}, CC~BY~4.0, built on the VCTK corpus
 \citep{yamagishi2019vctk}, fetched the same way. No new human participants were recruited; existing public
 speech data were used, and no proprietary or login-walled data. The robustness arm uses a pretrained
