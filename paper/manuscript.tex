@@ -182,6 +182,12 @@ into one output sample); other transformations need their own dependency model.
 MP3 appears often in what follows because, as a lossy and adaptive encoder, it
 is the hardest case to declare, not because the method is limited to it.
 
+A signature check and this contract test different things. Signature
+validation establishes the integrity of an assertion; evidence consistency
+checks whether the assertion follows from the declared sources. C2PA already
+records ingredient relationships, and the contribution here is the executable
+reduction over them and its evaluation.
+
 \paragraph{Contributions} Each is traceable to a completed experiment.
 
 \begin{enumerate}
@@ -1147,7 +1153,9 @@ over samples whose sources include generated speech. Retained-run selection
 produced no promotion at either level in this corpus (\DselInterval{}), because
 each retained run lay within a single evidence class, so its endpoints and its
 interior agree. A correct
-whole-output label can thus hide incorrect local claims, and the interval-level
+whole-output label can thus hide incorrect local claims: a correct whole-asset
+label does not establish the correctness of the claims attached to its individual
+intervals, and the interval-level
 count is the endpoint the contract is written for.
 
 The interval model was validated against FFmpeg's actual output on every PCM
@@ -1524,7 +1532,9 @@ strict profile is safe for the measured operators by construction and pays for
 it: median dilution is \IstrictMpPct{}\% for MP3, \IstrictStPct{}\% for time stretching and
 \IstrictSelPct{}\% for retained-run selection,
 against \IstrictFlacPct{}\% for lossless transcoding, whose footprint is
-analytical.
+analytical. Whole-asset fallback is thus the conservative reference: a local
+declaration is worth carrying when it keeps more specificity than that reference
+while its containment is justified.
 
 Dilution grows with composition. Along the chain trim, resample 16 to
 8~kHz, transcode to MP3, normalise, time stretch by 1.10, deliberately
@@ -1664,7 +1674,9 @@ footprint. An implementation that wants a ceiling on the count may coarsen the
 partition, merging adjacent intervals and emitting the meet over the merged
 range: each sample then carries the union of the merged required source sets,
 which by Proposition~\ref{prop:footprint} can only weaken its claim, at the
-dilution cost of Section~\ref{sec:res-dilution}. The byte figure is deterministic and reproduces exactly; the
+dilution cost of Section~\ref{sec:res-dilution}. Coarsening is therefore a
+conservative way to bound metadata size; we have not measured the trade-off
+between size and dilution it offers. The byte figure is deterministic and reproduces exactly; the
 microsecond figure is wall clock on one interpreter and one machine.
 
 Both arms are timed in the same process, so load and clock changes move them
@@ -1884,6 +1896,16 @@ did not implement the contract. An examiner reporting an interval should state i
 footprint basis and build from the declaration: an analytical or whole-asset
 basis carries the guarantee, a measured basis only at the operating points its
 calibration tested.
+
+\paragraph{Beyond audio} Nothing in Section~\ref{sec:model} refers to audio. The
+contract applies to other derived data whenever their required-source sets can be
+specified: temporal filtering of measured and imputed observations, image
+inpainting, robotic maps and LiDAR products that combine measurements with
+predictions, or video composed from captured and generated regions. Each needs
+domain-specific evidence channels and justified spatial or temporal dependency
+maps, and none is evaluated here. Preserving the distinction between observed,
+inferred and generated content does not by itself establish geometric accuracy,
+estimator confidence or operational safety.
 
 \section{Limitations}
 \label{sec:limits}
