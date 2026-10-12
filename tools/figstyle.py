@@ -116,6 +116,8 @@ OPERATOR_LABELS = {
     "resample_16_8": "resample 16 to 8 kHz",
     "silence_removal": "retained-run selection",
     "time_stretch_1.10": "time stretch 1.10",
+    "time_stretch_1.25": "time stretch 1.25",
+    "resample_48_16": "resample 48 to 16 kHz",
     "transcode_flac": "transcode to FLAC",
     "transcode_mp3": "transcode to MP3",
     "trim_10_90": "trim to middle 80%",

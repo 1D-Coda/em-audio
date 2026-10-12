@@ -90,7 +90,7 @@ was signed.
 
 \begin{keyword}
 digital evidence \sep media provenance \sep content credentials \sep C2PA \sep
-audio forensics \sep derived media \sep reproducibility
+audio forensics \sep derived media
 \end{keyword}
 
 \end{frontmatter}
@@ -108,7 +108,8 @@ detection result.
 Provenance systems bind assertions to an asset. They do not, on their own, say
 what a \emph{derived} asset is entitled to assert, and derivation is routine: a
 clip is trimmed, spliced, resampled and re-encoded before it reaches an
-examiner, and each step writes a new manifest. The C2PA specification names the
+examiner, and each step writes a new manifest. The specification of the Coalition
+for Content Provenance and Authenticity (C2PA) names the
 relationship of such an asset to its input \texttt{parentOf}
 \citep[Table~10, \S18.16.3]{c2pa24}, and its vocabulary can carry everything the
 problem needs: \texttt{componentOf} ingredients with their own histories, a
@@ -692,7 +693,7 @@ over-approximation is sufficient. Analytical bounds can establish containment;
 finite probes can only test it, and Section~\ref{sec:audio} says which of the
 two each operator's declaration rests on.
 
-\paragraph{Signal transparency (P8)} The contract must not change the audio.
+\paragraph{Signal transparency} The contract must not change the audio.
 The canonical essence of an asset is the SHA-256 of its decoded stream rendered
 to signed 16-bit little-endian PCM at the asset's own rate and channel count,
 and it must be identical whether the EM assertion or the baseline assertion is
@@ -738,7 +739,7 @@ footprints and the decoded output length determine each output interval's
 required source set; the complete-source meet produces the claims, which are
 signed with the dependency declaration. A consumer decodes the asset, rebuilds the
 declared map and recomputes every claim (Section~\ref{sec:res-consumer}). Signal
-transparency (P8) tests that signing preserved the decoded 16-bit PCM.}
+transparency tests that signing preserved the decoded 16-bit PCM.}
 \label{fig:architecture}
 \end{figure}
 
@@ -807,22 +808,6 @@ and strict steps, and such a chain cannot promote.
 
 \begin{table}[t]
 \centering
-\caption{Footprint bases and the two evaluated profiles.}
-\label{tab:profiles}
-\footnotesize
-\begin{tabular}{R{0.19}R{0.35}R{0.16}R{0.16}}
-\toprule
-Basis & Operators here & Declared profile & Strict profile \\
-\midrule
-Analytical & trim, concatenation, overlay, lossless transcoding, fixed-gain scaling, resampling & local & local \\
-Measured & MP3 encoding, time stretching, retained-run selection & local, conditional & whole asset \\
-Unpredicted output & tail beyond the modelled length & no claim & whole asset \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[t]
-\centering
 \caption{The v1 operator set. The analytical column is a support radius derived
 from the pinned algorithm configuration; the margin covers implementation
 behaviour that the analysis does not capture, such as frame-granular cut points
@@ -846,6 +831,23 @@ represented-content reading and its tested alternative.}
 \small
 \input{../results/tables/operator_table}
 \end{table}
+
+\begin{table}[t]
+\centering
+\caption{Footprint bases and the two evaluated profiles.}
+\label{tab:profiles}
+\footnotesize
+\begin{tabular}{R{0.19}R{0.35}R{0.16}R{0.16}}
+\toprule
+Basis & Operators here & Declared profile & Strict profile \\
+\midrule
+Analytical & trim, concatenation, overlay, lossless transcoding, fixed-gain scaling, resampling & local & local \\
+Measured & MP3 encoding, time stretching, retained-run selection & local, conditional & whole asset \\
+Unpredicted output & tail beyond the modelled length & no claim & whole asset \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 
 \subsection{The baseline reference policy}
 \label{sec:baseline}
@@ -925,6 +927,70 @@ frequencies characterise the frozen fixture family and are a \textbf{mechanism
 stress rate}: they are not, and must not be read as, an estimate of how often
 any deployed system promotes provenance.
 
+\begin{table}[tbp]
+\centering
+\caption{Claim--evidence boundary. Each row names a class of
+claim, the evidence used for it, what that evidence does not establish, and whether
+the independent reproductions of Section~\ref{sec:res-independent} reproduced
+it. Evidence from one row is
+never used to authorise a claim in another.}
+\label{tab:boundary}
+\footnotesize
+\begin{tabular}{R{0.15}R{0.26}R{0.23}R{0.23}}
+\toprule
+Claim class & Evidence used here & Not established by it & Independent reproduction \\
+\midrule
+Operator conformance &
+Propositions~\ref{prop:union}, \ref{prop:footprint}, Theorem~\ref{thm:composition};
+enumeration; scope battery; two-language differential &
+That any deployed system conforms &
+Yes: \IRafailed{} failures; the \XBWinChecks{}-check suite of \XBWinTag{} reproduced on Windows \\
+\addlinespace
+Constructed fixtures &
+\Btimelines{} adversarial timelines with a control arm &
+Any population rate or named product &
+Yes: \BbaseOne{} against \BemAll{}, exactly \\
+\addlinespace
+Realistic audio &
+\Cclips{} constructed, \Qclips{} PartialSpoof and \Rclips{} PartialEdit clips, stock FFmpeg &
+Balanced coverage of speakers, codecs or edits &
+Yes for our corpus; the other two added later \\
+\addlinespace
+Interval-map fidelity &
+Predicted versus decoded sample counts, against declared margins &
+Containment; margins on other builds &
+\textbf{No}: selection deviation \IRsilDev{} against a \IRsilGuard{} margin \\
+\addlinespace
+Kernel-support containment &
+\Kprobes{} probes in \Kcontexts{} contexts over \Kops{} configurations; holdout
+challenge &
+Containment at untested inputs or builds &
+\textbf{No}: MP3 reach \IRmpReach{} against \IRmpDeclared{} \\
+\addlinespace
+Signed transport &
+\Ftotal{} round-trips over \Fcontainerlist{}; decoded-PCM identity &
+C2PA security; perceptual or cross-decoder equivalence &
+Yes on all three external machines \\
+\addlinespace
+Consumer check &
+Recomputation from the declaration on three corpora, against decoded length;
+JavaScript verifier; signed workflow &
+That the declaration describes the processing; a non-C2PA consumer &
+Not yet: added later \\
+\addlinespace
+Runtime cost &
+\Greps{} repetitions on one machine &
+Compiled or broadcast-scale cost &
+\textbf{No} for ms; ratio within \IRratioGap{}\% \\
+\addlinespace
+Conservatism cost &
+Per-sample dilution against exact ground truth &
+Dilution against a codec's true dependencies &
+Yes, exactly \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Deterministic fixtures}
 
 Experiment~A enumerates every source word of length $1$ to \Amaxlen{} over
@@ -961,7 +1027,8 @@ a modest interior interval.
 
 Given the same dependency map and source records, evidence reduction is
 independent of waveform content; adaptive processing can nevertheless change the
-dependencies the map must contain. A robustness arm tests the first part. It rebuilds \CtwoNeuralN{} clips with a neural TTS
+dependencies the map must contain. A robustness arm tests the first part
+(materials in Supplementary Note~\NoteRobustness{}). It rebuilds \CtwoNeuralN{} clips with a neural TTS
 (Piper, a VITS-architecture engine with a voice trained on the public-domain
 LJSpeech corpus). It also overlays \CtwoNoiseN{} clips with locally generated pink
 noise over the whole clip, mixed at a volume setting of $-18$~dB; this
@@ -1008,6 +1075,16 @@ and the closed-form oracle together evaluated \Achecks{} checks with
 \Afailed{} failures, including \Acomp{} explicit composition cases. Every named regression test passes, across the contract and review-regression
 suites together: \Tpass{} of \Ttotal{}, with \Tfail{} failures
 (Table~\ref{tab:main}).
+
+\begin{table}[!tp]
+\centering
+\caption{Main results. Deterministic fixture rates characterise the frozen
+fixture family and are a mechanism stress rate, not a population prevalence
+estimate.}
+\label{tab:main}
+\small
+\input{../results/tables/main_results}
+\end{table}
 
 That enumeration carries one channel over one scope, as the audio
 instantiation does, so it cannot reach the applicability cases of~(iii). A
@@ -1066,7 +1143,8 @@ because the loss is established at the first derivation and no downstream
 operator can recover evidence already discarded. (B) Control arm with anomaly
 positions uniform over all positions, measured against the closed form
 $\binom{n-2}{k}/\binom{n}{k}$, on an axis truncated to 80--100\% to expose
-prediction error. (C) Each operator applied alone: filled circles are
+prediction error. (C) Each operator applied alone, in the fixture family's own resampling and
+time-stretch configurations, which differ from the corpus ones: filled circles are
 boundary-only, open diamonds complete-source, which is zero for every operator. Percentages throughout quantify mechanism stress
 on a frozen fixture family and are not real-world prevalence.}
 \label{fig:promotion}
@@ -1336,7 +1414,7 @@ beginning \KsilenceReach{} source samples before a retained run's start, well
 beyond the margin declared at the time. That is an under-declaration, the one
 direction Proposition~\ref{prop:footprint} does not forgive; the band was
 raised to \KsilenceFp{}, above the measured reach, and the operator now
-contains with a margin of \KsilenceMargin{}. At these probes the bands are tight, which matters because a larger band
+contains with a headroom of \KsilenceMargin{}. At these probes the bands are tight, which matters because a larger band
 dilutes more: resampling reached \KresampleReach{} against \KresampleFp{}, MP3
 \KmpThreeReach{} against \KmpThreeFp{}, and time stretching \KstretchReach{}
 against \KstretchFp{}.
@@ -1450,7 +1528,7 @@ the object the vocabulary-versus-reduction distinction describes: the component
 histories are all present in the signed graph, and the aggregate interval claim
 exists only because the EM assertion computes it. Nothing in the validation
 pipeline required it to be conservative. A representative manifest is frozen
-as a fixture in the repository.
+as a fixture in the repository (Supplementary Note~\NoteComposition{}).
 
 \subsection{The cost of conservatism: claim dilution}
 \label{sec:res-dilution}
@@ -1664,15 +1742,6 @@ Note~\NoteRawRows{}); between machines the absolute figure differed by
 The milliseconds show that the bookkeeping is cheap; they are not reproducible
 constants.
 
-\begin{table}[!tp]
-\centering
-\caption{Main results. Deterministic fixture rates characterise the frozen
-fixture family and are a mechanism stress rate, not a population prevalence
-estimate.}
-\label{tab:main}
-\small
-\input{../results/tables/main_results}
-\end{table}
 
 \begin{table}[!tp]
 \centering
@@ -1684,69 +1753,6 @@ constants.}
 \input{../results/tables/overhead_table}
 \end{table}
 
-\begin{table}[tbp]
-\centering
-\caption{Claim--evidence boundary. Each row names a class of
-claim, the evidence used for it, what that evidence does not establish, and whether
-the independent reproductions of Section~\ref{sec:res-independent} reproduced
-it. Evidence from one row is
-never used to authorise a claim in another.}
-\label{tab:boundary}
-\footnotesize
-\begin{tabular}{R{0.15}R{0.26}R{0.23}R{0.23}}
-\toprule
-Claim class & Evidence used here & Not established by it & Independent reproduction \\
-\midrule
-Operator conformance &
-Propositions~\ref{prop:union}, \ref{prop:footprint}, Theorem~\ref{thm:composition};
-enumeration; scope battery; two-language differential &
-That any deployed system conforms &
-Yes: \IRafailed{} failures; the \XBWinChecks{}-check suite of \XBWinTag{} reproduced on Windows \\
-\addlinespace
-Constructed fixtures &
-\Btimelines{} adversarial timelines with a control arm &
-Any population rate or named product &
-Yes: \BbaseOne{} against \BemAll{}, exactly \\
-\addlinespace
-Realistic audio &
-\Cclips{} constructed, \Qclips{} PartialSpoof and \Rclips{} PartialEdit clips, stock FFmpeg &
-Balanced coverage of speakers, codecs or edits &
-Yes for our corpus; the other two added later \\
-\addlinespace
-Interval-map fidelity &
-Predicted versus decoded sample counts, against declared margins &
-Containment; margins on other builds &
-\textbf{No}: selection deviation \IRsilDev{} against a \IRsilGuard{} margin \\
-\addlinespace
-Kernel-support containment &
-\Kprobes{} probes in \Kcontexts{} contexts over \Kops{} configurations; holdout
-challenge &
-Containment at untested inputs or builds &
-\textbf{No}: MP3 reach \IRmpReach{} against \IRmpDeclared{} \\
-\addlinespace
-Signed transport &
-\Ftotal{} round-trips over \Fcontainerlist{}; decoded-PCM identity &
-C2PA security; perceptual or cross-decoder equivalence &
-Yes on all three external machines \\
-\addlinespace
-Consumer check &
-Recomputation from the declaration on three corpora, against decoded length;
-JavaScript verifier; signed workflow &
-That the declaration describes the processing; a non-C2PA consumer &
-Not yet: added later \\
-\addlinespace
-Runtime cost &
-\Greps{} repetitions on one machine &
-Compiled or broadcast-scale cost &
-\textbf{No} for ms; ratio within \IRratioGap{}\% \\
-\addlinespace
-Conservatism cost &
-Per-sample dilution against exact ground truth &
-Dilution against a codec's true dependencies &
-Yes, exactly \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsection{Independent reproduction}
 \label{sec:res-independent}
@@ -2026,7 +2032,9 @@ public, commercial, or not-for-profit sectors.
 
 \section*{Declaration of competing interest}
 
-The author declares no competing financial or personal interests.
+The author declares that they have no known competing financial interests or
+personal relationships that could have appeared to influence the work reported
+in this paper.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
 

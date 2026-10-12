@@ -16,7 +16,7 @@ LIMIT = 85
 lines = [
  "Derived audio can keep its waveform while claiming stronger provenance.",
  "A complete-source contract makes the derived claim the meet over its sources.",
- "Measured codec footprints failed a holdout test; whole-asset dependency stays safe.",
+ "MP3 and time-stretch footprints failed a holdout; whole-asset dependency stays safe.",
  f"Boundary-only promoted at interval level in {d_base:,} of {d_runs:,} FFmpeg runs; ours in none.",
  f"Decoded essence was unchanged across {n_rt:,} signed C2PA round-trips.",
 ]

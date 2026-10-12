@@ -377,11 +377,9 @@ git clone https://github.com/1D-Coda/em-audio \bs
 \end{alltt}
 
 \path{run_all.sh} fetches the checksum-pinned corpus, generates the test
-signing credential, runs the named regression tests and experiments A--R, and prints every step it
-skipped; Experiments~Q and~R run only when the PartialSpoof and PartialEdit
-subsets have been fetched, which the two fetch commands do once (each keeps about
-70~MB),
-regenerates every table, macro and figure from the machine-readable results,
+signing credential, runs the named regression tests and the experiments, and prints every step it
+skipped (the PartialSpoof and PartialEdit runs execute only when those subsets
+have been fetched; each fetch keeps about 70~MB); it then regenerates every table, macro and figure from the machine-readable results,
 writes \path{results/PREFLIGHT.txt}, and exits non-zero if any conformance
 check fails. The preflight report is the single source of every number in the
 manuscript; a checker script verifies that no numeric result appears in the

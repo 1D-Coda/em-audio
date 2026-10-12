@@ -140,7 +140,7 @@ def fig2():
         "recompute every claim and report the verdict", "#fefcbf")
     arrow(93.0, 25.0, 83.6, 6.0)
 
-    ax.text(0, 3.4, "signal transparency (P8): decoded PCM identical\nbefore and after signing, "
+    ax.text(0, 3.4, "signal transparency: decoded PCM identical\nbefore and after signing, "
             "under either policy", fontsize=6.1, color="#c53030", va="center")
     save(fig, "fig2_architecture")
 
