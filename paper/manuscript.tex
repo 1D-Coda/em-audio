@@ -64,8 +64,7 @@ Promotion Across Derived Audio Transformations}
 \address[aur]{Independent researcher, Hermosillo, Sonora, Mexico}
 
 \begin{abstract}
-Derived audio can keep its waveform while strengthening what it says about
-its origin. Under a constructed boundary-only inheritance policy, a trimmed and re-encoded
+Derived audio can keep its waveform while strengthening its claimed origin. Under a constructed boundary-only inheritance policy, a trimmed and re-encoded
 clip of captured and generated material emerges described as captured-only. We specify an operator contract for derived audio: over the complete
 required source set, provenance unions, same-channel support minimises,
 applicability intersects and lineage unions, and an unverified source interval is
@@ -73,18 +72,18 @@ absorbing. The algebra is a known meet-semilattice construction; new are its
 executable temporal instantiation with declared kernel footprints, a signed C2PA
 transport, a consumer verifier and their evaluation. The contract prevents
 promotion relative to the declared dependency map; whether that map matches
-actual processing needs separate justification. Complete-source propagation failed none of \Achecks{} contract checks
+the processing needs separate justification. Complete-source propagation failed none of \Achecks{} contract checks
 and promoted in no interval over \Btimelines{} adversarial timelines, \Cclips{}
 mixed-origin clips and \Qclips{} PartialSpoof and \Rclips{} PartialEdit
 third-party utterances processed by stock FFmpeg, where boundary-only
 inheritance promoted in \Deither{}, \Qeither{} and \Reither{} of \Druns{} runs. A holdout challenge showed that the
 measured MP3 and time-stretch declarations are not universal. A strict profile
-assigns whole-asset dependency to measured declarations: safe by construction,
-it promoted nowhere and dilutes those operators' claims almost entirely. Consumer tests checked assertion consistency against the declarations;
+assigns whole-asset dependency to measured declarations: conservative by construction within the content-dependency
+model, it promoted nowhere and dilutes those operators' claims almost entirely. Consumer tests checked assertions against their declarations;
 an end-to-end signed workflow accepted all \PtwoHonest{} honest trim derivations
 and rejected all \PtwoWrongFlagged{} promoted variants; signing left decoded audio unchanged. Independent
-runs reproduced the conformance, promotion and oracle outcomes of an
-earlier release. The contract
+runs reproduced the conformance, promotion and oracle outcomes of
+an earlier release. The contract
 does not detect deepfakes, and a valid signature proves only that an assertion
 was signed.
 \end{abstract}
@@ -545,8 +544,8 @@ $\mu$ applicable. The contract requires:
 \item[(i) Provenance] $P_y = \bigsqcap_{x \in \Dy} P_x$, that is, the exact
   union of the required source provenance sets, with $\bot$ absorbing and with
   no invented ancestry.
-\item[(ii) Support] a channel is available only when no required source is
-  unverified, every required source supplies an applicable value
+\item[(ii) Support] a channel is available only when the required source set is
+  non-empty, no required source is unverified, every required source supplies an applicable value
   ($\Dy^{\mu} = \Dy$, requirement~(iv)) and the emitted scope $A_y(\mu)$
   of~(iii) is non-empty. Its value is then the minimum of the source values,
   $S_y(\mu) = \min_{x \in \Dy} S_x(\mu)$; otherwise the channel is
@@ -1919,7 +1918,10 @@ or tempo factor requires re-declaration with both passes of
 \path{tools/calibrate_footprint.py}, mapping and support, which exits non-zero
 when a declaration fails to contain its measured reach; until then the strict
 profile applies. Proposition~\ref{prop:footprint} guarantees only that erring large
-is safe.
+is safe. A declaration must match the configuration actually run; the evaluated
+verifier checks declaration consistency but does not enforce processing-build
+identity, so matching the declaration to the executed build remains the
+producer's responsibility (Supplementary Note~\NoteSchema{}).
 
 \paragraph{Content and control dependency} The contract tracks
 represented-content ancestry rather than all computational dependencies. In peak
