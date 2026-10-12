@@ -4,7 +4,7 @@ Interspeech 2025; CC BY 4.0).
 PartialEdit replaces one to three words inside genuine VCTK recordings with
 neural speech editing (E1: VoiceCraft) and publishes the edited regions as
 timestamps. It is a different generator generation from PartialSpoof's: a
-codec language model editing words in place, the realistic threat to a genuine
+neural codec model editing words in place, the realistic threat to a genuine
 recording, rather than concatenated segments from 2019 spoofing systems.
 
 The E1 archive is 3.4 GB, so the stream is stopped as soon as the subset is
