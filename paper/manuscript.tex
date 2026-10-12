@@ -1968,7 +1968,11 @@ Experiment~R \Rclips{} files of the PartialEdit v1.1 E1 subset
 \citep{yamagishi2019vctk}, fetched the same way. No new human participants were recruited; existing public
 speech data were used, and no proprietary or login-walled data. The robustness arm uses a pretrained
 voice as distributed and trains or adapts none. Licences, versions, URLs, access dates, digests and redistribution clauses are
-recorded in \texttt{DATA\_LICENSES.md}.
+recorded in \texttt{DATA\_LICENSES.md}. Every result file, the frozen reference
+and every fixture are archived with the code in Zenodo,
+\href{https://doi.org/10.5281/zenodo.23310554}{\mbox{doi:10.5281/zenodo.23310554}}, which resolves to one immutable
+version; the identifiers of the selected PartialSpoof and PartialEdit
+utterances are in the archived result files.
 
 \section*{Code availability}
 
@@ -1984,13 +1988,10 @@ The repository ships a frozen copy of the released results in
 \texttt{results/reference/}, the comparison target when
 \texttt{tools/verify\_reproduction.py} runs from a downloaded archive, and a
 container image and continuous verification that re-measure the declarations
-on further builds, author-run evidence not reported here. The evaluated state is release tag \Rtag{}, the
-identifier to resolve; the commit hash in \texttt{results/PREFLIGHT.txt} is
-necessarily the parent of the commit that stores the report, and the report
-says so.  The audio artefact is deposited in Zenodo
-with version and concept DOIs before submission, cited in the Data availability
-statement, and the repository tag and the Zenodo version resolve to the same
-evaluated state.
+on further builds, author-run evidence not reported here. The evaluated state is release tag \Rtag{}, archived in Zenodo as
+\href{https://doi.org/10.5281/zenodo.23310554}{\mbox{doi:10.5281/zenodo.23310554}}, where the tag and the archive hold the same files;
+the commit hash in \texttt{results/PREFLIGHT.txt} is necessarily the parent of
+the commit that stores the report, and the report says so.
 
 \section*{CRediT authorship contribution statement}
 
